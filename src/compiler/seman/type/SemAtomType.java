@@ -45,6 +45,8 @@ public class SemAtomType extends SemType {
 		case INT: return "INTEGER";
 		case STR: return "STRING";
 		case VOID: return "VOID";
+		case DOB: return "DOUBLE";
+		case CHR: return "CHAR";
 		}
 		Report.error("Internal error :: compiler.seman.type.SemAtomType.toString()");
 		return "";
