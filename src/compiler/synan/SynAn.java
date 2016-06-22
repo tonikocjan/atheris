@@ -1198,16 +1198,7 @@ public class SynAn {
 					stmts, s);
 		}
 
-		if (symbol.token == Token.RBRACE) {
-			dump("if_expression' -> }");
-			skip();
-			return new AbsIfThen(new Position(start, stmts.position), e1, stmts);
-		}
-
-		Report.error(symbol.position, "Syntax error on token \""
-				+ symbol.lexeme + "\", expected \"}\"");
-
-		return null;
+		return new AbsIfThen(new Position(start, stmts.position), e1, stmts);
 	}
 	
 	private AbsExpr parseBracket() {
