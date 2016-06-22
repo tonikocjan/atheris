@@ -12,7 +12,9 @@ public class SemAtomType extends SemType {
 	public static final int LOG = 0;
 	public static final int INT = 1;
 	public static final int STR = 2;
-	public static final int VOID = 3;
+	public static final int DOB = 3;
+	public static final int CHR = 4;
+	public static final int VOID = 5;
 
 	/* Tip. */
 	public final int type;
