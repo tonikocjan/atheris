@@ -5,64 +5,69 @@ package compiler.lexan;
  * 
  * @author sliva
  */
-public class Token {
+public enum Token {
 
-	/** Vrsta simbola: konec datoteke. */							public static final int EOF 		= 0;
+	/** Vrsta simbola: konec datoteke. */							EOF,
 	
-	/** Vrsta simbola: ime. */										public static final int IDENTIFIER 	= 1;
+	/** Vrsta simbola: ime. */										IDENTIFIER,
 
-	/** Vrsta simbola: logicna konstanta. */						public static final int LOG_CONST 	= 2;
-	/** Vrsta simbola: celo stevilo. */								public static final int INT_CONST 	= 3;
-	/** Vrsta simbola: niz. */										public static final int STR_CONST 	= 4;
+	/** Vrsta simbola: logicna konstanta. */						LOG_CONST,
+	/** Vrsta simbola: celo stevilo. */								INT_CONST,
+	/** Vrsta simbola: niz. */										STR_CONST,
+	/** Vrsta simbola: ključna beseda import.  */ 					DOUBLE_CONST,
+	/** Vrsta simbola: ključna beseda import.  */ 					CHAR_CONST,
 
-	/** Vrsta simbola: logicni in. */								public static final int AND 		= 5;
-	/** Vrsta simbola: logicni ali. */								public static final int IOR 		= 6;
-	/** Vrsta simbola: logicni ne. */								public static final int NOT 		= 7;
+	/** Vrsta simbola: logicni in. */								AND,
+	/** Vrsta simbola: logicni ali. */								IOR,
+	/** Vrsta simbola: logicni ne. */								NOT,
 	
-	/** Vrsta simbola: je-enako. */									public static final int EQU 		= 8;
-	/** Vrsta simbola: ni-enako. */									public static final int NEQ 		= 9;
-	/** Vrsta simbola: manjse-kot. */								public static final int LTH 		= 10;
-	/** Vrsta simbola: vecje-kot. */								public static final int GTH 		= 11;
-	/** Vrsta simbola: manjse-ali-enako. */							public static final int LEQ 		= 12;
-	/** Vrsta simbola: vecje-ali-enako. */							public static final int GEQ 		= 13;
+	/** Vrsta simbola: je-enako. */									EQU,
+	/** Vrsta simbola: ni-enako. */									NEQ,
+	/** Vrsta simbola: manjse-kot. */								LTH,
+	/** Vrsta simbola: vecje-kot. */								GTH,
+	/** Vrsta simbola: manjse-ali-enako. */							LEQ,
+	/** Vrsta simbola: vecje-ali-enako. */							GEQ,
 	
-	/** Vrsta simbola: celostevilsko mnozenje. */					public static final int MUL 		= 14;
-	/** Vrsta simbola: celostevilsko deljenje. */					public static final int DIV 		= 15;
-	/** Vrsta simbola: ostanek po celostevilskem deljenju. */		public static final int MOD 		= 16;
-	/** Vrsta simbola: celostevilsko sestevanje ali predznak. */	public static final int ADD 		= 17;
-	/** Vrsta simbola: celostevilsko odstevanje ali predznak. */	public static final int SUB 		= 18;
+	/** Vrsta simbola: celostevilsko mnozenje. */					MUL,
+	/** Vrsta simbola: celostevilsko deljenje. */					DIV,
+	/** Vrsta simbola: ostanek po celostevilskem deljenju. */		MOD,
+	/** Vrsta simbola: celostevilsko sestevanje ali predznak. */	ADD,
+	/** Vrsta simbola: celostevilsko odstevanje ali predznak. */	SUB,
 		
-	/** Vrsta simbola: levi oklepaj. */								public static final int LPARENT 	= 19;
-	/** Vrsta simbola: desni oklepaj. */							public static final int RPARENT 	= 20;
-	/** Vrsta simbola: levi oglati oklepaj. */						public static final int LBRACKET 	= 21;
-	/** Vrsta simbola: desni oglati oklepaj. */						public static final int RBRACKET 	= 22;
-	/** Vrsta simbola: levi zaviti oklepaj. */						public static final int LBRACE 		= 23;
-	/** Vrsta simbola: desni zaviti oklepaj. */						public static final int RBRACE 		= 24;
+	/** Vrsta simbola: levi oklepaj. */								LPARENT,
+	/** Vrsta simbola: desni oklepaj. */							RPARENT,
+	/** Vrsta simbola: levi oglati oklepaj. */						LBRACKET,
+	/** Vrsta simbola: desni oglati oklepaj. */						RBRACKET,
+	/** Vrsta simbola: levi zaviti oklepaj. */						LBRACE,
+	/** Vrsta simbola: desni zaviti oklepaj. */						RBRACE,
 	
-	/** Vrsta simbola: pika. */										public static final int DOT 		= 25;
-	/** Vrsta simbola: dvopicje. */									public static final int COLON 		= 26;
-	/** Vrsta simbola: podpicje. */									public static final int SEMIC 		= 27;
-	/** Vrsta simbola: vejica. */                                   public static final int COMMA 		= 28;
+	/** Vrsta simbola: pika. */										DOT,
+	/** Vrsta simbola: dvopicje. */									COLON,
+	/** Vrsta simbola: podpicje. */									SEMIC,
+	/** Vrsta simbola: vejica. */                                   COMMA,
+	/** Vrsta simbola: ključna beseda import.  */ 					NEWLINE,
 	
-	/** Vrsta simbola: prirejanje. */								public static final int ASSIGN 		= 29;
+	/** Vrsta simbola: prirejanje. */								ASSIGN,
 	
-	/** Vrsta simbola: tip logical.  */								public static final int LOGICAL 	= 30;
-	/** Vrsta simbola: tip integer.  */								public static final int INTEGER 	= 31;
-	/** Vrsta simbola: tip string.  */								public static final int STRING 		= 32;
+	/** Vrsta simbola: tip integer.  */								INTEGER,
+	/** Vrsta simbola: tip string.  */								STRING,
+	/** Vrsta simbola: tip double.  */								DOUBLE,
+	/** Vrsta simbola: tip bool.  */								BOOL,
+	/** Vrsta simbola: tip char.  */								CHAR,
+	/** Vrsta simbola: tip char.  */								VOID,
 	
-	/** Vrsta simbola: kljucna beseda arr.  */						public static final int KW_ARR 		= 33;
-	/** Vrsta simbola: kljucna beseda else.  */						public static final int KW_ELSE 	= 34;
-	/** Vrsta simbola: kljucna beseda for.  */						public static final int KW_FOR 		= 35;
-	/** Vrsta simbola: kljucna beseda fun.  */						public static final int KW_FUN 		= 36;
-	/** Vrsta simbola: kljucna beseda if.  */						public static final int KW_IF 		= 37;
-	/** Vrsta simbola: kljucna beseda then.  */						public static final int KW_THEN 	= 38;
-	/** Vrsta simbola: kljucna beseda typ.  */						public static final int KW_TYP 		= 39;
-	/** Vrsta simbola: kljucna beseda var.  */						public static final int KW_VAR 		= 40;
-	/** Vrsta simbola: kljucna beseda where.  */					public static final int KW_WHERE 	= 41;
-	/** Vrsta simbola: kljucna beseda while.  */					public static final int KW_WHILE 	= 42;
+	/** Vrsta simbola: kljucna beseda else.  */						KW_ELSE,
+	/** Vrsta simbola: kljucna beseda for.  */						KW_FOR,
+	/** Vrsta simbola: kljucna beseda fun.  */						KW_FUN,
+	/** Vrsta simbola: kljucna beseda if.  */						KW_IF,
+	/** Vrsta simbola: kljucna beseda var.  */						KW_VAR,
+	/** Vrsta simbola: kljucna beseda while.  */					KW_WHILE,
+	/** Vrsta simbola: ključna beseda struct.  */					KW_STRUCT,
+	/** Vrsta simbola: ključna beseda import.  */ 					KW_IMPORT,
+	/** Vrsta simbola: ključna beseda import.  */ 					KW_LET,
+	/** Vrsta simbola: ključna beseda import.  */ 					KW_NIL,
+	/** Vrsta simbola: ključna beseda import.  */ 					KW_SELF,
+	/** Vrsta simbola: ključna beseda import.  */ 					KW_CLASS,
+	/** Vrsta simbola: ključna beseda import.  */ 					KW_IN,
 
-	/** Vrsta simbola: ključna beseda ptr.  */						public static final int KW_PTR 		= 43;
-	/** Vrsta simbola: ključna beseda struct.  */					public static final int KW_STRUCT   = 44;
-	
-	/** Vrsta simbola: ključna beseda import.  */ 					public static final int KW_IMPORT 	= 45;
 }

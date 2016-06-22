@@ -34,10 +34,12 @@ public class LexAn {
 	/**
 	 * Map containing all reserved keywords.
 	 */
-	private static final String[] keywords = new String[] { "logical",
-			"integer", "string", "arr", "else", "for", "fun", "if", "then",
-			"typ", "var", "where", "while", "ptr", "struct", "import" };
-	private static Map<String, Integer> keywordsMap = null;
+	private static final String[] keywords = new String[] { 
+		"Int", "String", "Double", "Bool", "Char", "Void", "else", "for", 
+		"func", "if", "var", "while", "struct", "import", "let", "nil",
+		"self", "class", "in"
+	};
+	private static Map<String, Token> keywordsMap = null;
 
 	/**
 	 * Current caracter.
@@ -82,7 +84,7 @@ public class LexAn {
 			 */
 			keywordsMap = new HashMap<>();
 			for (int i = 0; i < keywords.length; i++)
-				keywordsMap.put(keywords[i], i + 30);
+				keywordsMap.put(keywords[i], Token.values()[i + Token.INTEGER.ordinal()]);
 
 		} catch (FileNotFoundException e) {
 			Report.error("File [ " + sourceFileName
@@ -135,16 +137,12 @@ public class LexAn {
 				dontRead = false;
 
 			/**
-			 * Skip characters after '#'.
+			 * Skip characters after '#'
 			 */
-			if (nxtCh == '#')
-				while (nxtCh != -1 && nxtCh != 10) {
+			if (nxtCh == '#') {
+				while (nxtCh != -1 && nxtCh != 10)
 					nxtCh = file.read();
-					if ((nxtCh < 32 || nxtCh > 126) && !isWhiteSpace(nxtCh)
-							&& nxtCh != -1)
-						Report.error(new Position(startRow, startCol),
-								"Invalid token in comment");
-				}
+			}
 
 			/**
 			 * Handle EOF.
@@ -170,8 +168,7 @@ public class LexAn {
 			/**
 			 * Parse string.
 			 */
-			if (nxtCh == '\'') {
-				word.append('\'');
+			if (nxtCh == '\"') {
 				boolean strClosed = false;
 				while (true) {
 					nxtCh = file.read();
@@ -185,10 +182,10 @@ public class LexAn {
 
 					word.append((char) nxtCh);
 
-					if (nxtCh == '\'') {
+					if (nxtCh == '\"') {
 						nxtCh = file.read();
-						if (nxtCh == '\'')
-							word.append((char) nxtCh);
+						if (nxtCh == '\"')
+							;
 						else {
 							dontRead = true;
 							strClosed = true;
@@ -209,17 +206,42 @@ public class LexAn {
 			}
 
 			/**
-			 * Parse int const.
+			 * Parse numeric const.
 			 */
 			if (isNumeric(nxtCh)) {
-				while (isNumeric(nxtCh)) {
-					word.append((char) nxtCh);
-					nxtCh = file.read();
+				boolean didParseDouble = false;
+				while (true) {
+					while (isNumeric(nxtCh)) {
+						word.append((char) nxtCh);
+						nxtCh = file.read();
+					}
+					if (!didParseDouble && nxtCh == '.') {
+						didParseDouble = true;
+						word.append((char)nxtCh);
+						nxtCh = file.read();
+					}
+					else
+						break;
 				}
 				dontRead = true;
 
-				return new Symbol(Token.INT_CONST, word.toString(), startRow,
-						startCol, startRow, startCol + word.length());
+				Token t = didParseDouble ? Token.DOUBLE_CONST : Token.INT_CONST;
+				return new Symbol(t, word.toString(), startRow, startCol,
+						startRow, startCol + word.length());
+			}
+
+			/**
+			 * Parse char const.
+			 */
+			if (nxtCh == '\'') {
+				nxtCh = file.read();
+				Symbol s = new Symbol(Token.CHAR_CONST, "" + nxtCh, startRow,
+						startCol, startRow, startCol + 2);
+				nxtCh = file.read();
+				if (nxtCh != '\'')
+					Report.error(new Position(startRow, startCol, startRow,
+							startCol + word.length() + 1), "Char constant must end with \"\'\"");
+				return s;
 			}
 
 			/**
@@ -237,7 +259,7 @@ public class LexAn {
 					if (isOperator(nxtCh) != null || isWhiteSpace(nxtCh)
 							|| nxtCh == -1 || nxtCh == '\'') {
 						dontRead = true;
-						int token = Token.IDENTIFIER;
+						Token token = Token.IDENTIFIER;
 
 						// Check if word is keyword
 						if (keywordsMap.containsKey(word.toString()))
@@ -279,6 +301,12 @@ public class LexAn {
 				dontRead = true;
 				nxtCh = tmpCh;
 				startCol++;
+				
+				if (op.token == Token.NEWLINE) {
+					startRow++;
+					startCol = 1;
+				}
+				
 				return op;
 			}
 
@@ -314,12 +342,6 @@ public class LexAn {
 			return new Symbol(Token.MOD, "%", startRow, startCol, startRow,
 					startCol + 1);
 
-		if (ch == '&')
-			return new Symbol(Token.AND, "&", startRow, startCol, startRow,
-					startCol + 1);
-		if (ch == '|')
-			return new Symbol(Token.IOR, "|", startRow, startCol, startRow,
-					startCol + 1);
 		if (ch == '!')
 			return new Symbol(Token.NOT, "!", startRow, startCol, startRow,
 					startCol + 1);
@@ -365,6 +387,10 @@ public class LexAn {
 		if (ch == ',')
 			return new Symbol(Token.COMMA, ",", startRow, startCol, startRow,
 					startCol + 1);
+		// TODO
+//		if (ch == '\n')
+//			return new Symbol(Token.NEWLINE, "\\n", startRow, startCol, startRow,
+//					startCol + 1);
 
 		return null;
 	}
@@ -389,6 +415,12 @@ public class LexAn {
 		if (ch1 == '<' && ch2 == '=')
 			return new Symbol(Token.LEQ, "<=", startRow, startCol, startRow,
 					startCol + 2);
+		if (ch1 == '&' && ch1 == ch2)
+			return new Symbol(Token.AND, "&", startRow, startCol, startRow,
+					startCol + 1);
+		if (ch1 == '|' && ch1 == ch2)
+			return new Symbol(Token.IOR, "|", startRow, startCol, startRow,
+					startCol + 1);
 		return null;
 	}
 
