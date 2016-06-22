@@ -389,7 +389,7 @@ public class SynAn {
 					"Syntax error, insert \")\" to complete function declaration");
 
 		dump("parameters' -> e");
-		skip(new Symbol(Token.COLON, ":", null));
+		skip();
 
 		return new Vector<>();
 	}
