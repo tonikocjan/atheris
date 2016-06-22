@@ -13,7 +13,7 @@ import compiler.interpreter.Interpreter;
 /**
  * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
  * 
- * @author sliva
+ * @author Toni Kocjan
  */
 public class Main {
 
@@ -36,7 +36,7 @@ public class Main {
 	 *            Parametri ukazne vrstice.
 	 */
 	public static void main(String[] args) {
-		System.out.printf("This is PINS compiler, v0.8:\n");
+		System.out.printf("This is Atheris compiler, v0.1:\n");
 
 		// Pregled ukazne vrstice.
 		for (int argc = 0; argc < args.length; argc++) {
