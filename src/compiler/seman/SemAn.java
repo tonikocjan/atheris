@@ -87,8 +87,17 @@ public class SemAn implements Visitor {
 		case AbsAtomConst.STR:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": STRING(" + atomConst.value + ")");
 			break;
+		case AbsAtomConst.DOB:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": DOUBLE(" + atomConst.value + ")");
+			break;
+		case AbsAtomConst.CHR:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": CHAR(" + atomConst.value + ")");
+			break;
+		case AbsAtomConst.VOID:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": VOID(" + atomConst.value + ")");
+			break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomConst)");
+			Report.error("Internal error :: compiler.abstr.Seman.visit(AbsAtomConst)");
 		}
 		{
 			SemType typ = SymbDesc.getType(atomConst);
@@ -108,8 +117,17 @@ public class SemAn implements Visitor {
 		case AbsAtomType.STR:
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": STRING");
 			break;
+		case AbsAtomType.DOB:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": DOUBLE");
+			break;
+		case AbsAtomType.CHR:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": CHAR");
+			break;
+		case AbsAtomType.VOID:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": VOID");
+			break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomType)");
+			Report.error("Internal error :: compiler.abstr.Seman.visit(AbsAtomType)");
 		}
 		{
 			SemType typ = SymbDesc.getType(atomType);
