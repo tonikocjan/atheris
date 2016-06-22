@@ -30,7 +30,8 @@ public interface Visitor {
 	public void visit(AbsUnExpr     acceptor);
 	public void visit(AbsVarDef     acceptor);
 	public void visit(AbsVarName    acceptor);
-	public void visit(AbsWhere      acceptor);
 	public void visit(AbsWhile      acceptor);
 	public void visit(AbsImportDef  acceptor);
+	public void visit(AbsStmts 		acceptor);
+	public void visit(AbsConstDef   acceptor);
 }

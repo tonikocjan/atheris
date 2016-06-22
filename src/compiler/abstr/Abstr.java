@@ -1,8 +1,5 @@
 package compiler.abstr;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import compiler.*;
 import compiler.abstr.tree.*;
 
@@ -72,6 +69,14 @@ public class Abstr implements Visitor {
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
 					+ ": STRING(" + atomConst.value + ")");
 			break;
+		case AbsAtomConst.CHR:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
+					+ ": CHAR(" + atomConst.value + ")");
+			break;
+		case AbsAtomConst.DOB:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
+					+ ": DOUBLE(" + atomConst.value + ")");
+			break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomConst)");
 		}
@@ -90,6 +95,18 @@ public class Abstr implements Visitor {
 		case AbsAtomType.STR:
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
 					+ ": STRING");
+			break;
+		case AbsAtomType.DOB:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
+					+ ": DOUBLE");
+			break;
+		case AbsAtomType.CHR:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
+					+ ": CHAR");
+			break;
+		case AbsAtomType.VOID:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
+					+ ": VOID");
 			break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomType)");
@@ -197,13 +214,7 @@ public class Abstr implements Visitor {
 		forStmt.count.accept(this);
 		indent -= 2;
 		indent += 2;
-		forStmt.lo.accept(this);
-		indent -= 2;
-		indent += 2;
-		forStmt.hi.accept(this);
-		indent -= 2;
-		indent += 2;
-		forStmt.step.accept(this);
+		forStmt.collection.accept(this);
 		indent -= 2;
 		indent += 2;
 		forStmt.body.accept(this);
@@ -232,7 +243,7 @@ public class Abstr implements Visitor {
 		funDef.type.accept(this);
 		indent -= 2;
 		indent += 2;
-		funDef.expr.accept(this);
+		funDef.func.accept(this);
 		indent -= 2;
 	}
 
@@ -324,16 +335,6 @@ public class Abstr implements Visitor {
 				+ varName.name);
 	}
 
-	public void visit(AbsWhere where) {
-		Report.dump(indent, "AbsWhere " + where.position.toString() + ":");
-		indent += 2;
-		where.expr.accept(this);
-		indent -= 2;
-		indent += 2;
-		where.defs.accept(this);
-		indent -= 2;
-	}
-
 	public void visit(AbsWhile where) {
 		Report.dump(indent, "AbsWhileName " + where.position.toString() + ":");
 		indent += 2;
@@ -347,7 +348,26 @@ public class Abstr implements Visitor {
 	@Override
 	public void visit(AbsImportDef imp) {
 		Report.dump(indent, "AbsImportDef " + imp.position.toString() + ":");
-		Report.dump(indent+2, "Filename: " + imp.fileName);
+		Report.dump(indent + 2, "Filename: " + imp.fileName);
+	}
+
+	@Override
+	public void visit(AbsStmts stmts) {
+		Report.dump(indent, "AbsStmts " + stmts.position.toString() + ":");
+		for (int def = 0; def < stmts.numStmts(); def++) {
+			indent += 2;
+			stmts.def(def).accept(this);
+			indent -= 2;
+		}
+	}
+
+	@Override
+	public void visit(AbsConstDef constDef) {
+		Report.dump(indent, "AbsConstDef " + constDef.position.toString() + ": "
+				+ constDef.name);
+		indent += 2;
+		constDef.type.accept(this);
+		indent -= 2;
 	}
 
 }
