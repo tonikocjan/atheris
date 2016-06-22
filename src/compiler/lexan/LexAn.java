@@ -235,7 +235,7 @@ public class LexAn {
 			 */
 			if (nxtCh == '\'') {
 				nxtCh = file.read();
-				Symbol s = new Symbol(Token.CHAR_CONST, "" + nxtCh, startRow,
+				Symbol s = new Symbol(Token.CHAR_CONST, "" + (char)nxtCh, startRow,
 						startCol, startRow, startCol + 2);
 				nxtCh = file.read();
 				if (nxtCh != '\'')
