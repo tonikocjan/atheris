@@ -22,7 +22,7 @@ public class AbsFunDef extends AbsDef {
 	public final AbsType type;
 	
 	/** Jedro funkcije. */
-	public final AbsExpr expr;
+	public final AbsStmts func;
 
 	/**
 	 * Ustvari novo definicijo funckije.
@@ -38,14 +38,14 @@ public class AbsFunDef extends AbsDef {
 	 * @param expr
 	 *            Jedro funkcije.
 	 */
-	public AbsFunDef(Position pos, String name, Vector<AbsPar> pars, AbsType type, AbsExpr expr) {
+	public AbsFunDef(Position pos, String name, Vector<AbsPar> pars, AbsType type, AbsStmts stmts) {
 		super(pos);
 		this.name = name;
 		this.pars = new AbsPar[pars.size()];
 		for (int par = 0; par < pars.size(); par++)
 			this.pars[par] = pars.elementAt(par);
 		this.type = type;
-		this.expr = expr;
+		this.func = stmts;
 	}
 
 	/**

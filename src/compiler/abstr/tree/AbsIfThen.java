@@ -14,7 +14,7 @@ public class AbsIfThen extends AbsExpr {
 	public final AbsExpr cond;
 	
 	/** Pozitivna veja. */
-	public final AbsExpr thenBody;
+	public final AbsStmts thenBody;
 		
 	/**
 	 * Ustvari nov kratki pogojni stavek.
@@ -26,10 +26,10 @@ public class AbsIfThen extends AbsExpr {
 	 * @param thenBody
 	 *            Pozitivna veja.
 	 */
-	public AbsIfThen(Position pos, AbsExpr cond, AbsExpr thenBody) {
+	public AbsIfThen(Position pos, AbsExpr cond, AbsStmts thenBody) {
 		super(pos);
 		this.cond = cond;
-		this.thenBody = thenBody;		
+		this.thenBody = thenBody;
 	}
 
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }

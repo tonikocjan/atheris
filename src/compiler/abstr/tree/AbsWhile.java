@@ -14,7 +14,7 @@ public class AbsWhile extends AbsExpr {
 	public final AbsExpr cond;
 	
 	/** Jedro zanke. */
-	public final AbsExpr body;
+	public final AbsStmts body;
 		
 	/**
 	 * Ustvari novo zanko brez eksplicitnega stevca.
@@ -26,7 +26,7 @@ public class AbsWhile extends AbsExpr {
 	 * @param body
 	 *            Jedro zanke.
 	 */
-	public AbsWhile(Position pos, AbsExpr cond, AbsExpr body) {
+	public AbsWhile(Position pos, AbsExpr cond, AbsStmts body) {
 		super(pos);
 		this.cond = cond;
 		this.body = body;

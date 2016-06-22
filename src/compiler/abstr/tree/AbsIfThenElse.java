@@ -14,10 +14,10 @@ public class AbsIfThenElse extends AbsExpr {
 	public final AbsExpr cond;
 	
 	/** Pozitivna veja. */
-	public final AbsExpr thenBody;
+	public final AbsStmts thenBody;
 	
 	/** Negativna veja. */
-	public final AbsExpr elseBody;
+	public final AbsStmts elseBody;
 	
 	/**
 	 * Ustvari nov dolgi pogojni stavek.
@@ -31,7 +31,7 @@ public class AbsIfThenElse extends AbsExpr {
 	 * @param elseBody
 	 *            Negativna veja.
 	 */
-	public AbsIfThenElse(Position pos, AbsExpr cond, AbsExpr thenBody, AbsExpr elseBody) {
+	public AbsIfThenElse(Position pos, AbsExpr cond, AbsStmts thenBody, AbsStmts elseBody) {
 		super(pos);
 		this.cond = cond;
 		this.thenBody = thenBody;

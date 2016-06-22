@@ -7,7 +7,7 @@ import compiler.*;
  * 
  * @author sliva
  */
-public abstract class AbsDef extends AbsTree {
+public abstract class AbsDef extends AbsStmt {
 
 	/**
 	 * Ustvari novo definicijo.

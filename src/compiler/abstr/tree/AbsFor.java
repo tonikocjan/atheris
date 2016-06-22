@@ -13,17 +13,11 @@ public class AbsFor extends AbsExpr {
 	/** Stevec. */
 	public final AbsVarName count;
 	
-	/** Spodnja meja. */
-	public final AbsExpr lo;
-	
-	/** Zgornja meja. */
-	public final AbsExpr hi;
-	
-	/** Korak. */
-	public final AbsExpr step;
+	/** Zbirka preko katire iteriramo. */
+	public final AbsExpr collection;
 	
 	/** Jedro stavka. */
-	public final AbsExpr body;
+	public final AbsStmts body;
 	
 	/**
 	 * Ustvari zanko z eksplicitnim stevcem.
@@ -32,21 +26,15 @@ public class AbsFor extends AbsExpr {
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param count
 	 *            Stevec.
-	 * @param lo
-	 *            Spodnja meja.
-	 * @param hi
-	 *            Zgornja meja.
-	 * @param step
-	 *            Korak.
+	 * @param collection
+	 *            Zbirka.
 	 * @param body
 	 *            Jedro zanke.
 	 */
-	public AbsFor(Position pos, AbsVarName count, AbsExpr lo, AbsExpr hi, AbsExpr step, AbsExpr body) {
+	public AbsFor(Position pos, AbsVarName count, AbsExpr collection, AbsStmts body) {
 		super(pos);
 		this.count = count;
-		this.lo = lo;
-		this.hi = hi;
-		this.step = step;
+		this.collection = collection;
 		this.body = body;
 	}
 
