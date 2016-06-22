@@ -212,9 +212,7 @@ public class SemAn implements Visitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2; forStmt.count.accept(this); indent -= 2;
-		indent += 2; forStmt.lo.accept(this); indent -= 2;
-		indent += 2; forStmt.hi.accept(this); indent -= 2;
-		indent += 2; forStmt.step.accept(this); indent -= 2;
+		indent += 2; forStmt.collection.accept(this); indent -= 2;
 		indent += 2; forStmt.body.accept(this); indent -= 2;
 	}
 	
@@ -247,7 +245,7 @@ public class SemAn implements Visitor {
 			indent += 2; funDef.par(par).accept(this); indent -= 2;
 		}
 		indent += 2; funDef.type.accept(this); indent -= 2;
-		indent += 2; funDef.expr.accept(this); indent -= 2;
+		indent += 2; funDef.func.accept(this); indent -= 2;
 	}
 	
 	public void visit(AbsIfThen ifThen) {
@@ -359,17 +357,6 @@ public class SemAn implements Visitor {
 		}
 	}
 	
-	public void visit(AbsWhere where) {
-		Report.dump(indent, "AbsWhere " + where.position.toString() + ":");
-		{
-			SemType typ = SymbDesc.getType(where);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
-		}
-		indent += 2; where.expr.accept(this); indent -= 2;
-		indent += 2; where.defs.accept(this); indent -= 2;
-	}
-	
 	public void visit(AbsWhile whileStmt) {
 		Report.dump(indent, "AbsWhileName " + whileStmt.position.toString() + ":");
 		{
@@ -390,5 +377,22 @@ public class SemAn implements Visitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2; importDef.imports.accept(this); indent -= 2;
+	}
+
+	@Override
+	public void visit(AbsStmts stmts) {
+		for (int stmt = 0; stmt < stmts.numStmts(); stmt++)
+			stmts.stmt(stmt).accept(this);
+	}
+
+	@Override
+	public void visit(AbsConstDef constDef) {
+		Report.dump(indent, "AbsConstDef " + constDef.position.toString() + ": " + constDef.name);
+		{
+			SemType typ = SymbDesc.getType(constDef);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		indent += 2; constDef.type.accept(this); indent -= 2;
 	}
 }
