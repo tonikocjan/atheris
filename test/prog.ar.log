@@ -1,0 +1,6 @@
+AbsStmts 2:1-2:14:
+  AbsFor 2:1-2:14:
+    AbsVarName 2:8-2:9: i
+    AbsVarName 2:13-2:14: x
+    AbsStmts 2:1-2:3:
+      AbsVarName 2:2-2:3: i
