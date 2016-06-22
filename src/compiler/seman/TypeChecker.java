@@ -16,11 +16,11 @@ import compiler.seman.type.*;
 public class TypeChecker implements Visitor {
 
 	/**
-	 *  
+	 * Traversal states.
 	 *
 	 */
 	private enum TraversalState {
-		ETS_imports, ETS_typeNames, ETS_typeDefs, ETS_variables, ETS_prototypes, ETS_functions
+		ETS_imports, ETS_variables, ETS_prototypes, ETS_functions
 	}
 
 	/**
@@ -75,6 +75,9 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsBinExpr acceptor) {
+		if (currentState != TraversalState.ETS_functions)
+			return;
+
 		acceptor.expr1.accept(this);
 		acceptor.expr2.accept(this);
 
@@ -83,6 +86,7 @@ public class TypeChecker implements Visitor {
 
 		SemType integer = new SemAtomType(SemAtomType.INT);
 		SemType logical = new SemAtomType(SemAtomType.LOG);
+		SemType double_ = new SemAtomType(SemAtomType.DOB);
 
 		int oper = acceptor.oper;
 
@@ -98,12 +102,10 @@ public class TypeChecker implements Visitor {
 			 */
 			if (t1 instanceof SemArrType) {
 				SymbDesc.setType(acceptor, ((SemArrType) t1).type);
-			} 
-			else if (t1 instanceof SemPtrType) {
+			} else if (t1 instanceof SemPtrType) {
 				if (t2.sameStructureAs(integer))
 					SymbDesc.setType(acceptor, ((SemPtrType) t1).type);
-			}
-			else
+			} else
 				Report.error(acceptor.expr1.position,
 						"Left side of ARR expression must be of type ARRAY");
 			return;
@@ -192,7 +194,38 @@ public class TypeChecker implements Visitor {
 			else
 				Report.error(acceptor.position,
 						"Logical operations \"&\" and \"|\" are undefined for type INTEGER");
-		} else {
+		}
+		/**
+		 * expr1 and expr2 are of type INTEGER
+		 */
+		else if (t1.sameStructureAs(double_) && t1.sameStructureAs(t2)) {
+			// +, -, *, /, %
+			if (oper >= 8 && oper <= 12)
+				SymbDesc.setType(acceptor, double_);
+			// ==, !=, <=, >=, <, >
+			else if (oper >= 2 && oper <= 7)
+				SymbDesc.setType(acceptor, logical);
+			else
+				Report.error(acceptor.position,
+						"Logical operations \"&\" and \"|\" are undefined for type INTEGER");
+		}
+		/**
+		 * expr1 or expr2 is DOUBLE and the other is INTEGER (implicit cast to double)
+		 */
+		else if (t1.sameStructureAs(double_) && t2.sameStructureAs(integer) ||
+				 t1.sameStructureAs(integer) && t2.sameStructureAs(double_) ) {
+			// +, -, *, /, %
+			if (oper >= 8 && oper <= 12)
+				SymbDesc.setType(acceptor, double_);
+			// ==, !=, <=, >=, <, >
+			else if (oper >= 2 && oper <= 7)
+				SymbDesc.setType(acceptor, logical);
+			else
+				Report.error(acceptor.position,
+						"Logical operations \"&\" and \"|\" are undefined for type INTEGER");
+		} 
+		
+		else {
 			Report.error(acceptor.position, "No viable operation for types "
 					+ t1 + " and " + t2);
 		}
@@ -218,23 +251,23 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsFor acceptor) {
-		acceptor.count.accept(this);
-		acceptor.lo.accept(this);
-		acceptor.hi.accept(this);
-		acceptor.step.accept(this);
-		acceptor.body.accept(this);
+		if (currentState == TraversalState.ETS_functions) {
+			acceptor.count.accept(this);
+			acceptor.collection.accept(this);
+			acceptor.body.accept(this);
 
-		SemType integer = new SemAtomType(SemAtomType.INT);
-		SemType lo_ = SymbDesc.getType(acceptor.lo);
-		SemType hi_ = SymbDesc.getType(acceptor.hi);
-		SemType step_ = SymbDesc.getType(acceptor.step);
+			SemType integer = new SemAtomType(SemAtomType.INT);
+			SemType collection = SymbDesc.getType(acceptor.collection);
+			SemType body = SymbDesc.getType(acceptor.body);
 
-		if (lo_.sameStructureAs(integer) && lo_.sameStructureAs(hi_)
-				&& lo_.sameStructureAs(step_))
-			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
-		else
-			Report.error(acceptor.position,
-					"Lower bound, upper bound and step expressions must be of type INTEGER");
+			// TODO
+			// if (lo_.sameStructureAs(integer) && lo_.sameStructureAs(hi_)
+			// && lo_.sameStructureAs(step_))
+			// SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+			// else
+			// Report.error(acceptor.position,
+			// "Lower bound, upper bound and step expressions must be of type INTEGER");
+		}
 	}
 
 	@Override
@@ -250,7 +283,7 @@ public class TypeChecker implements Visitor {
 		for (int arg = 0; arg < acceptor.numArgs(); arg++) {
 			acceptor.arg(arg).accept(this);
 			SemType parType = SymbDesc.getType(acceptor.arg(arg));
-			
+
 			if (parType instanceof SemArrType)
 				parType = new SemPtrType(((SemArrType) parType).type);
 
@@ -275,41 +308,45 @@ public class TypeChecker implements Visitor {
 			SymbDesc.setType(acceptor,
 					new SemFunType(parameters, SymbDesc.getType(acceptor.type)));
 		} else if (currentState == TraversalState.ETS_functions) {
-			acceptor.expr.accept(this);
-			SemType returnType = SymbDesc.getType(acceptor.expr);
-			SemFunType funType = (SemFunType) SymbDesc.getType(acceptor);
+			acceptor.func.accept(this);
+			// SemType returnType = SymbDesc.getType(acceptor.func);
+			// SemFunType funType = (SemFunType) SymbDesc.getType(acceptor);
 
-			if (!returnType.sameStructureAs(funType.resultType))
-				Report.error(acceptor.expr.position,
-						"Return type doesn't match");
+			// if (!returnType.sameStructureAs(funType.resultType))
+			// Report.error(acceptor.func.position,
+			// "Return type doesn't match");
 		}
 	}
 
 	@Override
 	public void visit(AbsIfThen acceptor) {
-		acceptor.cond.accept(this);
-		acceptor.thenBody.accept(this);
+		if (currentState == TraversalState.ETS_functions) {
+			acceptor.cond.accept(this);
+			acceptor.thenBody.accept(this);
 
-		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new SemAtomType(SemAtomType.LOG)))
-			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
-		else
-			Report.error(acceptor.cond.position,
-					"Condition must be of type LOGICAL");
+			if (SymbDesc.getType(acceptor.cond).sameStructureAs(
+					new SemAtomType(SemAtomType.LOG)))
+				SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+			else
+				Report.error(acceptor.cond.position,
+						"Condition must be of type LOGICAL");
+		}
 	}
 
 	@Override
 	public void visit(AbsIfThenElse acceptor) {
-		acceptor.cond.accept(this);
-		acceptor.thenBody.accept(this);
-		acceptor.elseBody.accept(this);
+		if (currentState == TraversalState.ETS_functions) {
+			acceptor.cond.accept(this);
+			acceptor.thenBody.accept(this);
+			acceptor.elseBody.accept(this);
 
-		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new SemAtomType(SemAtomType.LOG)))
-			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
-		else
-			Report.error(acceptor.cond.position,
-					"Condition must be of type LOGICAL");
+			if (SymbDesc.getType(acceptor.cond).sameStructureAs(
+					new SemAtomType(SemAtomType.LOG)))
+				SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+			else
+				Report.error(acceptor.cond.position,
+						"Condition must be of type LOGICAL");
+		}
 	}
 
 	@Override
@@ -325,17 +362,20 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsTypeDef acceptor) {
-		if (currentState == TraversalState.ETS_typeNames)
-			SymbDesc.setType(acceptor, new SemTypeName(acceptor.name));
-		else if (currentState == TraversalState.ETS_typeDefs) {
-			SemTypeName type = (SemTypeName) SymbDesc.getType(acceptor);
-			acceptor.type.accept(this);
-			type.setType(SymbDesc.getType(acceptor.type));
-		}
+		// if (currentState == TraversalState.ETS_typeNames)
+		// SymbDesc.setType(acceptor, new SemTypeName(acceptor.name));
+		// else if (currentState == TraversalState.ETS_typeDefs) {
+		// SemTypeName type = (SemTypeName) SymbDesc.getType(acceptor);
+		// acceptor.type.accept(this);
+		// type.setType(SymbDesc.getType(acceptor.type));
+		// }
 	}
 
 	@Override
 	public void visit(AbsTypeName acceptor) {
+		if (currentState != TraversalState.ETS_functions)
+			return;
+
 		AbsDef definition = SymbDesc.getNameDef(acceptor);
 		if (!(definition instanceof AbsTypeDef))
 			Report.error(acceptor.position, "Expected type definition");
@@ -351,6 +391,9 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsUnExpr acceptor) {
+		if (currentState != TraversalState.ETS_functions)
+			return;
+
 		acceptor.expr.accept(this);
 		SemType type = SymbDesc.getType(acceptor.expr);
 
@@ -391,28 +434,26 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsVarName acceptor) {
+		if (currentState != TraversalState.ETS_functions)
+			return;
+
 		SymbDesc.setType(acceptor,
 				SymbDesc.getType(SymbDesc.getNameDef(acceptor)));
 	}
 
 	@Override
-	public void visit(AbsWhere acceptor) {
-		acceptor.defs.accept(this);
-		acceptor.expr.accept(this);
-		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.expr));
-	}
-
-	@Override
 	public void visit(AbsWhile acceptor) {
-		acceptor.cond.accept(this);
-		acceptor.body.accept(this);
+		if (currentState == TraversalState.ETS_functions) {
+			acceptor.cond.accept(this);
+			acceptor.body.accept(this);
 
-		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new SemAtomType(SemAtomType.LOG)))
-			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
-		else
-			Report.error(acceptor.cond.position,
-					"Condition must be of type LOGICAL");
+			if (SymbDesc.getType(acceptor.cond).sameStructureAs(
+					new SemAtomType(SemAtomType.LOG)))
+				SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+			else
+				Report.error(acceptor.cond.position,
+						"Condition must be of type LOGICAL");
+		}
 	}
 
 	@Override
@@ -429,6 +470,24 @@ public class TypeChecker implements Visitor {
 
 			currentState = TraversalState.ETS_imports;
 			Report.fileName = tmp;
+		}
+	}
+
+	@Override
+	public void visit(AbsStmts stmts) {
+		for (TraversalState state : TraversalState.values()) {
+			currentState = state;
+			for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
+				stmts.stmt(stmt).accept(this);
+			}
+		}
+	}
+
+	@Override
+	public void visit(AbsConstDef acceptor) {
+		if (currentState == TraversalState.ETS_variables) {
+			acceptor.type.accept(this);
+			SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.type));
 		}
 	}
 
