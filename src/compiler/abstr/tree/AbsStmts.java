@@ -25,7 +25,7 @@ public class AbsStmts extends AbsTree {
 	 *            Indeks definicije.
 	 * @return Definicija na izbranem mestu v seznamu.
 	 */
-	public AbsStmt def(int index) {
+	public AbsStmt stmt(int index) {
 		return stmts[index];
 	}
 

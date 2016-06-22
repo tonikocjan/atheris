@@ -356,7 +356,7 @@ public class Abstr implements Visitor {
 		Report.dump(indent, "AbsStmts " + stmts.position.toString() + ":");
 		for (int def = 0; def < stmts.numStmts(); def++) {
 			indent += 2;
-			stmts.def(def).accept(this);
+			stmts.stmt(def).accept(this);
 			indent -= 2;
 		}
 	}
