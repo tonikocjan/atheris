@@ -228,12 +228,13 @@ public class NameChecker implements Visitor {
 		}
 
 		else if (currentState == TraversalState.ETS_functions) {
+			SymbTable.newScope();
+			
 			for (int par = 0; par < acceptor.numPars(); par++)
 				acceptor.par(par).accept(this);
 			acceptor.type.accept(this);
-			
-			SymbTable.newScope();
 			acceptor.func.accept(this);
+			
 			SymbTable.oldScope();
 		}
 	}
