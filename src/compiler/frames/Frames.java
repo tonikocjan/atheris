@@ -100,8 +100,19 @@ public class Frames implements Visitor {
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
 					+ ": STRING(" + atomConst.value + ")");
 			break;
+		case AbsAtomConst.DOB:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
+					+ ": DOUBLE(" + atomConst.value + ")");
+			break;
+		case AbsAtomConst.CHR:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
+					+ ": CHAR(" + atomConst.value + ")");
+		case AbsAtomConst.VOID:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
+					+ ": VOID(" + atomConst.value + ")");
+			break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomConst)");
+			Report.error("Internal error :: compiler.abstr.Frames.visit(AbsAtomConst)");
 		}
 		{
 			SemType typ = SymbDesc.getType(atomConst);
@@ -124,8 +135,20 @@ public class Frames implements Visitor {
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
 					+ ": STRING");
 			break;
+		case AbsAtomType.DOB:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
+					+ ": DOUBLE");
+			break;
+		case AbsAtomType.CHR:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
+					+ ": CHAR");
+			break;
+		case AbsAtomType.VOID:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
+					+ ": VOID");
+			break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomType)");
+			Report.error("Internal error :: compiler.abstr.Frames.visit(AbsAtomType)");
 		}
 		{
 			SemType typ = SymbDesc.getType(atomType);
@@ -255,13 +278,7 @@ public class Frames implements Visitor {
 		forStmt.count.accept(this);
 		indent -= 2;
 		indent += 2;
-		forStmt.lo.accept(this);
-		indent -= 2;
-		indent += 2;
-		forStmt.hi.accept(this);
-		indent -= 2;
-		indent += 2;
-		forStmt.step.accept(this);
+		forStmt.collection.accept(this);
 		indent -= 2;
 		indent += 2;
 		forStmt.body.accept(this);
@@ -311,7 +328,7 @@ public class Frames implements Visitor {
 		funDef.type.accept(this);
 		indent -= 2;
 		indent += 2;
-		funDef.expr.accept(this);
+		funDef.func.accept(this);
 		indent -= 2;
 	}
 
@@ -465,21 +482,6 @@ public class Frames implements Visitor {
 		}
 	}
 
-	public void visit(AbsWhere where) {
-		Report.dump(indent, "AbsWhere " + where.position.toString() + ":");
-		{
-			SemType typ = SymbDesc.getType(where);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
-		}
-		indent += 2;
-		where.expr.accept(this);
-		indent -= 2;
-		indent += 2;
-		where.defs.accept(this);
-		indent -= 2;
-	}
-
 	public void visit(AbsWhile whileStmt) {
 		Report.dump(indent, "AbsWhileName " + whileStmt.position.toString()
 				+ ":");
@@ -500,6 +502,40 @@ public class Frames implements Visitor {
 	public void visit(AbsImportDef acceptor) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void visit(AbsStmts stmts) {
+		Report.dump(indent, "AbsStmts " + stmts.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(stmts);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
+			indent += 2;
+			stmts.stmt(stmt).accept(this);
+			indent -= 2;
+		}
+	}
+
+	@Override
+	public void visit(AbsConstDef constDef) {
+		Report.dump(indent, "AbsConstDef " + constDef.position.toString() + ": "
+				+ constDef.name);
+		{
+			SemType typ = SymbDesc.getType(constDef);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		{
+			FrmAccess access = FrmDesc.getAccess(constDef);
+			if (access != null)
+				Report.dump(indent + 2, "#accesed as " + access.toString());
+		}
+		indent += 2;
+		constDef.type.accept(this);
+		indent -= 2;
 	}
 
 }
