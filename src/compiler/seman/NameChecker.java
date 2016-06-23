@@ -181,10 +181,16 @@ public class NameChecker implements Visitor {
 	@Override
 	public void visit(AbsFor acceptor) {
 		if (currentState == TraversalState.ETS_prototypes) {
+			SymbTable.newScope();
+			
+			try {
+				SymbTable.ins(acceptor.count.name, new AbsVarDef(acceptor.count.position, acceptor.count.name, null));
+			} catch (SemIllegalInsertException e) {
+				Report.error("Error @ NameChecker::AbsFor");
+			}
 			acceptor.count.accept(this);
 			acceptor.collection.accept(this);
 
-			SymbTable.newScope();
 			acceptor.body.accept(this);
 			SymbTable.oldScope();
 		}
@@ -310,7 +316,6 @@ public class NameChecker implements Visitor {
 			}
 		}
 	}
-	
 
 	@Override
 	public void visit(AbsConstDef acceptor) {
