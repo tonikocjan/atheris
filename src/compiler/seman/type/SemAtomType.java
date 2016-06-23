@@ -61,6 +61,10 @@ public class SemAtomType extends SemType {
 			return 4;
 		case VOID:
 			return 0;
+		case CHR:
+			return 1;
+		case DOB:
+			return 8;
 		}
 		Report.error("Internal error :: compiler.seman.type.SemAtomType.size()");
 		return 0;
