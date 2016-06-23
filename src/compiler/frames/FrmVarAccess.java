@@ -29,5 +29,4 @@ public class FrmVarAccess extends FrmAccess {
 	public String toString() {
 		return "VAR(" + var.name + ": label=" + label.name() + ")";
 	}
-	
 }

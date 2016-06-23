@@ -54,8 +54,8 @@ public class FrmEvaluator implements Visitor {
 
 	@Override
 	public void visit(AbsFor acceptor) {
-		acceptor.lo.accept(this);
-		acceptor.hi.accept(this);
+		acceptor.count.accept(this);
+		acceptor.collection.accept(this);
 		acceptor.body.accept(this);
 	}
 
@@ -81,7 +81,7 @@ public class FrmEvaluator implements Visitor {
 
 		currentLevel++;
 
-		acceptor.expr.accept(this);
+		acceptor.func.accept(this);
 
 		currentFrame = tmp;
 		currentLevel--;
@@ -135,12 +135,6 @@ public class FrmEvaluator implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsWhere acceptor) {
-		acceptor.defs.accept(this);
-		acceptor.expr.accept(this);
-	}
-
-	@Override
 	public void visit(AbsWhile acceptor) {
 		acceptor.cond.accept(this);
 		acceptor.body.accept(this);
@@ -149,6 +143,23 @@ public class FrmEvaluator implements Visitor {
 	@Override
 	public void visit(AbsImportDef importDef) {
 		importDef.imports.accept(this);
+	}
+
+	@Override
+	public void visit(AbsStmts stmts) {
+		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
+			stmts.stmt(stmt).accept(this);
+		}
+	}
+
+	@Override
+	public void visit(AbsConstDef acceptor) {
+		// TODO
+//		if (currentFrame == null)
+//			FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
+//		else
+//			FrmDesc.setAccess(acceptor,
+//					new FrmLocAccess(acceptor, currentFrame));
 	}
 
 }
