@@ -115,10 +115,9 @@ public class TypeChecker implements Visitor {
 		 * expr1 = expr2
 		 */
 		if (oper == AbsBinExpr.ASSIGN) {
-			if (t1.sameStructureAs(t2))
+			if (t1.sameStructureAs(t2)) {
 				SymbDesc.setType(acceptor, t1);
-			else if (t1.sameStructureAs(t2))
-				SymbDesc.setType(acceptor, t2);
+			}
 			else
 				Report.error(acceptor.position, "Cannot assign type " + t2
 						+ " to type " + t1);
@@ -252,21 +251,12 @@ public class TypeChecker implements Visitor {
 	@Override
 	public void visit(AbsFor acceptor) {
 		if (currentState == TraversalState.ETS_functions) {
-			acceptor.count.accept(this);
+//			acceptor.count.accept(this);
 			acceptor.collection.accept(this);
 			acceptor.body.accept(this);
 
-			SemType integer = new SemAtomType(SemAtomType.INT);
 			SemType collection = SymbDesc.getType(acceptor.collection);
-			SemType body = SymbDesc.getType(acceptor.body);
-
-			// TODO
-			// if (lo_.sameStructureAs(integer) && lo_.sameStructureAs(hi_)
-			// && lo_.sameStructureAs(step_))
-			// SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
-			// else
-			// Report.error(acceptor.position,
-			// "Lower bound, upper bound and step expressions must be of type INTEGER");
+			SymbDesc.setType(acceptor.count, collection);
 		}
 	}
 
