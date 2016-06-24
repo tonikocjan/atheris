@@ -37,7 +37,7 @@ public class LexAn {
 	private static final String[] keywords = new String[] { 
 		"Int", "String", "Double", "Bool", "Char", "Void", "else", "for", 
 		"func", "if", "var", "while", "struct", "import", "let", "nil",
-		"self", "class", "in"
+		"self", "class", "in", "return"
 	};
 	private static Map<String, Token> keywordsMap = null;
 

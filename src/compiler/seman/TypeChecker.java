@@ -481,4 +481,11 @@ public class TypeChecker implements Visitor {
 		}
 	}
 
+	@Override
+	public void visit(AbsReturnExpr returnExpr) {
+		if (returnExpr.expr != null)
+			returnExpr.expr.accept(this);
+		else
+			SymbDesc.setType(returnExpr, new SemAtomType(SemAtomType.VOID));
+	}
 }

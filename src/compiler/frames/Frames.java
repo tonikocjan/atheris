@@ -537,5 +537,13 @@ public class Frames implements Visitor {
 		constDef.type.accept(this);
 		indent -= 2;
 	}
+	
+
+	@Override
+	public void visit(AbsReturnExpr returnExpr) {
+		Report.dump(indent, "AbsReturnExpr " + returnExpr.position.toString());
+		if (returnExpr.expr != null) 
+			returnExpr.expr.accept(this);
+	}
 
 }

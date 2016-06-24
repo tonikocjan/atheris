@@ -69,5 +69,6 @@ public enum Token {
 	/** Vrsta simbola: ključna beseda import.  */ 					KW_SELF,
 	/** Vrsta simbola: ključna beseda import.  */ 					KW_CLASS,
 	/** Vrsta simbola: ključna beseda import.  */ 					KW_IN,
+	/** Vrsta simbola: ključna beseda import.  */ 					KW_RETURN
 
 }

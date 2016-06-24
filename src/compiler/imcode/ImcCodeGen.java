@@ -4,29 +4,7 @@ import java.util.*;
 
 import compiler.Report;
 import compiler.abstr.*;
-import compiler.abstr.tree.AbsArrType;
-import compiler.abstr.tree.AbsAtomConst;
-import compiler.abstr.tree.AbsAtomType;
-import compiler.abstr.tree.AbsBinExpr;
-import compiler.abstr.tree.AbsDefs;
-import compiler.abstr.tree.AbsExpr;
-import compiler.abstr.tree.AbsExprs;
-import compiler.abstr.tree.AbsFor;
-import compiler.abstr.tree.AbsFunCall;
-import compiler.abstr.tree.AbsFunDef;
-import compiler.abstr.tree.AbsIfThen;
-import compiler.abstr.tree.AbsIfThenElse;
-import compiler.abstr.tree.AbsImportDef;
-import compiler.abstr.tree.AbsPar;
-import compiler.abstr.tree.AbsPtrType;
-import compiler.abstr.tree.AbsStructType;
-import compiler.abstr.tree.AbsTypeDef;
-import compiler.abstr.tree.AbsTypeName;
-import compiler.abstr.tree.AbsUnExpr;
-import compiler.abstr.tree.AbsVarDef;
-import compiler.abstr.tree.AbsVarName;
-import compiler.abstr.tree.AbsWhere;
-import compiler.abstr.tree.AbsWhile;
+import compiler.abstr.tree.*;
 import compiler.frames.FrmAccess;
 import compiler.frames.FrmDesc;
 import compiler.frames.FrmFrame;
@@ -215,40 +193,38 @@ public class ImcCodeGen implements Visitor {
 	@Override
 	public void visit(AbsFor acceptor) {
 		acceptor.count.accept(this);
-		acceptor.lo.accept(this);
-		acceptor.hi.accept(this);
-		acceptor.step.accept(this);
+		acceptor.collection.accept(this);
 		acceptor.body.accept(this);
 
-		ImcCode bodyCode = ImcDesc.getImcCode(acceptor.body);
-		ImcStmt body = null;
-
-		if (bodyCode instanceof ImcStmt)
-			body = (ImcStmt) bodyCode;
-		else
-			body = new ImcEXP((ImcExpr) bodyCode);
-
-		ImcExpr step = (ImcExpr) ImcDesc.getImcCode(acceptor.step);
-		ImcExpr hi = (ImcExpr) ImcDesc.getImcCode(acceptor.hi);
-		ImcExpr lo = (ImcExpr) ImcDesc.getImcCode(acceptor.lo);
-		ImcExpr count = (ImcExpr) ImcDesc.getImcCode(acceptor.count);
-		FrmLabel l1 = FrmLabel.newLabel(), 
-				 l2 = FrmLabel.newLabel(), 
-				 l3 = FrmLabel.newLabel();
-
-		ImcSEQ statements = new ImcSEQ();
-		statements.stmts.add(new ImcMOVE(count, lo));
-		statements.stmts.add(new ImcLABEL(l1));
-		statements.stmts.add(new ImcCJUMP(
-				new ImcBINOP(ImcBINOP.LTH, count, hi), l2, l3));
-		statements.stmts.add(new ImcLABEL(l2));
-		statements.stmts.add(body);
-		statements.stmts.add(new ImcMOVE(count, new ImcBINOP(ImcBINOP.ADD,
-				count, step)));
-		statements.stmts.add(new ImcJUMP(l1));
-		statements.stmts.add(new ImcLABEL(l3));
-
-		ImcDesc.setImcCode(acceptor, statements);
+//		ImcCode bodyCode = ImcDesc.getImcCode(acceptor.body);
+//		ImcStmt body = null;
+//
+//		if (bodyCode instanceof ImcStmt)
+//			body = (ImcStmt) bodyCode;
+//		else
+//			body = new ImcEXP((ImcExpr) bodyCode);
+//
+//		ImcExpr step = (ImcExpr) ImcDesc.getImcCode(acceptor.step);
+//		ImcExpr hi = (ImcExpr) ImcDesc.getImcCode(acceptor.hi);
+//		ImcExpr lo = (ImcExpr) ImcDesc.getImcCode(acceptor.lo);
+//		ImcExpr count = (ImcExpr) ImcDesc.getImcCode(acceptor.count);
+//		FrmLabel l1 = FrmLabel.newLabel(), 
+//				 l2 = FrmLabel.newLabel(), 
+//				 l3 = FrmLabel.newLabel();
+//
+//		ImcSEQ statements = new ImcSEQ();
+//		statements.stmts.add(new ImcMOVE(count, lo));
+//		statements.stmts.add(new ImcLABEL(l1));
+//		statements.stmts.add(new ImcCJUMP(
+//				new ImcBINOP(ImcBINOP.LTH, count, hi), l2, l3));
+//		statements.stmts.add(new ImcLABEL(l2));
+//		statements.stmts.add(body);
+//		statements.stmts.add(new ImcMOVE(count, new ImcBINOP(ImcBINOP.ADD,
+//				count, step)));
+//		statements.stmts.add(new ImcJUMP(l1));
+//		statements.stmts.add(new ImcLABEL(l3));
+//
+//		ImcDesc.setImcCode(acceptor, statements);
 	}
 
 	@Override
@@ -284,8 +260,8 @@ public class ImcCodeGen implements Visitor {
 		FrmFrame tmpFr = currentFrame;
 		currentFrame = frame;
 
-		acceptor.expr.accept(this);
-		ImcCode code = ImcDesc.getImcCode(acceptor.expr);
+		acceptor.func.accept(this);
+		ImcCode code = ImcDesc.getImcCode(acceptor.func);
 
 		ImcExpr rv = new ImcTEMP(new FrmTemp());
 		ImcStmt fnCode = null;
@@ -403,16 +379,17 @@ public class ImcCodeGen implements Visitor {
 			ImcDesc.setImcCode(acceptor, new ImcBINOP(ImcBINOP.SUB,
 					new ImcCONST(0), (ImcExpr) expr));
 		} else if (acceptor.oper == AbsUnExpr.NOT) {
-			AbsExpr e2 = new AbsAtomConst(null, AbsAtomConst.INT, "0");
-			AbsExpr cond = new AbsBinExpr(null, AbsBinExpr.EQU, acceptor.expr,
-					e2);
-			AbsExpr thenBody = new AbsAtomConst(null, AbsAtomConst.LOG, "true");
-			AbsExpr elseBody = new AbsAtomConst(null, AbsAtomConst.LOG, "false");
-			AbsIfThenElse not = new AbsIfThenElse(null, cond, thenBody,
-					elseBody);
-			not.accept(this);
-
-			ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(not));
+			// TODO
+//			AbsExpr e2 = new AbsAtomConst(null, AbsAtomConst.INT, "0");
+//			AbsExpr cond = new AbsBinExpr(null, AbsBinExpr.EQU, acceptor.expr,
+//					e2);
+//			AbsExpr thenBody = new AbsAtomConst(null, AbsAtomConst.LOG, "true");
+//			AbsExpr elseBody = new AbsAtomConst(null, AbsAtomConst.LOG, "false");
+//			AbsIfThenElse not = new AbsIfThenElse(null, cond, thenBody,
+//					elseBody);
+//			not.accept(this);
+//
+//			ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(not));
 		} else if (acceptor.oper == AbsUnExpr.MEM) {
 			if (expr instanceof ImcStmt)
 				Report.error(acceptor.position, "Error");
@@ -471,14 +448,6 @@ public class ImcCodeGen implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsWhere acceptor) {
-		acceptor.defs.accept(this);
-		acceptor.expr.accept(this);
-
-		ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(acceptor.expr));
-	}
-
-	@Override
 	public void visit(AbsWhile acceptor) {
 		acceptor.cond.accept(this);
 		acceptor.body.accept(this);
@@ -502,6 +471,25 @@ public class ImcCodeGen implements Visitor {
 	@Override
 	public void visit(AbsImportDef importDef) {
 		importDef.imports.accept(this);
+	}
+
+	@Override
+	public void visit(AbsStmts stmts) {
+		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
+			stmts.stmt(stmt).accept(this);
+		}
+	}
+
+	@Override
+	public void visit(AbsConstDef constDef) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(AbsReturnExpr returnExpr) {
+		if (returnExpr.expr != null) 
+			returnExpr.expr.accept(this);
 	}
 
 }

@@ -153,7 +153,7 @@ public class FrmEvaluator implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsConstDef acceptor) {
+	public void visit(AbsConstDef constDef) {
 		// TODO
 //		if (currentFrame == null)
 //			FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
@@ -162,4 +162,11 @@ public class FrmEvaluator implements Visitor {
 //					new FrmLocAccess(acceptor, currentFrame));
 	}
 
+
+	@Override
+	public void visit(AbsReturnExpr returnExpr) {
+		if (returnExpr.expr != null) 
+			returnExpr.expr.accept(this);
+	}
+	
 }

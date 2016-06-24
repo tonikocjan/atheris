@@ -428,6 +428,7 @@ public class SynAn {
 		case LBRACE:
 		case LPARENT:
 		case IDENTIFIER:
+		case KW_RETURN:
 			dump("expressions -> expression expression'");
 			e = parseExpression();
 
@@ -484,6 +485,7 @@ public class SynAn {
 		case KW_WHILE:
 		case KW_FOR:
 		case IDENTIFIER:
+		case KW_RETURN:
 			dump("expression -> logical_ior_expression");
 			return parseExpression_(parseIorExpression());
 		default:
@@ -536,6 +538,7 @@ public class SynAn {
 		case KW_FOR:
 		case LPARENT:
 		case IDENTIFIER:
+		case KW_RETURN:
 			dump("logical_ior_expression -> logical_and_expression logical_ior_expression'");
 
 			return parseIorExpression_(parseAndExpression());
@@ -592,6 +595,7 @@ public class SynAn {
 		case KW_FOR:
 		case LPARENT:
 		case IDENTIFIER:
+		case KW_RETURN:
 			dump("logical_and_expression -> logical_compare_expression logical_and_expression'");
 
 			return parseAndExpression_(parseCmpExpression());
@@ -650,6 +654,7 @@ public class SynAn {
 		case KW_FOR:
 		case LPARENT:
 		case IDENTIFIER:
+		case KW_RETURN:
 			dump("compare_expression -> add_expression compare_expression'");
 
 			return parseCmpExpression_(parseAddExpression());
@@ -748,6 +753,7 @@ public class SynAn {
 		case KW_FOR:
 		case LPARENT:
 		case IDENTIFIER:
+		case KW_RETURN:
 			dump("add_expression -> multiplicative_expression add_expression'");
 
 			return parseAddExpression_(parseMulExpression());
@@ -821,6 +827,7 @@ public class SynAn {
 		case KW_FOR:
 		case LPARENT:
 		case IDENTIFIER:
+		case KW_RETURN:
 			dump("multiplicative_expression -> prefix_expression multiplicative_expression'");
 
 			return parseMulExpression_(parsePrefixExpression());
@@ -944,6 +951,7 @@ public class SynAn {
 		case KW_FOR:
 		case LPARENT:
 		case IDENTIFIER:
+		case KW_RETURN:
 			dump("prefix_expression -> postfix_expression");
 			return parsePostfixExpression();
 		default:
@@ -967,6 +975,7 @@ public class SynAn {
 		case KW_FOR:
 		case LPARENT:
 		case IDENTIFIER:
+		case KW_RETURN:
 			dump("postfix_expression -> atom_expression postfix_expression'");
 
 			return parsePostfixExpression_(parseAtomExpression());
@@ -1092,6 +1101,16 @@ public class SynAn {
 			}
 		case LBRACKET:
 			return parseBracket();
+		case KW_RETURN:
+			Position pos = symbol.position;
+			skip();
+			if (symbol.token == Token.SEMIC) {
+				dump("atom_expression -> return");
+				return new AbsReturnExpr(pos, null);
+			}
+			dump("atom_expression -> return expression");
+			AbsExpr e = parseExpression();
+			return new AbsReturnExpr(new Position(pos, e.position), e);
 		default:
 			Report.error("Syntax error on token \"" + symbol.lexeme + "\", delete this token");
 		}
