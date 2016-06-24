@@ -193,7 +193,6 @@ public class SynAn {
 			dump("function_definition -> func identifier ( parameters ) function_definition'");
 
 			Vector<AbsPar> params = parseParameters();
-			skip();
 
 			return parseFunDefinition_(startPos, id, params);
 		}
