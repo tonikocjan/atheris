@@ -370,4 +370,13 @@ public class Abstr implements Visitor {
 		indent -= 2;
 	}
 
+	@Override
+	public void visit(AbsReturnExpr returnExpr) {
+		Report.dump(indent, "AbsConstDef " + returnExpr.position.toString());
+		indent += 2;
+		if (returnExpr.expr != null) 
+			returnExpr.expr.accept(this);
+		indent -= 2;
+	}
+
 }
