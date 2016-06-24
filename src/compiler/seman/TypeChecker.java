@@ -299,12 +299,19 @@ public class TypeChecker implements Visitor {
 					new SemFunType(parameters, SymbDesc.getType(acceptor.type)));
 		} else if (currentState == TraversalState.ETS_functions) {
 			acceptor.func.accept(this);
-			// SemType returnType = SymbDesc.getType(acceptor.func);
-			// SemFunType funType = (SemFunType) SymbDesc.getType(acceptor);
+			SemFunType funType = (SemFunType) SymbDesc.getType(acceptor);
 
-			// if (!returnType.sameStructureAs(funType.resultType))
-			// Report.error(acceptor.func.position,
-			// "Return type doesn't match");
+			// check if return type matches
+			for (int i = 0; i < acceptor.func.numStmts(); i++) {
+				AbsStmt stmt = acceptor.func.stmt(i);
+				if (stmt instanceof AbsReturnExpr) {
+					SemType t = SymbDesc.getType(stmt);
+					if (!t.sameStructureAs(funType.resultType))			 
+						Report.error(stmt.position, "Return type doesn't match, expected \"" + 
+								funType.resultType.actualType().toString() + "\", but got \"" + 
+								t.actualType().toString() + "\" instead");
+				}
+			}
 		}
 	}
 
@@ -483,8 +490,10 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsReturnExpr returnExpr) {
-		if (returnExpr.expr != null)
+		if (returnExpr.expr != null) {
 			returnExpr.expr.accept(this);
+			SymbDesc.setType(returnExpr, SymbDesc.getType(returnExpr.expr));
+		}
 		else
 			SymbDesc.setType(returnExpr, new SemAtomType(SemAtomType.VOID));
 	}
