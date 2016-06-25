@@ -100,37 +100,39 @@ public class Main {
 				}
 				break;
 			}
+			
 			// Sintaksna analiza.
 			SynAn synAn = new SynAn(lexAn, dumpPhases.contains("synan"));
 			AbsTree source = synAn.parse();
 			if (execPhase.equals("synan")) break;
+			
 			// Abstraktna sintaksa.
 			Abstr ast = new Abstr(dumpPhases.contains("ast"));
 			ast.dump(source);
 			if (execPhase.equals("ast")) break;
+			
 			// Semanticna analiza.
 			SemAn semAn = new SemAn(dumpPhases.contains("seman"));
 			NameChecker nc = new NameChecker();
 			source.accept(nc);
 			source.accept(new TypeChecker());
-			AbsFunDef mainFunction = nc.getMain();
-			if (mainFunction == null || 
-				mainFunction.numPars() > 1 || 
-				!mainFunction.par(0).name.equals("i"))
-				Report.error(mainFunction.position, "Undefined reference to _main(i:integer)");
 			semAn.dump(source);
 			if (execPhase.equals("seman")) break;
+			
 			// Klicni zapisi.
 			Frames frames = new Frames(dumpPhases.contains("frames"));
-			source.accept(new FrmEvaluator());
+			FrmEvaluator frmEval = new FrmEvaluator();
+			source.accept(frmEval);
 			frames.dump(source);
 			if (execPhase.equals("frames")) break;
+			
 			// Vmesna koda.
 			ImCode imcode = new ImCode(dumpPhases.contains("imcode"));
-			ImcCodeGen imcodegen = new ImcCodeGen();
+			ImcCodeGen imcodegen = new ImcCodeGen(frmEval.entryPoint);
 			source.accept(imcodegen);
 			imcode.dump(imcodegen.chunks);
 			if (execPhase.equals("imcode")) break;
+			
 			// Linearizacija vmesne kode
 			ImcCodeChunk mainFrame = CodeGenerator.linearize(imcodegen.chunks);
 			imcode = new ImCode(dumpPhases.contains("interpret"));
@@ -141,7 +143,10 @@ public class Main {
 			
 			// Izvajanje linearizirane vmesne kode
 			Interpreter.stM(Interpreter.getFP() + 4, 0);
-			new Interpreter(mainFrame.frame, mainFrame.imcode.linear());
+			if (mainFrame != null)
+				new Interpreter(mainFrame.frame, mainFrame.imcode.linear());
+			else
+				new Interpreter(frmEval.entryPoint, imcodegen.entryPointCode.imcode.linear());
 			
 			if (execPhase.equals("interpret")) break;
 			
