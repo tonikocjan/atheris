@@ -17,15 +17,6 @@ import compiler.seman.type.*;
  */
 public class NameChecker implements Visitor {
 
-	private enum TraversalState {
-		ETS_importDefinitions, 
-		ETS_typeDefinitions, 
-		ETS_variableDefinitions, 
-		ETS_prototypes, 
-		ETS_functions
-	}
-
-	private TraversalState currentState;
 	private AbsFunDef main = null;
 
 	public AbsFunDef getMain() {
@@ -43,7 +34,8 @@ public class NameChecker implements Visitor {
 						AbsAtomType.INT)));
 
 				AbsFunDef putInt = new AbsFunDef(null, "putInt", pars,
-						new AbsAtomType(null, AbsAtomType.INT), new AbsStmts(null, new Vector<>()));
+						new AbsAtomType(null, AbsAtomType.INT), new AbsStmts(
+								null, new Vector<>()));
 				SymbTable.ins("putInt", putInt);
 				SymbDesc.setType(putInt, new SemFunType(parTypes,
 						new SemAtomType(SemAtomType.INT)));
@@ -54,75 +46,75 @@ public class NameChecker implements Visitor {
 				frame.label = FrmLabel.newLabel("putInt");
 				FrmDesc.setFrame(putInt, frame);
 			}
-//			{
-//				Vector<AbsPar> pars = new Vector<>();
-//				Vector<SemType> parTypes = new Vector<>();
-//				parTypes.add(new SemPtrType(new SemAtomType(SemAtomType.INT)));
-//				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-//						AbsAtomType.INT)));
-//				AbsFunDef putInt = new AbsFunDef(null, "getInt", pars,
-//						new AbsAtomType(null, AbsAtomType.INT), new AbsExpr(
-//								null) {
-//					@Override
-//					public void accept(Visitor visitor) {
-//					}
-//				});
-//				SymbTable.ins("getInt", putInt);
-//				SymbDesc.setType(putInt, new SemFunType(parTypes,
-//						new SemAtomType(SemAtomType.INT)));
-//
-//				FrmFrame frame = new FrmFrame(putInt, 1);
-//				frame.numPars = 1;
-//				frame.sizePars = 4;
-//				frame.label = FrmLabel.newLabel("getInt");
-//				FrmDesc.setFrame(putInt, frame);
-//			}
-//			{
-//				Vector<AbsPar> pars = new Vector<>();
-//				Vector<SemType> parTypes = new Vector<>();
-//				parTypes.add(new SemAtomType(SemAtomType.STR));
-//				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-//						AbsAtomType.STR)));
-//				AbsFunDef putInt = new AbsFunDef(null, "putString", pars,
-//						new AbsAtomType(null, AbsAtomType.INT), new AbsExpr(
-//								null) {
-//					@Override
-//					public void accept(Visitor visitor) {
-//					}
-//				});
-//				SymbTable.ins("putString", putInt);
-//				SymbDesc.setType(putInt, new SemFunType(parTypes,
-//						new SemAtomType(SemAtomType.INT)));
-//
-//				FrmFrame frame = new FrmFrame(putInt, 1);
-//				frame.numPars = 1;
-//				frame.sizePars = 4;
-//				frame.label = FrmLabel.newLabel("putString");
-//				FrmDesc.setFrame(putInt, frame);
-//			}
-//			{
-//				Vector<AbsPar> pars = new Vector<>();
-//				Vector<SemType> parTypes = new Vector<>();
-//				parTypes.add(new SemPtrType(new SemAtomType(SemAtomType.STR)));
-//				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-//						AbsAtomType.STR)));
-//				AbsFunDef putInt = new AbsFunDef(null, "getString", pars,
-//						new AbsAtomType(null, AbsAtomType.STR), new AbsExpr(
-//								null) {
-//					@Override
-//					public void accept(Visitor visitor) {
-//					}
-//				});
-//				SymbTable.ins("getString", putInt);
-//				SymbDesc.setType(putInt, new SemFunType(parTypes,
-//						new SemAtomType(SemAtomType.STR)));
-//
-//				FrmFrame frame = new FrmFrame(putInt, 1);
-//				frame.numPars = 1;
-//				frame.sizePars = 4;
-//				frame.label = FrmLabel.newLabel("getString");
-//				FrmDesc.setFrame(putInt, frame);
-//			}
+			// {
+			// Vector<AbsPar> pars = new Vector<>();
+			// Vector<SemType> parTypes = new Vector<>();
+			// parTypes.add(new SemPtrType(new SemAtomType(SemAtomType.INT)));
+			// pars.add(new AbsPar(null, "x", new AbsAtomType(null,
+			// AbsAtomType.INT)));
+			// AbsFunDef putInt = new AbsFunDef(null, "getInt", pars,
+			// new AbsAtomType(null, AbsAtomType.INT), new AbsExpr(
+			// null) {
+			// @Override
+			// public void accept(Visitor visitor) {
+			// }
+			// });
+			// SymbTable.ins("getInt", putInt);
+			// SymbDesc.setType(putInt, new SemFunType(parTypes,
+			// new SemAtomType(SemAtomType.INT)));
+			//
+			// FrmFrame frame = new FrmFrame(putInt, 1);
+			// frame.numPars = 1;
+			// frame.sizePars = 4;
+			// frame.label = FrmLabel.newLabel("getInt");
+			// FrmDesc.setFrame(putInt, frame);
+			// }
+			// {
+			// Vector<AbsPar> pars = new Vector<>();
+			// Vector<SemType> parTypes = new Vector<>();
+			// parTypes.add(new SemAtomType(SemAtomType.STR));
+			// pars.add(new AbsPar(null, "x", new AbsAtomType(null,
+			// AbsAtomType.STR)));
+			// AbsFunDef putInt = new AbsFunDef(null, "putString", pars,
+			// new AbsAtomType(null, AbsAtomType.INT), new AbsExpr(
+			// null) {
+			// @Override
+			// public void accept(Visitor visitor) {
+			// }
+			// });
+			// SymbTable.ins("putString", putInt);
+			// SymbDesc.setType(putInt, new SemFunType(parTypes,
+			// new SemAtomType(SemAtomType.INT)));
+			//
+			// FrmFrame frame = new FrmFrame(putInt, 1);
+			// frame.numPars = 1;
+			// frame.sizePars = 4;
+			// frame.label = FrmLabel.newLabel("putString");
+			// FrmDesc.setFrame(putInt, frame);
+			// }
+			// {
+			// Vector<AbsPar> pars = new Vector<>();
+			// Vector<SemType> parTypes = new Vector<>();
+			// parTypes.add(new SemPtrType(new SemAtomType(SemAtomType.STR)));
+			// pars.add(new AbsPar(null, "x", new AbsAtomType(null,
+			// AbsAtomType.STR)));
+			// AbsFunDef putInt = new AbsFunDef(null, "getString", pars,
+			// new AbsAtomType(null, AbsAtomType.STR), new AbsExpr(
+			// null) {
+			// @Override
+			// public void accept(Visitor visitor) {
+			// }
+			// });
+			// SymbTable.ins("getString", putInt);
+			// SymbDesc.setType(putInt, new SemFunType(parTypes,
+			// new SemAtomType(SemAtomType.STR)));
+			//
+			// FrmFrame frame = new FrmFrame(putInt, 1);
+			// frame.numPars = 1;
+			// frame.sizePars = 4;
+			// frame.label = FrmLabel.newLabel("getString");
+			// FrmDesc.setFrame(putInt, frame);
+			// }
 		} catch (Exception e) {
 		}
 	}
@@ -139,20 +131,15 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsStructDef acceptor) {
-		if (currentState == TraversalState.ETS_typeDefinitions) {
-			try {
-				SymbTable.ins(acceptor.getName(), acceptor);
-			} catch (SemIllegalInsertException e) {
-				Report.error(acceptor.position, "Structure \""
-						+ acceptor.getName() + "\" already exists");
-			}
-		} else if (currentState == TraversalState.ETS_functions) {
-			TraversalState tmp = currentState;
-			SymbTable.newScope();
-			acceptor.getDefinitions().accept(this);
-			SymbTable.oldScope();
-			currentState = tmp;
+		try {
+			SymbTable.ins(acceptor.getName(), acceptor);
+		} catch (SemIllegalInsertException e) {
+			Report.error(acceptor.position, "Structure \"" + acceptor.getName()
+					+ "\" already exists");
 		}
+		SymbTable.newScope();
+		acceptor.getDefinitions().accept(this);
+		SymbTable.oldScope();
 	}
 
 	@Override
@@ -175,11 +162,8 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsDefs acceptor) {
-		for (TraversalState state : TraversalState.values()) {
-			currentState = state;
-			for (int def = 0; def < acceptor.numDefs(); def++)
-				acceptor.def(def).accept(this);
-		}
+		for (int def = 0; def < acceptor.numDefs(); def++)
+			acceptor.def(def).accept(this);
 	}
 
 	@Override
@@ -190,27 +174,23 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsFor acceptor) {
-		if (currentState == TraversalState.ETS_functions) {
-			SymbTable.newScope();
-			
-			try {
-				SymbTable.ins(acceptor.count.name, new AbsVarDef(acceptor.count.position, acceptor.count.name, null));
-			} catch (SemIllegalInsertException e) {
-				Report.error("Error @ NameChecker::AbsFor");
-			}
-			acceptor.count.accept(this);
-			acceptor.collection.accept(this);
+		SymbTable.newScope();
 
-			acceptor.body.accept(this);
-			SymbTable.oldScope();
+		try {
+			SymbTable.ins(acceptor.count.name, new AbsVarDef(
+					acceptor.count.position, acceptor.count.name, null));
+		} catch (SemIllegalInsertException e) {
+			Report.error("Error @ NameChecker::AbsFor");
 		}
+		acceptor.count.accept(this);
+		acceptor.collection.accept(this);
+
+		acceptor.body.accept(this);
+		SymbTable.oldScope();
 	}
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-		if (currentState != TraversalState.ETS_functions)
-			return;
-
 		AbsDef definition = SymbTable.fnd(acceptor.name);
 
 		if (definition == null)
@@ -228,50 +208,42 @@ public class NameChecker implements Visitor {
 		if (acceptor.name.equals("main"))
 			main = acceptor;
 
-		if (currentState == TraversalState.ETS_prototypes) {
-			try {
-				SymbTable.ins(acceptor.name, acceptor);
-			} catch (SemIllegalInsertException e) {
-				Report.error(acceptor.position, "Duplicate method \""
-						+ acceptor.name + "\"");
-			}
+		try {
+			SymbTable.ins(acceptor.name, acceptor);
+		} catch (SemIllegalInsertException e) {
+			Report.error(acceptor.position, "Duplicate method \""
+					+ acceptor.name + "\"");
 		}
 
-		else if (currentState == TraversalState.ETS_functions) {
-			SymbTable.newScope();
-			
-			for (int par = 0; par < acceptor.numPars(); par++)
-				acceptor.par(par).accept(this);
-			acceptor.type.accept(this);
-			acceptor.func.accept(this);
-			
-			SymbTable.oldScope();
-		}
+		SymbTable.newScope();
+
+		for (int par = 0; par < acceptor.numPars(); par++)
+			acceptor.par(par).accept(this);
+		acceptor.type.accept(this);
+		acceptor.func.accept(this);
+
+		SymbTable.oldScope();
 	}
 
 	@Override
 	public void visit(AbsIfThen acceptor) {
-		if (currentState == TraversalState.ETS_functions) {
-			acceptor.cond.accept(this);
-			SymbTable.newScope();
-			acceptor.thenBody.accept(this);
-			SymbTable.oldScope();
-		}
+		acceptor.cond.accept(this);
+		SymbTable.newScope();
+		acceptor.thenBody.accept(this);
+		SymbTable.oldScope();
 	}
 
 	@Override
 	public void visit(AbsIfThenElse acceptor) {
-		if (currentState == TraversalState.ETS_functions) {
-			acceptor.cond.accept(this);
-			
-			SymbTable.newScope();
-			acceptor.thenBody.accept(this);
-			SymbTable.oldScope();
-			
-			SymbTable.newScope();
-			acceptor.elseBody.accept(this);
-			SymbTable.oldScope();
-		}
+		acceptor.cond.accept(this);
+
+		SymbTable.newScope();
+		acceptor.thenBody.accept(this);
+		SymbTable.oldScope();
+
+		SymbTable.newScope();
+		acceptor.elseBody.accept(this);
+		SymbTable.oldScope();
 	}
 
 	@Override
@@ -303,35 +275,28 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		if (currentState == TraversalState.ETS_variableDefinitions) {
-			try {
-				SymbTable.ins(acceptor.name, acceptor);
-				acceptor.type.accept(this);
-			} catch (SemIllegalInsertException e) {
-				Report.error(acceptor.position, "Duplicate variable \""
-						+ acceptor.name + "\"");
-			}
+		try {
+			SymbTable.ins(acceptor.name, acceptor);
+			acceptor.type.accept(this);
+		} catch (SemIllegalInsertException e) {
+			Report.error(acceptor.position, "Duplicate variable \""
+					+ acceptor.name + "\"");
 		}
 	}
 
 	@Override
 	public void visit(AbsConstDef acceptor) {
-		if (currentState == TraversalState.ETS_variableDefinitions) {
-			try {
-				SymbTable.ins(acceptor.name, acceptor);
-				acceptor.type.accept(this);
-			} catch (SemIllegalInsertException e) {
-				Report.error(acceptor.position, "Duplicate variable \""
-						+ acceptor.name + "\"");
-			}
-		}		
+		try {
+			SymbTable.ins(acceptor.name, acceptor);
+			acceptor.type.accept(this);
+		} catch (SemIllegalInsertException e) {
+			Report.error(acceptor.position, "Duplicate variable \""
+					+ acceptor.name + "\"");
+		}
 	}
 
 	@Override
 	public void visit(AbsVarName acceptor) {
-		if (currentState != TraversalState.ETS_functions)
-			return;
-
 		AbsDef definition = SymbTable.fnd(acceptor.name);
 		if (definition == null)
 			Report.error(acceptor.position, "Error, variable \""
@@ -342,67 +307,60 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsWhile acceptor) {
-		if (currentState == TraversalState.ETS_functions) {
-			acceptor.cond.accept(this);
-			
-			SymbTable.newScope();
-			acceptor.body.accept(this);
-			SymbTable.oldScope();
-		}
+		acceptor.cond.accept(this);
+
+		SymbTable.newScope();
+		acceptor.body.accept(this);
+		SymbTable.oldScope();
 	}
 
 	@Override
 	public void visit(AbsImportDef acceptor) {
-		if (currentState == TraversalState.ETS_importDefinitions) {
-			String tmp = Report.fileName;
-			Report.fileName = acceptor.fileName;
+		String tmp = Report.fileName;
+		Report.fileName = acceptor.fileName;
 
-			// parse the file
-			// TODO hardcodano notr test/
-			SynAn synAn = new SynAn(new LexAn("test/" + acceptor.fileName
-					+ ".ar", false), false);
-			AbsStmts source = (AbsStmts) synAn.parse();
+		// parse the file
+		// TODO hardcodano notr test/
+		SynAn synAn = new SynAn(new LexAn("test/" + acceptor.fileName + ".ar",
+				false), false);
+		AbsStmts source = (AbsStmts) synAn.parse();
 
-			Vector<AbsDef> definitions = new Vector<>();
-			for (int i = 0; i < source.numStmts(); i++) {
-				AbsStmt s = source.stmt(i);
-				
-				// skip statements which are not definitions
-				if (!(s instanceof AbsDef)) continue;
+		Vector<AbsDef> definitions = new Vector<>();
+		for (int i = 0; i < source.numStmts(); i++) {
+			AbsStmt s = source.stmt(i);
 
-				AbsDef d = (AbsDef) s;
-				
-				if (acceptor.definitions.size() > 0) {
-					String name = null;
+			// skip statements which are not definitions
+			if (!(s instanceof AbsDef))
+				continue;
 
-					if (d instanceof AbsVarDef)
-						name = ((AbsVarDef) d).name;
-					if (d instanceof AbsFunDef)
-						name = ((AbsFunDef) d).name;
-					if (d instanceof AbsStructDef)
-						name = ((AbsStructDef) d).getName();
-	
-					if (!acceptor.definitions.contains(name))
-						continue;
-				}
-				definitions.add(d);
+			AbsDef d = (AbsDef) s;
+
+			if (acceptor.definitions.size() > 0) {
+				String name = null;
+
+				if (d instanceof AbsVarDef)
+					name = ((AbsVarDef) d).name;
+				if (d instanceof AbsFunDef)
+					name = ((AbsFunDef) d).name;
+				if (d instanceof AbsStructDef)
+					name = ((AbsStructDef) d).getName();
+
+				if (!acceptor.definitions.contains(name))
+					continue;
 			}
-
-			acceptor.imports = new AbsDefs(source.position, definitions);
-			acceptor.imports.accept(this);
-
-			currentState = TraversalState.ETS_importDefinitions;
-			Report.fileName = tmp;
+			definitions.add(d);
 		}
+
+		acceptor.imports = new AbsDefs(source.position, definitions);
+		acceptor.imports.accept(this);
+
+		Report.fileName = tmp;
 	}
 
 	@Override
 	public void visit(AbsStmts stmts) {
-		for (TraversalState state : TraversalState.values()) {
-			currentState = state;
-			for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
-				stmts.stmt(stmt).accept(this);
-			}
+		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
+			stmts.stmt(stmt).accept(this);
 		}
 	}
 
@@ -410,6 +368,13 @@ public class NameChecker implements Visitor {
 	public void visit(AbsReturnExpr returnExpr) {
 		if (returnExpr.expr != null)
 			returnExpr.expr.accept(this);
+	}
+
+	@Override
+	public void visit(AbsInitDef initDef) {
+		initDef.initialization.accept(this);
+		initDef.definition.accept(this);
+		initDef.name.accept(this);
 	}
 
 }
