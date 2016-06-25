@@ -5,8 +5,10 @@ import java.util.Vector;
 import compiler.Report;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
+import compiler.frames.*;
 import compiler.lexan.LexAn;
 import compiler.synan.SynAn;
+import compiler.seman.type.*;
 
 /**
  * Preverjanje in razresevanje imen (razen imen komponent).
@@ -27,32 +29,27 @@ public class NameChecker implements Visitor {
 	}
 
 	public NameChecker() {
-//		try {
-//			{
-//				Vector<AbsPar> pars = new Vector<>();
-//				Vector<SemType> parTypes = new Vector<>();
-//				parTypes.add(new SemAtomType(SemAtomType.INT));
-//
-//				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-//						AbsAtomType.INT)));
-//
-//				AbsFunDef putInt = new AbsFunDef(null, "putInt", pars,
-//						new AbsAtomType(null, AbsAtomType.INT), new AbsExpr(
-//								null) {
-//					@Override
-//					public void accept(Visitor visitor) {
-//					}
-//				});
-//				SymbTable.ins("putInt", putInt);
-//				SymbDesc.setType(putInt, new SemFunType(parTypes,
-//						new SemAtomType(SemAtomType.INT)));
-//
-//				FrmFrame frame = new FrmFrame(putInt, 1);
-//				frame.numPars = 1;
-//				frame.sizePars = 4;
-//				frame.label = FrmLabel.newLabel("putInt");
-//				FrmDesc.setFrame(putInt, frame);
-//			}
+		try {
+			{
+				Vector<AbsPar> pars = new Vector<>();
+				Vector<SemType> parTypes = new Vector<>();
+				parTypes.add(new SemAtomType(SemAtomType.INT));
+
+				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
+						AbsAtomType.INT)));
+
+				AbsFunDef putInt = new AbsFunDef(null, "putInt", pars,
+						new AbsAtomType(null, AbsAtomType.INT), new AbsStmts(null, new Vector<>()));
+				SymbTable.ins("putInt", putInt);
+				SymbDesc.setType(putInt, new SemFunType(parTypes,
+						new SemAtomType(SemAtomType.INT)));
+
+				FrmFrame frame = new FrmFrame(putInt, 1);
+				frame.numPars = 1;
+				frame.sizePars = 4;
+				frame.label = FrmLabel.newLabel("putInt");
+				FrmDesc.setFrame(putInt, frame);
+			}
 //			{
 //				Vector<AbsPar> pars = new Vector<>();
 //				Vector<SemType> parTypes = new Vector<>();
@@ -122,8 +119,8 @@ public class NameChecker implements Visitor {
 //				frame.label = FrmLabel.newLabel("getString");
 //				FrmDesc.setFrame(putInt, frame);
 //			}
-//		} catch (Exception e) {
-//		}
+		} catch (Exception e) {
+		}
 	}
 
 	@Override
