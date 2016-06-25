@@ -262,6 +262,9 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
+		if (currentState != TraversalState.ETS_functions)
+			return;
+		
 		SemFunType type = (SemFunType) SymbDesc.getType(SymbDesc
 				.getNameDef(acceptor));
 

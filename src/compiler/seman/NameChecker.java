@@ -177,7 +177,7 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsFor acceptor) {
-		if (currentState == TraversalState.ETS_prototypes) {
+		if (currentState == TraversalState.ETS_functions) {
 			SymbTable.newScope();
 			
 			try {
@@ -238,7 +238,7 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsIfThen acceptor) {
-		if (currentState == TraversalState.ETS_prototypes) {
+		if (currentState == TraversalState.ETS_functions) {
 			acceptor.cond.accept(this);
 			SymbTable.newScope();
 			acceptor.thenBody.accept(this);
@@ -248,7 +248,7 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsIfThenElse acceptor) {
-		if (currentState == TraversalState.ETS_prototypes) {
+		if (currentState == TraversalState.ETS_functions) {
 			acceptor.cond.accept(this);
 			
 			SymbTable.newScope();
@@ -343,7 +343,7 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsWhile acceptor) {
-		if (currentState == TraversalState.ETS_prototypes) {
+		if (currentState == TraversalState.ETS_functions) {
 			acceptor.cond.accept(this);
 			
 			SymbTable.newScope();
