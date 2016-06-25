@@ -34,7 +34,7 @@ public class CodeGenerator {
 			if (chnk instanceof ImcCodeChunk) {
 				ImcCodeChunk fn = (ImcCodeChunk) chnk;
 				fn.lincode = fn.imcode.linear();
-				if (fn.frame.label.name().equals("_main")) {
+				if (fn.frame.label.name().equals("__main__")) {
 					mainFrame = fn;
 					
 				}
