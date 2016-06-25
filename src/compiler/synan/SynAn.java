@@ -360,8 +360,10 @@ public class SynAn {
 	}
 
 	private Vector<AbsPar> parseParameters() {
-		if (symbol.token == Token.RPARENT)
+		if (symbol.token == Token.RPARENT) {
+			skip();
 			return new Vector<>();
+		}
 
 		dump("parameters -> parameter parameters'");
 
@@ -1068,13 +1070,13 @@ public class SynAn {
 
 			return new AbsAtomConst(current.position, AbsAtomConst.DOB,
 					current.lexeme);
-		case LPARENT:
-			dump("atom_expression -> ( expressions )");
-			skip();
-
-			Vector<AbsExpr> exprs = parseExpressions();
-			return new AbsExprs(new Position(exprs.firstElement().position,
-					exprs.lastElement().position), exprs);
+//		case LPARENT:
+//			skip();
+//			dump("atom_expression -> ( expressions )");
+//
+//			Vector<AbsExpr> exprs = parseExpressions();
+//			return new AbsExprs(new Position(exprs.firstElement().position,
+//					exprs.lastElement().position), exprs);
 		case KW_IF:
 			dump("atom_expression -> if_expression");
 			return parseIf();
@@ -1087,8 +1089,15 @@ public class SynAn {
 		case IDENTIFIER:
 			skip();
 			if (symbol.token == Token.LPARENT) {
-				dump("atom_expression -> identifier ( expressions )");
 				skip();
+				
+				if (symbol.token == Token.RPARENT) {
+					dump("atom_expression -> identifier ( )");
+					skip();
+					return new AbsFunCall(symbol.position, current.lexeme, new Vector<>());
+				}
+
+				dump("atom_expression -> identifier ( expressions )");
 
 				Vector<AbsExpr> absExprs = parseExpressions();
 				return new AbsFunCall(new Position(current.position,
