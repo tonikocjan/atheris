@@ -168,10 +168,10 @@ public class FrmEvaluator implements Visitor {
 	public void visit(AbsConstDef constDef) {
 		// TODO
 //		if (currentFrame == null)
-//			FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
+//			FrmDesc.setAccess(constDef, new FrmVarAccess(constDef));
 //		else
-//			FrmDesc.setAccess(acceptor,
-//					new FrmLocAccess(acceptor, currentFrame));
+//			FrmDesc.setAccess(constDef,
+//					new FrmLocAccess(constDef, currentFrame));
 	}
 
 
@@ -179,6 +179,13 @@ public class FrmEvaluator implements Visitor {
 	public void visit(AbsReturnExpr returnExpr) {
 		if (returnExpr.expr != null) 
 			returnExpr.expr.accept(this);
+	}
+
+	@Override
+	public void visit(AbsInitDef initDef) {
+		initDef.definition.accept(this);
+		initDef.name.accept(this);
+		initDef.initialization.accept(this);
 	}
 	
 }
