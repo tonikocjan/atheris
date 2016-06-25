@@ -9,10 +9,20 @@ public class AbsInitDef extends AbsDef {
 	/** AbsVarDef or AbsConstDef */
 	public final AbsDef definition;
 	
+	/**  */
+	public final AbsVarName name;
+	
 	/** Initialization expression */
 	public final AbsExpr initialization;
 
-	public AbsInitDef(Position pos, AbsDef definition, AbsExpr initialization) {
+	/**
+	 * Contruct AbsInit defition
+	 * @param pos position of definition
+	 * @param definition variable which is being initialized
+	 * @param initialization expression to initialize variable
+	 * @param name name of the variable
+	 */
+	public AbsInitDef(Position pos, AbsDef definition, AbsExpr initialization, String name) {
 		super(pos);
 		
 		if (!(definition instanceof AbsVarDef || definition instanceof AbsConstDef))
@@ -21,6 +31,7 @@ public class AbsInitDef extends AbsDef {
 		
 		this.definition = definition;
 		this.initialization = initialization;
+		this.name = new AbsVarName(pos, name);
 	}
 
 	@Override
