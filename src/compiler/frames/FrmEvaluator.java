@@ -1,5 +1,7 @@
 package compiler.frames;
 
+import java.util.Vector;
+
 import compiler.abstr.Visitor;
 import compiler.abstr.tree.*;
 import compiler.seman.SymbDesc;
@@ -8,6 +10,21 @@ public class FrmEvaluator implements Visitor {
 
 	private int currentLevel = 1;
 	private FrmFrame currentFrame = null;
+	public FrmFrame entryPoint = null;
+	
+	public static final String ENTRY_POINT = "__main";
+	
+	public FrmEvaluator() {
+		AbsFunDef _main = new AbsFunDef(null, ENTRY_POINT, new Vector<>(), 
+				new AbsAtomType(null, AbsAtomType.VOID), new AbsStmts(null, new Vector<>()));
+
+		entryPoint = new FrmFrame(_main, 0);
+		entryPoint.label = FrmLabel.newLabel(ENTRY_POINT);
+		entryPoint.sizePars = 0;
+		entryPoint.numPars = 0;
+		
+		currentFrame = entryPoint;
+	}
 
 	@Override
 	public void visit(AbsArrType acceptor) {
@@ -122,7 +139,7 @@ public class FrmEvaluator implements Visitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		if (currentFrame == null)
+		if (currentFrame.label.name().equals("_" + ENTRY_POINT))
 			FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
 		else
 			FrmDesc.setAccess(acceptor,
