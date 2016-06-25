@@ -250,7 +250,7 @@ public class SynAn {
 			AbsVarDef def = new AbsVarDef(new Position(startPos, type.position),
 					id.lexeme, type);
 			
-			return parseVarDefinition_(def);
+			return parseVarDefinition_(def, id.lexeme);
 		}
 		Report.error(previous.position, "Syntax error on token \""
 				+ previous.lexeme + "\", expected keyword \"var\"");
@@ -258,14 +258,14 @@ public class SynAn {
 		return null;
 	}
 	
-	private AbsDef parseVarDefinition_(AbsVarDef def) {
+	private AbsDef parseVarDefinition_(AbsVarDef def, String name) {
 		if (symbol.token == Token.ASSIGN) {
 			dump("var_definition -> var_definition' -> = expression");
 			
 			skip();
 			AbsExpr e = parseExpression();
 			return new AbsInitDef(new Position(def.position, e.position), 
-					def, e);
+					def, e, name);
 		}
 		
 		return def;
