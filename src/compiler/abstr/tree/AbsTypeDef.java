@@ -8,13 +8,10 @@ import compiler.abstr.*;
  * 
  * @author sliva
  */
-public class AbsTypeDef extends AbsDef {
+public abstract class AbsTypeDef extends AbsDef {
 
 	/** Ime tipa. */
 	public final String name;
-
-	/** Opis tipa. */
-	public final AbsType type;
 
 	/**
 	 * Ustvari novo definicijo tipa.
@@ -23,15 +20,10 @@ public class AbsTypeDef extends AbsDef {
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param name
 	 *            Ime tipa.
-	 * @param type
-	 *            Opis tipa.
 	 */
-	public AbsTypeDef(Position pos, String name, AbsType type) {
+	public AbsTypeDef(Position pos, String name) {
 		super(pos);
 		this.name = name;
-		this.type = type;
 	}
 	
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
-
 }

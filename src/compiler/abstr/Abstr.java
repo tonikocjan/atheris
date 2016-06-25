@@ -46,7 +46,7 @@ public class Abstr implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsStructType structType) {
+	public void visit(AbsStructDef structType) {
 		Report.dump(indent, "AbsStructType " + structType.position.toString()
 				+ ":");
 		indent += 2;
@@ -276,14 +276,6 @@ public class Abstr implements Visitor {
 				+ par.name);
 		indent += 2;
 		par.type.accept(this);
-		indent -= 2;
-	}
-
-	public void visit(AbsTypeDef typeDef) {
-		Report.dump(indent, "AbsTypeDef " + typeDef.position.toString() + ": "
-				+ typeDef.name);
-		indent += 2;
-		typeDef.type.accept(this);
 		indent -= 2;
 	}
 

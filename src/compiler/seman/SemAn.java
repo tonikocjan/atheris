@@ -66,7 +66,7 @@ public class SemAn implements Visitor {
 	}
 	
 	@Override
-	public void visit(AbsStructType structType) {
+	public void visit(AbsStructDef structType) {
 		Report.dump(indent, "AbsStructType " + structType.position.toString() + ": " + structType.getName());		
 		{
 			SemType typ = SymbDesc.getType(structType);
@@ -297,16 +297,6 @@ public class SemAn implements Visitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2; par.type.accept(this); indent -= 2;
-	}
-	
-	public void visit(AbsTypeDef typeDef) {
-		Report.dump(indent, "AbsTypeDef " + typeDef.position.toString() + ": " + typeDef.name);
-		{
-			SemType typ = SymbDesc.getType(typeDef);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
-		}
-		indent += 2; typeDef.type.accept(this); indent -= 2;
 	}
 	
 	public void visit(AbsTypeName typeName) {

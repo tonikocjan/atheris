@@ -3,18 +3,16 @@ package compiler.abstr.tree;
 import compiler.Position;
 import compiler.abstr.Visitor;
 
-public class AbsStructType extends AbsType {
+public class AbsStructDef extends AbsTypeDef {
 	
 	private final AbsDefs definitions;
-	private final String name;
 	
 	public AbsDefs getDefinitions() { return definitions; }
 	
-	public AbsStructType(String name, Position pos, AbsDefs definitions) {
-		super(pos);
+	public AbsStructDef(String name, Position pos, AbsDefs definitions) {
+		super(pos, name);
 		
 		this.definitions = definitions;
-		this.name = name;
 	}
 	
 	public String getName() {

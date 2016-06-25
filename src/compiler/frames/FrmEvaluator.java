@@ -37,7 +37,7 @@ public class FrmEvaluator implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsStructType acceptor) {
+	public void visit(AbsStructDef acceptor) {
 
 	}
 
@@ -120,11 +120,6 @@ public class FrmEvaluator implements Visitor {
 	@Override
 	public void visit(AbsPar acceptor) {
 		FrmDesc.setAccess(acceptor, new FrmParAccess(acceptor, currentFrame));
-	}
-
-	@Override
-	public void visit(AbsTypeDef acceptor) {
-
 	}
 
 	@Override

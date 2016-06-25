@@ -18,7 +18,11 @@ import compiler.seman.type.*;
 public class NameChecker implements Visitor {
 
 	private enum TraversalState {
-		ETS_importDefinitions, ETS_variableDefinitions, ETS_prototypes, ETS_functions
+		ETS_importDefinitions, 
+		ETS_typeDefinitions, 
+		ETS_variableDefinitions, 
+		ETS_prototypes, 
+		ETS_functions
 	}
 
 	private TraversalState currentState;
@@ -134,12 +138,21 @@ public class NameChecker implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsStructType acceptor) {
-		TraversalState tmp = currentState;
-		SymbTable.newScope();
-		acceptor.getDefinitions().accept(this);
-		SymbTable.oldScope();
-		currentState = tmp;
+	public void visit(AbsStructDef acceptor) {
+		if (currentState == TraversalState.ETS_typeDefinitions) {
+			try {
+				SymbTable.ins(acceptor.getName(), acceptor);
+			} catch (SemIllegalInsertException e) {
+				Report.error(acceptor.position, "Structure \""
+						+ acceptor.getName() + "\" already exists");
+			}
+		} else if (currentState == TraversalState.ETS_functions) {
+			TraversalState tmp = currentState;
+			SymbTable.newScope();
+			acceptor.getDefinitions().accept(this);
+			SymbTable.oldScope();
+			currentState = tmp;
+		}
 	}
 
 	@Override
@@ -273,20 +286,6 @@ public class NameChecker implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsTypeDef acceptor) {
-//		if (currentState == TraversalState.ETS_types) {
-//			try {
-//				SymbTable.ins(acceptor.name, acceptor);
-//			} catch (SemIllegalInsertException e) {
-//				Report.error(acceptor.position, "Type definition \""
-//						+ acceptor.name + "\" already exists");
-//			}
-//		} else if (currentState == TraversalState.ETS_prototypes) {
-//			acceptor.type.accept(this);
-//		}
-	}
-
-	@Override
 	public void visit(AbsTypeName acceptor) {
 		AbsDef definition = SymbTable.fnd(acceptor.name);
 
@@ -361,33 +360,36 @@ public class NameChecker implements Visitor {
 			// parse the file
 			// TODO hardcodano notr test/
 			SynAn synAn = new SynAn(new LexAn("test/" + acceptor.fileName
-					+ ".pins", false), false);
-			AbsDefs source = (AbsDefs) synAn.parse();
+					+ ".ar", false), false);
+			AbsStmts source = (AbsStmts) synAn.parse();
 
-			// TODO
-			if (acceptor.definitions.size() > 0) {
-				Vector<AbsDef> definitions = new Vector<>();
-				for (int i = 0; i < source.numDefs(); i++) {
+			Vector<AbsDef> definitions = new Vector<>();
+			for (int i = 0; i < source.numStmts(); i++) {
+				AbsStmt s = source.stmt(i);
+				
+				// skip statements which are not definitions
+				if (!(s instanceof AbsDef)) continue;
+
+				AbsDef d = (AbsDef) s;
+				
+				if (acceptor.definitions.size() > 0) {
 					String name = null;
-					AbsDef d = source.def(i);
 
 					if (d instanceof AbsVarDef)
 						name = ((AbsVarDef) d).name;
-					if (d instanceof AbsTypeDef)
-						name = ((AbsTypeDef) d).name;
 					if (d instanceof AbsFunDef)
 						name = ((AbsFunDef) d).name;
-
-					if (acceptor.definitions.contains(name))
-						definitions.add(d);
+					if (d instanceof AbsStructDef)
+						name = ((AbsStructDef) d).getName();
+	
+					if (!acceptor.definitions.contains(name))
+						continue;
 				}
-
-				acceptor.imports = new AbsDefs(source.position, definitions);
-				acceptor.imports.accept(this);
-			} else {
-				acceptor.imports = (AbsDefs) source;
-				acceptor.imports.accept(this);
+				definitions.add(d);
 			}
+
+			acceptor.imports = new AbsDefs(source.position, definitions);
+			acceptor.imports.accept(this);
 
 			currentState = TraversalState.ETS_importDefinitions;
 			Report.fileName = tmp;

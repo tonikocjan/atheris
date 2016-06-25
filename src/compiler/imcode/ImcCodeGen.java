@@ -41,7 +41,7 @@ public class ImcCodeGen implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsStructType acceptor) {
+	public void visit(AbsStructDef acceptor) {
 
 	}
 
@@ -340,11 +340,6 @@ public class ImcCodeGen implements Visitor {
 
 	@Override
 	public void visit(AbsPar acceptor) {
-
-	}
-
-	@Override
-	public void visit(AbsTypeDef acceptor) {
 
 	}
 

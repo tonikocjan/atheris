@@ -9,7 +9,7 @@ public interface Visitor {
 	
 	public void visit(AbsArrType    acceptor);
 	public void visit(AbsPtrType    acceptor);
-	public void visit(AbsStructType acceptor);
+	public void visit(AbsStructDef acceptor);
 	public void visit(AbsAtomConst  acceptor);
 	public void visit(AbsAtomType   acceptor);
 	public void visit(AbsBinExpr    acceptor);
@@ -25,7 +25,6 @@ public interface Visitor {
 	public void visit(AbsPar        acceptor);
 //  public void visit(AbsTree       acceptor);
 //  public void visit(AbsType       acceptor);
-	public void visit(AbsTypeDef    acceptor);
 	public void visit(AbsTypeName   acceptor);
 	public void visit(AbsUnExpr     acceptor);
 	public void visit(AbsVarDef     acceptor);
