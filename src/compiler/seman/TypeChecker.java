@@ -20,7 +20,11 @@ public class TypeChecker implements Visitor {
 	 *
 	 */
 	private enum TraversalState {
-		ETS_imports, ETS_variables, ETS_prototypes, ETS_functions
+		ETS_imports, 
+		ETS_typeDefinitions, 
+		ETS_variables, 
+		ETS_prototypes, 
+		ETS_functions
 	}
 
 	/**
@@ -44,7 +48,10 @@ public class TypeChecker implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsStructType acceptor) {
+	public void visit(AbsStructDef acceptor) {
+		if (currentState != TraversalState.ETS_typeDefinitions)
+			return;
+		
 		ArrayList<SemType> types = new ArrayList<>();
 		ArrayList<String> names = new ArrayList<>();
 
@@ -133,30 +140,24 @@ public class TypeChecker implements Visitor {
 						"Expressions around DOT operator must be identifiers");
 
 			/**
-			 * Handle array.length
+			 * Handle list.length
 			 */
 			if (t1 instanceof SemArrType) {
 				String name = ((AbsVarName) acceptor.expr2).name;
 				if (!name.equals("length"))
-					Report.error("Arrays have no attribute named \"" + name
+					Report.error("Lists have no attribute named \"" + name
 							+ "\"");
 
 				SymbDesc.setType(acceptor, integer);
 				return;
 			}
 
-			if (!(t1 instanceof SemTypeName))
-				Report.error(acceptor.position,
-						"Left expression's type must be a structure to use DOT operator");
-
-			SemTypeName typ_ = (SemTypeName) t1;
-
-			if (!(typ_.getType() instanceof SemStructType))
+			if (!(t1 instanceof SemStructType))
 				Report.error(acceptor.position,
 						"Left expression's type must be a structure to use DOT operator");
 
 			String name = ((AbsVarName) acceptor.expr2).name;
-			SemStructType sType = (SemStructType) typ_.getType();
+			SemStructType sType = (SemStructType) t1;
 			SemType type = sType.getMembers().get(name);
 
 			if (type == null)
@@ -365,19 +366,8 @@ public class TypeChecker implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsTypeDef acceptor) {
-		// if (currentState == TraversalState.ETS_typeNames)
-		// SymbDesc.setType(acceptor, new SemTypeName(acceptor.name));
-		// else if (currentState == TraversalState.ETS_typeDefs) {
-		// SemTypeName type = (SemTypeName) SymbDesc.getType(acceptor);
-		// acceptor.type.accept(this);
-		// type.setType(SymbDesc.getType(acceptor.type));
-		// }
-	}
-
-	@Override
 	public void visit(AbsTypeName acceptor) {
-		if (currentState != TraversalState.ETS_functions)
+		if (currentState != TraversalState.ETS_variables)
 			return;
 
 		AbsDef definition = SymbDesc.getNameDef(acceptor);
