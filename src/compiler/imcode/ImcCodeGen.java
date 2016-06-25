@@ -7,6 +7,7 @@ import compiler.abstr.*;
 import compiler.abstr.tree.*;
 import compiler.frames.FrmAccess;
 import compiler.frames.FrmDesc;
+import compiler.frames.FrmEvaluator;
 import compiler.frames.FrmFrame;
 import compiler.frames.FrmLabel;
 import compiler.frames.FrmLocAccess;
@@ -21,9 +22,11 @@ import compiler.seman.type.SemType;
 public class ImcCodeGen implements Visitor {
 
 	public LinkedList<ImcChunk> chunks;
+	public ImcCodeChunk entryPointCode = null;
 	private FrmFrame currentFrame = null;
-
-	public ImcCodeGen() {
+	
+	public ImcCodeGen(FrmFrame entryPoint) {
+		currentFrame = entryPoint;
 		chunks = new LinkedList<ImcChunk>();
 	}
 
@@ -261,40 +264,31 @@ public class ImcCodeGen implements Visitor {
 		currentFrame = frame;
 
 		acceptor.func.accept(this);
-		ImcCode code = ImcDesc.getImcCode(acceptor.func);
+		ImcSEQ code = (ImcSEQ) ImcDesc.getImcCode(acceptor.func);
+		ImcSEQ functionCode = new ImcSEQ();
 
 		ImcExpr rv = new ImcTEMP(new FrmTemp());
-		ImcStmt fnCode = null;
-		ImcSEQ seq = new ImcSEQ();
-
-		if (code instanceof ImcESEQ) {
-			fnCode = ((ImcESEQ) code).stmt;
-			code = ((ImcESEQ) code).expr;
-			// add function code
-			seq.stmts.add(fnCode);
-		}
-		else if (code instanceof ImcSEQ) {
-			ImcCode tmp = ((ImcSEQ) code).stmts.getLast();
-			((ImcSEQ) code).stmts.removeLast();
-			fnCode = (ImcSEQ) code;
-			code = tmp;
-		}
 		
-		if (code instanceof ImcMOVE){
-			seq.stmts.add((ImcStmt) code);
+		// find return statements and add MOVE for each of them
+		for (ImcStmt s : code.stmts) {
+			if (!(s instanceof ImcEXP)) {
+				functionCode.stmts.add(s);
+				continue;
+			};
+			
+			ImcExpr expr = ((ImcEXP) s).expr;
+			if (!(expr instanceof ImcRETURN)) continue;
+			
+			ImcExpr ret = ((ImcRETURN) expr).expr;
+			if (ret == null) continue;
+			
 			// save result into temporary
-			seq.stmts.add(new ImcMOVE(rv, ((ImcMOVE) code).dst));
+			functionCode.stmts.add(new ImcMOVE(rv, (ImcExpr) ret));
 			// move result from temp into RV
-			seq.stmts.add(new ImcMOVE(new ImcTEMP(currentFrame.RV), rv));
-		}
-		else {
-			// save result into temporary
-			seq.stmts.add(new ImcMOVE(rv, (ImcExpr) code));
-			// move result from temp into RV
-			seq.stmts.add(new ImcMOVE(new ImcTEMP(currentFrame.RV), rv));
+			functionCode.stmts.add(new ImcMOVE(new ImcTEMP(currentFrame.RV), rv));
 		}
 
-		chunks.add(new ImcCodeChunk(frame, seq));
+		chunks.add(new ImcCodeChunk(frame, functionCode));
 		currentFrame = tmpFr;
 	}
 
@@ -475,8 +469,27 @@ public class ImcCodeGen implements Visitor {
 
 	@Override
 	public void visit(AbsStmts stmts) {
+		ImcSEQ seq = new ImcSEQ();
 		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
 			stmts.stmt(stmt).accept(this);
+			
+			ImcCode code = ImcDesc.getImcCode(stmts.stmt(stmt));
+			if (code != null) {
+				ImcStmt s = null;
+				
+				if (code instanceof ImcStmt)
+					s = (ImcStmt) code;
+				else
+					s = new ImcEXP((ImcExpr) code);
+				
+				seq.stmts.add(s);
+			}
+		}
+		ImcDesc.setImcCode(stmts, seq);
+		
+		if (currentFrame.label.name().equals("_" + FrmEvaluator.ENTRY_POINT)) {
+			entryPointCode = new ImcCodeChunk(currentFrame, seq);
+			chunks.add(entryPointCode);
 		}
 	}
 
@@ -488,8 +501,12 @@ public class ImcCodeGen implements Visitor {
 
 	@Override
 	public void visit(AbsReturnExpr returnExpr) {
-		if (returnExpr.expr != null) 
+		if (returnExpr.expr != null) {
 			returnExpr.expr.accept(this);
+			ImcDesc.setImcCode(returnExpr, new ImcRETURN((ImcExpr) ImcDesc.getImcCode(returnExpr.expr)));
+		}
+		else
+			ImcDesc.setImcCode(returnExpr, new ImcRETURN(null));
 	}
 
 }
