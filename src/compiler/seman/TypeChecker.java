@@ -241,11 +241,15 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsExprs acceptor) {
-		for (int expr = 0; expr < acceptor.numExprs(); expr++)
-			acceptor.expr(expr).accept(this);
+		if (acceptor.numExprs() == 0)
+			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+		else {
+			for (int expr = 0; expr < acceptor.numExprs(); expr++)
+				acceptor.expr(expr).accept(this);
 
-		SymbDesc.setType(acceptor,
-				SymbDesc.getType(acceptor.expr(acceptor.numExprs() - 1)));
+			SymbDesc.setType(acceptor,
+					SymbDesc.getType(acceptor.expr(acceptor.numExprs() - 1)));
+		}
 	}
 
 	@Override
