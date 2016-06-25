@@ -163,34 +163,24 @@ public class ImcCodeGen implements Visitor {
 
 	@Override
 	public void visit(AbsExprs acceptor) {
-		if (acceptor.numExprs() == 1) {
-			acceptor.expr(0).accept(this);
-			ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(acceptor.expr(0)));
+		if (acceptor.numExprs() == 0) {
+			ImcDesc.setImcCode(acceptor, new ImcCONST(0));
 			return;
 		}
 
 		ImcSEQ statements = new ImcSEQ();
 
-		for (int i = 0; i < acceptor.numExprs() - 1; i++) {
+		for (int i = 0; i < acceptor.numExprs(); i++) {
 			acceptor.expr(i).accept(this);
-			ImcCode tmp = ImcDesc.getImcCode(acceptor.expr(i));
-
-			if (tmp instanceof ImcStmt)
-				statements.stmts.add((ImcStmt) tmp);
+			
+			ImcCode code = ImcDesc.getImcCode(acceptor.expr(i));
+			if (code instanceof ImcStmt)
+				statements.stmts.add((ImcStmt) code);
 			else
-				statements.stmts.add(new ImcEXP((ImcExpr) tmp));
+				statements.stmts.add(new ImcEXP((ImcExpr) code));
 		}
-		acceptor.expr(acceptor.numExprs() - 1).accept(this);
-		ImcCode last = ImcDesc
-				.getImcCode(acceptor.expr(acceptor.numExprs() - 1));
-
-		if (last instanceof ImcExpr)
-			ImcDesc.setImcCode(acceptor,
-					new ImcESEQ(statements, (ImcExpr) last));
-		else {
-			statements.stmts.add((ImcStmt) last);
-			ImcDesc.setImcCode(acceptor, statements);
-		}
+		
+		ImcDesc.setImcCode(acceptor, statements);
 	}
 
 	@Override
@@ -271,21 +261,21 @@ public class ImcCodeGen implements Visitor {
 		
 		// find return statements and add MOVE for each of them
 		for (ImcStmt s : code.stmts) {
-			if (!(s instanceof ImcEXP)) {
-				functionCode.stmts.add(s);
+			if (!(s instanceof ImcEXP))
 				continue;
-			};
 			
 			ImcExpr expr = ((ImcEXP) s).expr;
-			if (!(expr instanceof ImcRETURN)) continue;
-			
-			ImcExpr ret = ((ImcRETURN) expr).expr;
-			if (ret == null) continue;
-			
-			// save result into temporary
-			functionCode.stmts.add(new ImcMOVE(rv, (ImcExpr) ret));
-			// move result from temp into RV
-			functionCode.stmts.add(new ImcMOVE(new ImcTEMP(currentFrame.RV), rv));
+			if (expr instanceof ImcRETURN) {
+				ImcExpr ret = ((ImcRETURN) expr).expr;
+				if (ret == null) continue;
+				
+				// save result into temporary
+				functionCode.stmts.add(new ImcMOVE(rv, (ImcExpr) ret));
+				// move result from temp into RV
+				functionCode.stmts.add(new ImcMOVE(new ImcTEMP(currentFrame.RV), rv));
+			}
+			else
+				functionCode.stmts.add(s);
 		}
 
 		chunks.add(new ImcCodeChunk(frame, functionCode));
