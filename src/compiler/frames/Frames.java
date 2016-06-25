@@ -290,7 +290,7 @@ public class Frames implements Visitor {
 				+ funCall.name);
 		{
 			AbsDef def = SymbDesc.getNameDef(funCall);
-			if (def != null)
+			if (def != null && def.position != null)
 				Report.dump(indent + 2,
 						"#defined at " + def.position.toString());
 		}
