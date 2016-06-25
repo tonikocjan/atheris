@@ -261,21 +261,21 @@ public class ImcCodeGen implements Visitor {
 		
 		// find return statements and add MOVE for each of them
 		for (ImcStmt s : code.stmts) {
-			if (!(s instanceof ImcEXP))
-				continue;
-			
-			ImcExpr expr = ((ImcEXP) s).expr;
-			if (expr instanceof ImcRETURN) {
-				ImcExpr ret = ((ImcRETURN) expr).expr;
-				if (ret == null) continue;
-				
-				// save result into temporary
-				functionCode.stmts.add(new ImcMOVE(rv, (ImcExpr) ret));
-				// move result from temp into RV
-				functionCode.stmts.add(new ImcMOVE(new ImcTEMP(currentFrame.RV), rv));
+			if (s instanceof ImcEXP) {
+				ImcExpr expr = ((ImcEXP) s).expr;
+				if (expr instanceof ImcRETURN) {
+					ImcExpr ret = ((ImcRETURN) expr).expr;
+					if (ret == null) continue;
+					
+					// save result into temporary
+					functionCode.stmts.add(new ImcMOVE(rv, (ImcExpr) ret));
+					// move result from temp into RV
+					functionCode.stmts.add(new ImcMOVE(new ImcTEMP(currentFrame.RV), rv));
+					
+					continue;
+				}
 			}
-			else
-				functionCode.stmts.add(s);
+			functionCode.stmts.add(s);
 		}
 
 		chunks.add(new ImcCodeChunk(frame, functionCode));
@@ -492,6 +492,18 @@ public class ImcCodeGen implements Visitor {
 		}
 		else
 			ImcDesc.setImcCode(returnExpr, new ImcRETURN(null));
+	}
+
+	@Override
+	public void visit(AbsInitDef initDef) {
+		initDef.definition.accept(this);
+		initDef.name.accept(this);
+		initDef.initialization.accept(this);
+		
+		ImcExpr var = (ImcExpr) ImcDesc.getImcCode(initDef.name);
+		ImcExpr e = (ImcExpr) ImcDesc.getImcCode(initDef.initialization);
+
+		ImcDesc.setImcCode(initDef, new ImcMOVE(var, e));
 	}
 
 }
