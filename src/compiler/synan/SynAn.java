@@ -236,7 +236,7 @@ public class SynAn {
 				params, type, expr);
 	}
 
-	private AbsVarDef parseVarDefinition() {
+	private AbsDef parseVarDefinition() {
 		Position startPos = symbol.position;
 		if (symbol.token == Token.KW_VAR) {
 			Symbol id = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
@@ -244,16 +244,31 @@ public class SynAn {
 			skip(new Symbol(Token.COLON, ":", null));
 			skip();
 
-			dump("var_definition -> var identifier : type");
+			dump("var_definition -> var identifier : type var_definition'");
 
 			AbsType type = parseType();
-			return new AbsVarDef(new Position(startPos, type.position),
+			AbsVarDef def = new AbsVarDef(new Position(startPos, type.position),
 					id.lexeme, type);
+			
+			return parseVarDefinition_(def);
 		}
 		Report.error(previous.position, "Syntax error on token \""
 				+ previous.lexeme + "\", expected keyword \"var\"");
 
 		return null;
+	}
+	
+	private AbsDef parseVarDefinition_(AbsVarDef def) {
+		if (symbol.token == Token.ASSIGN) {
+			dump("var_definition -> var_definition' -> = expression");
+			
+			skip();
+			AbsExpr e = parseExpression();
+			return new AbsInitDef(new Position(def.position, e.position), 
+					def, e);
+		}
+		
+		return def;
 	}
 
 	private AbsConstDef parseConstDefinition() {
