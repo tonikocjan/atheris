@@ -399,8 +399,16 @@ public class SemAn implements Visitor {
 
 	@Override
 	public void visit(AbsStmts stmts) {
-		for (int stmt = 0; stmt < stmts.numStmts(); stmt++)
-			stmts.stmt(stmt).accept(this);
+		Report.dump(indent, "AbsStmts " + stmts.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(stmts);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());	
+		}
+		
+		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
+			indent += 2; stmts.stmt(stmt).accept(this); indent -= 2;
+		}
 	}
 
 	@Override
