@@ -139,6 +139,9 @@ public class SynAn {
 		case SEMIC:
 			dump("definitions' -> ; definitions");
 			skip();
+			
+			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
+				return new Vector<>();
 
 			AbsDef definition = parseDefinition();
 			Vector<AbsDef> absDefs = parseDefinitions_();
@@ -170,6 +173,10 @@ public class SynAn {
 		case KW_IMPORT:
 			dump("definition -> import_definition");
 			definition = parseImportDefinition();
+			break;
+		case KW_STRUCT:
+			dump("definition -> struct_definition");
+			definition = parseStructDefinition();
 			break;
 		default:
 			if (symbol.token != Token.EOF)
@@ -304,6 +311,24 @@ public class SynAn {
 		default:
 			return def;
 		}
+	}
+	
+	private AbsStructDef parseStructDefinition() {
+		Position start = symbol.position;
+		if (symbol.token == Token.KW_STRUCT) {
+			String name = skip(new Symbol(Token.IDENTIFIER, "IDENTIFIER", null)).lexeme;
+			skip(new Symbol(Token.LBRACE, "{", null));
+			skip();
+			
+			AbsDefs definitions = parseDefinitions();
+			if (symbol.token != Token.RBRACE)
+				Report.error(symbol.position, "Syntax error on token \""
+						+ symbol.lexeme + "\", expected \"}\"");
+			skip();
+			return new AbsStructDef(name, new Position(start, definitions.position), 
+					definitions);
+		}
+		return null;
 	}
 
 	private AbsType parseType() {
