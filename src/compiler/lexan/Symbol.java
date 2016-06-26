@@ -68,6 +68,8 @@ public class Symbol {
 		case LOG_CONST : tokenName = "LOG_CONST" ; break;
 		case INT_CONST : tokenName = "INT_CONST" ; break;
 		case STR_CONST : tokenName = "STR_CONST" ; break;
+		case CHAR_CONST   : tokenName = "CHAR_CONST" ; break;
+		case DOUBLE_CONST : tokenName = "DOUBLE_CONST" ; break;
 
 		case AND       : tokenName = "AND"       ; break;
 		case IOR       : tokenName = "IOR"       ; break;
@@ -86,7 +88,6 @@ public class Symbol {
 		case ADD       : tokenName = "ADD"       ; break;
 		case SUB       : tokenName = "SUB"       ; break;
 		
-		
 		case LPARENT   : tokenName = "LPARENT"   ; break;
 		case RPARENT   : tokenName = "RPARENT"   ; break;
 		case LBRACKET  : tokenName = "LBRACKET"  ; break;
@@ -99,7 +100,6 @@ public class Symbol {
 		case SEMIC     : tokenName = "SEMIC"     ; break;
 		case COMMA     : tokenName = "COMMA"     ; break;
 		
-		// TODO odstrani ptr
 		case KW_STRUCT : tokenName = "STRUCT"    ; break;
 		case KW_CLASS  : tokenName = "CLASS"     ; break;
 		case KW_SELF   : tokenName = "SELF"      ; break;
@@ -107,8 +107,8 @@ public class Symbol {
 		
 		case ASSIGN    : tokenName = "ASSIGN"    ; break;
 		
-		case BOOL	     : tokenName = "BOOLEAN" ; break;
-		case VOID	     : tokenName = "VOID"    ; break;
+		case BOOL	   : tokenName = "BOOLEAN" ; break;
+		case VOID	   : tokenName = "VOID"    ; break;
 		case INTEGER   : tokenName = "INTEGER"   ; break;
 		case STRING    : tokenName = "STRING"    ; break;
 		case CHAR      : tokenName = "CHAR"      ; break;
