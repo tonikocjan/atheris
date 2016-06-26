@@ -358,17 +358,9 @@ public class ImcCodeGen implements Visitor {
 			ImcDesc.setImcCode(acceptor, new ImcBINOP(ImcBINOP.SUB,
 					new ImcCONST(0), (ImcExpr) expr));
 		} else if (acceptor.oper == AbsUnExpr.NOT) {
-			// TODO
-//			AbsExpr e2 = new AbsAtomConst(null, AbsAtomConst.INT, "0");
-//			AbsExpr cond = new AbsBinExpr(null, AbsBinExpr.EQU, acceptor.expr,
-//					e2);
-//			AbsExpr thenBody = new AbsAtomConst(null, AbsAtomConst.LOG, "true");
-//			AbsExpr elseBody = new AbsAtomConst(null, AbsAtomConst.LOG, "false");
-//			AbsIfThenElse not = new AbsIfThenElse(null, cond, thenBody,
-//					elseBody);
-//			not.accept(this);
-//
-//			ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(not));
+			ImcBINOP mul = new ImcBINOP(ImcBINOP.MUL, (ImcExpr) expr, new ImcCONST(1));
+			ImcBINOP not = new ImcBINOP(ImcBINOP.ADD, mul, new ImcCONST(1));
+			ImcDesc.setImcCode(acceptor, not);
 		} else if (acceptor.oper == AbsUnExpr.MEM) {
 			if (expr instanceof ImcStmt)
 				Report.error(acceptor.position, "Error");
