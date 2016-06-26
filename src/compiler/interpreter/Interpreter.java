@@ -199,7 +199,7 @@ public class Interpreter {
 		
 		if (instruction instanceof ImcCONST) {
 			ImcCONST instr = (ImcCONST) instruction;
-			return new Integer(instr.value);
+			return instr.value;
 		}
 		
 		if (instruction instanceof ImcJUMP) {
