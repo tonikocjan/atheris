@@ -62,13 +62,13 @@ public class SynAn {
 		dump("statements -> statement statements'");
 		AbsStmt statement = parseStatement();
 
-		Vector<AbsStmt> absStmts = parseStatements_();
+		Vector<AbsStmt> absStmts = parseStatements_(statement);
 		absStmts.add(0, statement);
 		return new AbsStmts(new Position(absStmts.firstElement().position,
 				absStmts.lastElement().position), absStmts);
 	}
 
-	private Vector<AbsStmt> parseStatements_() {
+	private Vector<AbsStmt> parseStatements_(AbsStmt prevStmt) {
 		switch (symbol.token) {
 		case EOF:
 			dump("statements' -> $");
@@ -85,12 +85,30 @@ public class SynAn {
 				return new Vector<AbsStmt>();
 
 			AbsStmt statement = parseStatement();
-			Vector<AbsStmt> absStmts = parseStatements_();
+			Vector<AbsStmt> absStmts = parseStatements_(statement);
 			absStmts.add(0, statement);
 			return absStmts;
+			// TODO
 			// case NEWLINE:
 			// skip();
 			// dump("statements' -> " + symbol.lexeme + " statements");
+		case ASSIGN:
+			if (!(prevStmt instanceof AbsVarDef))
+				Report.error(prevStmt.position, "Syntax error");
+			
+			skip();
+			dump("var_definition -> = expression");
+			
+			AbsVarDef var = (AbsVarDef) prevStmt;
+			AbsVarName varName = new AbsVarName(var.position, var.name);
+			AbsExpr e = parseExpression();
+			
+			absStmts = parseStatements_(null);
+			
+			absStmts.add(0, new AbsBinExpr(new Position(var.position, e.position), 
+					AbsBinExpr.ASSIGN, varName, e));
+			
+			return absStmts;
 		default:
 			Report.error(symbol.position, "Syntax error on token \""
 					+ previous.lexeme
@@ -244,31 +262,16 @@ public class SynAn {
 			skip(new Symbol(Token.COLON, ":", null));
 			skip();
 
-			dump("var_definition -> var identifier : type var_definition'");
+			dump("var_definition -> var identifier : type");
 
 			AbsType type = parseType();
-			AbsVarDef def = new AbsVarDef(new Position(startPos, type.position),
+			return new AbsVarDef(new Position(startPos, type.position),
 					id.lexeme, type);
-			
-			return parseVarDefinition_(def, id.lexeme);
 		}
 		Report.error(previous.position, "Syntax error on token \""
 				+ previous.lexeme + "\", expected keyword \"var\"");
 
 		return null;
-	}
-	
-	private AbsDef parseVarDefinition_(AbsVarDef def, String name) {
-		if (symbol.token == Token.ASSIGN) {
-			dump("var_definition -> var_definition' -> = expression");
-			
-			skip();
-			AbsExpr e = parseExpression();
-			return new AbsInitDef(new Position(def.position, e.position), 
-					def, e, name);
-		}
-		
-		return def;
 	}
 
 	private AbsConstDef parseConstDefinition() {
@@ -389,7 +392,7 @@ public class SynAn {
 				Report.error(symbol.position, "Syntax error, insert \"]\"");
 
 			skip();
-			return new AbsArrType(new Position(s.position, type.position), 0,
+			return new AbsListType(new Position(s.position, type.position), 0,
 					type);
 		default:
 			Report.error(symbol.position, "Syntax error on token \""
@@ -1269,41 +1272,66 @@ public class SynAn {
 	}
 	
 	private AbsExpr parseBracket() {
-		dump("atom_expression -> [expression for identifier in expression]");
-		
+		dump("atom_expression -> []");
+
 		Position start = symbol.position;
 		skip();
-		
 		AbsExpr e1 = parseExpression();
-		Vector<AbsStmt> stmt = new Vector<>();
-		stmt.add(e1);
-		AbsStmts s = new AbsStmts(new Position(start, e1.position), stmt);
 		
-		if (symbol.token != Token.KW_FOR)
-			Report.error(previous.position, "Syntax error on token \""
-					+ previous.lexeme
-					+ "\", expected keyword \"for\" after this token");
+		if (symbol.token == Token.KW_FOR) {
+			dump("[] -> [ expression for identifier in expression ]");
+			Vector<AbsStmt> stmt = new Vector<>();
+			stmt.add(e1);
+			AbsStmts s = new AbsStmts(new Position(start, e1.position), stmt);
+			
+			if (symbol.token != Token.KW_FOR)
+				Report.error(previous.position, "Syntax error on token \""
+						+ previous.lexeme
+						+ "\", expected keyword \"for\" after this token");
+			
+			Symbol count = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
+			AbsVarName var = new AbsVarName(count.position, count.lexeme);
+			skip();
+			
+			if (symbol.token != Token.KW_IN)
+				Report.error(previous.position, "Syntax error on token \""
+						+ previous.lexeme
+						+ "\", expected keyword \"in\" after this token");
+			skip();
+			
+			AbsExpr e2 = parseExpression();
+			
+			if (symbol.token != Token.RBRACKET)
+				Report.error(previous.position, "Syntax error on token \""
+						+ previous.lexeme
+						+ "\", expected \"]\" after this token");
+			skip();
+			
+			return new AbsFor(new Position(start, e2.position), var, e2, s);
+		}
 		
-		Symbol count = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
-		AbsVarName var = new AbsVarName(count.position, count.lexeme);
-		skip();
-		
-		if (symbol.token != Token.KW_IN)
-			Report.error(previous.position, "Syntax error on token \""
-					+ previous.lexeme
-					+ "\", expected keyword \"in\" after this token");
-		skip();
-		
-		AbsExpr e2 = parseExpression();
-		
-		if (symbol.token != Token.RBRACKET)
-			Report.error(previous.position, "Syntax error on token \""
-					+ previous.lexeme
-					+ "\", expected \"]\" after this token");
-		skip();
-		
-		return new AbsFor(new Position(start, e2.position), var, e2, s);
+		else {
+//			dump("[] -> [expression, ...]");
+//			Vector<AbsExpr> elements = new Vector<>();
+//			elements.add(e1);
+//			return parseListInitialization(e1);
+		}
+		return null;
 	}
+	
+//	private AbsListInitDef parseListInitialization(AbsExpr first) {
+//		Vector<AbsExpr> expressions = new Vector<>();
+//		expressions.add(first);
+//		if (symbol.token == Token.COMMA) {
+//			skip();
+//			AbsExpr e = parseExpression();
+//			elements.add(e);
+//			return parseListInitialization(elements);
+//		}
+//		
+//		return new AbsListInitDef(new Position(first.position, expressions.lastElement().position), 
+//				definition, name, elements)
+//	}
 
 	/**
 	 * Get next symbol from lexan.
@@ -1318,7 +1346,7 @@ public class SynAn {
 	 * Get next symbol from lexan.
 	 * 
 	 * @param expected
-	 *            symbol which we are expecting
+	 *            symbol which we expect
 	 * @return next symbol
 	 */
 	private Symbol skip(Symbol expected) {
