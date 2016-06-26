@@ -80,11 +80,10 @@ public class Interpreter {
 		}
 
 		int pc = 0;
-		Object result = null;
 		while (pc < code.stmts.size()) {
 			if (debug) System.out.println("pc=" + pc);
 			ImcCode instruction = code.stmts.get(pc);
-			result = execute(instruction);
+			Object result = execute(instruction);
 			if (result instanceof FrmLabel) {
 				for (pc = 0; pc < code.stmts.size(); pc++) {
 					instruction = code.stmts.get(pc);
@@ -103,9 +102,9 @@ public class Interpreter {
 			System.out.println("[SP=" + sp + "]");
 		}
 		
-		stM(sp, result);
+		stM(sp, ldT(frame.RV));
 		if (debug) {
-			System.out.println("[RV=" + result + "]");
+			System.out.println("[RV=" + ldT(frame.RV) + "]");
 		}
 
 		if (debug) {

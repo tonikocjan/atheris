@@ -19,7 +19,10 @@ public class FrmFrame {
 
 	/** Vstopna labela.  */
 	public FrmLabel label;
-
+	
+	/** Izhodna labela */
+	public FrmLabel endLabel;
+	
 	/** Stevilo parametrov.  */
 	public int numPars;
 	
@@ -60,6 +63,7 @@ public class FrmFrame {
 		this.fun = fun;
 		this.level = level;
 		this.label = (level == 1 ? FrmLabel.newLabel(fun.name) : FrmLabel.newLabel());
+		this.endLabel = FrmLabel.newLabel();
 		this.numPars = 0;
 		this.sizePars = 4;
 		this.locVars = new LinkedList<FrmLocAccess> ();

@@ -1,6 +1,7 @@
 package compiler.imcode;
 
 import compiler.*;
+import compiler.frames.FrmLabel;
 
 /**
  * Return.
@@ -10,8 +11,8 @@ import compiler.*;
 public class ImcRETURN extends ImcExpr {
 
 	/** Izraz.  */
-	public ImcExpr expr = null;
-
+	public final ImcExpr expr;
+	
 	/** Ustvari nov prenos.
 	 * 
 	 * @param dst Ponor.
