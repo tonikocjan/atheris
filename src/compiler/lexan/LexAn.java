@@ -387,6 +387,12 @@ public class LexAn {
 		if (ch == ',')
 			return new Symbol(Token.COMMA, ",", startRow, startCol, startRow,
 					startCol + 1);
+		if (ch == '|')
+			return new Symbol(Token.IOR, "|", startRow, startCol, startRow,
+					startCol + 1);
+		if (ch == '&')
+			return new Symbol(Token.AND, "&", startRow, startCol, startRow,
+					startCol + 1);
 		// TODO
 //		if (ch == '\n')
 //			return new Symbol(Token.NEWLINE, "\\n", startRow, startCol, startRow,
