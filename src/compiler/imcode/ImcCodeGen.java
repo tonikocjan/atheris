@@ -31,7 +31,7 @@ public class ImcCodeGen implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsArrType acceptor) {
+	public void visit(AbsListType acceptor) {
 
 	}
 
@@ -492,18 +492,6 @@ public class ImcCodeGen implements Visitor {
 		}
 		else
 			ImcDesc.setImcCode(returnExpr, new ImcRETURN(null));
-	}
-
-	@Override
-	public void visit(AbsInitDef initDef) {
-		initDef.definition.accept(this);
-		initDef.name.accept(this);
-		initDef.initialization.accept(this);
-		
-		ImcExpr var = (ImcExpr) ImcDesc.getImcCode(initDef.name);
-		ImcExpr e = (ImcExpr) ImcDesc.getImcCode(initDef.initialization);
-
-		ImcDesc.setImcCode(initDef, new ImcMOVE(var, e));
 	}
 
 }

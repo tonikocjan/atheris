@@ -120,7 +120,7 @@ public class NameChecker implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsArrType acceptor) {
+	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
 	}
 
@@ -368,13 +368,6 @@ public class NameChecker implements Visitor {
 	public void visit(AbsReturnExpr returnExpr) {
 		if (returnExpr.expr != null)
 			returnExpr.expr.accept(this);
-	}
-
-	@Override
-	public void visit(AbsInitDef initDef) {
-		initDef.initialization.accept(this);
-		initDef.definition.accept(this);
-		initDef.name.accept(this);
 	}
 
 }

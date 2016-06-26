@@ -29,7 +29,7 @@ public class Abstr implements Visitor {
 	/** Trenutni zamik. */
 	private int indent;
 
-	public void visit(AbsArrType arrType) {
+	public void visit(AbsListType arrType) {
 		Report.dump(indent, "AbsArrType " + arrType.position.toString() + ":");
 		Report.dump(indent + 2, "[" + arrType.length + "]");
 		indent += 2;
@@ -368,15 +368,6 @@ public class Abstr implements Visitor {
 		indent += 2;
 		if (returnExpr.expr != null) 
 			returnExpr.expr.accept(this);
-		indent -= 2;
-	}
-
-	@Override
-	public void visit(AbsInitDef initExpr) {
-		Report.dump(indent, "AbsInitExpr " + initExpr.position.toString());
-		indent += 2;
-		initExpr.definition.accept(this);
-		initExpr.initialization.accept(this);
 		indent -= 2;
 	}
 

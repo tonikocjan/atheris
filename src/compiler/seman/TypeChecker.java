@@ -16,7 +16,7 @@ import compiler.seman.type.*;
 public class TypeChecker implements Visitor {
 
 	@Override
-	public void visit(AbsArrType acceptor) {
+	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
 		SemArrType type = new SemArrType(acceptor.length,
 				SymbDesc.getType(acceptor.type));
@@ -432,20 +432,5 @@ public class TypeChecker implements Visitor {
 			SymbDesc.setType(returnExpr, SymbDesc.getType(returnExpr.expr));
 		} else
 			SymbDesc.setType(returnExpr, new SemAtomType(SemAtomType.VOID));
-	}
-
-	@Override
-	public void visit(AbsInitDef initDef) {
-		initDef.definition.accept(this);
-		initDef.name.accept(this);
-		initDef.initialization.accept(this);
-		
-		SemType t1 = SymbDesc.getType(initDef.definition);
-		SemType t2 = SymbDesc.getType(initDef.initialization);
-		
-		if (!t1.sameStructureAs(t2))
-			Report.error(initDef.position, "Types don't match for initialization");
-		
-		SymbDesc.setType(initDef, t1);
 	}
 }

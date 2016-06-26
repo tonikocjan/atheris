@@ -8,12 +8,12 @@ import compiler.abstr.*;
  * 
  * @author sliva
  */
-public class AbsArrType extends AbsType {
+public class AbsListType extends AbsType {
 
-	/** Dolzina tabele. */
+	/** Dolzina seznama. */
 	public final int length;
 
-	/** Tip elementa tabele. */
+	/** Tip elementa seznama. */
 	public final AbsType type;
 
 	/**
@@ -26,7 +26,7 @@ public class AbsArrType extends AbsType {
 	 * @param type
 	 *            Tip elementa tabele.
 	 */
-	public AbsArrType(Position pos, int length, AbsType type) {
+	public AbsListType(Position pos, int length, AbsType type) {
 		super(pos);
 		this.length = length;
 		this.type = type;

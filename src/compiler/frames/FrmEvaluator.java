@@ -27,7 +27,7 @@ public class FrmEvaluator implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsArrType acceptor) {
+	public void visit(AbsListType acceptor) {
 
 	}
 
@@ -181,11 +181,4 @@ public class FrmEvaluator implements Visitor {
 			returnExpr.expr.accept(this);
 	}
 
-	@Override
-	public void visit(AbsInitDef initDef) {
-		initDef.definition.accept(this);
-		initDef.name.accept(this);
-		initDef.initialization.accept(this);
-	}
-	
 }
