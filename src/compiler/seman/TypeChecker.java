@@ -31,22 +31,23 @@ public class TypeChecker implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsStructDef acceptor) {
+	public void visit(AbsClassDef acceptor) {
 		ArrayList<SemType> types = new ArrayList<>();
 		ArrayList<String> names = new ArrayList<>();
 
 		for (int i = 0; i < acceptor.getDefinitions().numDefs(); i++) {
 			AbsDef def = acceptor.getDefinitions().def(i);
-			if (def instanceof AbsVarDef) {
-				AbsVarDef def_ = (AbsVarDef) def;
-				def_.type.accept(this);
-				SemType type = SymbDesc.getType(def_.type);
-
-				types.add(type);
-				names.add(def_.name);
-			}
+			def.accept(this);
+			types.add(SymbDesc.getType(def));
+			
+			if (def instanceof AbsVarDef)
+				names.add(((AbsVarDef) def).name);
+			else if (def instanceof AbsFunDef)
+				names.add(((AbsFunDef) def).name);
+			else
+				Report.error("Semantic error @ AbsClassDef-typeChecker");
 		}
-		SymbDesc.setType(acceptor, new SemStructType(acceptor.getName(), names,
+		SymbDesc.setType(acceptor, new SemClassType(acceptor.getName(), names,
 				types));
 	}
 
@@ -120,7 +121,7 @@ public class TypeChecker implements Visitor {
 			 */
 			if (t1 instanceof SemArrType) {
 				String name = ((AbsVarName) acceptor.expr2).name;
-				if (!name.equals("length"))
+				if (!name.equals("count"))
 					Report.error("Lists have no attribute named \"" + name
 							+ "\"");
 
@@ -128,12 +129,12 @@ public class TypeChecker implements Visitor {
 				return;
 			}
 
-			if (!(t1 instanceof SemStructType))
+			if (!(t1 instanceof SemClassType))
 				Report.error(acceptor.position,
-						"Left expression's type must be a structure to use DOT operator");
+						"Left expression's type must be a class type to use DOT operator");
 
 			String name = ((AbsVarName) acceptor.expr2).name;
-			SemStructType sType = (SemStructType) t1;
+			SemClassType sType = (SemClassType) t1;
 			SemType type = sType.getMembers().get(name);
 
 			if (type == null)

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import compiler.Report;
 
-public class SemStructType extends SemType {
+public class SemClassType extends SemType {
 
 	private final LinkedHashMap<String, SemType> members = new LinkedHashMap<>();
 	private final String name;
@@ -20,9 +20,10 @@ public class SemStructType extends SemType {
 	 * @param names List of names for each definition
 	 * @param types List of types for each definition
 	 */
-	public SemStructType(String name, ArrayList<String> names, ArrayList<SemType> types) {
+	public SemClassType(String name, ArrayList<String> names, ArrayList<SemType> types) {
 		if (names.size() != types.size())
-			Report.error("Internal error :: compiler.seman.type.SemStructType: names size not equal types size");
+			Report.error("Internal error :: compiler.seman.type.SemStructType: "
+					+ "names size not equal types size");
 
 		int size = 0;
 		for (int i = 0; i < names.size(); i++) {
@@ -54,10 +55,10 @@ public class SemStructType extends SemType {
 
 	@Override
 	public boolean sameStructureAs(SemType type) {
-		if (!(type instanceof SemStructType))
+		if (!(type instanceof SemClassType))
 			return false;
 		
-		SemStructType type_ = (SemStructType) type;
+		SemClassType type_ = (SemClassType) type;
 		
 		if (members.size() != type_.members.size())
 			return false;
@@ -76,7 +77,7 @@ public class SemStructType extends SemType {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		int i = 0;
-		sb.append("STRUCT(");
+		sb.append("CLASS(");
 		for (Map.Entry<String, SemType> entry : members.entrySet()) {
 			sb.append(entry.getKey() + ":" + entry.getValue().toString());
 			if (++i < members.size()) sb.append(";");

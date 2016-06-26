@@ -192,9 +192,9 @@ public class SynAn {
 			dump("definition -> import_definition");
 			definition = parseImportDefinition();
 			break;
-		case KW_STRUCT:
-			dump("definition -> struct_definition");
-			definition = parseStructDefinition();
+		case KW_CLASS:
+			dump("definition -> class_definition");
+			definition = parseClassDefinition();
 			break;
 		default:
 			if (symbol.token != Token.EOF)
@@ -331,22 +331,22 @@ public class SynAn {
 		}
 	}
 	
-	private AbsStructDef parseStructDefinition() {
+	private AbsClassDef parseClassDefinition() {
 		Position start = symbol.position;
-		if (symbol.token == Token.KW_STRUCT) {
-			String name = skip(new Symbol(Token.IDENTIFIER, "IDENTIFIER", null)).lexeme;
-			skip(new Symbol(Token.LBRACE, "{", null));
-			skip();
-			
-			AbsDefs definitions = parseDefinitions();
-			if (symbol.token != Token.RBRACE)
-				Report.error(symbol.position, "Syntax error on token \""
-						+ symbol.lexeme + "\", expected \"}\"");
-			skip();
-			return new AbsStructDef(name, new Position(start, definitions.position), 
-					definitions);
-		}
-		return null;
+		
+		String name = skip(new Symbol(Token.IDENTIFIER, "IDENTIFIER", null)).lexeme;
+		
+		skip(new Symbol(Token.LBRACE, "{", null));
+		skip();
+		
+		AbsDefs definitions = parseDefinitions();
+		if (symbol.token != Token.RBRACE)
+			Report.error(symbol.position, "Syntax error on token \""
+					+ symbol.lexeme + "\", expected \"}\"");
+		skip();
+		
+		return new AbsClassDef(name, new Position(start, definitions.position), 
+				definitions);
 	}
 
 	private AbsType parseType() {

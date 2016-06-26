@@ -73,7 +73,7 @@ public class Frames implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsStructDef structType) {
+	public void visit(AbsClassDef structType) {
 		Report.dump(indent, "AbsStructType " + structType.position.toString()
 				+ ": " + structType.getName());
 		{

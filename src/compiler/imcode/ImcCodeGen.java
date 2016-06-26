@@ -16,7 +16,7 @@ import compiler.frames.FrmTemp;
 import compiler.frames.FrmVarAccess;
 import compiler.seman.SymbDesc;
 import compiler.seman.type.SemArrType;
-import compiler.seman.type.SemStructType;
+import compiler.seman.type.SemClassType;
 import compiler.seman.type.SemType;
 
 public class ImcCodeGen implements Visitor {
@@ -41,7 +41,7 @@ public class ImcCodeGen implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsStructDef acceptor) {
+	public void visit(AbsClassDef acceptor) {
 
 	}
 
@@ -97,8 +97,8 @@ public class ImcCodeGen implements Visitor {
 		else if (acceptor.oper == AbsBinExpr.ASSIGN) {
 			SemType p = SymbDesc.getType(acceptor.expr2).actualType();
 			// copy content of one struct into another
-			if (p instanceof SemStructType)	{
-				SemStructType t = (SemStructType) p;
+			if (p instanceof SemClassType)	{
+				SemClassType t = (SemClassType) p;
 				code = new ImcSEQ();
 				
 				e1 = ((ImcMEM)e1).expr;
@@ -137,10 +137,10 @@ public class ImcCodeGen implements Visitor {
 			code = sub;
 		} else if (acceptor.oper == AbsBinExpr.DOT) {
 			SemType t = SymbDesc.getType(acceptor.expr1).actualType();
-			SemStructType type = null;
+			SemClassType type = null;
 			
-			if (t instanceof SemStructType) {
-				type = (SemStructType) t;
+			if (t instanceof SemClassType) {
+				type = (SemClassType) t;
 				String var = ((AbsVarName) acceptor.expr2).name;
 				int offset = type.offsetOf(var);
 

@@ -37,7 +37,7 @@ public class FrmEvaluator implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsStructDef acceptor) {
+	public void visit(AbsClassDef acceptor) {
 
 	}
 

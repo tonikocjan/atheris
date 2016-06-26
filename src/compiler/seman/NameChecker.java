@@ -130,7 +130,7 @@ public class NameChecker implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsStructDef acceptor) {
+	public void visit(AbsClassDef acceptor) {
 		try {
 			SymbTable.ins(acceptor.getName(), acceptor);
 		} catch (SemIllegalInsertException e) {
@@ -342,8 +342,8 @@ public class NameChecker implements Visitor {
 					name = ((AbsVarDef) d).name;
 				if (d instanceof AbsFunDef)
 					name = ((AbsFunDef) d).name;
-				if (d instanceof AbsStructDef)
-					name = ((AbsStructDef) d).getName();
+				if (d instanceof AbsClassDef)
+					name = ((AbsClassDef) d).getName();
 
 				if (!acceptor.definitions.contains(name))
 					continue;

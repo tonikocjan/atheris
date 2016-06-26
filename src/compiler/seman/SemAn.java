@@ -1,6 +1,5 @@
 package compiler.seman;
 
-import compiler.Position;
 import compiler.Report;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
@@ -66,8 +65,8 @@ public class SemAn implements Visitor {
 	}
 	
 	@Override
-	public void visit(AbsStructDef structType) {
-		Report.dump(indent, "AbsStructType " + structType.position.toString() + ": " + structType.getName());		
+	public void visit(AbsClassDef structType) {
+		Report.dump(indent, "AbsClassType " + structType.position.toString() + ": " + structType.getName());		
 		{
 			SemType typ = SymbDesc.getType(structType);
 			if (typ != null)
@@ -238,8 +237,7 @@ public class SemAn implements Visitor {
 		Report.dump(indent, "AbsFunCall " + funCall.position.toString() + ": " + funCall.name);
 		{
 			AbsDef def = SymbDesc.getNameDef(funCall);
-			Position pos = def.position;
-			if (def != null && pos != null)
+			if (def != null && def.position != null)
 				Report.dump(indent + 2, "#defined at " + def.position.toString());
 		}
 		{
