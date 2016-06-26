@@ -5,9 +5,11 @@ import compiler.abstr.Visitor;
 
 public class AbsClassDef extends AbsTypeDef {
 	
-	private final AbsDefs definitions;
+	public final AbsDefs definitions;
 	
-	public AbsDefs getDefinitions() { return definitions; }
+	public AbsDefs getDefinitions() {
+		return definitions;
+	}
 	
 	public AbsClassDef(String name, Position pos, AbsDefs definitions) {
 		super(pos, name);

@@ -64,7 +64,8 @@ public class TypeChecker implements Visitor {
 	@Override
 	public void visit(AbsBinExpr acceptor) {
 		acceptor.expr1.accept(this);
-		acceptor.expr2.accept(this);
+		if (acceptor.oper != AbsBinExpr.DOT)
+			acceptor.expr2.accept(this);
 
 		SemType t1 = SymbDesc.getType(acceptor.expr1);
 		SemType t2 = SymbDesc.getType(acceptor.expr2);
@@ -112,10 +113,6 @@ public class TypeChecker implements Visitor {
 		 * identifier.identifier
 		 */
 		if (oper == AbsBinExpr.DOT) {
-			if (!(acceptor.expr1 instanceof AbsVarName && acceptor.expr2 instanceof AbsVarName))
-				Report.error(acceptor.position,
-						"Expressions around DOT operator must be identifiers");
-
 			/**
 			 * Handle list.length
 			 */
@@ -133,15 +130,21 @@ public class TypeChecker implements Visitor {
 				Report.error(acceptor.position,
 						"Left expression's type must be a class type to use DOT operator");
 
-			String name = ((AbsVarName) acceptor.expr2).name;
+			String name;
+			if (acceptor.expr2 instanceof AbsVarName) 
+				name = ((AbsVarName) acceptor.expr2).name;
+			else
+				name = ((AbsFunCall) acceptor.expr2).name;
+			
 			SemClassType sType = (SemClassType) t1;
 			SemType type = sType.getMembers().get(name);
 
 			if (type == null)
 				Report.error(acceptor.position, "\"" + name
-						+ "\" is not defined in struct \"" + sType.getName()
+						+ "\" is not defined in class \"" + sType.getName()
 						+ "\"");
-
+			
+			SymbDesc.setType(acceptor.expr2, type);
 			SymbDesc.setType(acceptor, type);
 			return;
 		}
