@@ -421,4 +421,18 @@ public class SemAn implements Visitor {
 		}
 		indent += 2; if (returnExpr.expr != null) returnExpr.expr.accept(this); indent -= 2;
 	}
+
+	@Override
+	public void visit(AbsListExpr absListExpr) {
+		Report.dump(indent, "AbsListExpr " + absListExpr.position.toString());
+		{
+			SemType typ = SymbDesc.getType(absListExpr);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		indent += 2; 
+		for (AbsExpr e : absListExpr.expressions)
+			e.accept(this);
+		indent -= 2;		
+	}
 }

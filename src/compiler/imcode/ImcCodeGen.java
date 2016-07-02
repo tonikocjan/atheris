@@ -12,7 +12,6 @@ import compiler.frames.FrmFrame;
 import compiler.frames.FrmLabel;
 import compiler.frames.FrmLocAccess;
 import compiler.frames.FrmParAccess;
-import compiler.frames.FrmTemp;
 import compiler.frames.FrmVarAccess;
 import compiler.seman.SymbDesc;
 import compiler.seman.type.SemListType;
@@ -93,7 +92,9 @@ public class ImcCodeGen implements Visitor {
 		else
 			e1 = (ImcExpr) c1;
 
-		if (c2 instanceof ImcEXP)
+		if (c2 instanceof ImcESEQ)
+			e2 = (ImcESEQ) c2;
+		else if (c2 instanceof ImcEXP)
 			e2 = ((ImcEXP) c2).expr;
 		else
 			e2 = (ImcExpr) c2;
@@ -103,34 +104,7 @@ public class ImcCodeGen implements Visitor {
 		if (acceptor.oper >= 0 && acceptor.oper <= 11)
 			code = new ImcBINOP(acceptor.oper, e1, e2);
 		else if (acceptor.oper == AbsBinExpr.ASSIGN) {
-			SemType p = SymbDesc.getType(acceptor.expr2).actualType();
-			// copy content of one struct into another
-			if (p instanceof SemClassType)	{
-				SemClassType t = (SemClassType) p;
-				code = new ImcSEQ();
-				
-				e1 = ((ImcMEM)e1).expr;
-				if (e2 instanceof ImcMEM)
-					e2 = ((ImcMEM)e2).expr;
-				else {
-					ImcTEMP temp = new ImcTEMP(new FrmTemp());
-					((ImcSEQ) code).stmts.add(new ImcMOVE(temp, e2));
-					e2 = temp;
-				}
-				
-				int offset = 0;				
-				for (Map.Entry<String, SemType> entry : t.getMembers().entrySet()) {
-					ImcMEM dst = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcCONST(offset)));
-					ImcMEM src = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e2, new ImcCONST(offset)));
-					
-					ImcMOVE move = new ImcMOVE(dst, src);
-					((ImcSEQ) code).stmts.add(move);
-					
-					offset += entry.getValue().actualType().size();
-				}
-			}
-			else
-				code = new ImcMOVE(e1, e2);
+			code = new ImcMOVE(e1, e2);
 		} else if (acceptor.oper == AbsBinExpr.ARR) {
 			// TODO 
 			// zrihtej da bo zaznalo velikost spremenljivke
@@ -427,17 +401,17 @@ public class ImcCodeGen implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsImportDef importDef) {
-		importDef.imports.accept(this);
+	public void visit(AbsImportDef acceptor) {
+		acceptor.imports.accept(this);
 	}
 
 	@Override
-	public void visit(AbsStmts stmts) {
+	public void visit(AbsStmts acceptor) {
 		ImcSEQ seq = new ImcSEQ();
-		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
-			stmts.stmt(stmt).accept(this);
+		for (int stmt = 0; stmt < acceptor.numStmts(); stmt++) {
+			acceptor.stmt(stmt).accept(this);
 			
-			ImcCode code = ImcDesc.getImcCode(stmts.stmt(stmt));
+			ImcCode code = ImcDesc.getImcCode(acceptor.stmt(stmt));
 			if (code != null) {
 				ImcStmt s = null;
 				
@@ -449,7 +423,7 @@ public class ImcCodeGen implements Visitor {
 				seq.stmts.add(s);
 			}
 		}
-		ImcDesc.setImcCode(stmts, seq);
+		ImcDesc.setImcCode(acceptor, seq);
 		
 		if (currentFrame.label.name().equals("_" + FrmEvaluator.ENTRY_POINT)) {
 			entryPointCode = new ImcCodeChunk(currentFrame, seq);
@@ -458,27 +432,60 @@ public class ImcCodeGen implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsConstDef constDef) {
-		// TODO Auto-generated method stub
+	public void visit(AbsConstDef acceptor) {
 		
 	}
 
 	@Override
-	public void visit(AbsReturnExpr returnExpr) {
+	public void visit(AbsReturnExpr acceptor) {
 		ImcSEQ seq = new ImcSEQ();
 		ImcTEMP rv = new ImcTEMP(currentFrame.RV);
 
-		if (returnExpr.expr != null) {
-			returnExpr.expr.accept(this);
+		if (acceptor.expr != null) {
+			acceptor.expr.accept(this);
 			
 			seq.stmts.add(new ImcMOVE(rv, 
-					(ImcExpr) ImcDesc.getImcCode(returnExpr.expr)));
+					(ImcExpr) ImcDesc.getImcCode(acceptor.expr)));
 		}
 		else
-			ImcDesc.setImcCode(returnExpr, new ImcRETURN(null));
+			ImcDesc.setImcCode(acceptor, new ImcRETURN(null));
 		
 		seq.stmts.add(new ImcJUMP(currentFrame.endLabel));
-		ImcDesc.setImcCode(returnExpr, seq);
+		ImcDesc.setImcCode(acceptor, seq);
+	}
+
+	@Override
+	public void visit(AbsListExpr acceptor) {
+		int size = ((SemListType) SymbDesc.getType(acceptor)).size;
+		int elSize = ((SemListType) SymbDesc.getType(acceptor)).type.size();
+		
+		FrmLabel label = FrmLabel.newLabel();
+		ImcDataChunk chunk = new ImcDataChunk(label, size * elSize);
+		ImcSEQ seq = new ImcSEQ();
+		
+		int i = 0;
+		for (AbsExpr e : acceptor.expressions) {
+			e.accept(this);
+			
+			ImcCode code = ImcDesc.getImcCode(e);
+			ImcExpr expr;
+			if (code instanceof ImcEXP)
+				expr = ((ImcEXP) code).expr;
+			else
+				expr = (ImcExpr) code;
+			
+			ImcMOVE move = new ImcMOVE(new ImcMEM(new ImcBINOP(ImcBINOP.ADD,
+													new ImcNAME(label),
+													new ImcBINOP(ImcBINOP.MUL, 
+																new ImcCONST(i), 
+																new ImcCONST(elSize)))),
+										expr);
+			i++;
+			seq.stmts.add(move);
+		}
+		
+		chunks.add(chunk);
+		ImcDesc.setImcCode(acceptor, new ImcESEQ(seq, new ImcNAME(label)));
 	}
 
 }

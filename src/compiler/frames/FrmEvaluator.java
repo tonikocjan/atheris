@@ -181,4 +181,10 @@ public class FrmEvaluator implements Visitor {
 			returnExpr.expr.accept(this);
 	}
 
+	@Override
+	public void visit(AbsListExpr absListExpr) {
+		for (AbsExpr e : absListExpr.expressions)
+			e.accept(this);
+	}
+
 }

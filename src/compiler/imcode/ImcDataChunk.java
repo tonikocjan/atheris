@@ -17,7 +17,7 @@ public class ImcDataChunk extends ImcChunk {
 	public int size;
 	
 	/**  Inicializacija spremenljivke v labeli */
-	public String data = null;
+	public Object data = null;
 
 	/**
 	 * Ustvari novfragment podatkov.

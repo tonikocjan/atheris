@@ -18,9 +18,7 @@ public class TypeChecker implements Visitor {
 	@Override
 	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
-		SemListType type = new SemListType(acceptor.length,
-				SymbDesc.getType(acceptor.type));
-		SymbDesc.setType(acceptor, type);
+		SymbDesc.setType(acceptor, new SemPtrType(SymbDesc.getType(acceptor.type)));
 	}
 
 	@Override
@@ -39,7 +37,7 @@ public class TypeChecker implements Visitor {
 			AbsDef def = acceptor.getDefinitions().def(i);
 			def.accept(this);
 			types.add(SymbDesc.getType(def));
-			
+
 			if (def instanceof AbsVarDef)
 				names.add(((AbsVarDef) def).name);
 			else if (def instanceof AbsFunDef)
@@ -101,9 +99,13 @@ public class TypeChecker implements Visitor {
 		 * expr1 = expr2
 		 */
 		if (oper == AbsBinExpr.ASSIGN) {
-			if (t1.sameStructureAs(t2)) {
+			if (t1.sameStructureAs(t2))
 				SymbDesc.setType(acceptor, t1);
-			} else
+			else if (t1 instanceof SemPtrType && 
+					t2 instanceof SemListType && 
+					(((SemPtrType) t1).type.sameStructureAs(((SemListType) t2).type)))
+					SymbDesc.setType(acceptor, t1);
+			else
 				Report.error(acceptor.position, "Cannot assign type " + t2
 						+ " to type " + t1);
 			return;
@@ -131,11 +133,11 @@ public class TypeChecker implements Visitor {
 						"Left expression's type must be a class type to use DOT operator");
 
 			String name;
-			if (acceptor.expr2 instanceof AbsVarName) 
+			if (acceptor.expr2 instanceof AbsVarName)
 				name = ((AbsVarName) acceptor.expr2).name;
 			else
 				name = ((AbsFunCall) acceptor.expr2).name;
-			
+
 			SemClassType sType = (SemClassType) t1;
 			SemType type = sType.getMembers().get(name);
 
@@ -143,7 +145,7 @@ public class TypeChecker implements Visitor {
 				Report.error(acceptor.position, "\"" + name
 						+ "\" is not defined in class \"" + sType.getName()
 						+ "\"");
-			
+
 			SymbDesc.setType(acceptor.expr2, type);
 			SymbDesc.setType(acceptor, type);
 			return;
@@ -251,18 +253,19 @@ public class TypeChecker implements Visitor {
 			// implicit cast from list to pointer
 			if (parType instanceof SemListType)
 				parType = new SemPtrType(((SemListType) parType).type);
-			
+
 			parameters.add(parType);
 		}
 
 		AbsDef definition = SymbTable.fndFunc(acceptor.name, parameters);
 		if (definition == null) {
-			Report.error(acceptor.position, "Method " + acceptor.name +
-						new SemFunType(parameters, null).toString()
-								+ " is undefined");
+			Report.error(acceptor.position, "Method " + acceptor.name
+					+ new SemFunType(parameters, null).toString()
+					+ " is undefined");
 		}
 		SymbDesc.setNameDef(acceptor, definition);
-		SymbDesc.setType(acceptor, ((SemFunType)SymbDesc.getType(definition)).resultType);
+		SymbDesc.setType(acceptor,
+				((SemFunType) SymbDesc.getType(definition)).resultType);
 	}
 
 	@Override
@@ -275,9 +278,10 @@ public class TypeChecker implements Visitor {
 
 		acceptor.type.accept(this);
 
-		SemFunType funType = new SemFunType(parameters, SymbDesc.getType(acceptor.type));
+		SemFunType funType = new SemFunType(parameters,
+				SymbDesc.getType(acceptor.type));
 		SymbDesc.setType(acceptor, funType);
-		
+
 		acceptor.func.accept(this);
 
 		// check if return type matches
@@ -336,7 +340,8 @@ public class TypeChecker implements Visitor {
 		SemType type = SymbDesc.getType(acceptor.type);
 
 		if (type instanceof SemListType)
-			SymbDesc.setType(acceptor, new SemPtrType(((SemListType) type).type));
+			SymbDesc.setType(acceptor,
+					new SemPtrType(((SemListType) type).type));
 		else
 			SymbDesc.setType(acceptor, type);
 	}
@@ -391,7 +396,9 @@ public class TypeChecker implements Visitor {
 	@Override
 	public void visit(AbsVarDef acceptor) {
 		acceptor.type.accept(this);
-		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.type));
+		SemType type = SymbDesc.getType(acceptor.type);
+
+		SymbDesc.setType(acceptor, type);
 	}
 
 	@Override
@@ -449,17 +456,16 @@ public class TypeChecker implements Visitor {
 	@Override
 	public void visit(AbsListExpr absListExpr) {
 		Vector<SemType> vec = new Vector<>();
-		for (AbsExpr e: absListExpr.expressions) {
+		for (AbsExpr e : absListExpr.expressions) {
 			e.accept(this);
 			SemType t = SymbDesc.getType(e);
-			
+
 			if (!vec.isEmpty() && !vec.firstElement().sameStructureAs(t))
 				Report.error(e.position, "Error, invalid expression type");
-			
+
 			vec.add(SymbDesc.getType(e));
 		}
-		
-		SymbDesc.setType(absListExpr, 
-				new SemListType(vec.size(), vec.firstElement()));
+
+		SymbDesc.setType(absListExpr, new SemListType(vec.size(), vec.firstElement()));
 	}
 }

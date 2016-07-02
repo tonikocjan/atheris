@@ -1064,16 +1064,16 @@ public class SynAn {
 			dump("postfix_expression' -> e");
 			return e;
 		// TODO
-//		case LBRACKET:
-//			dump("postfix_expression' -> [ expression ] postfix_expression'");
-//			skip();
-//			AbsExpr expr = parseExpression();
-//			if (symbol.token != Token.RBRACKET)
-//				Report.error(previous.position,
-//						"Syntax error, insert \"]\" to complete expression");
-//			skip();
-//			return parsePostfixExpression_(new AbsBinExpr(new Position(
-//					e.position, expr.position), AbsBinExpr.ARR, e, expr));
+		case LBRACKET:
+			dump("postfix_expression' -> [ expression ] postfix_expression'");
+			skip();
+			AbsExpr expr = parseExpression();
+			if (symbol.token != Token.RBRACKET)
+				Report.error(previous.position,
+						"Syntax error, insert \"]\" to complete expression");
+			skip();
+			return parsePostfixExpression_(new AbsBinExpr(new Position(
+					e.position, expr.position), AbsBinExpr.ARR, e, expr));
 		default:
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", delete this token");
