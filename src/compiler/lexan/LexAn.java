@@ -56,7 +56,7 @@ public class LexAn {
 	private boolean dontRead = false;
 
 	/**
-	 * -----------------------------
+	 * ------------------------------
 	 */
 
 	/**
@@ -194,6 +194,7 @@ public class LexAn {
 			 * Parse string.
 			 */
 			if (nxtCh == '\"') {
+				word.append((char)nxtCh);
 				boolean strClosed = false;
 				while (true) {
 					nxtCh = file.read();
