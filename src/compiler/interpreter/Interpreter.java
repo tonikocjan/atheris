@@ -160,8 +160,8 @@ public class Interpreter {
 				stM(sp + offset, execute(instr.args.get(i)));
 				offset += 4;
 			}
-			if (instr.label.name().equals("_putInt")) {
-				System.out.println((Integer) ldM(sp + 4));
+			if (instr.label.name().equals("_print")) {
+				System.out.println(ldM(sp + 4));
 				return null;
 			}
 			if (instr.label.name().equals("_getInt")) {

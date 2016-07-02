@@ -20,25 +20,114 @@ public class NameChecker implements Visitor {
 	public NameChecker() {
 		try {
 			{
+				String name = "print";
 				Vector<AbsPar> pars = new Vector<>();
 				Vector<SemType> parTypes = new Vector<>();
+				
 				parTypes.add(new SemAtomType(SemAtomType.INT));
+				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
+						AbsAtomType.INT)));
+
+				AbsFunDef print = new AbsFunDef(null, name, pars,
+						new AbsAtomType(null, AbsAtomType.VOID), new AbsStmts(
+								null, new Vector<>()));
+				SymbTable.insFunc(name, parTypes, print);
+				SymbDesc.setType(print, new SemFunType(parTypes,
+						new SemAtomType(SemAtomType.VOID)));
+
+				FrmFrame frame = new FrmFrame(print, 1);
+				frame.numPars = 1;
+				frame.sizePars = 4;
+				frame.label = FrmLabel.newLabel(name);
+				FrmDesc.setFrame(print, frame);
+			}
+			{
+				String name = "print";
+				Vector<AbsPar> pars = new Vector<>();
+				Vector<SemType> parTypes = new Vector<>();
+				parTypes.add(new SemAtomType(SemAtomType.DOB));
+
+				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
+						AbsAtomType.DOB)));
+
+				AbsFunDef print = new AbsFunDef(null, name, pars,
+						new AbsAtomType(null, AbsAtomType.VOID), new AbsStmts(
+								null, new Vector<>()));
+				SymbTable.insFunc(name, parTypes, print);
+				SymbDesc.setType(print, new SemFunType(parTypes,
+						new SemAtomType(SemAtomType.VOID)));
+
+				FrmFrame frame = new FrmFrame(print, 1);
+				frame.numPars = 1;
+				frame.sizePars = 4;
+				frame.label = FrmLabel.newLabel(name);
+				FrmDesc.setFrame(print, frame);
+			}
+			{
+				String name = "print";
+				Vector<AbsPar> pars = new Vector<>();
+				Vector<SemType> parTypes = new Vector<>();
+				parTypes.add(new SemAtomType(SemAtomType.STR));
 
 				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
 						AbsAtomType.INT)));
 
-				AbsFunDef putInt = new AbsFunDef(null, "putInt", pars,
-						new AbsAtomType(null, AbsAtomType.INT), new AbsStmts(
+				AbsFunDef print = new AbsFunDef(null, name, pars,
+						new AbsAtomType(null, AbsAtomType.VOID), new AbsStmts(
 								null, new Vector<>()));
-				SymbTable.insFunc("putInt", parTypes, putInt);
-				SymbDesc.setType(putInt, new SemFunType(parTypes,
-						new SemAtomType(SemAtomType.INT)));
+				SymbTable.insFunc(name, parTypes, print);
+				SymbDesc.setType(print, new SemFunType(parTypes,
+						new SemAtomType(SemAtomType.VOID)));
 
-				FrmFrame frame = new FrmFrame(putInt, 1);
+				FrmFrame frame = new FrmFrame(print, 1);
 				frame.numPars = 1;
 				frame.sizePars = 4;
-				frame.label = FrmLabel.newLabel("putInt");
-				FrmDesc.setFrame(putInt, frame);
+				frame.label = FrmLabel.newLabel(name);
+				FrmDesc.setFrame(print, frame);
+			}
+			{
+				String name = "print";
+				Vector<AbsPar> pars = new Vector<>();
+				Vector<SemType> parTypes = new Vector<>();
+				parTypes.add(new SemAtomType(SemAtomType.CHR));
+
+				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
+						AbsAtomType.CHR)));
+
+				AbsFunDef print = new AbsFunDef(null, name, pars,
+						new AbsAtomType(null, AbsAtomType.VOID), new AbsStmts(
+								null, new Vector<>()));
+				SymbTable.insFunc(name, parTypes, print);
+				SymbDesc.setType(print, new SemFunType(parTypes,
+						new SemAtomType(SemAtomType.VOID)));
+
+				FrmFrame frame = new FrmFrame(print, 1);
+				frame.numPars = 1;
+				frame.sizePars = 4;
+				frame.label = FrmLabel.newLabel(name);
+				FrmDesc.setFrame(print, frame);
+			}
+			{
+				String name = "print";
+				Vector<AbsPar> pars = new Vector<>();
+				Vector<SemType> parTypes = new Vector<>();
+				parTypes.add(new SemAtomType(SemAtomType.LOG));
+
+				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
+						AbsAtomType.LOG)));
+
+				AbsFunDef print = new AbsFunDef(null, name, pars,
+						new AbsAtomType(null, AbsAtomType.VOID), new AbsStmts(
+								null, new Vector<>()));
+				SymbTable.insFunc(name, parTypes, print);
+				SymbDesc.setType(print, new SemFunType(parTypes,
+						new SemAtomType(SemAtomType.VOID)));
+
+				FrmFrame frame = new FrmFrame(print, 1);
+				frame.numPars = 1;
+				frame.sizePars = 4;
+				frame.label = FrmLabel.newLabel(name);
+				FrmDesc.setFrame(print, frame);
 			}
 			// {
 			// Vector<AbsPar> pars = new Vector<>();
@@ -46,22 +135,22 @@ public class NameChecker implements Visitor {
 			// parTypes.add(new SemPtrType(new SemAtomType(SemAtomType.INT)));
 			// pars.add(new AbsPar(null, "x", new AbsAtomType(null,
 			// AbsAtomType.INT)));
-			// AbsFunDef putInt = new AbsFunDef(null, "getInt", pars,
+			// AbsFunDef print = new AbsFunDef(null, "getInt", pars,
 			// new AbsAtomType(null, AbsAtomType.INT), new AbsExpr(
 			// null) {
 			// @Override
 			// public void accept(Visitor visitor) {
 			// }
 			// });
-			// SymbTable.ins("getInt", putInt);
-			// SymbDesc.setType(putInt, new SemFunType(parTypes,
+			// SymbTable.ins("getInt", print);
+			// SymbDesc.setType(print, new SemFunType(parTypes,
 			// new SemAtomType(SemAtomType.INT)));
 			//
-			// FrmFrame frame = new FrmFrame(putInt, 1);
+			// FrmFrame frame = new FrmFrame(print, 1);
 			// frame.numPars = 1;
 			// frame.sizePars = 4;
 			// frame.label = FrmLabel.newLabel("getInt");
-			// FrmDesc.setFrame(putInt, frame);
+			// FrmDesc.setFrame(print, frame);
 			// }
 			// {
 			// Vector<AbsPar> pars = new Vector<>();
@@ -69,22 +158,22 @@ public class NameChecker implements Visitor {
 			// parTypes.add(new SemAtomType(SemAtomType.STR));
 			// pars.add(new AbsPar(null, "x", new AbsAtomType(null,
 			// AbsAtomType.STR)));
-			// AbsFunDef putInt = new AbsFunDef(null, "putString", pars,
+			// AbsFunDef print = new AbsFunDef(null, "putString", pars,
 			// new AbsAtomType(null, AbsAtomType.INT), new AbsExpr(
 			// null) {
 			// @Override
 			// public void accept(Visitor visitor) {
 			// }
 			// });
-			// SymbTable.ins("putString", putInt);
-			// SymbDesc.setType(putInt, new SemFunType(parTypes,
+			// SymbTable.ins("putString", print);
+			// SymbDesc.setType(print, new SemFunType(parTypes,
 			// new SemAtomType(SemAtomType.INT)));
 			//
-			// FrmFrame frame = new FrmFrame(putInt, 1);
+			// FrmFrame frame = new FrmFrame(print, 1);
 			// frame.numPars = 1;
 			// frame.sizePars = 4;
 			// frame.label = FrmLabel.newLabel("putString");
-			// FrmDesc.setFrame(putInt, frame);
+			// FrmDesc.setFrame(print, frame);
 			// }
 			// {
 			// Vector<AbsPar> pars = new Vector<>();
@@ -92,22 +181,22 @@ public class NameChecker implements Visitor {
 			// parTypes.add(new SemPtrType(new SemAtomType(SemAtomType.STR)));
 			// pars.add(new AbsPar(null, "x", new AbsAtomType(null,
 			// AbsAtomType.STR)));
-			// AbsFunDef putInt = new AbsFunDef(null, "getString", pars,
+			// AbsFunDef print = new AbsFunDef(null, "getString", pars,
 			// new AbsAtomType(null, AbsAtomType.STR), new AbsExpr(
 			// null) {
 			// @Override
 			// public void accept(Visitor visitor) {
 			// }
 			// });
-			// SymbTable.ins("getString", putInt);
-			// SymbDesc.setType(putInt, new SemFunType(parTypes,
+			// SymbTable.ins("getString", print);
+			// SymbDesc.setType(print, new SemFunType(parTypes,
 			// new SemAtomType(SemAtomType.STR)));
 			//
-			// FrmFrame frame = new FrmFrame(putInt, 1);
+			// FrmFrame frame = new FrmFrame(print, 1);
 			// frame.numPars = 1;
 			// frame.sizePars = 4;
 			// frame.label = FrmLabel.newLabel("getString");
-			// FrmDesc.setFrame(putInt, frame);
+			// FrmDesc.setFrame(print, frame);
 			// }
 		} catch (Exception e) {
 		}
