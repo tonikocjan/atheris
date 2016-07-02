@@ -41,12 +41,12 @@ public class SemAtomType extends SemType {
 	@Override
 	public String toString() {
 		switch (type) {
-		case LOG: return "LOGICAL";
-		case INT: return "INTEGER";
-		case STR: return "STRING";
-		case VOID: return "VOID";
-		case DOB: return "DOUBLE";
-		case CHR: return "CHAR";
+		case LOG: return "Bool";
+		case INT: return "Int";
+		case STR: return "String";
+		case VOID: return "Void";
+		case DOB: return "Double";
+		case CHR: return "Char";
 		}
 		Report.error("Internal error :: compiler.seman.type.SemAtomType.toString()");
 		return "";

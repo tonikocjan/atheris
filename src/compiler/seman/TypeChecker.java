@@ -257,9 +257,9 @@ public class TypeChecker implements Visitor {
 
 		AbsDef definition = SymbTable.fndFunc(acceptor.name, parameters);
 		if (definition == null) {
-			Report.error(acceptor.position, "Method \"" + acceptor.name + "\"" +
-						new SemFunType(parameters, null).toString() + "\""
-								+ "is undefined");
+			Report.error(acceptor.position, "Method " + acceptor.name +
+						new SemFunType(parameters, null).toString()
+								+ " is undefined");
 		}
 		SymbDesc.setNameDef(acceptor, definition);
 		SymbDesc.setType(acceptor, ((SemFunType)SymbDesc.getType(definition)).resultType);
