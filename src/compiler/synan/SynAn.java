@@ -473,6 +473,7 @@ public class SynAn {
 		case STR_CONST:
 		case LBRACE:
 		case LPARENT:
+		case LBRACKET:
 		case IDENTIFIER:
 		case KW_RETURN:
 			dump("expressions -> expression expression'");
@@ -1278,6 +1279,12 @@ public class SynAn {
 
 		Position start = symbol.position;
 		skip();
+		
+		if (symbol.token == Token.RBRACKET) {
+			skip();
+			return new AbsListExpr(start, new Vector<AbsExpr>());
+		}
+		
 		AbsExpr e1 = parseExpression();
 		
 		if (symbol.token == Token.KW_FOR) {
@@ -1312,28 +1319,25 @@ public class SynAn {
 			return new AbsFor(new Position(start, e2.position), var, e2, s);
 		}
 		
-		else {
-//			dump("[] -> [expression, ...]");
-//			Vector<AbsExpr> elements = new Vector<>();
-//			elements.add(e1);
-//			return parseListInitialization(e1);
+		else if (symbol.token == Token.COMMA) {
+			dump("[] -> [expression, expressions']");
+			Vector<AbsExpr> elements = new Vector<>();
+			elements.add(e1);
+			while (symbol.token == Token.COMMA) {
+				skip();
+				elements.add(parseExpression());
+			}
+			if (symbol.token != Token.RBRACKET)
+				Report.error(previous.position, "Syntax error on token \""
+						+ previous.lexeme
+						+ "\", expected \"]\" after this token");
+			skip();
+			return new AbsListExpr(new Position(elements.firstElement().position, 
+					elements.lastElement().position), elements);
 		}
+		
 		return null;
 	}
-	
-//	private AbsListInitDef parseListInitialization(AbsExpr first) {
-//		Vector<AbsExpr> expressions = new Vector<>();
-//		expressions.add(first);
-//		if (symbol.token == Token.COMMA) {
-//			skip();
-//			AbsExpr e = parseExpression();
-//			elements.add(e);
-//			return parseListInitialization(elements);
-//		}
-//		
-//		return new AbsListInitDef(new Position(first.position, expressions.lastElement().position), 
-//				definition, name, elements)
-//	}
 
 	/**
 	 * Get next symbol from lexan.

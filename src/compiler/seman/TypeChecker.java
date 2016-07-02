@@ -445,4 +445,21 @@ public class TypeChecker implements Visitor {
 		} else
 			SymbDesc.setType(returnExpr, new SemAtomType(SemAtomType.VOID));
 	}
+
+	@Override
+	public void visit(AbsListExpr absListExpr) {
+		Vector<SemType> vec = new Vector<>();
+		for (AbsExpr e: absListExpr.expressions) {
+			e.accept(this);
+			SemType t = SymbDesc.getType(e);
+			
+			if (!vec.isEmpty() && !vec.firstElement().sameStructureAs(t))
+				Report.error(e.position, "Error, invalid expression type");
+			
+			vec.add(SymbDesc.getType(e));
+		}
+		
+		SymbDesc.setType(absListExpr, 
+				new SemListType(vec.size(), vec.firstElement()));
+	}
 }

@@ -371,4 +371,13 @@ public class Abstr implements Visitor {
 		indent -= 2;
 	}
 
+	@Override
+	public void visit(AbsListExpr absListExpr) {
+		Report.dump(indent, "AbsListExpr");
+		indent += 2;
+		for (AbsExpr e: absListExpr.expressions)
+			e.accept(this);
+		indent -= 2;
+	}
+
 }
