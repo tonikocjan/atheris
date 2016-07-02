@@ -467,6 +467,8 @@ public class SynAn {
 		case AND:
 		case MUL:
 		case LOG_CONST:
+		case CHAR_CONST:
+		case DOUBLE_CONST:
 		case INT_CONST:
 		case STR_CONST:
 		case LBRACE:
