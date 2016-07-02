@@ -34,11 +34,10 @@ public class LexAn {
 	/**
 	 * Map containing all reserved keywords.
 	 */
-	private static final String[] keywords = new String[] { 
-		"Int", "String", "Double", "Bool", "Char", "Void", "else", "for", 
-		"func", "if", "var", "while", "struct", "import", "let", "nil",
-		"self", "class", "in", "return"
-	};
+	private static final String[] keywords = new String[] { "Int", "String",
+			"Double", "Bool", "Char", "Void", "else", "for", "func", "if",
+			"var", "while", "struct", "import", "let", "nil", "self", "class",
+			"in", "return" };
 	private static Map<String, Token> keywordsMap = null;
 
 	/**
@@ -84,7 +83,8 @@ public class LexAn {
 			 */
 			keywordsMap = new HashMap<>();
 			for (int i = 0; i < keywords.length; i++)
-				keywordsMap.put(keywords[i], Token.values()[i + Token.INTEGER.ordinal()]);
+				keywordsMap.put(keywords[i],
+						Token.values()[i + Token.INTEGER.ordinal()]);
 
 		} catch (FileNotFoundException e) {
 			Report.error("File [ " + sourceFileName
@@ -142,6 +142,31 @@ public class LexAn {
 			if (nxtCh == '#') {
 				while (nxtCh != -1 && nxtCh != 10)
 					nxtCh = file.read();
+			}
+			/**
+			 * Handle multi-line comments.
+			 */
+			if (nxtCh == '/') {
+				nxtCh = file.read();
+				// if next character is not *, return DIV token
+				if (nxtCh != '*') {
+					dontRead = true;
+					return new Symbol(Token.DIV, "/", startRow, startCol, startRow, startCol + 1);
+				}
+				// else skip characters until */
+				do {
+					nxtCh = file.read();
+					startCol++;
+					if (nxtCh == '*' && file.read() == '/') {
+						nxtCh = file.read();
+						startCol++;
+						break;
+					}
+					if (nxtCh == '\n') {
+						startRow++;
+						startCol = 1;
+					}
+				} while (true);
 			}
 
 			/**
@@ -217,10 +242,9 @@ public class LexAn {
 					}
 					if (!didParseDouble && nxtCh == '.') {
 						didParseDouble = true;
-						word.append((char)nxtCh);
+						word.append((char) nxtCh);
 						nxtCh = file.read();
-					}
-					else
+					} else
 						break;
 				}
 				dontRead = true;
@@ -235,12 +259,13 @@ public class LexAn {
 			 */
 			if (nxtCh == '\'') {
 				nxtCh = file.read();
-				Symbol s = new Symbol(Token.CHAR_CONST, "" + (char)nxtCh, startRow,
-						startCol, startRow, startCol + 2);
+				Symbol s = new Symbol(Token.CHAR_CONST, "" + (char) nxtCh,
+						startRow, startCol, startRow, startCol + 2);
 				nxtCh = file.read();
 				if (nxtCh != '\'')
 					Report.error(new Position(startRow, startCol, startRow,
-							startCol + word.length() + 1), "Char constant must end with \"\'\"");
+							startCol + word.length() + 1),
+							"Char constant must end with \"\'\"");
 				return s;
 			}
 
@@ -301,12 +326,12 @@ public class LexAn {
 				dontRead = true;
 				nxtCh = tmpCh;
 				startCol++;
-				
+
 				if (op.token == Token.NEWLINE) {
 					startRow++;
 					startCol = 1;
 				}
-				
+
 				return op;
 			}
 
@@ -394,9 +419,9 @@ public class LexAn {
 			return new Symbol(Token.AND, "&", startRow, startCol, startRow,
 					startCol + 1);
 		// TODO
-//		if (ch == '\n')
-//			return new Symbol(Token.NEWLINE, "\\n", startRow, startCol, startRow,
-//					startCol + 1);
+		// if (ch == '\n')
+		// return new Symbol(Token.NEWLINE, "\\n", startRow, startCol, startRow,
+		// startCol + 1);
 
 		return null;
 	}
