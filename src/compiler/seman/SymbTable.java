@@ -4,12 +4,14 @@ import java.util.*;
 
 import compiler.*;
 import compiler.abstr.tree.*;
+import compiler.seman.type.SemType;
 
 public class SymbTable {
 
 	/** Simbolna tabela. */
-	private static HashMap<String, LinkedList<AbsDef>> mapping = new HashMap<String, LinkedList<AbsDef>>();
-
+	private static HashMap<String, LinkedList<AbsDef>> mapping = new HashMap<>();
+	private static HashMap<String, HashMap<String, AbsDef>> functions = new HashMap<>();
+	
 	/** Trenutna globina nivoja gnezdenja. */
 	private static int scope = 0;
 
@@ -67,6 +69,33 @@ public class SymbTable {
 		allNameDefs.addFirst(newDef);
 		SymbDesc.setScope(newDef, scope);
 	}
+	
+	/**
+	 * Vstavi novo definicijo funkcije na trenutni nivo gnezdenja.
+	 * 
+	 * @param name
+	 *            Ime.
+	 * @param type
+	 * 			  Tip funkcije
+	 * @param newDef
+	 *            Nova definicija.
+	 * @throws SemIllegalInsertException
+	 *             Ce definicija imena na trenutnem nivoju gnezdenja ze obstaja.
+	 */
+	public static void insFunc(String name, Vector<SemType> parameters, AbsDef newDef)
+			throws SemIllegalInsertException {
+		HashMap<String, AbsDef> hashmap = functions.get(name);
+		
+		// if method with such parameters already exists
+		if (hashmap != null && hashmap.get(parameters) != null)
+			throw new SemIllegalInsertException();
+		
+		if (hashmap == null) hashmap = new HashMap<>();
+		hashmap.put(parameters.toString(), newDef);
+		functions.put(name, hashmap);
+		
+		SymbDesc.setScope(newDef, scope);
+	}
 
 	/**
 	 * Odstrani definicijo imena s trenutnega nivoja gnezdenja.
@@ -108,5 +137,16 @@ public class SymbTable {
 			return null;
 		return allNameDefs.getFirst();
 	}
-
+	
+	/**
+	 * Vrne definicijo funkcije.
+	 * @param name ime funkcije
+	 * @param parameters tipi parametrov klica funkcije
+	 * @return
+	 */
+	public static AbsDef fndFunc(String name, Vector<SemType> parameters) {
+		if (functions.get(name) != null)
+			return functions.get(name).get(parameters.toString());
+		return null;
+	}
 }

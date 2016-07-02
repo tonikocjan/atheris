@@ -18,7 +18,7 @@ public class TypeChecker implements Visitor {
 	@Override
 	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
-		SemArrType type = new SemArrType(acceptor.length,
+		SemListType type = new SemListType(acceptor.length,
 				SymbDesc.getType(acceptor.type));
 		SymbDesc.setType(acceptor, type);
 	}
@@ -86,8 +86,8 @@ public class TypeChecker implements Visitor {
 			/**
 			 * expr1 is of type ARR(n, t)
 			 */
-			if (t1 instanceof SemArrType) {
-				SymbDesc.setType(acceptor, ((SemArrType) t1).type);
+			if (t1 instanceof SemListType) {
+				SymbDesc.setType(acceptor, ((SemListType) t1).type);
 			} else if (t1 instanceof SemPtrType) {
 				if (t2.sameStructureAs(integer))
 					SymbDesc.setType(acceptor, ((SemPtrType) t1).type);
@@ -116,7 +116,7 @@ public class TypeChecker implements Visitor {
 			/**
 			 * Handle list.length
 			 */
-			if (t1 instanceof SemArrType) {
+			if (t1 instanceof SemListType) {
 				String name = ((AbsVarName) acceptor.expr2).name;
 				if (!name.equals("count"))
 					Report.error("Lists have no attribute named \"" + name
@@ -243,27 +243,26 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-		SemFunType type = (SemFunType) SymbDesc.getType(SymbDesc
-				.getNameDef(acceptor));
-
-		if (type.getNumPars() != acceptor.numArgs())
-			Report.error(acceptor.position,
-					"Number of arguments doesn't match for function \""
-							+ acceptor.name + "\"");
-
+		Vector<SemType> parameters = new Vector<>();
 		for (int arg = 0; arg < acceptor.numArgs(); arg++) {
 			acceptor.arg(arg).accept(this);
 			SemType parType = SymbDesc.getType(acceptor.arg(arg));
 
-			if (parType instanceof SemArrType)
-				parType = new SemPtrType(((SemArrType) parType).type);
-
-			if (!type.getParType(arg).sameStructureAs(parType))
-				Report.error(acceptor.arg(arg).position,
-						"Parameter type doesn't match");
+			// implicit cast from list to pointer
+			if (parType instanceof SemListType)
+				parType = new SemPtrType(((SemListType) parType).type);
+			
+			parameters.add(parType);
 		}
 
-		SymbDesc.setType(acceptor, type.resultType);
+		AbsDef definition = SymbTable.fndFunc(acceptor.name, parameters);
+		if (definition == null) {
+			Report.error(acceptor.position, "Method \"" + acceptor.name + "\"" +
+						new SemFunType(parameters, null).toString() + "\""
+								+ "is undefined");
+		}
+		SymbDesc.setNameDef(acceptor, definition);
+		SymbDesc.setType(acceptor, ((SemFunType)SymbDesc.getType(definition)).resultType);
 	}
 
 	@Override
@@ -275,10 +274,11 @@ public class TypeChecker implements Visitor {
 		}
 
 		acceptor.type.accept(this);
-		SymbDesc.setType(acceptor,
-				new SemFunType(parameters, SymbDesc.getType(acceptor.type)));
+
+		SemFunType funType = new SemFunType(parameters, SymbDesc.getType(acceptor.type));
+		SymbDesc.setType(acceptor, funType);
+		
 		acceptor.func.accept(this);
-		SemFunType funType = (SemFunType) SymbDesc.getType(acceptor);
 
 		// check if return type matches
 		for (int i = 0; i < acceptor.func.numStmts(); i++) {
@@ -289,9 +289,17 @@ public class TypeChecker implements Visitor {
 					Report.error(stmt.position,
 							"Return type doesn't match, expected \""
 									+ funType.resultType.actualType()
-											.toString() + "\", but got \""
+											.toString() + "\", got \""
 									+ t.actualType().toString() + "\" instead");
 			}
+		}
+
+		// insert function into symbol table
+		try {
+			SymbTable.insFunc(acceptor.name, parameters, acceptor);
+		} catch (SemIllegalInsertException e) {
+			Report.error(acceptor.position, "Duplicate method \""
+					+ acceptor.name + "\"");
 		}
 	}
 
@@ -327,8 +335,8 @@ public class TypeChecker implements Visitor {
 		acceptor.type.accept(this);
 		SemType type = SymbDesc.getType(acceptor.type);
 
-		if (type instanceof SemArrType)
-			SymbDesc.setType(acceptor, new SemPtrType(((SemArrType) type).type));
+		if (type instanceof SemListType)
+			SymbDesc.setType(acceptor, new SemPtrType(((SemListType) type).type));
 		else
 			SymbDesc.setType(acceptor, type);
 	}
@@ -370,13 +378,13 @@ public class TypeChecker implements Visitor {
 		} else if (acceptor.oper == AbsUnExpr.MEM) {
 			SymbDesc.setType(acceptor, new SemPtrType(type));
 		} else if (acceptor.oper == AbsUnExpr.VAL) {
-			if (!(type instanceof SemPtrType) && !(type instanceof SemArrType))
+			if (!(type instanceof SemPtrType) && !(type instanceof SemListType))
 				Report.error(acceptor.position,
 						"Error, operator \"*\" requires pointer operand");
 			if (type instanceof SemPtrType)
 				SymbDesc.setType(acceptor, ((SemPtrType) type).type);
-			if (type instanceof SemArrType)
-				SymbDesc.setType(acceptor, ((SemArrType) type).type);
+			if (type instanceof SemListType)
+				SymbDesc.setType(acceptor, ((SemListType) type).type);
 		}
 	}
 

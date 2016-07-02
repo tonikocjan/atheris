@@ -10,7 +10,7 @@ import java.util.*;
 public class SemFunType extends SemType {
 
 	/** Tipi parametrov. */
-	private final SemType parTypes[];
+	public final SemType parTypes[];
 
 	/** Tipa rezultata. */
 	public final SemType resultType;
@@ -70,10 +70,9 @@ public class SemFunType extends SemType {
 	@Override
 	public String toString() {
 		String str = "";
-		str += "FUN(";
+		str += "(";
 		for (int par = 0; par < parTypes.length; par++)
 			str += (par > 0 ? "," : "") + parTypes[par].toString();
-		str += ":" + resultType.toString();
 		str += ")";
 		return str;
 	}

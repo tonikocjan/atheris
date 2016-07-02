@@ -16,13 +16,7 @@ import compiler.seman.type.*;
  * @implementation Toni Kocjan
  */
 public class NameChecker implements Visitor {
-
-	private AbsFunDef main = null;
-
-	public AbsFunDef getMain() {
-		return main;
-	}
-
+	
 	public NameChecker() {
 		try {
 			{
@@ -36,7 +30,7 @@ public class NameChecker implements Visitor {
 				AbsFunDef putInt = new AbsFunDef(null, "putInt", pars,
 						new AbsAtomType(null, AbsAtomType.INT), new AbsStmts(
 								null, new Vector<>()));
-				SymbTable.ins("putInt", putInt);
+				SymbTable.insFunc("putInt", parTypes, putInt);
 				SymbDesc.setType(putInt, new SemFunType(parTypes,
 						new SemAtomType(SemAtomType.INT)));
 
@@ -198,30 +192,12 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-		AbsDef definition = SymbTable.fnd(acceptor.name);
-
-		if (definition == null)
-			Report.error(acceptor.position, "Error, function \""
-					+ acceptor.name + "\" is undefined");
-
-		SymbDesc.setNameDef(acceptor, definition);
-
 		for (int arg = 0; arg < acceptor.numArgs(); arg++)
 			acceptor.arg(arg).accept(this);
 	}
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
-		if (acceptor.name.equals("main"))
-			main = acceptor;
-
-		try {
-			SymbTable.ins(acceptor.name, acceptor);
-		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Duplicate method \""
-					+ acceptor.name + "\"");
-		}
-
 		SymbTable.newScope();
 
 		for (int par = 0; par < acceptor.numPars(); par++)
