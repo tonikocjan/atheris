@@ -44,18 +44,12 @@ public class Main {
 				// Stikalo v ukazni vrstici.
 				if (args[argc].startsWith("--phase=")) {
 					String phase = args[argc].substring("--phase=".length());
-					if (phase.matches(allPhases))
+					if (phase.matches(allPhases)) {
 						execPhase = phase;
+						dumpPhases = phase;
+					}
 					else
 						Report.warning("Unknown exec phase '" + phase + "' ignored.");
-					continue;
-				}
-				if (args[argc].startsWith("--dump=")) {
-					String phases = args[argc].substring("--dump=".length());
-					if (phases.matches(allPhases + "(," + allPhases + ")*"))
-						dumpPhases = phases;
-					else
-						Report.warning("Illegal dump phases '" + phases + "' ignored.");
 					continue;
 				}
 				if (args[argc].startsWith("--debug=")) {
