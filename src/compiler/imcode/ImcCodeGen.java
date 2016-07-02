@@ -15,7 +15,7 @@ import compiler.frames.FrmParAccess;
 import compiler.frames.FrmTemp;
 import compiler.frames.FrmVarAccess;
 import compiler.seman.SymbDesc;
-import compiler.seman.type.SemArrType;
+import compiler.seman.type.SemListType;
 import compiler.seman.type.SemClassType;
 import compiler.seman.type.SemType;
 
@@ -155,8 +155,8 @@ public class ImcCodeGen implements Visitor {
 				code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, ((ImcMEM) e1).expr,
 						new ImcCONST(offset)));
 			}
-			else if (t instanceof SemArrType) {
-				code = new ImcCONST(((SemArrType) t).size);
+			else if (t instanceof SemListType) {
+				code = new ImcCONST(((SemListType) t).size);
 			}
 		}
 
@@ -399,7 +399,7 @@ public class ImcCodeGen implements Visitor {
 		}
 		
 		// remove ImcMEM if VarName is of type Array
-		if (SymbDesc.getType(acceptor) instanceof SemArrType) 
+		if (SymbDesc.getType(acceptor) instanceof SemListType) 
 			ImcDesc.setImcCode(acceptor, ((ImcMEM)expr).expr);
 		else
 			ImcDesc.setImcCode(acceptor, expr);
