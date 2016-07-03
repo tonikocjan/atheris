@@ -240,8 +240,6 @@ public class NameChecker implements Visitor {
 		acceptor.expr1.accept(this);
 
 		if (acceptor.oper == AbsBinExpr.DOT) {
-			if (!(acceptor.expr1 instanceof AbsVarName))
-				  Report.error(acceptor.position, "Invalid expression for DOT operator");
 			if (!(acceptor.expr2 instanceof AbsVarName ||
 					acceptor.expr2 instanceof AbsFunCall))
 				  Report.error(acceptor.position, "Invalid expression for DOT operator");
