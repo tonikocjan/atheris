@@ -20,6 +20,12 @@ public abstract class SemType {
 	public abstract boolean sameStructureAs(SemType type);
 	
 	/**
+	 * @param type
+	 * @return true, if this type can be castet to type t
+	 */
+	public abstract boolean canCastTo(SemType t);
+	
+	/**
 	 * Vrne velikost podatkovnega tipa v bytih.
 	 * 
 	 * @return Velikost podatkovnega tipa v bytih.

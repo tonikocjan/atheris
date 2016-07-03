@@ -91,4 +91,9 @@ public class SemClassType extends SemType {
 		return size;
 	}
 
+	@Override
+	public boolean canCastTo(SemType t) {
+		return false;
+	}
+
 }

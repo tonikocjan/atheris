@@ -110,7 +110,12 @@ public class TypeChecker implements Visitor {
 				SemListType typ = (SemListType) t2;
 				SemPtrType t = new SemPtrType(typ.type, typ.count);
 				SymbDesc.setType(acceptor.expr1, t);
+				SymbDesc.setType(acceptor, t);
 				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t);
+			}
+			else if (t2.canCastTo(t1)) {
+				SymbDesc.setType(acceptor, t1);
+				SymbDesc.setType(acceptor.expr2, t2);
 			}
 			else
 				Report.error(acceptor.position, "Cannot assign type " + t2

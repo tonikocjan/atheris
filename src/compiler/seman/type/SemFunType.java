@@ -86,4 +86,9 @@ public class SemFunType extends SemType {
 		return Math.max(resultType.size(), input);
 	}
 
+	@Override
+	public boolean canCastTo(SemType t) {
+		return false;
+	}
+
 }

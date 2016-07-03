@@ -69,4 +69,11 @@ public class SemAtomType extends SemType {
 		Report.error("Internal error :: compiler.seman.type.SemAtomType.size()");
 		return 0;
 	}
+
+	@Override
+	public boolean canCastTo(SemType t) {
+		if (!(t instanceof SemAtomType)) return false;
+		// int can be castet to double
+		return ((SemAtomType) t).type == DOB && type == INT;
+	}
 }

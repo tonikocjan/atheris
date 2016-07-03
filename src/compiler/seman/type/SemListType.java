@@ -45,4 +45,9 @@ public class SemListType extends SemType {
 	public int size() {
 		return count * type.size();
 	}
+
+	@Override
+	public boolean canCastTo(SemType t) {
+		return false;
+	}
 }

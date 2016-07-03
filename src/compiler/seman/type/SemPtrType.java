@@ -37,4 +37,9 @@ public class SemPtrType extends SemType {
 		return 4;
 	}
 
+	@Override
+	public boolean canCastTo(SemType t) {
+		return false;
+	}
+
 }
