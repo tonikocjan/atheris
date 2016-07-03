@@ -1335,6 +1335,14 @@ public class SynAn {
 			return new AbsListExpr(new Position(elements.firstElement().position, 
 					elements.lastElement().position), elements);
 		}
+		else if (symbol.token == Token.RBRACKET) {
+			dump("[] -> [expression]");
+			Vector<AbsExpr> elements = new Vector<>();
+			elements.add(e1);
+			skip();
+			return new AbsListExpr(new Position(elements.firstElement().position, 
+					elements.lastElement().position), elements);
+		}
 		
 		return null;
 	}
