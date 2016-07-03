@@ -355,11 +355,7 @@ public class TypeChecker implements Visitor {
 		acceptor.type.accept(this);
 		SemType type = SymbDesc.getType(acceptor.type);
 
-		if (type instanceof SemListType)
-			SymbDesc.setType(acceptor,
-					new SemPtrType(((SemListType) type).type));
-		else
-			SymbDesc.setType(acceptor, type);
+		SymbDesc.setType(acceptor, type);
 	}
 
 	@Override

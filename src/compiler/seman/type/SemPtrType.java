@@ -5,7 +5,7 @@ public class SemPtrType extends SemType {
 	/** Tip na katerega kazalec kaže. */
 	public final SemType type;
 	
-	/** Velikost seznama */
+	/** Velikost seznama (0, če ne kaže na seznam) */
 	public final int count;
 	
 	public SemPtrType(SemType type) {
@@ -29,7 +29,7 @@ public class SemPtrType extends SemType {
 	
 	@Override
 	public String toString() {
-		return "PTR(" + type.toString() + ", " + count + ")";
+		return "PTR(" + type.toString() + ")";
 	}
 
 	@Override
