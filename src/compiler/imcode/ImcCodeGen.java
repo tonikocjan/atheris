@@ -12,10 +12,12 @@ import compiler.frames.FrmFrame;
 import compiler.frames.FrmLabel;
 import compiler.frames.FrmLocAccess;
 import compiler.frames.FrmParAccess;
+import compiler.frames.FrmTemp;
 import compiler.frames.FrmVarAccess;
 import compiler.seman.SymbDesc;
 import compiler.seman.type.SemListType;
 import compiler.seman.type.SemClassType;
+import compiler.seman.type.SemPtrType;
 import compiler.seman.type.SemType;
 
 public class ImcCodeGen implements Visitor {
@@ -130,7 +132,7 @@ public class ImcCodeGen implements Visitor {
 						new ImcCONST(offset)));
 			}
 			else if (t instanceof SemListType) {
-				code = new ImcCONST(((SemListType) t).size);
+				code = new ImcCONST(((SemListType) t).count);
 			}
 		}
 
@@ -167,39 +169,52 @@ public class ImcCodeGen implements Visitor {
 
 	@Override
 	public void visit(AbsFor acceptor) {
-		acceptor.count.accept(this);
+		SymbDesc.getNameDef(acceptor.iterator).accept(this);
+		acceptor.iterator.accept(this);
 		acceptor.collection.accept(this);
 		acceptor.body.accept(this);
 
-//		ImcCode bodyCode = ImcDesc.getImcCode(acceptor.body);
-//		ImcStmt body = null;
-//
-//		if (bodyCode instanceof ImcStmt)
-//			body = (ImcStmt) bodyCode;
-//		else
-//			body = new ImcEXP((ImcExpr) bodyCode);
-//
-//		ImcExpr step = (ImcExpr) ImcDesc.getImcCode(acceptor.step);
-//		ImcExpr hi = (ImcExpr) ImcDesc.getImcCode(acceptor.hi);
-//		ImcExpr lo = (ImcExpr) ImcDesc.getImcCode(acceptor.lo);
-//		ImcExpr count = (ImcExpr) ImcDesc.getImcCode(acceptor.count);
-//		FrmLabel l1 = FrmLabel.newLabel(), 
-//				 l2 = FrmLabel.newLabel(), 
-//				 l3 = FrmLabel.newLabel();
-//
-//		ImcSEQ statements = new ImcSEQ();
-//		statements.stmts.add(new ImcMOVE(count, lo));
-//		statements.stmts.add(new ImcLABEL(l1));
-//		statements.stmts.add(new ImcCJUMP(
-//				new ImcBINOP(ImcBINOP.LTH, count, hi), l2, l3));
-//		statements.stmts.add(new ImcLABEL(l2));
-//		statements.stmts.add(body);
-//		statements.stmts.add(new ImcMOVE(count, new ImcBINOP(ImcBINOP.ADD,
-//				count, step)));
-//		statements.stmts.add(new ImcJUMP(l1));
-//		statements.stmts.add(new ImcLABEL(l3));
-//
-//		ImcDesc.setImcCode(acceptor, statements);
+		ImcSEQ bodyCode = (ImcSEQ) ImcDesc.getImcCode(acceptor.body);
+		SemType type = SymbDesc.getType(acceptor.collection);
+		int count = 0;
+		if (type instanceof SemListType) {
+			count = ((SemListType) type).count;
+			type = ((SemListType) type).type;
+		}
+		else if (type instanceof SemPtrType) {
+			count = ((SemPtrType) type).count;
+			type = ((SemPtrType) type).type;
+		}
+
+		System.out.println(count);
+		
+		ImcExpr size = new ImcCONST(type.size());
+		ImcExpr hi = new ImcCONST(count);
+		ImcTEMP counter = new ImcTEMP(new FrmTemp());
+		ImcExpr iterator = (ImcExpr) ImcDesc.getImcCode(acceptor.iterator);
+		ImcExpr collection = (ImcExpr) ImcDesc.getImcCode(acceptor.collection);
+
+		ImcBINOP mul = new ImcBINOP(ImcBINOP.MUL, counter, size);
+		ImcBINOP add = new ImcBINOP(ImcBINOP.ADD, collection, mul);
+		
+		FrmLabel l1 = FrmLabel.newLabel(), 
+				 l2 = FrmLabel.newLabel(), 
+				 l3 = FrmLabel.newLabel();
+
+		ImcSEQ statements = new ImcSEQ();
+		statements.stmts.add(new ImcMOVE(counter, new ImcCONST(0)));
+		statements.stmts.add(new ImcLABEL(l1));
+		statements.stmts.add(new ImcMOVE(iterator, new ImcMEM(add)));
+		statements.stmts.add(new ImcCJUMP(
+				new ImcBINOP(ImcBINOP.LTH, counter, hi), l2, l3));
+		statements.stmts.add(new ImcLABEL(l2));
+		statements.stmts.add(bodyCode);
+		statements.stmts.add(new ImcMOVE(counter, new ImcBINOP(ImcBINOP.ADD,
+				counter, new ImcCONST(1))));
+		statements.stmts.add(new ImcJUMP(l1));
+		statements.stmts.add(new ImcLABEL(l3));
+
+		ImcDesc.setImcCode(acceptor, statements);
 	}
 
 	@Override
@@ -405,8 +420,10 @@ public class ImcCodeGen implements Visitor {
 		acceptor.imports.accept(this);
 	}
 
+	int scope = 0;
 	@Override
 	public void visit(AbsStmts acceptor) {
+		scope++;
 		ImcSEQ seq = new ImcSEQ();
 		for (int stmt = 0; stmt < acceptor.numStmts(); stmt++) {
 			acceptor.stmt(stmt).accept(this);
@@ -423,9 +440,10 @@ public class ImcCodeGen implements Visitor {
 				seq.stmts.add(s);
 			}
 		}
+		scope--;
 		ImcDesc.setImcCode(acceptor, seq);
 		
-		if (currentFrame.label.name().equals("_" + FrmEvaluator.ENTRY_POINT)) {
+		if (scope == 0) {
 			entryPointCode = new ImcCodeChunk(currentFrame, seq);
 			chunks.add(entryPointCode);
 		}
@@ -456,7 +474,7 @@ public class ImcCodeGen implements Visitor {
 
 	@Override
 	public void visit(AbsListExpr acceptor) {
-		int size = ((SemListType) SymbDesc.getType(acceptor)).size;
+		int size = ((SemListType) SymbDesc.getType(acceptor)).count;
 		int elSize = ((SemListType) SymbDesc.getType(acceptor)).type.size();
 		
 		FrmLabel label = FrmLabel.newLabel();

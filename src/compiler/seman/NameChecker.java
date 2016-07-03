@@ -266,13 +266,15 @@ public class NameChecker implements Visitor {
 	public void visit(AbsFor acceptor) {
 		SymbTable.newScope();
 
+		AbsVarDef var = new AbsVarDef(
+				acceptor.iterator.position, acceptor.iterator.name, null);
 		try {
-			SymbTable.ins(acceptor.count.name, new AbsVarDef(
-					acceptor.count.position, acceptor.count.name, null));
+			SymbTable.ins(acceptor.iterator.name, var);
+			SymbDesc.setNameDef(acceptor.iterator, var);
 		} catch (SemIllegalInsertException e) {
 			Report.error("Error @ NameChecker::AbsFor");
 		}
-		acceptor.count.accept(this);
+		acceptor.iterator.accept(this);
 		acceptor.collection.accept(this);
 
 		acceptor.body.accept(this);

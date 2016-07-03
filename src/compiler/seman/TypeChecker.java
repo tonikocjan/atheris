@@ -18,7 +18,8 @@ public class TypeChecker implements Visitor {
 	@Override
 	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
-		SymbDesc.setType(acceptor, new SemPtrType(SymbDesc.getType(acceptor.type)));
+		SymbDesc.setType(acceptor, new SemPtrType(SymbDesc.getType(acceptor.type), 
+				acceptor.count));
 	}
 
 	@Override
@@ -99,12 +100,18 @@ public class TypeChecker implements Visitor {
 		 * expr1 = expr2
 		 */
 		if (oper == AbsBinExpr.ASSIGN) {
-			if (t1.sameStructureAs(t2))
-				SymbDesc.setType(acceptor, t1);
+			if (t1.sameStructureAs(t2)) {
+				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
+				SymbDesc.setType(acceptor, t2);
+			}
 			else if (t1 instanceof SemPtrType && 
 					t2 instanceof SemListType && 
-					(((SemPtrType) t1).type.sameStructureAs(((SemListType) t2).type)))
-					SymbDesc.setType(acceptor, t1);
+					(((SemPtrType) t1).type.sameStructureAs(((SemListType) t2).type))) {
+				SemListType typ = (SemListType) t2;
+				SemPtrType t = new SemPtrType(typ.type, typ.count);
+				SymbDesc.setType(acceptor.expr1, t);
+				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t);
+			}
 			else
 				Report.error(acceptor.position, "Cannot assign type " + t2
 						+ " to type " + t1);
@@ -235,12 +242,16 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsFor acceptor) {
-		acceptor.count.accept(this);
 		acceptor.collection.accept(this);
-		acceptor.body.accept(this);
+		SemType type = SymbDesc.getType(acceptor.collection);
+		if (type instanceof SemListType) type = ((SemListType) type).type;
+		else if (type instanceof SemPtrType) type = ((SemPtrType) type).type;
 
-		SemType collection = SymbDesc.getType(acceptor.collection);
-		SymbDesc.setType(acceptor.count, collection);
+		SymbDesc.setType(SymbDesc.getNameDef(acceptor.iterator), type);
+		SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+		
+		acceptor.iterator.accept(this);
+		acceptor.body.accept(this);
 	}
 
 	@Override

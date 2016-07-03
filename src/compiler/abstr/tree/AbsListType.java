@@ -4,14 +4,14 @@ import compiler.*;
 import compiler.abstr.*;
 
 /**
- * Opis tabela.
+ * Opis seznama.
  * 
  * @author sliva
  */
 public class AbsListType extends AbsType {
 
 	/** Dolzina seznama. */
-	public final int length;
+	public final int count;
 
 	/** Tip elementa seznama. */
 	public final AbsType type;
@@ -22,13 +22,13 @@ public class AbsListType extends AbsType {
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param length
-	 *            Dolzina tabele.
+	 *            Dolzina seznama.
 	 * @param type
 	 *            Tip elementa tabele.
 	 */
-	public AbsListType(Position pos, int length, AbsType type) {
+	public AbsListType(Position pos, int count, AbsType type) {
 		super(pos);
-		this.length = length;
+		this.count = count;
 		this.type = type;
 	}
 	

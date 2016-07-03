@@ -71,7 +71,8 @@ public class FrmEvaluator implements Visitor {
 
 	@Override
 	public void visit(AbsFor acceptor) {
-		acceptor.count.accept(this);
+		SymbDesc.getNameDef(acceptor.iterator).accept(this);
+		acceptor.iterator.accept(this);
 		acceptor.collection.accept(this);
 		acceptor.body.accept(this);
 	}

@@ -44,7 +44,7 @@ public class SemAn implements Visitor {
 	private int indent;
 	
 	public void visit(AbsListType arrType) {
-		Report.dump(indent, "AbsArrType " + arrType.position.toString() + ": " + "[" + arrType.length + "]");
+		Report.dump(indent, "AbsArrType " + arrType.position.toString() + ": " + "[" + arrType.count + "]");
 		{
 			SemType typ = SymbDesc.getType(arrType);
 			if (typ != null)
@@ -228,7 +228,7 @@ public class SemAn implements Visitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		indent += 2; forStmt.count.accept(this); indent -= 2;
+		indent += 2; forStmt.iterator.accept(this); indent -= 2;
 		indent += 2; forStmt.collection.accept(this); indent -= 2;
 		indent += 2; forStmt.body.accept(this); indent -= 2;
 	}

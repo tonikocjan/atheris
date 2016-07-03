@@ -11,26 +11,26 @@ public class SemListType extends SemType {
 	public final SemType type;
 
 	/** Velikost tabele. */
-	public final int size;
+	public final int count;
 
 	/**
 	 * Ustvari nov opis tabelaricnega tipa.
 	 * 
 	 * @param type
 	 *            Tip elementa tabele.
-	 * @param size
+	 * @param count
 	 *            Velikost tabele.
 	 */
-	public SemListType(int size, SemType type) {
+	public SemListType(int count, SemType type) {
 		this.type = type;
-		this.size = size;
+		this.count = count;
 	}
 
 	@Override
 	public boolean sameStructureAs(SemType type) {
 		if (type.actualType() instanceof SemListType) {
 			SemListType arrayType = (SemListType) (type.actualType());
-			return (arrayType.size == size)
+			return (arrayType.count == count)
 					&& (arrayType.type.sameStructureAs(this.type));
 		} else
 			return false;
@@ -38,11 +38,11 @@ public class SemListType extends SemType {
 
 	@Override
 	public String toString() {
-		return "LIST(" + size + "," + type.toString() + ")";
+		return "LIST(" + count + "," + type.toString() + ")";
 	}
 
 	@Override
 	public int size() {
-		return size * type.size();
+		return count * type.size();
 	}
 }

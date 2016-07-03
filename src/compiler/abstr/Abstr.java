@@ -31,7 +31,7 @@ public class Abstr implements Visitor {
 
 	public void visit(AbsListType arrType) {
 		Report.dump(indent, "AbsArrType " + arrType.position.toString() + ":");
-		Report.dump(indent + 2, "[" + arrType.length + "]");
+		Report.dump(indent + 2, "[" + arrType.count + "]");
 		indent += 2;
 		arrType.type.accept(this);
 		indent -= 2;
@@ -211,7 +211,7 @@ public class Abstr implements Visitor {
 	public void visit(AbsFor forStmt) {
 		Report.dump(indent, "AbsFor " + forStmt.position.toString() + ":");
 		indent += 2;
-		forStmt.count.accept(this);
+		forStmt.iterator.accept(this);
 		indent -= 2;
 		indent += 2;
 		forStmt.collection.accept(this);

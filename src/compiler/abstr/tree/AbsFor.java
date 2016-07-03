@@ -10,8 +10,11 @@ import compiler.abstr.*;
  */
 public class AbsFor extends AbsExpr {
 	
-	/** Stevec. */
-	public final AbsVarName count;
+//	/** Stevec. */
+//	public final AbsVarName count;
+	
+	/** Vrednost v tabeli collection[count] */
+	public final AbsVarName iterator;
 	
 	/** Zbirka preko katire iteriramo. */
 	public final AbsExpr collection;
@@ -33,7 +36,7 @@ public class AbsFor extends AbsExpr {
 	 */
 	public AbsFor(Position pos, AbsVarName count, AbsExpr collection, AbsStmts body) {
 		super(pos);
-		this.count = count;
+		this.iterator = count;
 		this.collection = collection;
 		this.body = body;
 	}
