@@ -18,15 +18,8 @@ public class TypeChecker implements Visitor {
 	@Override
 	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
-		SymbDesc.setType(acceptor, new SemPtrType(SymbDesc.getType(acceptor.type), 
+		SymbDesc.setType(acceptor, new SemListType(SymbDesc.getType(acceptor.type), 
 				acceptor.count));
-	}
-
-	@Override
-	public void visit(AbsPtrType acceptor) {
-		acceptor.type.accept(this);
-		SemPtrType type = new SemPtrType(SymbDesc.getType(acceptor.type));
-		SymbDesc.setType(acceptor, type);
 	}
 
 	@Override
@@ -87,9 +80,6 @@ public class TypeChecker implements Visitor {
 			 */
 			if (t1 instanceof SemListType) {
 				SymbDesc.setType(acceptor, ((SemListType) t1).type);
-			} else if (t1 instanceof SemPtrType) {
-				if (t2.sameStructureAs(integer))
-					SymbDesc.setType(acceptor, ((SemPtrType) t1).type);
 			} else
 				Report.error(acceptor.expr1.position,
 						"Left side of ARR expression must be of type ARRAY");
@@ -104,14 +94,12 @@ public class TypeChecker implements Visitor {
 				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
 				SymbDesc.setType(acceptor, t2);
 			}
-			else if (t1 instanceof SemPtrType && 
+			else if (t1 instanceof SemListType && 
 					t2 instanceof SemListType && 
-					(((SemPtrType) t1).type.sameStructureAs(((SemListType) t2).type))) {
-				SemListType typ = (SemListType) t2;
-				SemPtrType t = new SemPtrType(typ.type, typ.count);
-				SymbDesc.setType(acceptor.expr1, t);
-				SymbDesc.setType(acceptor, t);
-				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t);
+					(((SemListType) t1).type.sameStructureAs(((SemListType) t2).type))) {
+				SymbDesc.setType(acceptor.expr1, t2);
+				SymbDesc.setType(acceptor, t2);
+				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
 			}
 			else if (t2.canCastTo(t1)) {
 				SymbDesc.setType(acceptor, t1);
@@ -248,9 +236,7 @@ public class TypeChecker implements Visitor {
 	@Override
 	public void visit(AbsFor acceptor) {
 		acceptor.collection.accept(this);
-		SemType type = SymbDesc.getType(acceptor.collection);
-		if (type instanceof SemListType) type = ((SemListType) type).type;
-		else if (type instanceof SemPtrType) type = ((SemPtrType) type).type;
+		SemType type = ((SemListType)SymbDesc.getType(acceptor.collection)).type;
 
 		SymbDesc.setType(SymbDesc.getNameDef(acceptor.iterator), type);
 		SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
@@ -267,8 +253,8 @@ public class TypeChecker implements Visitor {
 			SemType parType = SymbDesc.getType(acceptor.arg(arg));
 
 			// implicit cast from list to pointer
-			if (parType instanceof SemListType)
-				parType = new SemPtrType(((SemListType) parType).type);
+//			if (parType instanceof SemListType)
+//				parType = new SemPtrType(((SemListType) parType).type);
 
 			parameters.add(parType);
 		}
@@ -392,16 +378,6 @@ public class TypeChecker implements Visitor {
 				Report.error(acceptor.position,
 						"Operators \"+\" and \"-\" are not defined for type "
 								+ type);
-		} else if (acceptor.oper == AbsUnExpr.MEM) {
-			SymbDesc.setType(acceptor, new SemPtrType(type));
-		} else if (acceptor.oper == AbsUnExpr.VAL) {
-			if (!(type instanceof SemPtrType) && !(type instanceof SemListType))
-				Report.error(acceptor.position,
-						"Error, operator \"*\" requires pointer operand");
-			if (type instanceof SemPtrType)
-				SymbDesc.setType(acceptor, ((SemPtrType) type).type);
-			if (type instanceof SemListType)
-				SymbDesc.setType(acceptor, ((SemListType) type).type);
 		}
 	}
 
@@ -478,6 +454,6 @@ public class TypeChecker implements Visitor {
 			vec.add(SymbDesc.getType(e));
 		}
 
-		SymbDesc.setType(absListExpr, new SemListType(vec.size(), vec.firstElement()));
+		SymbDesc.setType(absListExpr, new SemListType(vec.firstElement(), vec.size()));
 	}
 }

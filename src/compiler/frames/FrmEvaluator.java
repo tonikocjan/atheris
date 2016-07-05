@@ -32,11 +32,6 @@ public class FrmEvaluator implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsPtrType acceptor) {
-
-	}
-
-	@Override
 	public void visit(AbsClassDef acceptor) {
 		acceptor.definitions.accept(this);
 	}

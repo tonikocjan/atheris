@@ -7,7 +7,6 @@ import compiler.abstr.*;
 import compiler.abstr.tree.*;
 import compiler.frames.FrmAccess;
 import compiler.frames.FrmDesc;
-import compiler.frames.FrmEvaluator;
 import compiler.frames.FrmFrame;
 import compiler.frames.FrmLabel;
 import compiler.frames.FrmLocAccess;
@@ -33,11 +32,6 @@ public class ImcCodeGen implements Visitor {
 
 	@Override
 	public void visit(AbsListType acceptor) {
-
-	}
-
-	@Override
-	public void visit(AbsPtrType acceptor) {
 
 	}
 
@@ -181,12 +175,7 @@ public class ImcCodeGen implements Visitor {
 			count = ((SemListType) type).count;
 			type = ((SemListType) type).type;
 		}
-		else if (type instanceof SemPtrType) {
-			count = ((SemPtrType) type).count;
-			type = ((SemPtrType) type).type;
-		}
 
-		System.out.println(count);
 		
 		ImcExpr size = new ImcCONST(type.size());
 		ImcExpr hi = new ImcCONST(count);
@@ -353,9 +342,12 @@ public class ImcCodeGen implements Visitor {
 	public void visit(AbsVarDef acceptor) {
 		FrmAccess x = FrmDesc.getAccess(acceptor);
 		SemType y = SymbDesc.getType(acceptor);
+		int size = y.size();
+		if (y instanceof SemPtrType)
+			size = 4;
 
 		if (x instanceof FrmVarAccess)
-			chunks.add(new ImcDataChunk(((FrmVarAccess) x).label, y.size()));
+			chunks.add(new ImcDataChunk(((FrmVarAccess) x).label, size));
 	}
 
 	@Override
@@ -387,11 +379,7 @@ public class ImcCodeGen implements Visitor {
 					loc.offset)));
 		}
 		
-		// remove ImcMEM if VarName is of type Array
-		if (SymbDesc.getType(acceptor) instanceof SemListType) 
-			ImcDesc.setImcCode(acceptor, ((ImcMEM)expr).expr);
-		else
-			ImcDesc.setImcCode(acceptor, expr);
+		ImcDesc.setImcCode(acceptor, expr);
 	}
 
 	@Override

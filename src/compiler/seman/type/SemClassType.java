@@ -7,7 +7,7 @@ import java.util.Map;
 
 import compiler.Report;
 
-public class SemClassType extends SemType {
+public class SemClassType extends SemPtrType {
 
 	private final LinkedHashMap<String, SemType> members = new LinkedHashMap<>();
 	private final String name;

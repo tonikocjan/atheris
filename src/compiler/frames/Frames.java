@@ -60,19 +60,6 @@ public class Frames implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsPtrType ptrType) {
-		Report.dump(indent, "AbsPtrType " + ptrType.position.toString() + ":");
-		{
-			SemType typ = SymbDesc.getType(ptrType);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
-		}
-		indent += 2;
-		ptrType.type.accept(this);
-		indent -= 2;
-	}
-
-	@Override
 	public void visit(AbsClassDef structType) {
 		Report.dump(indent, "AbsStructType " + structType.position.toString()
 				+ ": " + structType.getName());

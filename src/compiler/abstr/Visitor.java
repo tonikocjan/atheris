@@ -6,7 +6,6 @@ import compiler.abstr.tree.*;
  * @author toni
  */
 public interface Visitor {
-	public void visit(AbsPtrType     acceptor);
 	public void visit(AbsListType    acceptor);
 	public void visit(AbsClassDef   acceptor);
 	public void visit(AbsAtomConst   acceptor);

@@ -5,7 +5,7 @@ package compiler.seman.type;
  * 
  * @author sliva
  */
-public class SemListType extends SemType {
+public class SemListType extends SemPtrType {
 
 	/** Tip elementa. */
 	public final SemType type;
@@ -21,7 +21,7 @@ public class SemListType extends SemType {
 	 * @param count
 	 *            Velikost tabele.
 	 */
-	public SemListType(int count, SemType type) {
+	public SemListType(SemType type, int count) {
 		this.type = type;
 		this.count = count;
 	}
@@ -29,16 +29,15 @@ public class SemListType extends SemType {
 	@Override
 	public boolean sameStructureAs(SemType type) {
 		if (type.actualType() instanceof SemListType) {
-			SemListType arrayType = (SemListType) (type.actualType());
-			return (arrayType.count == count)
-					&& (arrayType.type.sameStructureAs(this.type));
-		} else
-			return false;
+			SemListType listType = (SemListType) (type.actualType());
+			return (listType.type.sameStructureAs(this.type));
+		}
+		return false;
 	}
 
 	@Override
 	public String toString() {
-		return "LIST(" + count + "," + type.toString() + ")";
+		return "LIST(" + type.toString() + ")";
 	}
 
 	@Override
