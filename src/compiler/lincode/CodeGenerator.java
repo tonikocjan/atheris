@@ -29,7 +29,7 @@ public class CodeGenerator {
 
 	public static ImcCodeChunk linearize(LinkedList<ImcChunk> chunks) {
 		ImcCodeChunk mainFrame = null;
-		int offset = 0;
+		Interpreter.offset = 0;
 		for (ImcChunk chnk : chunks) {
 			if (chnk instanceof ImcCodeChunk) {
 				ImcCodeChunk fn = (ImcCodeChunk) chnk;
@@ -42,13 +42,13 @@ public class CodeGenerator {
 			}
 			else {
 				ImcDataChunk data = (ImcDataChunk) chnk;
-				Interpreter.locations.put(data.label, offset);
+				Interpreter.locations.put(data.label, Interpreter.offset);
 				if (data.data != null)
-					Interpreter.stM(offset, data.data);
+					Interpreter.stM(Interpreter.offset, data.data);
 				else
-					Interpreter.stM(offset, 0);
+					Interpreter.stM(Interpreter.offset, 0);
 					
-				offset += data.size;
+				Interpreter.offset += data.size;
 			}
 		}
 		return mainFrame;

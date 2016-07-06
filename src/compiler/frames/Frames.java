@@ -1,5 +1,7 @@
 package compiler.frames;
 
+import java.util.Vector;
+
 import compiler.*;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
@@ -60,16 +62,20 @@ public class Frames implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsClassDef structType) {
-		Report.dump(indent, "AbsStructType " + structType.position.toString()
-				+ ": " + structType.getName());
+	public void visit(AbsClassDef classDef) {
+		Report.dump(indent, "AbsStructType " + classDef.position.toString()
+				+ ": " + classDef.getName());
 		{
-			SemType typ = SymbDesc.getType(structType);
+			SemType typ = SymbDesc.getType(classDef);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2;
-		structType.getDefinitions().accept(this);
+		for (AbsFunDef c : classDef.contrustors) {
+			c.accept(this);
+		}
+		indent += 2;
+		classDef.getDefinitions().accept(this);
 		indent -= 2;
 	}
 

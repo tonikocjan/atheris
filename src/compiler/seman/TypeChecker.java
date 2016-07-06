@@ -39,8 +39,14 @@ public class TypeChecker implements Visitor {
 			else
 				Report.error("Semantic error @ AbsClassDef-typeChecker");
 		}
-		SymbDesc.setType(acceptor, new SemClassType(acceptor.getName(), names,
-				types));
+		SymbDesc.setType(acceptor, new SemClassType(acceptor.getName(), 
+													names,
+													types));
+		for (AbsFunDef c : acceptor.contrustors) {
+			c.accept(this);
+			SymbDesc.setType(c, new SemFunType(new Vector<>(), 
+					SymbDesc.getType(acceptor)));
+		}
 	}
 
 	@Override

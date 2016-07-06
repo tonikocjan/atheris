@@ -218,6 +218,10 @@ public class NameChecker implements Visitor {
 		SymbTable.newScope();
 		acceptor.getDefinitions().accept(this);
 		SymbTable.oldScope();
+		
+		for (AbsFunDef c : acceptor.contrustors) {
+			c.accept(this);
+		}
 	}
 
 	@Override

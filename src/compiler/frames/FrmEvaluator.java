@@ -5,6 +5,7 @@ import java.util.Vector;
 import compiler.abstr.Visitor;
 import compiler.abstr.tree.*;
 import compiler.seman.SymbDesc;
+import compiler.seman.SymbTable;
 
 public class FrmEvaluator implements Visitor {
 
@@ -34,6 +35,13 @@ public class FrmEvaluator implements Visitor {
 	@Override
 	public void visit(AbsClassDef acceptor) {
 		acceptor.definitions.accept(this);
+//		AbsFunDef c = (AbsFunDef) SymbTable.fndFunc(acceptor.name, new Vector<>());
+//		
+//		FrmFrame constructor = new FrmFrame(c, 1);
+//		FrmDesc.setFrame(c, constructor);
+		for (AbsFunDef c : acceptor.contrustors) {
+			c.accept(this);
+		}
 	}
 
 	@Override

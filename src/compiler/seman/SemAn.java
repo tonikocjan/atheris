@@ -54,14 +54,19 @@ public class SemAn implements Visitor {
 	}		
 	
 	@Override
-	public void visit(AbsClassDef structType) {
-		Report.dump(indent, "AbsClassType " + structType.position.toString() + ": " + structType.getName());		
+	public void visit(AbsClassDef classDef) {
+		Report.dump(indent, "AbsClassType " + classDef.position.toString() + ": " + classDef.getName());		
 		{
-			SemType typ = SymbDesc.getType(structType);
+			SemType typ = SymbDesc.getType(classDef);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		indent += 2; structType.getDefinitions().accept(this); indent -= 2;
+		indent += 2;
+		for (AbsFunDef c : classDef.contrustors) {
+			c.accept(this);
+		}
+		indent -= 2;
+		indent += 2; classDef.getDefinitions().accept(this); indent -= 2;
 	}
 	
 	public void visit(AbsAtomConst atomConst) {

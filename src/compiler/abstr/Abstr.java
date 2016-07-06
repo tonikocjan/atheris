@@ -38,12 +38,18 @@ public class Abstr implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsClassDef structType) {
-		Report.dump(indent, "AbsStructType " + structType.position.toString()
+	public void visit(AbsClassDef classDef) {
+		Report.dump(indent, "AbsStructType " + classDef.position.toString()
 				+ ":");
 		indent += 2;
-		for (int i = 0; i < structType.getDefinitions().numDefs(); i++)
-			structType.getDefinitions().def(i).accept(this);
+		Report.dump(indent, "Constructors: ");
+		indent += 2;
+		for (AbsFunDef c : classDef.contrustors) {
+			c.accept(this);
+		}
+		indent -= 2;
+		for (int i = 0; i < classDef.getDefinitions().numDefs(); i++)
+			classDef.getDefinitions().def(i).accept(this);
 		indent -= 2;
 	}
 

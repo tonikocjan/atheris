@@ -32,9 +32,16 @@ public class FrmLabel {
 	public String name() {
 		return name;
 	}
-
+	
 	/** Stevec anonimnih label.  */
 	private static int label_count = 0;
+	
+	/**
+	 * toString
+	 */
+	public String toString() {
+		return name;
+	}
 
 	/** 
 	 * Vrne novo anonimno labelo.
