@@ -58,6 +58,22 @@ public class Interpreter {
 		return value;
 	}
 	
+	/**
+	 * Debug print memory
+	 */
+	private void printMemory() {
+		for (Map.Entry<FrmLabel, Integer> entry : locations.entrySet()) {
+			System.out.println("Label: " + entry.getKey() + 
+								", Adress: " + entry.getValue() + 
+								", Value: " + mems.get(entry.getValue()));
+			if (entry.getKey().name().equals("L8")) {
+				System.out.println("Label: " + entry.getKey() + 
+						", Adress: " + (entry.getValue() + 4) + 
+						", Value: " + mems.get(entry.getValue() + 4));
+			}
+		}
+	}
+	
 	/*--- Izvajanje navideznega stroja. ---*/
 	
 	public Interpreter(FrmFrame frame, ImcSEQ code) {
