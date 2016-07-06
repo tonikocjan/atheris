@@ -81,6 +81,9 @@ public class SynAn {
 			return new Vector<>();
 		case SEMIC:
 			skip();
+			if (symbol.token == Token.NEWLINE)
+				skip();
+			
 			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
 				return new Vector<AbsStmt>();
 
@@ -88,10 +91,16 @@ public class SynAn {
 			Vector<AbsStmt> absStmts = parseStatements_(statement);
 			absStmts.add(0, statement);
 			return absStmts;
-			// TODO
-			// case NEWLINE:
-			// skip();
-			// dump("statements' -> " + symbol.lexeme + " statements");
+		case NEWLINE:
+			skip();
+			
+			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
+				return new Vector<AbsStmt>();
+
+			statement = parseStatement();
+			absStmts = parseStatements_(statement);
+			absStmts.add(0, statement);
+			return absStmts;
 		case ASSIGN:
 			if (!(prevStmt instanceof AbsVarDef))
 				Report.error(prevStmt.position, "Syntax error");
@@ -112,7 +121,7 @@ public class SynAn {
 		default:
 			Report.error(symbol.position, "Syntax error on token \""
 					+ previous.lexeme
-					+ "\", expected \";\" or \"\\n\" after this token");
+					+ "\", expected \";\" or \"NEWLINE\" after this token");
 		}
 		return null;
 	}
@@ -157,12 +166,25 @@ public class SynAn {
 		case SEMIC:
 			dump("definitions' -> ; definitions");
 			skip();
+			if (symbol.token == Token.NEWLINE)
+				skip();
 			
 			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
 				return new Vector<>();
 
 			AbsDef definition = parseDefinition();
 			Vector<AbsDef> absDefs = parseDefinitions_();
+			absDefs.add(0, definition);
+			return absDefs;
+		case NEWLINE:
+			dump("definitions' -> \n definitions");
+			skip();
+			
+			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
+				return new Vector<>();
+
+			definition = parseDefinition();
+			absDefs = parseDefinitions_();
 			absDefs.add(0, definition);
 			return absDefs;
 		default:
@@ -242,8 +264,10 @@ public class SynAn {
 		if (symbol.token != Token.LBRACE)
 			Report.error(symbol.position, "Syntax error on token \""
 					+ previous.lexeme + "\", expected \"{\" after this token");
-		skip();
 
+		skip(new Symbol(Token.NEWLINE, "NEWLINE", null));
+		skip();
+		
 		AbsStmts expr = parseStatements();
 		if (symbol.token != Token.RBRACE)
 			Report.error(symbol.position, "Syntax error on token \""
@@ -337,6 +361,7 @@ public class SynAn {
 		String name = skip(new Symbol(Token.IDENTIFIER, "IDENTIFIER", null)).lexeme;
 		
 		skip(new Symbol(Token.LBRACE, "{", null));
+		skip(new Symbol(Token.NEWLINE, "\n", null));
 		skip();
 		
 		AbsDefs definitions = parseDefinitions();
@@ -547,6 +572,7 @@ public class SynAn {
 		switch (symbol.token) {
 		case SEMIC:
 		case COLON:
+		case NEWLINE:
 		case RPARENT:
 		case RBRACE:
 		case RBRACKET:
@@ -607,6 +633,7 @@ public class SynAn {
 					expr.position), AbsBinExpr.IOR, e, expr));
 		case SEMIC:
 		case COLON:
+		case NEWLINE:
 		case RPARENT:
 		case ASSIGN:
 		case RBRACE:
@@ -665,6 +692,7 @@ public class SynAn {
 					expr.position), AbsBinExpr.AND, e, expr));
 		case IOR:
 		case SEMIC:
+		case NEWLINE:
 		case COLON:
 		case RPARENT:
 		case ASSIGN:
@@ -721,6 +749,7 @@ public class SynAn {
 		case AND:
 		case IOR:
 		case SEMIC:
+		case NEWLINE:
 		case COLON:
 		case RPARENT:
 		case ASSIGN:
@@ -820,6 +849,7 @@ public class SynAn {
 		case IOR:
 		case SEMIC:
 		case COLON:
+		case NEWLINE:
 		case RPARENT:
 		case ASSIGN:
 		case RBRACE:
@@ -894,6 +924,7 @@ public class SynAn {
 		case AND:
 		case IOR:
 		case SEMIC:
+		case NEWLINE:
 		case COLON:
 		case RPARENT:
 		case ASSIGN:
@@ -1039,6 +1070,7 @@ public class SynAn {
 		case AND:
 		case IOR:
 		case SEMIC:
+		case NEWLINE:
 		case COLON:
 		case RPARENT:
 		case ASSIGN:
@@ -1063,7 +1095,6 @@ public class SynAn {
 		case KW_FOR:
 			dump("postfix_expression' -> e");
 			return e;
-		// TODO
 		case LBRACKET:
 			dump("postfix_expression' -> [ expression ] postfix_expression'");
 			skip();
@@ -1188,6 +1219,7 @@ public class SynAn {
 				Report.error(previous.position, "Syntax error on token \""
 						+ previous.lexeme
 						+ "\", expected \"{\" after this token");
+			skip(new Symbol(Token.NEWLINE, "NEWLINE", null));
 			skip();
 			
 			AbsStmts s = parseStatements();
@@ -1212,6 +1244,7 @@ public class SynAn {
 			skip();
 			AbsExpr e1 = parseExpression();
 			if (symbol.token == Token.LBRACE) {
+				skip(new Symbol(Token.NEWLINE, "NEWLINE", null));
 				skip();
 				AbsStmts s = parseStatements();
 
@@ -1242,6 +1275,7 @@ public class SynAn {
 			if (symbol.token != Token.LBRACE)
 				Report.error(symbol.position, "Syntax error on token \""
 						+ previous.lexeme + "\", expected '{' after this token");
+			skip(new Symbol(Token.NEWLINE, "NEWLINE", null));
 			skip();
 			AbsStmts s = parseStatements();
 			if (symbol.token != Token.RBRACE)

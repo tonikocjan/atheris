@@ -73,7 +73,8 @@ public class SemFunType extends SemType {
 		str += "(";
 		for (int par = 0; par < parTypes.length; par++)
 			str += (par > 0 ? "," : "") + parTypes[par].toString();
-		str += ") -> " + resultType.toString();
+		String res = resultType == null ? "?" : resultType.toString();
+		str += ") -> " + res;
 		return str;
 	}
 

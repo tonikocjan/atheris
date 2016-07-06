@@ -151,7 +151,8 @@ public class LexAn {
 				// if next character is not *, return DIV token
 				if (nxtCh != '*') {
 					dontRead = true;
-					return new Symbol(Token.DIV, "/", startRow, startCol, startRow, startCol + 1);
+					return new Symbol(Token.DIV, "/", startRow, startCol,
+							startRow, startCol + 1);
 				}
 				// else skip characters until */
 				do {
@@ -177,24 +178,10 @@ public class LexAn {
 						startCol);
 
 			/**
-			 * Handle whitespaces.
-			 */
-			if (isWhiteSpace(nxtCh)) {
-				// update counters
-				if (nxtCh == 32 || nxtCh == 9)
-					startCol += (nxtCh == 32) ? 1 : 4;
-				else if (nxtCh == 10) {
-					startCol = 1;
-					startRow++;
-				}
-				continue;
-			}
-
-			/**
 			 * Parse string.
 			 */
 			if (nxtCh == '\"') {
-				word.append((char)nxtCh);
+				word.append((char) nxtCh);
 				boolean strClosed = false;
 				while (true) {
 					nxtCh = file.read();
@@ -310,10 +297,30 @@ public class LexAn {
 			}
 
 			/**
-			 * Parse operator.
+			 * Parse operators.
 			 */
 			Symbol op = isOperator(nxtCh);
 			if (op != null) {
+				/**
+				 * Handle newline
+				 */
+				if (op.token == Token.NEWLINE) {
+					// skip all whitespaces
+					do {
+						if (nxtCh == 10) {
+							startCol = 1;
+							startRow++;
+						}
+						else
+							startCol += nxtCh == 9 ? 4 : 1;
+						nxtCh = file.read();
+					}
+					while (isWhiteSpace(nxtCh));
+					
+					dontRead = true;
+					return op;
+				}
+				
 				/**
 				 * Also check if this character + next character is an operator.
 				 */
@@ -335,6 +342,21 @@ public class LexAn {
 
 				return op;
 			}
+
+			/**
+			 * Handle whitespaces.
+			 */
+			if (isWhiteSpace(nxtCh)) {
+				// update counters
+				if (nxtCh == 32 || nxtCh == 9)
+					startCol += (nxtCh == 32) ? 1 : 4;
+//				else if (nxtCh == 10) {
+//					startCol = 1;
+//					startRow++;
+//				}
+				continue;
+			}
+
 
 			/**
 			 * Unknown character. Report error.
@@ -419,10 +441,9 @@ public class LexAn {
 		if (ch == '&')
 			return new Symbol(Token.AND, "&", startRow, startCol, startRow,
 					startCol + 1);
-		// TODO
-		// if (ch == '\n')
-		// return new Symbol(Token.NEWLINE, "\\n", startRow, startCol, startRow,
-		// startCol + 1);
+		if (ch == '\n')
+			return new Symbol(Token.NEWLINE, "\\n", startRow, startCol,
+					startRow, startCol + 1);
 
 		return null;
 	}
