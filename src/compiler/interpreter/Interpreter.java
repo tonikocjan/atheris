@@ -20,6 +20,9 @@ public class Interpreter {
 	public static HashMap<Integer, Object> mems = new HashMap<Integer, Object>();
 	public static HashMap<FrmLabel, Integer> locations = new HashMap<>();
 	
+	/** Vrhnji naslov kopice */
+	public static int offset = 0;
+	
 	public static void stM(Integer address, Object value) {
 		if (debug) System.out.println(" [" + address + "] <= " + value);
 		mems.put(address, value);
@@ -109,6 +112,9 @@ public class Interpreter {
 			}
 			else
 				pc++;
+//			System.out.println(pc);
+//			printMemory();
+//			System.out.println();
 		}
 		
 		fp = (Integer) ldM(fp - frame.sizeLocs - 4);
@@ -232,6 +238,13 @@ public class Interpreter {
 			return ldM((Integer) execute(instr.expr));
 		}
 		
+		if (instruction instanceof ImcMALLOC) {
+			ImcMALLOC malloc = (ImcMALLOC) instruction;
+			ImcDataChunk data = new ImcDataChunk(malloc.chunkLabel, malloc.size);
+			Interpreter.locations.put(data.label, offset);
+			Interpreter.stM(offset, data.data);
+		}
+		
 		if (instruction instanceof ImcMOVE) {
 			ImcMOVE instr = (ImcMOVE) instruction;
 			if (instr.dst instanceof ImcTEMP) {
@@ -252,7 +265,7 @@ public class Interpreter {
 			ImcNAME instr = (ImcNAME) instruction;
 			if (instr.label.name().equals("FP")) return fp;
 			if (instr.label.name().equals("SP")) return sp;
-			
+
 			return locations.get(instr.label);
 		}
 		
