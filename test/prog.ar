@@ -1,17 +1,13 @@
 class A {
 	var x: Int;
+	var y: Int;
 };
 
-var a: A = A();
-a.x = 10;
+func test(x: Int, y: Int) A {
+	var a: A = A();
+	a.x = x;
+	a.y = y;
+	return a;
+};
 
-var b: A = a;
-b.x = -10;
-
-print(a.x);
-
-
-/*var x: [Int] = [1, 2, 3];
-var y: [Int] = x;
-
-y[0] = -10;*/
+print(test(10, 20).x);
