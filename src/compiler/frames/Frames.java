@@ -493,8 +493,7 @@ public class Frames implements Visitor {
 
 	@Override
 	public void visit(AbsImportDef acceptor) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

@@ -117,10 +117,9 @@ public class ImcCodeGen implements Visitor {
 		else if (acceptor.oper == AbsBinExpr.ASSIGN) {
 			code = new ImcMOVE(e1, e2);
 		} else if (acceptor.oper == AbsBinExpr.ARR) {
-			// TODO
-			// zrihtej da bo zaznalo velikost spremenljivke
-			// trenutno je hardcodano not 4
-			int size = 4;
+			SemListType type = (SemListType) SymbDesc.getType(acceptor.expr1);
+			int size = type.type.size();
+			
 			code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcBINOP(
 					ImcBINOP.MUL, e2, new ImcCONST(size))));
 		} else if (acceptor.oper == ImcBINOP.MOD) {
