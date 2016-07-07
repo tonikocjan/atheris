@@ -29,7 +29,6 @@ public class CodeGenerator {
 
 	public static ImcCodeChunk linearize(LinkedList<ImcChunk> chunks) {
 		ImcCodeChunk mainFrame = null;
-		Interpreter.offset = 0;
 		for (ImcChunk chnk : chunks) {
 			if (chnk instanceof ImcCodeChunk) {
 				ImcCodeChunk fn = (ImcCodeChunk) chnk;

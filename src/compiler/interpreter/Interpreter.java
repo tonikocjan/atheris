@@ -11,9 +11,6 @@ public class Interpreter {
 
 	public static boolean debug = false;
 	
-	/** STDLIB functions */
-	public static final String[] stdLib = {"putInt, getInt, putString, getString"};
-
 	/*--- staticni del navideznega stroja ---*/
 	
 	/** Pomnilnik navideznega stroja. */
@@ -21,7 +18,7 @@ public class Interpreter {
 	public static HashMap<FrmLabel, Integer> locations = new HashMap<>();
 	
 	/** Vrhnji naslov kopice */
-	public static int offset = 0;
+	public static int offset = 4;
 	
 	public static void stM(Integer address, Object value) {
 		if (debug) System.out.println(" [" + address + "] <= " + value);
@@ -235,7 +232,10 @@ public class Interpreter {
 		
 		if (instruction instanceof ImcMEM) {
 			ImcMEM instr = (ImcMEM) instruction;
-			return ldM((Integer) execute(instr.expr));
+			Integer adress = (Integer) execute(instr.expr);
+			if (adress == 0)
+				Report.error("Cannot dereference nil pointer");
+			return ldM(adress);
 		}
 		
 		if (instruction instanceof ImcMALLOC) {
