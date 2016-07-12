@@ -552,6 +552,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
+		case KW_NIL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -605,6 +606,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
+		case KW_NIL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -663,6 +665,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
+		case KW_NIL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -723,6 +726,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
+		case KW_NIL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -823,6 +827,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
+		case KW_NIL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -898,6 +903,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
+		case KW_NIL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -1023,6 +1029,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
+		case KW_NIL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -1047,6 +1054,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
+		case KW_NIL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -1147,13 +1155,13 @@ public class SynAn {
 
 			return new AbsAtomConst(current.position, AbsAtomConst.DOB,
 					current.lexeme);
-//		case LPARENT:
-//			skip();
-//			dump("atom_expression -> ( expressions )");
-//
-//			Vector<AbsExpr> exprs = parseExpressions();
-//			return new AbsExprs(new Position(exprs.firstElement().position,
-//					exprs.lastElement().position), exprs);
+		case KW_NIL:
+			dump("atom_expression -> nil");
+			skip();
+
+			// TODO
+			return new AbsAtomConst(current.position, AbsAtomConst.DOB,
+					current.lexeme);
 		case KW_IF:
 			dump("atom_expression -> if_expression");
 			return parseIf();
