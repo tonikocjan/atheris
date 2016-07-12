@@ -255,7 +255,7 @@ public class SynAn {
 
 		if (symbol.token == Token.LBRACE) {
 			dump("function_definition' -> { statements } ");
-			type = new AbsAtomType(symbol.position, AbsAtomType.VOID);
+			type = new AbsAtomType(symbol.position, AtomType.VOID);
 		} else {
 			dump("function_definition' -> type { statements } ");
 			type = parseType();
@@ -387,27 +387,27 @@ public class SynAn {
 			dump("type -> logical");
 			skip();
 
-			return new AbsAtomType(s.position, AbsAtomType.LOG);
+			return new AbsAtomType(s.position, AtomType.LOG);
 		case INTEGER:
 			dump("type -> integer");
 			skip();
 
-			return new AbsAtomType(s.position, AbsAtomType.INT);
+			return new AbsAtomType(s.position, AtomType.INT);
 		case STRING:
 			dump("type -> string");
 			skip();
 
-			return new AbsAtomType(s.position, AbsAtomType.STR);
+			return new AbsAtomType(s.position, AtomType.STR);
 		case CHAR:
 			dump("type -> char");
 			skip();
 
-			return new AbsAtomType(s.position, AbsAtomType.CHR);
+			return new AbsAtomType(s.position, AtomType.CHR);
 		case DOUBLE:
 			dump("type -> double");
 			skip();
 
-			return new AbsAtomType(s.position, AbsAtomType.DOB);
+			return new AbsAtomType(s.position, AtomType.DOB);
 		case LBRACKET:
 			skip();
 			dump("type -> [ type ]");
@@ -1129,38 +1129,38 @@ public class SynAn {
 			dump("atom_expression -> log_const");
 			skip();
 
-			return new AbsAtomConst(current.position, AbsAtomConst.LOG,
+			return new AbsAtomConst(current.position, AtomType.LOG,
 					current.lexeme);
 		case INT_CONST:
 			dump("atom_expression -> int_const");
 			skip();
 
-			return new AbsAtomConst(current.position, AbsAtomConst.INT,
+			return new AbsAtomConst(current.position, AtomType.INT,
 					current.lexeme);
 		case STR_CONST:
 			dump("atom_expression -> str_const");
 			skip();
 
-			return new AbsAtomConst(current.position, AbsAtomConst.STR,
+			return new AbsAtomConst(current.position, AtomType.STR,
 					current.lexeme);
 		case CHAR_CONST:
 			dump("atom_expression -> char_const");
 			skip();
 
-			return new AbsAtomConst(current.position, AbsAtomConst.CHR,
+			return new AbsAtomConst(current.position, AtomType.CHR,
 					current.lexeme);
 		case DOUBLE_CONST:
 			dump("atom_expression -> double_const");
 			skip();
 
-			return new AbsAtomConst(current.position, AbsAtomConst.DOB,
+			return new AbsAtomConst(current.position, AtomType.DOB,
 					current.lexeme);
 		case KW_NIL:
 			dump("atom_expression -> nil");
 			skip();
 
 			// TODO
-			return new AbsAtomConst(current.position, AbsAtomConst.DOB,
+			return new AbsAtomConst(current.position, AtomType.DOB,
 					current.lexeme);
 		case KW_IF:
 			dump("atom_expression -> if_expression");

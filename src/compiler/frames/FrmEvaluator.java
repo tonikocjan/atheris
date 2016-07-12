@@ -17,7 +17,7 @@ public class FrmEvaluator implements Visitor {
 	
 	public FrmEvaluator() {
 		AbsFunDef _main = new AbsFunDef(null, ENTRY_POINT, new Vector<>(), 
-				new AbsAtomType(null, AbsAtomType.VOID), new AbsStmts(null, new Vector<>()));
+				new AbsAtomType(null, AtomType.VOID), new AbsStmts(null, new Vector<>()));
 
 		entryPoint = new FrmFrame(_main, 0);
 		entryPoint.label = FrmLabel.newLabel(ENTRY_POINT);

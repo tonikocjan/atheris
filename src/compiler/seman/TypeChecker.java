@@ -68,9 +68,9 @@ public class TypeChecker implements Visitor {
 		SemType t1 = SymbDesc.getType(acceptor.expr1);
 		SemType t2 = SymbDesc.getType(acceptor.expr2);
 
-		SemType integer = new SemAtomType(SemAtomType.INT);
-		SemType logical = new SemAtomType(SemAtomType.LOG);
-		SemType double_ = new SemAtomType(SemAtomType.DOB);
+		SemType integer = new SemAtomType(AtomType.INT);
+		SemType logical = new SemAtomType(AtomType.LOG);
+		SemType double_ = new SemAtomType(AtomType.DOB);
 
 		int oper = acceptor.oper;
 
@@ -229,7 +229,7 @@ public class TypeChecker implements Visitor {
 	@Override
 	public void visit(AbsExprs acceptor) {
 		if (acceptor.numExprs() == 0)
-			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+			SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
 		else {
 			for (int expr = 0; expr < acceptor.numExprs(); expr++)
 				acceptor.expr(expr).accept(this);
@@ -245,7 +245,7 @@ public class TypeChecker implements Visitor {
 		SemType type = ((SemListType)SymbDesc.getType(acceptor.collection)).type;
 
 		SymbDesc.setType(SymbDesc.getNameDef(acceptor.iterator), type);
-		SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+		SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
 		
 		acceptor.iterator.accept(this);
 		acceptor.body.accept(this);
@@ -321,8 +321,8 @@ public class TypeChecker implements Visitor {
 		acceptor.thenBody.accept(this);
 
 		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new SemAtomType(SemAtomType.LOG)))
-			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+				new SemAtomType(AtomType.LOG)))
+			SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
 		else
 			Report.error(acceptor.cond.position,
 					"Condition must be of type LOGICAL");
@@ -335,8 +335,8 @@ public class TypeChecker implements Visitor {
 		acceptor.elseBody.accept(this);
 
 		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new SemAtomType(SemAtomType.LOG)))
-			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+				new SemAtomType(AtomType.LOG)))
+			SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
 		else
 			Report.error(acceptor.cond.position,
 					"Condition must be of type LOGICAL");
@@ -371,15 +371,15 @@ public class TypeChecker implements Visitor {
 		SemType type = SymbDesc.getType(acceptor.expr);
 
 		if (acceptor.oper == AbsUnExpr.NOT) {
-			if (type.sameStructureAs(new SemAtomType(SemAtomType.LOG)))
-				SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.LOG));
+			if (type.sameStructureAs(new SemAtomType(AtomType.LOG)))
+				SymbDesc.setType(acceptor, new SemAtomType(AtomType.LOG));
 			else
 				Report.error(acceptor.position,
 						"Operator \"!\" is not defined for type " + type);
 		} else if (acceptor.oper == AbsUnExpr.ADD
 				|| acceptor.oper == AbsUnExpr.SUB) {
-			if (type.sameStructureAs(new SemAtomType(SemAtomType.INT)))
-				SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.INT));
+			if (type.sameStructureAs(new SemAtomType(AtomType.INT)))
+				SymbDesc.setType(acceptor, new SemAtomType(AtomType.INT));
 			else
 				Report.error(acceptor.position,
 						"Operators \"+\" and \"-\" are not defined for type "
@@ -407,8 +407,8 @@ public class TypeChecker implements Visitor {
 		acceptor.body.accept(this);
 
 		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new SemAtomType(SemAtomType.LOG)))
-			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+				new SemAtomType(AtomType.LOG)))
+			SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
 		else
 			Report.error(acceptor.cond.position,
 					"Condition must be of type LOGICAL");
@@ -444,7 +444,7 @@ public class TypeChecker implements Visitor {
 			returnExpr.expr.accept(this);
 			SymbDesc.setType(returnExpr, SymbDesc.getType(returnExpr.expr));
 		} else
-			SymbDesc.setType(returnExpr, new SemAtomType(SemAtomType.VOID));
+			SymbDesc.setType(returnExpr, new SemAtomType(AtomType.VOID));
 	}
 
 	@Override

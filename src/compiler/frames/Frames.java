@@ -81,26 +81,26 @@ public class Frames implements Visitor {
 
 	public void visit(AbsAtomConst atomConst) {
 		switch (atomConst.type) {
-		case AbsAtomConst.LOG:
+		case LOG:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
 					+ ": LOGICAL(" + atomConst.value + ")");
 			break;
-		case AbsAtomConst.INT:
+		case INT:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
 					+ ": INTEGER(" + atomConst.value + ")");
 			break;
-		case AbsAtomConst.STR:
+		case STR:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
 					+ ": STRING(" + atomConst.value + ")");
 			break;
-		case AbsAtomConst.DOB:
+		case DOB:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
 					+ ": DOUBLE(" + atomConst.value + ")");
 			break;
-		case AbsAtomConst.CHR:
+		case CHR:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
 					+ ": CHAR(" + atomConst.value + ")");
-		case AbsAtomConst.VOID:
+		case VOID:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
 					+ ": VOID(" + atomConst.value + ")");
 			break;
@@ -116,27 +116,27 @@ public class Frames implements Visitor {
 
 	public void visit(AbsAtomType atomType) {
 		switch (atomType.type) {
-		case AbsAtomType.LOG:
+		case LOG:
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
 					+ ": LOGICAL");
 			break;
-		case AbsAtomType.INT:
+		case INT:
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
 					+ ": INTEGER");
 			break;
-		case AbsAtomType.STR:
+		case STR:
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
 					+ ": STRING");
 			break;
-		case AbsAtomType.DOB:
+		case DOB:
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
 					+ ": DOUBLE");
 			break;
-		case AbsAtomType.CHR:
+		case CHR:
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
 					+ ": CHAR");
 			break;
-		case AbsAtomType.VOID:
+		case VOID:
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
 					+ ": VOID");
 			break;

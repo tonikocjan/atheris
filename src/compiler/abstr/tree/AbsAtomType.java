@@ -9,16 +9,9 @@ import compiler.abstr.*;
  * @author sliva
  */
 public class AbsAtomType extends AbsType {
-
-	public static final int LOG = 0;
-	public static final int INT = 1;
-	public static final int STR = 2;
-	public static final int DOB = 3;
-	public static final int CHR = 4;
-	public static final int VOID = 5;
 	
 	/** Tip. */
-	public final int type;
+	public final AtomType type;
 
 	/**
 	 * Ustvari opis konkretnega tipa.
@@ -28,7 +21,7 @@ public class AbsAtomType extends AbsType {
 	 * @param type
 	 *            Konkretni tip.
 	 */
-	public AbsAtomType(Position pos, int type) {
+	public AbsAtomType(Position pos, AtomType type) {
 		super(pos);
 		this.type = type;
 	}

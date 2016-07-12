@@ -60,13 +60,13 @@ public class ImcCodeGen implements Visitor {
 
 	@Override
 	public void visit(AbsAtomConst acceptor) {
-		if (acceptor.type == AbsAtomConst.INT)
+		if (acceptor.type == AtomType.INT)
 			ImcDesc.setImcCode(acceptor,
 					new ImcCONST(Integer.parseInt(acceptor.value)));
-		else if (acceptor.type == AbsAtomConst.LOG)
+		else if (acceptor.type == AtomType.LOG)
 			ImcDesc.setImcCode(acceptor,
 					new ImcCONST(acceptor.value.equals("true") ? 1 : 0));
-		else if (acceptor.type == AbsAtomConst.STR) {
+		else if (acceptor.type == AtomType.STR) {
 			FrmLabel l = FrmLabel.newLabel();
 			ImcDataChunk str = new ImcDataChunk(l, 4);
 			str.data = new String(acceptor.value.substring(1,
@@ -74,9 +74,9 @@ public class ImcCodeGen implements Visitor {
 					+ "\0");
 			chunks.add(str);
 			ImcDesc.setImcCode(acceptor, new ImcMEM(new ImcNAME(l)));
-		} else if (acceptor.type == AbsAtomConst.CHR) {
+		} else if (acceptor.type == AtomType.CHR) {
 			ImcDesc.setImcCode(acceptor, new ImcCONST(acceptor.value.charAt(0)));
-		} else if (acceptor.type == AbsAtomConst.DOB) {
+		} else if (acceptor.type == AtomType.DOB) {
 			ImcDesc.setImcCode(acceptor,
 					new ImcCONST(Double.parseDouble(acceptor.value)));
 		}

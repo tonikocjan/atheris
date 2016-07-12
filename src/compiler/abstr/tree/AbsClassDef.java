@@ -22,7 +22,7 @@ public class AbsClassDef extends AbsTypeDef {
 		AbsFunDef contructor = new AbsFunDef(pos, 
 				name, 
 				new Vector<>(), 
-				new AbsAtomType(pos, AbsAtomType.VOID), 
+				new AbsAtomType(pos, AtomType.VOID), 
 				new AbsStmts(pos, new Vector<>()));
 		contrustors.add(contructor);
 	}

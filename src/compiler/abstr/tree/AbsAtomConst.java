@@ -9,16 +9,9 @@ import compiler.abstr.*;
  * @author sliva
  */
 public class AbsAtomConst extends AbsExpr {
-
-	public static final int LOG = 0;
-	public static final int INT = 1;
-	public static final int STR = 2;
-	public static final int DOB = 3;
-	public static final int CHR = 4;
-	public static final int VOID = 5;
 	
 	/** Tip. */
-	public final int type;
+	public final AtomType type;
 	
 	/** Vrednost. */
 	public final String value;
@@ -33,7 +26,7 @@ public class AbsAtomConst extends AbsExpr {
 	 * @param value
 	 *            Vrednost.
 	 */
-	public AbsAtomConst(Position pos, int type, String value) {
+	public AbsAtomConst(Position pos, AtomType type, String value) {
 		super(pos);
 		this.type = type;
 		this.value = value;
