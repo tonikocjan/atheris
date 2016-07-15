@@ -41,6 +41,7 @@ public class SemAtomType extends SemType {
 		case VOID: return "Void";
 		case DOB: return "Double";
 		case CHR: return "Char";
+		case NIL: return "nil";
 		}
 		Report.error("Internal error :: compiler.seman.type.SemAtomType.toString()");
 		return "";
@@ -54,6 +55,7 @@ public class SemAtomType extends SemType {
 		case STR:
 			return 4;
 		case VOID:
+		case NIL:
 			return 0;
 		case CHR:
 			return 1;

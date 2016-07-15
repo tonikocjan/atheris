@@ -79,6 +79,8 @@ public class ImcCodeGen implements Visitor {
 		} else if (acceptor.type == AtomType.DOB) {
 			ImcDesc.setImcCode(acceptor,
 					new ImcCONST(Double.parseDouble(acceptor.value)));
+		} else if (acceptor.type == AtomType.NIL) {
+			ImcDesc.setImcCode(acceptor, new ImcCONST(0));
 		}
 	}
 

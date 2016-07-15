@@ -1159,8 +1159,7 @@ public class SynAn {
 			dump("atom_expression -> nil");
 			skip();
 
-			// TODO
-			return new AbsAtomConst(current.position, AtomType.DOB,
+			return new AbsAtomConst(current.position, AtomType.NIL,
 					current.lexeme);
 		case KW_IF:
 			dump("atom_expression -> if_expression");

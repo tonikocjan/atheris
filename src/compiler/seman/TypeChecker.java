@@ -111,9 +111,15 @@ public class TypeChecker implements Visitor {
 				SymbDesc.setType(acceptor, t1);
 				SymbDesc.setType(acceptor.expr2, t2);
 			}
-			else
+			else if (t2 instanceof SemAtomType && ((SemAtomType) t2).type == AtomType.NIL
+					&& t1 instanceof SemPtrType) {
+				SymbDesc.setType(acceptor.expr2, t1);
+				SymbDesc.setType(acceptor, t1);
+			}
+			else {
 				Report.error(acceptor.position, "Cannot assign type " + t2
 						+ " to type " + t1);
+			}
 			return;
 		}
 

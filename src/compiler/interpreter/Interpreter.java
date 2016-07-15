@@ -234,7 +234,7 @@ public class Interpreter {
 			ImcMEM instr = (ImcMEM) instruction;
 			Integer adress = (Integer) execute(instr.expr);
 			if (adress == 0)
-				Report.error("Cannot dereference nil pointer");
+				Report.error("Nil pointer exception");
 			return ldM(adress);
 		}
 		
@@ -251,6 +251,7 @@ public class Interpreter {
 				FrmTemp temp = ((ImcTEMP) instr.dst).temp;
 				Object srcValue = execute(instr.src);
 				stT(temp, srcValue);
+				
 				return srcValue;
 			}
 			if (instr.dst instanceof ImcMEM) {
