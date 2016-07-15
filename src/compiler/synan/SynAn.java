@@ -47,6 +47,9 @@ public class SynAn {
 	public AbsTree parse() {
 		if (symbol == null)
 			Report.error("Error accessing LexAn");
+		
+		if (symbol.token == Token.NEWLINE)
+			skip();
 
 		dump("source -> statements");
 		AbsTree abstrTree = parseStatements();
@@ -1297,6 +1300,9 @@ public class SynAn {
 	}
 
 	private AbsExpr parseIf_(Position start, AbsExpr e1, AbsStmts stmts) {
+		if (symbol.token == Token.NEWLINE) 
+			skip();
+		
 		if (symbol.token == Token.KW_ELSE) {
 			dump("if_expression' -> else { statements }");
 			skip();
@@ -1304,6 +1310,7 @@ public class SynAn {
 			if (symbol.token != Token.LBRACE)
 				Report.error(symbol.position, "Syntax error on token \""
 						+ previous.lexeme + "\", expected '{' after this token");
+			skip(new Symbol(Token.NEWLINE, "NEWLINE", null));
 			skip();
 
 			AbsStmts s = parseStatements();
