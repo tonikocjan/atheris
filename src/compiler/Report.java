@@ -93,7 +93,7 @@ public class Report {
 	 */
 	public static void error(String message) {
 		if (fileName != null)
-			message = fileName + ":" + message;
+			message = fileName + ": " + message;
 		
 		System.err.println(":-( " + message);
 		System.exit(1);

@@ -230,6 +230,10 @@ public class Interpreter {
 			return null;
 		}
 		
+		if (instruction instanceof ImcEXP) {
+			execute(((ImcEXP) instruction).expr);
+		}
+		
 		if (instruction instanceof ImcMEM) {
 			ImcMEM instr = (ImcMEM) instruction;
 			Integer adress = (Integer) execute(instr.expr);
