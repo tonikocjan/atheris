@@ -284,23 +284,28 @@ public class TypeChecker implements Visitor {
 		for (int arg = 0; arg < acceptor.numArgs(); arg++) {
 			acceptor.arg(arg).accept(this);
 			SemType parType = SymbDesc.getType(acceptor.arg(arg));
-
-			// implicit cast from list to pointer
-//			if (parType instanceof SemListType)
-//				parType = new SemPtrType(((SemListType) parType).type);
-
 			parameters.add(parType);
 		}
 
-		AbsDef definition = SymbTable.fndFunc(acceptor.name, parameters);
-		if (definition == null) {
-			Report.error(acceptor.position, "Method " + acceptor.name
-					+ new SemFunType(parameters, null).toString()
-					+ " is undefined");
+		AbsDef def = SymbTable.fnd(acceptor.name);
+		
+		if (def instanceof AbsFunDef) {
+			AbsDef definition = SymbTable.fndFunc(acceptor.name, parameters);
+			if (definition == null) {
+				Report.error(acceptor.position, "Method " + acceptor.name
+						+ new SemFunType(parameters, null).toString()
+						+ " is undefined");
+			}
+			SymbDesc.setNameDef(acceptor, definition);
+			SymbDesc.setType(acceptor,
+					((SemFunType) SymbDesc.getType(definition)).resultType);
 		}
-		SymbDesc.setNameDef(acceptor, definition);
-		SymbDesc.setType(acceptor,
-				((SemFunType) SymbDesc.getType(definition)).resultType);
+		else if (def instanceof AbsVarDef) {
+			SemType type = SymbDesc.getType(def);
+			if (!(type instanceof SemFunType))
+				Report.error(acceptor.position, "Cannot call value of non-function type \'"
+								+ type.toString() + "\'");
+		}
 	}
 
 	@Override
