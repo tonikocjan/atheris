@@ -99,6 +99,7 @@ public class Symbol {
 		case COLON     : tokenName = "COLON"     ; break;
 		case SEMIC     : tokenName = "SEMIC"     ; break;
 		case COMMA     : tokenName = "COMMA"     ; break;
+		case ARROW     : tokenName = "->"    	 ; break;
 		
 		case KW_STRUCT : tokenName = "STRUCT"    ; break;
 		case KW_CLASS  : tokenName = "CLASS"     ; break;

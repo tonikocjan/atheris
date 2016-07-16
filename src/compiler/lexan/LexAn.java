@@ -474,6 +474,9 @@ public class LexAn {
 		if (ch1 == '|' && ch1 == ch2)
 			return new Symbol(Token.IOR, "|", startRow, startCol, startRow,
 					startCol + 1);
+		if (ch1 == '-' && ch2 == '>')
+			return new Symbol(Token.ARROW, "->", startRow, startCol, startRow,
+					startCol + 1);
 		return null;
 	}
 

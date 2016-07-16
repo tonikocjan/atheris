@@ -20,7 +20,6 @@ public enum Token {
 	/** Vrsta simbola: logicni in. */								AND,
 	/** Vrsta simbola: logicni ali. */								IOR,
 	/** Vrsta simbola: logicni ne. */								NOT,
-	
 	/** Vrsta simbola: je-enako. */									EQU,
 	/** Vrsta simbola: ni-enako. */									NEQ,
 	/** Vrsta simbola: manjse-kot. */								LTH,
@@ -45,7 +44,8 @@ public enum Token {
 	/** Vrsta simbola: dvopicje. */									COLON,
 	/** Vrsta simbola: podpicje. */									SEMIC,
 	/** Vrsta simbola: vejica. */                                   COMMA,
-	/** Vrsta simbola: ključna beseda import.  */ 					NEWLINE,
+	/** Vrsta simbola: nova vrstica.  */ 							NEWLINE,
+	/** Vrsta simbola: puščica ->.  */ 								ARROW,
 	
 	/** Vrsta simbola: prirejanje. */								ASSIGN,
 	
