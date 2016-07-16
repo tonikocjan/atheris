@@ -131,6 +131,12 @@ public class Main {
 			ImcCodeChunk mainFrame = CodeGenerator.linearize(imcodegen.chunks);
 			imcode = new ImCode(dumpPhases.contains("interpret"));
 			imcode.dump(imcodegen.chunks);
+			
+			// clean-up
+			SymbTable.clean();
+			SymbDesc.clean();
+			FrmDesc.clean();
+			ImcDesc.clean();
 
 			System.out.printf(":-) Done.\n");
 			System.out.printf("----- Executing file %s -----\n", sourceFileName);

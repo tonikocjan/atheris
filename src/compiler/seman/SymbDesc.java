@@ -93,4 +93,9 @@ public class SymbDesc {
 		return typ;
 	}
 
+	public static void clean() {
+		scope.clear();
+		scope = null;
+	}
+
 }

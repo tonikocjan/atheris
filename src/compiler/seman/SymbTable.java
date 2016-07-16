@@ -149,4 +149,11 @@ public class SymbTable {
 			return functions.get(name).get(parameters.toString());
 		return null;
 	}
+
+	public static void clean() {
+		mapping.clear();
+		mapping = null;
+		functions.clear();
+		functions = null;
+	}
 }

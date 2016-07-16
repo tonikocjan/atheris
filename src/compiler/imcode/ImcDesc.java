@@ -27,4 +27,9 @@ public class ImcDesc {
 	public static ImcCode getImcCode(AbsTree node) {
 		return imcMap.get(node);
 	}
+
+	public static void clean() {
+		imcMap.clear();
+		imcMap = null;
+	}
 }

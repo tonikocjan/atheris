@@ -57,4 +57,9 @@ public class FrmDesc {
 		return FrmDesc.acceses.get(var);
 	}
 
+	public static void clean() {
+		frames.clear();
+		frames = null;
+	}
+
 }
