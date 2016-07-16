@@ -286,6 +286,13 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
+		try {
+			SymbTable.ins(acceptor.name, acceptor);
+		} catch (SemIllegalInsertException e) {
+			Report.error(acceptor.position, "Invaid redeclaration of \""
+					+ acceptor.name + "\"");
+		}
+		
 		SymbTable.newScope();
 
 		for (int par = 0; par < acceptor.numPars(); par++)
@@ -358,9 +365,10 @@ public class NameChecker implements Visitor {
 	@Override
 	public void visit(AbsVarName acceptor) {
 		AbsDef definition = SymbTable.fnd(acceptor.name);
+		
 		if (definition == null)
-			Report.error(acceptor.position, "Error, variable \""
-					+ acceptor.name + "\" is undefined");
+			Report.error(acceptor.position, "Use of unresolved indentifier \""
+					+ acceptor.name + "\"");
 
 		SymbDesc.setNameDef(acceptor, definition);
 	}
