@@ -434,12 +434,13 @@ public class SynAn {
 			skip();
 			
 			Vector<AbsType> parameters = new Vector<>();
-			while (true) {
-				parameters.add(parseType());
-				if (symbol.token != Token.COMMA)
-					break;
-				skip();
-			}
+			if (symbol.token != Token.RPARENT)
+				while (true) {
+					parameters.add(parseType());
+					if (symbol.token != Token.COMMA)
+						break;
+					skip();
+				}
 			if (symbol.token != Token.RPARENT)
 				Report.error(symbol.position,
 						"Syntax error, insert \")\" to complete function declaration");
