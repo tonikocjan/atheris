@@ -412,6 +412,11 @@ public class SynAn {
 			skip();
 
 			return new AbsAtomType(s.position, AtomType.DOB);
+		case VOID:
+			dump("type -> void");
+			skip();
+
+			return new AbsAtomType(s.position, AtomType.VOID);
 		case LBRACKET:
 			skip();
 			dump("type -> [ type ]");
@@ -423,6 +428,27 @@ public class SynAn {
 			skip();
 			return new AbsListType(new Position(s.position, type.position), 0,
 					type);
+		case LPARENT:
+			Position start = symbol.position;
+			dump("type -> (parameters) -> type");
+			skip();
+			
+			Vector<AbsType> parameters = new Vector<>();
+			while (true) {
+				parameters.add(parseType());
+				if (symbol.token != Token.COMMA)
+					break;
+				skip();
+			}
+			if (symbol.token != Token.RPARENT)
+				Report.error(symbol.position,
+						"Syntax error, insert \")\" to complete function declaration");
+			skip(new Symbol(Token.ARROW, "->", null));
+			skip();
+			
+			type = parseType();
+			return new AbsFunType(new Position(start, type.position), 
+					parameters, type);
 		default:
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", expected \"variable type\"");

@@ -26,6 +26,25 @@ public class AbsAtomType extends AbsType {
 		this.type = type;
 	}
 	
+	public String toString() {
+		switch (type) {
+		case INT:
+			return "Int";
+		case DOB:
+			return "Double";
+		case CHR:
+			return "Char";
+		case VOID:
+			return "Void";
+		case STR:
+			return "String";
+		case NIL:
+			Report.error("Internal error @ AtomType toString");
+		default:
+			return null;
+		}
+	}
+	
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }
 
 }

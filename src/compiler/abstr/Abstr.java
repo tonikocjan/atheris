@@ -371,4 +371,10 @@ public class Abstr implements Visitor {
 		indent -= 2;
 	}
 
+	@Override
+	public void visit(AbsFunType funType) {
+		Report.dump(indent, "AbsFunType " + funType.position.toString() + ":");
+		Report.dump(indent + 2, funType.toString());
+	}
+
 }
