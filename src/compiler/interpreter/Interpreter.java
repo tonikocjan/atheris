@@ -236,10 +236,10 @@ public class Interpreter {
 		
 		if (instruction instanceof ImcMEM) {
 			ImcMEM instr = (ImcMEM) instruction;
-			Integer adress = (Integer) execute(instr.expr);
-			if (adress == 0)
+			Integer address = (Integer) execute(instr.expr);
+			if (address == 0)
 				Report.error("Nil pointer exception");
-			return ldM(adress);
+			return ldM(address);
 		}
 		
 		if (instruction instanceof ImcMALLOC) {
