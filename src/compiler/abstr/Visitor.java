@@ -26,7 +26,6 @@ public interface Visitor {
 	public void visit(AbsWhile       acceptor);
 	public void visit(AbsImportDef   acceptor);
 	public void visit(AbsStmts 		 acceptor);
-	public void visit(AbsConstDef    acceptor);
 	public void visit(AbsReturnExpr  acceptor);
 	public void visit(AbsListExpr absListExpr);
 }

@@ -169,17 +169,6 @@ public class FrmEvaluator implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsConstDef constDef) {
-		// TODO
-//		if (currentFrame == null)
-//			FrmDesc.setAccess(constDef, new FrmVarAccess(constDef));
-//		else
-//			FrmDesc.setAccess(constDef,
-//					new FrmLocAccess(constDef, currentFrame));
-	}
-
-
-	@Override
 	public void visit(AbsReturnExpr returnExpr) {
 		if (returnExpr.expr != null) 
 			returnExpr.expr.accept(this);

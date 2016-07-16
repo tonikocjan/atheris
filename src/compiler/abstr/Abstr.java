@@ -316,6 +316,8 @@ public class Abstr implements Visitor {
 		Report.dump(indent, "AbsVarDef " + varDef.position.toString() + ": "
 				+ varDef.name);
 		indent += 2;
+		if (varDef.isConstant)
+			Report.dump(indent, "#CONSTANT");
 		varDef.type.accept(this);
 		indent -= 2;
 	}
@@ -349,15 +351,6 @@ public class Abstr implements Visitor {
 			stmts.stmt(def).accept(this);
 			indent -= 2;
 		}
-	}
-
-	@Override
-	public void visit(AbsConstDef constDef) {
-		Report.dump(indent, "AbsConstDef " + constDef.position.toString() + ": "
-				+ constDef.name);
-		indent += 2;
-		constDef.type.accept(this);
-		indent -= 2;
 	}
 
 	@Override

@@ -211,7 +211,7 @@ public class SynAn {
 			break;
 		case KW_LET:
 			dump("definition -> constant_definition");
-			definition = parseConstDefinition();
+			definition = parseConstantDefinition();
 			break;
 		case KW_IMPORT:
 			dump("definition -> import_definition");
@@ -293,15 +293,15 @@ public class SynAn {
 
 			AbsType type = parseType();
 			return new AbsVarDef(new Position(startPos, type.position),
-					id.lexeme, type);
+					id.lexeme, type, false);
 		}
 		Report.error(previous.position, "Syntax error on token \""
 				+ previous.lexeme + "\", expected keyword \"var\"");
 
 		return null;
 	}
-
-	private AbsConstDef parseConstDefinition() {
+	
+	private AbsDef parseConstantDefinition() {
 		Position startPos = symbol.position;
 		if (symbol.token == Token.KW_LET) {
 			Symbol id = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
@@ -309,17 +309,18 @@ public class SynAn {
 			skip(new Symbol(Token.COLON, ":", null));
 			skip();
 
-			dump("var_definition -> var identifier : type");
+			dump("var_definition -> let identifier : type");
 
 			AbsType type = parseType();
-			return new AbsConstDef(new Position(startPos, type.position),
-					id.lexeme, type);
+			return new AbsVarDef(new Position(startPos, type.position),
+					id.lexeme, type, true);
 		}
 		Report.error(previous.position, "Syntax error on token \""
-				+ previous.lexeme + "\", expected keyword \"var\"");
+				+ previous.lexeme + "\", expected keyword \"let\"");
 
 		return null;
 	}
+
 
 	private AbsImportDef parseImportDefinition() {
 		Position pos = symbol.position;

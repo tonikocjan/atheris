@@ -14,7 +14,7 @@ import compiler.seman.type.*;
  * @implementation Toni Kocjan
  */
 public class TypeChecker implements Visitor {
-
+	
 	@Override
 	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
@@ -436,12 +436,6 @@ public class TypeChecker implements Visitor {
 		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
 			stmts.stmt(stmt).accept(this);
 		}
-	}
-
-	@Override
-	public void visit(AbsConstDef acceptor) {
-		acceptor.type.accept(this);
-		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.type));
 	}
 
 	@Override

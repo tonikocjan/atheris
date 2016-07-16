@@ -264,7 +264,7 @@ public class NameChecker implements Visitor {
 		SymbTable.newScope();
 
 		AbsVarDef var = new AbsVarDef(
-				acceptor.iterator.position, acceptor.iterator.name, null);
+				acceptor.iterator.position, acceptor.iterator.name, null, false);
 		try {
 			SymbTable.ins(acceptor.iterator.name, var);
 			SymbDesc.setNameDef(acceptor.iterator, var);
@@ -346,17 +346,6 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		try {
-			SymbTable.ins(acceptor.name, acceptor);
-			acceptor.type.accept(this);
-		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Duplicate variable \""
-					+ acceptor.name + "\"");
-		}
-	}
-
-	@Override
-	public void visit(AbsConstDef acceptor) {
 		try {
 			SymbTable.ins(acceptor.name, acceptor);
 			acceptor.type.accept(this);

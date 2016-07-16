@@ -451,11 +451,6 @@ public class ImcCodeGen implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsConstDef acceptor) {
-
-	}
-
-	@Override
 	public void visit(AbsReturnExpr acceptor) {
 		ImcSEQ seq = new ImcSEQ();
 		ImcTEMP rv = new ImcTEMP(currentFrame.RV);

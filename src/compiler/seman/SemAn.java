@@ -335,6 +335,8 @@ public class SemAn implements Visitor {
 	
 	public void visit(AbsVarDef varDef) {
 		Report.dump(indent, "AbsVarDef " + varDef.position.toString() + ": " + varDef.name);
+		if (varDef.isConstant)
+			Report.dump(indent + 2, "#CONSTANT");
 		{
 			SemType typ = SymbDesc.getType(varDef);
 			if (typ != null)
@@ -392,18 +394,6 @@ public class SemAn implements Visitor {
 			indent += 2; stmts.stmt(stmt).accept(this); indent -= 2;
 		}
 	}
-
-	@Override
-	public void visit(AbsConstDef constDef) {
-		Report.dump(indent, "AbsConstDef " + constDef.position.toString() + ": " + constDef.name);
-		{
-			SemType typ = SymbDesc.getType(constDef);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
-		}
-		indent += 2; constDef.type.accept(this); indent -= 2;
-	}
-	
 
 	@Override
 	public void visit(AbsReturnExpr returnExpr) {

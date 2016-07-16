@@ -512,26 +512,6 @@ public class Frames implements Visitor {
 	}
 
 	@Override
-	public void visit(AbsConstDef constDef) {
-		Report.dump(indent, "AbsConstDef " + constDef.position.toString() + ": "
-				+ constDef.name);
-		{
-			SemType typ = SymbDesc.getType(constDef);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
-		}
-		{
-			FrmAccess access = FrmDesc.getAccess(constDef);
-			if (access != null)
-				Report.dump(indent + 2, "#accesed as " + access.toString());
-		}
-		indent += 2;
-		constDef.type.accept(this);
-		indent -= 2;
-	}
-	
-
-	@Override
 	public void visit(AbsReturnExpr returnExpr) {
 		Report.dump(indent, "AbsReturnExpr " + returnExpr.position.toString());
 		{
