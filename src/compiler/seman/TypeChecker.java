@@ -427,11 +427,13 @@ public class TypeChecker implements Visitor {
 		SymbDesc.setType(acceptor,
 				SymbDesc.getType(SymbDesc.getNameDef(acceptor)));
 		
-		AbsVarDef def = (AbsVarDef) SymbDesc.getNameDef(acceptor);
-		if (!initialized.contains(def)) {
-			String err = def.isConstant ? "Constant \'" : "Variable \'";
-			Report.error(acceptor.position, err + acceptor.name +
-					"\' used before being initialized");
+		if (SymbDesc.getNameDef(acceptor) instanceof AbsVarDef) {
+			AbsVarDef def = (AbsVarDef) SymbDesc.getNameDef(acceptor);
+			if (!initialized.contains(def)) {
+				String err = def.isConstant ? "Constant \'" : "Variable \'";
+				Report.error(acceptor.position, err + acceptor.name +
+						"\' used before being initialized");
+			}
 		}
 	}
 
@@ -445,7 +447,7 @@ public class TypeChecker implements Visitor {
 			SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
 		else
 			Report.error(acceptor.cond.position,
-					"Condition must be of type LOGICAL");
+					"Condition must be typed as Boolean");
 	}
 
 	@Override
