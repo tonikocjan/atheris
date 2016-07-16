@@ -305,6 +305,8 @@ public class TypeChecker implements Visitor {
 			if (!(type instanceof SemFunType))
 				Report.error(acceptor.position, "Cannot call value of non-function type \'"
 								+ type.toString() + "\'");
+			SymbDesc.setNameDef(acceptor, def);
+			SymbDesc.setType(acceptor, ((SemFunType) SymbDesc.getType(def)).resultType);
 		}
 	}
 
