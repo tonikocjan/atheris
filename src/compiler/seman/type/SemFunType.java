@@ -7,10 +7,10 @@ import java.util.*;
  * 
  * @author sliva
  */
-public class SemFunType extends SemType {
+public class SemFunType extends SemPtrType {
 
 	/** Tipi parametrov. */
-	public final SemType parTypes[];
+	public final Vector<SemType> parameterTypes;
 
 	/** Tipa rezultata. */
 	public final SemType resultType;
@@ -24,9 +24,7 @@ public class SemFunType extends SemType {
 	 *            Tip rezultata.
 	 */
 	public SemFunType(Vector<SemType> parTypes, SemType resultType) {
-		this.parTypes = new SemType[parTypes.size()];
-		for (int par = 0; par < parTypes.size(); par++)
-			this.parTypes[par] = parTypes.elementAt(par);
+		this.parameterTypes = parTypes;
 		this.resultType = resultType;
 	}
 
@@ -36,7 +34,7 @@ public class SemFunType extends SemType {
 	 * @return Stevilo parametrov.
 	 */
 	public int getNumPars() {
-		return parTypes.length;
+		return parameterTypes.size();
 	}
 
 	/**
@@ -47,7 +45,7 @@ public class SemFunType extends SemType {
 	 * @return Tip zahtevanega parametra.
 	 */
 	public SemType getParType(int index) {
-		return parTypes[index];
+		return parameterTypes.elementAt(index);
 	}
 
 	@Override
@@ -57,22 +55,21 @@ public class SemFunType extends SemType {
 			if (this.getNumPars() != funType.getNumPars())
 				return false;
 			for (int par = 0; par < getNumPars(); par++)
-				if (!this.getParType(par).sameStructureAs(
-						funType.getParType(par)))
+				if (!this.getParType(par).sameStructureAs(funType.getParType(par)))
 					return false;
 			if (!this.resultType.sameStructureAs(funType.resultType))
 				return false;
 			return true;
-		} else
-			return false;
+		}
+		return false;
 	}
 	
 	@Override
 	public String toString() {
 		String str = "";
 		str += "(";
-		for (int par = 0; par < parTypes.length; par++)
-			str += (par > 0 ? "," : "") + parTypes[par].toString();
+		for (SemType t : parameterTypes)
+			str += (t == parameterTypes.lastElement() ? "," : "") + t.toString();
 		String res = resultType == null ? "?" : resultType.toString();
 		str += ") -> " + res;
 		return str;
@@ -81,7 +78,7 @@ public class SemFunType extends SemType {
 	@Override
 	public int size() {
 		int input = 4;
-		for (SemType t : parTypes)
+		for (SemType t : parameterTypes)
 			input += t.size();
 		
 		return Math.max(resultType.size(), input);

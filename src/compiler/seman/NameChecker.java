@@ -436,4 +436,11 @@ public class NameChecker implements Visitor {
 			e.accept(this);
 	}
 
+	@Override
+	public void visit(AbsFunType funType) {
+		for (AbsType t : funType.parameterTypes)
+			t.accept(this);
+		funType.returnType.accept(this);
+	}
+
 }

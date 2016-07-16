@@ -43,14 +43,14 @@ public class SemAn implements Visitor {
 	/** Trenutni zamik. */
 	private int indent;
 	
-	public void visit(AbsListType arrType) {
-		Report.dump(indent, "AbsArrType " + arrType.position.toString() + ": " + "[" + arrType.count + "]");
+	public void visit(AbsListType listType) {
+		Report.dump(indent, "AbsListType " + listType.position.toString() + ": " + "[" + listType.count + "]");
 		{
-			SemType typ = SymbDesc.getType(arrType);
+			SemType typ = SymbDesc.getType(listType);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		indent += 2; arrType.type.accept(this); indent -= 2;
+		indent += 2; listType.type.accept(this); indent -= 2;
 	}		
 	
 	@Override
@@ -418,5 +418,16 @@ public class SemAn implements Visitor {
 		for (AbsExpr e : absListExpr.expressions)
 			e.accept(this);
 		indent -= 2;		
+	}
+
+	@Override
+	public void visit(AbsFunType funType) {
+		Report.dump(indent, "AbsFunType " + funType.position.toString() + ":");
+		Report.dump(indent + 2, funType.toString());
+		{
+			SemType typ = SymbDesc.getType(funType);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 	}
 }

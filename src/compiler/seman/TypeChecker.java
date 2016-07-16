@@ -492,4 +492,17 @@ public class TypeChecker implements Visitor {
 
 		SymbDesc.setType(absListExpr, new SemListType(vec.firstElement(), vec.size()));
 	}
+
+	@Override
+	public void visit(AbsFunType funType) {
+		Vector<SemType> parameters = new Vector<>();
+		for (AbsType t : funType.parameterTypes) {
+			t.accept(this);
+			parameters.add(SymbDesc.getType(t));
+		}
+		funType.returnType.accept(this);
+		
+		SymbDesc.setType(funType, new SemFunType(parameters, 
+				SymbDesc.getType(funType.returnType)));
+	}
 }
