@@ -15,6 +15,9 @@ import compiler.seman.type.*;
  */
 public class TypeChecker implements Visitor {
 	
+	// set of already initialized variables
+	private HashSet<AbsVarDef> initialized = new HashSet<>();
+
 	@Override
 	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
@@ -61,6 +64,19 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsBinExpr acceptor) {
+		if (acceptor.oper == AbsBinExpr.ASSIGN) {
+			if (!(acceptor.expr1 instanceof AbsVarName))
+				Report.error(acceptor.position, "Cannot assign to a literal value");
+			
+			// if variable is constant and already initialized, error
+			AbsVarDef def = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr1);
+			if (def.isConstant && initialized.contains(def))
+				Report.error(acceptor.position, 
+						"Immutable value \'" + ((AbsVarName) acceptor.expr1).name +
+						"\' may only be initialized once");
+			initialized.add(def);
+		}
+		
 		acceptor.expr1.accept(this);
 		if (acceptor.oper != AbsBinExpr.DOT)
 			acceptor.expr2.accept(this);
@@ -88,7 +104,7 @@ public class TypeChecker implements Visitor {
 				SymbDesc.setType(acceptor, ((SemListType) t1).type);
 			} else
 				Report.error(acceptor.expr1.position,
-						"Left side of ARR expression must be of type ARRAY");
+						"Type \'" + t1 + "\' has no subscript members");
 			return;
 		}
 
@@ -96,9 +112,11 @@ public class TypeChecker implements Visitor {
 		 * expr1 = expr2
 		 */
 		if (oper == AbsBinExpr.ASSIGN) {
+			boolean success = false;
 			if (t1.sameStructureAs(t2)) {
 				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
 				SymbDesc.setType(acceptor, t2);
+				success = true;
 			}
 			else if (t1 instanceof SemListType && 
 					t2 instanceof SemListType && 
@@ -106,6 +124,7 @@ public class TypeChecker implements Visitor {
 				SymbDesc.setType(acceptor.expr1, t2);
 				SymbDesc.setType(acceptor, t2);
 				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
+				success = true;
 			}
 			else if (t2.canCastTo(t1)) {
 				SymbDesc.setType(acceptor, t1);
@@ -115,11 +134,13 @@ public class TypeChecker implements Visitor {
 					&& t1 instanceof SemPtrType) {
 				SymbDesc.setType(acceptor.expr2, t1);
 				SymbDesc.setType(acceptor, t1);
+				success = true;
 			}
-			else {
+			
+			if (!success)
 				Report.error(acceptor.position, "Cannot assign type " + t2
 						+ " to type " + t1);
-			}
+
 			return;
 		}
 
@@ -405,6 +426,13 @@ public class TypeChecker implements Visitor {
 	public void visit(AbsVarName acceptor) {
 		SymbDesc.setType(acceptor,
 				SymbDesc.getType(SymbDesc.getNameDef(acceptor)));
+		
+		AbsVarDef def = (AbsVarDef) SymbDesc.getNameDef(acceptor);
+		if (!initialized.contains(def)) {
+			String err = def.isConstant ? "Constant \'" : "Variable \'";
+			Report.error(acceptor.position, err + acceptor.name +
+					"\' used before being initialized");
+		}
 	}
 
 	@Override
