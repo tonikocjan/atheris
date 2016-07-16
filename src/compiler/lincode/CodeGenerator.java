@@ -38,6 +38,10 @@ public class CodeGenerator {
 					
 				}
 				CodeGenerator.insertCode(fn.frame.label, fn);
+				Interpreter.locations.put(((ImcCodeChunk) chnk).frame.label, 
+						Interpreter.offset);
+				
+				Interpreter.offset += 4;
 			}
 			else {
 				ImcDataChunk data = (ImcDataChunk) chnk;
