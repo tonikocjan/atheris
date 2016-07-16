@@ -35,10 +35,6 @@ public class FrmEvaluator implements Visitor {
 	@Override
 	public void visit(AbsClassDef acceptor) {
 		acceptor.definitions.accept(this);
-//		AbsFunDef c = (AbsFunDef) SymbTable.fndFunc(acceptor.name, new Vector<>());
-//		
-//		FrmFrame constructor = new FrmFrame(c, 1);
-//		FrmDesc.setFrame(c, constructor);
 		for (AbsFunDef c : acceptor.contrustors) {
 			c.accept(this);
 		}

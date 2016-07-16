@@ -15,7 +15,7 @@ import compiler.seman.type.*;
  */
 public class TypeChecker implements Visitor {
 	
-	// set of already initialized variables
+	// set of initialized variables
 	private HashSet<AbsVarDef> initialized = new HashSet<>();
 
 	@Override

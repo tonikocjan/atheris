@@ -1,7 +1,5 @@
 package compiler.frames;
 
-import java.util.Vector;
-
 import compiler.*;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
@@ -63,7 +61,7 @@ public class Frames implements Visitor {
 
 	@Override
 	public void visit(AbsClassDef classDef) {
-		Report.dump(indent, "AbsStructType " + classDef.position.toString()
+		Report.dump(indent, "AbsClassType " + classDef.position.toString()
 				+ ": " + classDef.getName());
 		{
 			SemType typ = SymbDesc.getType(classDef);
