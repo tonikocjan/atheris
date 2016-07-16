@@ -537,4 +537,15 @@ public class Frames implements Visitor {
 		indent -= 2;
 	}
 
+	@Override
+	public void visit(AbsFunType funType) {
+		Report.dump(indent, "AbsFunType " + funType.position.toString() + ":");
+		Report.dump(indent + 2, funType.toString());
+		{
+			SemType typ = SymbDesc.getType(funType);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}		
+	}
+
 }

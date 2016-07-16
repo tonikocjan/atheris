@@ -390,6 +390,9 @@ public class ImcCodeGen implements Visitor {
 
 			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, fp, new ImcCONST(
 					loc.offset)));
+		} else if (access == null) {
+			FrmFrame frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
+			expr = new ImcMEM(new ImcNAME(frame.label));
 		}
 
 		ImcDesc.setImcCode(acceptor, expr);
@@ -496,6 +499,11 @@ public class ImcCodeGen implements Visitor {
 
 		chunks.add(chunk);
 		ImcDesc.setImcCode(acceptor, new ImcESEQ(seq, new ImcNAME(label)));
+	}
+
+	@Override
+	public void visit(AbsFunType funType) {
+		
 	}
 
 }
