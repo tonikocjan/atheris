@@ -40,6 +40,7 @@ public class CodeGenerator {
 				CodeGenerator.insertCode(fn.frame.label, fn);
 				Interpreter.locations.put(((ImcCodeChunk) chnk).frame.label, 
 						Interpreter.offset);
+				Interpreter.stM(Interpreter.offset, ((ImcCodeChunk) chnk).frame.label);
 				
 				Interpreter.offset += 4;
 			}

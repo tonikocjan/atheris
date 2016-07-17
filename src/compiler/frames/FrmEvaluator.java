@@ -5,7 +5,6 @@ import java.util.Vector;
 import compiler.abstr.Visitor;
 import compiler.abstr.tree.*;
 import compiler.seman.SymbDesc;
-import compiler.seman.SymbTable;
 
 public class FrmEvaluator implements Visitor {
 
@@ -174,6 +173,11 @@ public class FrmEvaluator implements Visitor {
 	public void visit(AbsListExpr absListExpr) {
 		for (AbsExpr e : absListExpr.expressions)
 			e.accept(this);
+	}
+
+	@Override
+	public void visit(AbsFunType acceptor) {
+		
 	}
 
 }

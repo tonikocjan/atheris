@@ -289,7 +289,15 @@ public class TypeChecker implements Visitor {
 
 		AbsDef def = SymbTable.fnd(acceptor.name);
 		
-		if (def instanceof AbsFunDef) {
+		if (def instanceof AbsVarDef) {
+			SemType type = SymbDesc.getType(def);
+			if (!(type instanceof SemFunType))
+				Report.error(acceptor.position, "Cannot call value of non-function type \'"
+								+ type.toString() + "\'");
+			SymbDesc.setNameDef(acceptor, def);
+			SymbDesc.setType(acceptor, ((SemFunType) SymbDesc.getType(def)).resultType);
+		}
+		else {
 			AbsDef definition = SymbTable.fndFunc(acceptor.name, parameters);
 			if (definition == null) {
 				Report.error(acceptor.position, "Method " + acceptor.name
@@ -299,14 +307,6 @@ public class TypeChecker implements Visitor {
 			SymbDesc.setNameDef(acceptor, definition);
 			SymbDesc.setType(acceptor,
 					((SemFunType) SymbDesc.getType(definition)).resultType);
-		}
-		else if (def instanceof AbsVarDef) {
-			SemType type = SymbDesc.getType(def);
-			if (!(type instanceof SemFunType))
-				Report.error(acceptor.position, "Cannot call value of non-function type \'"
-								+ type.toString() + "\'");
-			SymbDesc.setNameDef(acceptor, def);
-			SymbDesc.setType(acceptor, ((SemFunType) SymbDesc.getType(def)).resultType);
 		}
 	}
 

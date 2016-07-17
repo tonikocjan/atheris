@@ -14,6 +14,7 @@ import compiler.frames.FrmParAccess;
 import compiler.frames.FrmTemp;
 import compiler.frames.FrmVarAccess;
 import compiler.seman.SymbDesc;
+import compiler.seman.SymbTable;
 import compiler.seman.type.SemListType;
 import compiler.seman.type.SemClassType;
 import compiler.seman.type.SemPtrType;
@@ -224,7 +225,11 @@ public class ImcCodeGen implements Visitor {
 		for (int arg = 0; arg < acceptor.numArgs(); arg++)
 			acceptor.arg(arg).accept(this);
 
-		FrmFrame frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
+		FrmFrame frame = null;
+		if (SymbTable.fnd(acceptor.name) instanceof AbsFunDef)
+			frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
+		else return;
+		
 		ImcCALL fnCall = new ImcCALL(frame.label);
 
 		int diff = currentFrame.level - frame.level;
