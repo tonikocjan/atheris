@@ -8,7 +8,7 @@ import compiler.abstr.Visitor;
 public class AbsStmts extends AbsTree {
 
 	/** Elementi seznama definicij. */
-	private AbsStmt stmts[];
+	public AbsStmt stmts[];
 	
 	public AbsStmts(Position position, Vector<AbsStmt> absStmts) {
 		super(position);

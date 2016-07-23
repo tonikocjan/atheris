@@ -111,6 +111,7 @@ public class Main {
 			source.accept(nc);
 			source.accept(new TypeChecker());
 			semAn.dump(source);
+			source.accept(new InitializationChecker());
 			if (execPhase.equals("seman")) break;
 			
 			// Klicni zapisi.

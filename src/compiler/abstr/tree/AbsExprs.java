@@ -13,7 +13,7 @@ import compiler.abstr.*;
 public class AbsExprs extends AbsExpr {
 
 	/** Seznam izrazov. */
-	private final AbsExpr exprs[];
+	public final AbsExpr exprs[];
 
 	/**
 	 * Ustvari nov opis izrazov.

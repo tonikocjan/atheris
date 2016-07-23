@@ -16,7 +16,7 @@ public class AbsFunCall extends AbsExpr {
 	public final String name;
 	
 	/** Argumenti funkcije. */
-	private final AbsExpr args[];
+	public final AbsExpr args[];
 
 	/**
 	 * Ustvari nov opis klica funkcije.

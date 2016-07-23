@@ -50,6 +50,17 @@ public class AbsDefs extends AbsTree {
 		return defs.length;
 	}
 	
+	
+	public AbsDef findDefinition(String name) {
+		for (AbsDef d : defs) {
+			if (d instanceof AbsVarDef && ((AbsVarDef) d).name.equals(name))
+				return d;
+			if (d instanceof AbsFunDef && ((AbsFunDef) d).name.equals(name))
+				return d;
+		}
+		return null;
+	}
+	
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }
 
 }

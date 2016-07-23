@@ -149,12 +149,18 @@ public class TypeChecker implements Visitor {
 			if (!(t1 instanceof SemClassType))
 				Report.error(acceptor.position,
 						"Left expression must be a class type to use '.' operator");
-
+			
 			String name;
 			if (acceptor.expr2 instanceof AbsVarName)
 				name = ((AbsVarName) acceptor.expr2).name;
 			else
 				name = ((AbsFunCall) acceptor.expr2).name;
+
+			AbsVarDef varDef = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr1);
+			AbsClassDef classDef = (AbsClassDef) SymbTable.fnd(((AbsTypeName)varDef.type).name);
+			AbsDef definition = classDef.definitions.findDefinition(name);
+			SymbDesc.setNameDef(acceptor.expr2, definition);
+			SymbDesc.setNameDef(acceptor, definition);
 
 			SemClassType sType = (SemClassType) t1;
 			SemType type = sType.getMembers().get(name);
