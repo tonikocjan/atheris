@@ -129,75 +129,65 @@ public class NameChecker implements Visitor {
 				frame.label = FrmLabel.newLabel(name);
 				FrmDesc.setFrame(print, frame);
 			}
-			// {
-			// Vector<AbsPar> pars = new Vector<>();
-			// Vector<SemType> parTypes = new Vector<>();
-			// parTypes.add(new SemPtrType(new SemAtomType(AtomType.INT)));
-			// pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-			// AtomType.INT)));
-			// AbsFunDef print = new AbsFunDef(null, "getInt", pars,
-			// new AbsAtomType(null, AtomType.INT), new AbsExpr(
-			// null) {
-			// @Override
-			// public void accept(Visitor visitor) {
-			// }
-			// });
-			// SymbTable.ins("getInt", print);
-			// SymbDesc.setType(print, new SemFunType(parTypes,
-			// new SemAtomType(AtomType.INT)));
-			//
-			// FrmFrame frame = new FrmFrame(print, 1);
-			// frame.numPars = 1;
-			// frame.sizePars = 4;
-			// frame.label = FrmLabel.newLabel("getInt");
-			// FrmDesc.setFrame(print, frame);
-			// }
-			// {
-			// Vector<AbsPar> pars = new Vector<>();
-			// Vector<SemType> parTypes = new Vector<>();
-			// parTypes.add(new SemAtomType(AtomType.STR));
-			// pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-			// AtomType.STR)));
-			// AbsFunDef print = new AbsFunDef(null, "putString", pars,
-			// new AbsAtomType(null, AtomType.INT), new AbsExpr(
-			// null) {
-			// @Override
-			// public void accept(Visitor visitor) {
-			// }
-			// });
-			// SymbTable.ins("putString", print);
-			// SymbDesc.setType(print, new SemFunType(parTypes,
-			// new SemAtomType(AtomType.INT)));
-			//
-			// FrmFrame frame = new FrmFrame(print, 1);
-			// frame.numPars = 1;
-			// frame.sizePars = 4;
-			// frame.label = FrmLabel.newLabel("putString");
-			// FrmDesc.setFrame(print, frame);
-			// }
-			// {
-			// Vector<AbsPar> pars = new Vector<>();
-			// Vector<SemType> parTypes = new Vector<>();
-			// parTypes.add(new SemPtrType(new SemAtomType(AtomType.STR)));
-			// pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-			// AtomType.STR)));
-			// AbsFunDef print = new AbsFunDef(null, "getString", pars,
-			// new AbsAtomType(null, AtomType.STR), new AbsExpr(
-			// null) {
-			// @Override
-			// public void accept(Visitor visitor) {
-			// }
-			// });
-			// SymbTable.ins("getString", print);
-			// SymbDesc.setType(print, new SemFunType(parTypes,
-			// new SemAtomType(AtomType.STR)));
-			//
-			// FrmFrame frame = new FrmFrame(print, 1);
-			// frame.numPars = 1;
-			// frame.sizePars = 4;
-			// frame.label = FrmLabel.newLabel("getString");
-			// FrmDesc.setFrame(print, frame);
-			// }
+			{
+				String name = "time";
+				Vector<AbsPar> pars = new Vector<>();
+				Vector<SemType> parTypes = new Vector<>();
+
+
+				AbsFunDef time = new AbsFunDef(null, name, pars,
+						new AbsAtomType(null, AtomType.INT), new AbsStmts(
+								null, new Vector<>()));
+				SymbTable.insFunc(name, parTypes, time);
+				SymbDesc.setType(time, new SemFunType(parTypes,
+						new SemAtomType(AtomType.INT)));
+
+				FrmFrame frame = new FrmFrame(time, 1);
+				frame.numPars = 0;
+				frame.sizePars = 0;
+				frame.label = FrmLabel.newLabel(name);
+				FrmDesc.setFrame(time, frame);
+			}
+			{
+				String name = "rand";
+				Vector<AbsPar> pars = new Vector<>();
+				Vector<SemType> parTypes = new Vector<>();
+
+
+				AbsFunDef rand = new AbsFunDef(null, name, pars,
+						new AbsAtomType(null, AtomType.INT), new AbsStmts(
+								null, new Vector<>()));
+				SymbTable.insFunc(name, parTypes, rand);
+				SymbDesc.setType(rand, new SemFunType(parTypes,
+						new SemAtomType(AtomType.INT)));
+
+				FrmFrame frame = new FrmFrame(rand, 1);
+				frame.numPars = 0;
+				frame.sizePars = 0;
+				frame.label = FrmLabel.newLabel(name);
+				FrmDesc.setFrame(rand, frame);
+			}
+			{
+				String name = "rand";
+				Vector<AbsPar> pars = new Vector<>();
+				Vector<SemType> parTypes = new Vector<>();
+				parTypes.add(new SemAtomType(AtomType.INT));
+				pars.add(new AbsPar(null, "bound", new AbsAtomType(null,
+						AtomType.INT)));
+
+				AbsFunDef rand = new AbsFunDef(null, name, pars,
+						new AbsAtomType(null, AtomType.INT), new AbsStmts(
+								null, new Vector<>()));
+				SymbTable.insFunc(name, parTypes, rand);
+				SymbDesc.setType(rand, new SemFunType(parTypes,
+						new SemAtomType(AtomType.INT)));
+
+				FrmFrame frame = new FrmFrame(rand, 1);
+				frame.numPars = 0;
+				frame.sizePars = 0;
+				frame.label = FrmLabel.newLabel(name);
+				FrmDesc.setFrame(rand, frame);
+			}
 		} catch (Exception e) {
 		}
 	}

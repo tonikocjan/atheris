@@ -187,21 +187,11 @@ public class Interpreter {
 				System.out.println(ldM(stackPointer + 4));
 				return null;
 			}
-			if (instr.label.name().equals("_getInt")) {
-				Scanner scanner = new Scanner(System.in);
-				stM((Integer) ldM (stackPointer + 4),scanner.nextInt());
-				scanner.close();
-				return null;
+			if (instr.label.name().equals("_time")) {
+				return (int)System.currentTimeMillis();
 			}
-			if (instr.label.name().equals("_putString")) {
-				System.out.println((String) ldM(stackPointer + 4));
-				return null;
-			}
-			if (instr.label.name().equals("_getString")) {
-				Scanner scanner = new Scanner(System.in);
-				stM((Integer) ldM (stackPointer + 4),scanner.next());
-				scanner.close();
-				return null;
+			if (instr.label.name().equals("_rand")) {
+				return new Random().nextInt((Integer)ldM(stackPointer + 4));
 			}
 			
 			new Interpreter(CodeGenerator.framesByFrmLabel(instr.label), (ImcSEQ) CodeGenerator.codesByFrmLabel(instr.label));

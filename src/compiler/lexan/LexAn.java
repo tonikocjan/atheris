@@ -267,8 +267,12 @@ public class LexAn {
 					nxtCh = file.read();
 
 					/**
-					 * Delemiters for identifier are: - whitespaces - EOF -
-					 * operator - single-quote
+					 * Delemiters for identifier are: 
+					 * - whitespaces 
+					 * - EOF
+					 * - operators 
+					 * - single-quote
+					 * - doouble-quote
 					 */
 					if (isOperator(nxtCh) != null || isWhiteSpace(nxtCh)
 							|| nxtCh == -1 || nxtCh == '\'') {

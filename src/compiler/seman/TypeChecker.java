@@ -322,6 +322,14 @@ public class TypeChecker implements Visitor {
 				SymbDesc.getType(acceptor.type));
 		SymbDesc.setType(acceptor, funType);
 
+		// insert function into symbol table
+		try {
+			SymbTable.insFunc(acceptor.name, parameters, acceptor);
+		} catch (SemIllegalInsertException e) {
+			Report.error(acceptor.position, "Duplicate method \""
+					+ acceptor.name + "\"");
+		}
+		
 		acceptor.func.accept(this);
 
 		// check if return type matches
@@ -336,14 +344,6 @@ public class TypeChecker implements Visitor {
 											.toString() + "\", got \""
 									+ t.actualType().toString() + "\" instead");
 			}
-		}
-
-		// insert function into symbol table
-		try {
-			SymbTable.insFunc(acceptor.name, parameters, acceptor);
-		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Duplicate method \""
-					+ acceptor.name + "\"");
 		}
 	}
 

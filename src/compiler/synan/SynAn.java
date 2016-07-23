@@ -315,15 +315,25 @@ public class SynAn {
 		Position startPos = symbol.position;
 		if (symbol.token == Token.KW_LET) {
 			Symbol id = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
-
-			skip(new Symbol(Token.COLON, ":", null));
+			skip();
+			
+			AbsType type = null;
+			
+			if (symbol.token == Token.ASSIGN) {
+				dump("let_definition -> var identifier = expr");
+				return new AbsVarDef(startPos, id.lexeme, type, false);
+			}
+			else if (symbol.token != Token.COLON) 
+				Report.error(previous.position, "Syntax error on token \""
+						+ previous.lexeme + "\", expected \":\"");
+			
 			skip();
 
-			dump("var_definition -> let identifier : type");
+			dump("let_definition -> let identifier : type");
 
-			AbsType type = parseType();
+			type = parseType();
 			return new AbsVarDef(new Position(startPos, type.position),
-					id.lexeme, type, true);
+					id.lexeme, type, false);
 		}
 		Report.error(previous.position, "Syntax error on token \""
 				+ previous.lexeme + "\", expected keyword \"let\"");
