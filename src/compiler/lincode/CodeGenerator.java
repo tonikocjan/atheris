@@ -40,7 +40,6 @@ public class CodeGenerator {
 				CodeGenerator.insertCode(fn.frame.label, fn);
 				Interpreter.locations.put(((ImcCodeChunk) chnk).frame.label, 
 						Interpreter.heapPointer);
-				Interpreter.stM(Interpreter.heapPointer, ((ImcCodeChunk) chnk).frame.label);
 				
 				Interpreter.heapPointer += 4;
 			}

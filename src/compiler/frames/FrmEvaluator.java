@@ -5,6 +5,7 @@ import java.util.Vector;
 import compiler.abstr.Visitor;
 import compiler.abstr.tree.*;
 import compiler.seman.SymbDesc;
+import compiler.seman.type.SemFunType;
 
 public class FrmEvaluator implements Visitor {
 
@@ -53,6 +54,14 @@ public class FrmEvaluator implements Visitor {
 	public void visit(AbsBinExpr acceptor) {
 		acceptor.expr1.accept(this);
 		acceptor.expr2.accept(this);
+		
+		if (acceptor.oper == AbsBinExpr.ASSIGN) {
+			if (SymbDesc.getType(acceptor.expr1) instanceof SemFunType &&
+					SymbDesc.getType(acceptor.expr2) instanceof SemFunType) {
+				FrmDesc.setFrame(SymbDesc.getNameDef(acceptor.expr1), 
+						FrmDesc.getFrame(SymbDesc.getNameDef(acceptor.expr2)));	
+			}
+		}
 	}
 
 	@Override
@@ -88,6 +97,7 @@ public class FrmEvaluator implements Visitor {
 	public void visit(AbsFunDef acceptor) {
 		FrmFrame frame = new FrmFrame(acceptor, currentLevel);
 		FrmDesc.setFrame(acceptor, frame);
+		FrmDesc.setAccess(acceptor, new FrmFunAccess(acceptor));
 
 		FrmFrame tmp = currentFrame;
 		currentFrame = frame;

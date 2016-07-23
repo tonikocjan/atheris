@@ -12,7 +12,7 @@ import compiler.abstr.tree.*;
 public class FrmDesc {
 
 	/** Klicni zapisi. */
-	private static HashMap<AbsFunDef, FrmFrame> frames = new HashMap<AbsFunDef, FrmFrame>();
+	private static HashMap<AbsDef, FrmFrame> frames = new HashMap<AbsDef, FrmFrame>();
 
 	/**
 	 * Poveze funkcijo s klicnim zapisom.
@@ -20,7 +20,7 @@ public class FrmDesc {
 	 * @param fun Funkcija.
 	 * @param frame Klicni zapis.
 	 */
-	public static void setFrame(AbsFunDef fun, FrmFrame frame) {
+	public static void setFrame(AbsDef fun, FrmFrame frame) {
 		FrmDesc.frames.put(fun, frame);
 	}
 	

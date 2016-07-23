@@ -8,6 +8,7 @@ import compiler.abstr.tree.*;
 import compiler.frames.FrmAccess;
 import compiler.frames.FrmDesc;
 import compiler.frames.FrmFrame;
+import compiler.frames.FrmFunAccess;
 import compiler.frames.FrmLabel;
 import compiler.frames.FrmLocAccess;
 import compiler.frames.FrmParAccess;
@@ -388,10 +389,8 @@ public class ImcCodeGen implements Visitor {
 			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, fp, new ImcCONST(
 					loc.offset)));
 		} 
-//		else if (access == null) {
-//			FrmFrame frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
-//			expr = new ImcMEM(new ImcNAME(frame.label));
-//		}
+		else if (access instanceof FrmFunAccess)
+			expr = new ImcNAME(((FrmFunAccess) access).label);
 
 		ImcDesc.setImcCode(acceptor, expr);
 	}
