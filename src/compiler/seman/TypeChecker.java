@@ -98,6 +98,13 @@ public class TypeChecker implements Visitor {
 		 */
 		if (oper == AbsBinExpr.ASSIGN) {
 			boolean success = false;
+			
+			// if left variable doesn't have type, assign right type
+			if (t1 == null) {
+				t1 = t2;
+				SymbDesc.setType(acceptor.expr1, t1);
+			}
+			
 			if (t1.sameStructureAs(t2)) {
 				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
 				SymbDesc.setType(acceptor, t2);
@@ -414,10 +421,11 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		acceptor.type.accept(this);
-		SemType type = SymbDesc.getType(acceptor.type);
-
-		SymbDesc.setType(acceptor, type);
+		if (acceptor.type != null) {
+			acceptor.type.accept(this);
+			SemType type = SymbDesc.getType(acceptor.type);
+			SymbDesc.setType(acceptor, type);
+		}
 	}
 
 	@Override

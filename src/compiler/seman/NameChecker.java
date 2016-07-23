@@ -347,7 +347,8 @@ public class NameChecker implements Visitor {
 	public void visit(AbsVarDef acceptor) {
 		try {
 			SymbTable.ins(acceptor.name, acceptor);
-			acceptor.type.accept(this);
+			if (acceptor.type != null)
+				acceptor.type.accept(this);
 		} catch (SemIllegalInsertException e) {
 			Report.error(acceptor.position, "Duplicate variable \""
 					+ acceptor.name + "\"");

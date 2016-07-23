@@ -342,7 +342,7 @@ public class SemAn implements Visitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		indent += 2; varDef.type.accept(this); indent -= 2;
+		indent += 2; if (varDef.type != null) varDef.type.accept(this); indent -= 2;
 	}
 	
 	public void visit(AbsVarName varName) {

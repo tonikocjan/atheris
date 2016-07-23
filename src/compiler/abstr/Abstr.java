@@ -318,7 +318,10 @@ public class Abstr implements Visitor {
 		indent += 2;
 		if (varDef.isConstant)
 			Report.dump(indent, "#CONSTANT");
-		varDef.type.accept(this);
+		if (varDef.type == null)
+			Report.dump(indent, "?");
+		else
+			varDef.type.accept(this);
 		indent -= 2;
 	}
 
