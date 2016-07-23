@@ -142,6 +142,7 @@ public class LexAn {
 			if (nxtCh == '#') {
 				while (nxtCh != -1 && nxtCh != 10)
 					nxtCh = file.read();
+				continue;
 			}
 			/**
 			 * Handle multi-line comments.
