@@ -212,16 +212,12 @@ public class NameChecker implements Visitor {
 		try {
 			SymbTable.ins(acceptor.getName(), acceptor);
 		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Structure \"" + acceptor.getName()
-					+ "\" already exists");
+			Report.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName()
+					+ "\'");
 		}
 		SymbTable.newScope();
 		acceptor.getDefinitions().accept(this);
 		SymbTable.oldScope();
-		
-		for (AbsFunDef c : acceptor.contrustors) {
-			c.accept(this);
-		}
 	}
 
 	@Override
@@ -238,13 +234,9 @@ public class NameChecker implements Visitor {
 	public void visit(AbsBinExpr acceptor) {
 		acceptor.expr1.accept(this);
 
-		if (acceptor.oper == AbsBinExpr.DOT) {
-			if (!(acceptor.expr2 instanceof AbsVarName ||
-					acceptor.expr2 instanceof AbsFunCall))
-				  Report.error(acceptor.position, "Invalid expression for DOT operator");
-		}
-		else
+		if (acceptor.oper != AbsBinExpr.DOT) {
 			acceptor.expr2.accept(this);
+		}
 	}
 
 	@Override

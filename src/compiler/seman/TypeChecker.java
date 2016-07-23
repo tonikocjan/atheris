@@ -14,9 +14,6 @@ import compiler.seman.type.*;
  * @implementation Toni Kocjan
  */
 public class TypeChecker implements Visitor {
-	
-	// set of initialized variables
-	private HashSet<AbsVarDef> initialized = new HashSet<>();
 
 	@Override
 	public void visit(AbsListType acceptor) {
@@ -64,20 +61,8 @@ public class TypeChecker implements Visitor {
 
 	@Override
 	public void visit(AbsBinExpr acceptor) {
-		if (acceptor.oper == AbsBinExpr.ASSIGN) {
-			if (!(acceptor.expr1 instanceof AbsVarName))
-				Report.error(acceptor.position, "Cannot assign to a literal value");
-			
-			// if variable is constant and already initialized, error
-			AbsVarDef def = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr1);
-			if (def.isConstant && initialized.contains(def))
-				Report.error(acceptor.position, 
-						"Immutable value \'" + ((AbsVarName) acceptor.expr1).name +
-						"\' may only be initialized once");
-			initialized.add(def);
-		}
-		
 		acceptor.expr1.accept(this);
+		
 		if (acceptor.oper != AbsBinExpr.DOT)
 			acceptor.expr2.accept(this);
 
@@ -140,7 +125,7 @@ public class TypeChecker implements Visitor {
 			if (!success)
 				Report.error(acceptor.position, "Cannot assign type " + t2
 						+ " to type " + t1);
-
+			
 			return;
 		}
 
@@ -163,7 +148,7 @@ public class TypeChecker implements Visitor {
 
 			if (!(t1 instanceof SemClassType))
 				Report.error(acceptor.position,
-						"Left expression's type must be a class type to use DOT operator");
+						"Left expression must be a class type to use '.' operator");
 
 			String name;
 			if (acceptor.expr2 instanceof AbsVarName)
@@ -173,11 +158,6 @@ public class TypeChecker implements Visitor {
 
 			SemClassType sType = (SemClassType) t1;
 			SemType type = sType.getMembers().get(name);
-
-			if (type == null)
-				Report.error(acceptor.position, "\"" + name
-						+ "\" is not defined in class \"" + sType.getName()
-						+ "\"");
 
 			SymbDesc.setType(acceptor.expr2, type);
 			SymbDesc.setType(acceptor, type);
@@ -436,15 +416,6 @@ public class TypeChecker implements Visitor {
 	public void visit(AbsVarName acceptor) {
 		SymbDesc.setType(acceptor,
 				SymbDesc.getType(SymbDesc.getNameDef(acceptor)));
-		
-		if (SymbDesc.getNameDef(acceptor) instanceof AbsVarDef) {
-			AbsVarDef def = (AbsVarDef) SymbDesc.getNameDef(acceptor);
-			if (!initialized.contains(def)) {
-				String err = def.isConstant ? "Constant \'" : "Variable \'";
-				Report.error(acceptor.position, err + acceptor.name +
-						"\' used before being initialized");
-			}
-		}
 	}
 
 	@Override
