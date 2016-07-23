@@ -156,11 +156,13 @@ public class TypeChecker implements Visitor {
 			else
 				name = ((AbsFunCall) acceptor.expr2).name;
 
-			AbsVarDef varDef = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr1);
-			AbsClassDef classDef = (AbsClassDef) SymbTable.fnd(((AbsTypeName)varDef.type).name);
-			AbsDef definition = classDef.definitions.findDefinition(name);
-			SymbDesc.setNameDef(acceptor.expr2, definition);
-			SymbDesc.setNameDef(acceptor, definition);
+			if (!(SymbDesc.getNameDef(acceptor.expr1) instanceof AbsPar)) {
+				AbsVarDef varDef = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr1);
+				AbsClassDef classDef = (AbsClassDef) SymbTable.fnd(((AbsTypeName)varDef.type).name);
+				AbsDef definition = classDef.definitions.findDefinition(name);
+				SymbDesc.setNameDef(acceptor.expr2, definition);
+				SymbDesc.setNameDef(acceptor, definition);
+			}
 
 			SemClassType sType = (SemClassType) t1;
 			SemType type = sType.getMembers().get(name);

@@ -181,6 +181,9 @@ public class InitializationChecker implements Visitor {
 
 	@Override
 	public void visit(AbsVarName acceptor) {
+		if (SymbDesc.getNameDef(acceptor) instanceof AbsPar)
+			return;
+		
 		AbsVarDef def = (AbsVarDef) SymbDesc.getNameDef(acceptor);
 
 		if (shouldCheckIfInitialized) {
