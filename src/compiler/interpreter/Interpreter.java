@@ -10,6 +10,7 @@ import compiler.lincode.CodeGenerator;
 public class Interpreter {
 
 	public static boolean debug = false;
+	public static boolean shouldPrintMemory = false;
 	
 	/*--- staticni del navideznega stroja ---*/
 	
@@ -18,7 +19,7 @@ public class Interpreter {
 	public static HashMap<FrmLabel, Integer> locations = new HashMap<>();
 	
 	/** Vrhnji naslov kopice */
-	public static int offset = 4;
+	public static int heapPointer = 4;
 	
 	public static void stM(Integer address, Object value) {
 		if (debug) System.out.println(" [" + address + "] <= " + value);
@@ -31,16 +32,16 @@ public class Interpreter {
 		return value;
 	}
 	
-	public static int getFP() { return fp; }
+	public static int getFP() { return framePointer; }
 	
 	/** Velikost sklada */
 	public  static int STACK_SIZE = 1000;
 	
 	/** Kazalec na vrh klicnega zapisa. */
-	private static int fp = STACK_SIZE;
+	private static int framePointer = STACK_SIZE;
 
 	/** Kazalec na dno klicnega zapisa. */
-	private static int sp = STACK_SIZE;
+	private static int stackPointer = STACK_SIZE;
 	
 	/*--- dinamicni del navideznega stroja ---*/
 	
@@ -81,18 +82,18 @@ public class Interpreter {
 			System.out.println("[START OF " + frame.label.name() + "]");
 		}
 	
-		stM(sp - frame.sizeLocs - 4, fp);
-		fp = sp;
-		stT(frame.FP, fp);
-		sp = sp - frame.size();
+		stM(stackPointer - frame.sizeLocs - 4, framePointer);
+		framePointer = stackPointer;
+		stT(frame.FP, framePointer);
+		stackPointer = stackPointer - frame.size();
 		
-		if (sp < 0) {
+		if (stackPointer < 0) {
 			Report.error("Error, stack overflow");
 		}
 		
 		if (debug) {
-			System.out.println("[FP=" + fp + "]");
-			System.out.println("[SP=" + sp + "]");
+			System.out.println("[FP=" + framePointer + "]");
+			System.out.println("[SP=" + stackPointer + "]");
 		}
 
 		int pc = 0;
@@ -109,19 +110,22 @@ public class Interpreter {
 			}
 			else
 				pc++;
-//			System.out.println(pc);
-//			printMemory();
-//			System.out.println();
+			
+			if (shouldPrintMemory) {
+				System.out.println(pc);
+				printMemory();
+				System.out.println();
+			}
 		}
 		
-		fp = (Integer) ldM(fp - frame.sizeLocs - 4);
-		sp = sp + frame.size();
+		framePointer = (Integer) ldM(framePointer - frame.sizeLocs - 4);
+		stackPointer = stackPointer + frame.size();
 		if (debug) {
-			System.out.println("[FP=" + fp + "]");
-			System.out.println("[SP=" + sp + "]");
+			System.out.println("[FP=" + framePointer + "]");
+			System.out.println("[SP=" + stackPointer + "]");
 		}
 		
-		stM(sp, ldT(frame.RV));
+		stM(stackPointer, ldT(frame.RV));
 		if (debug) {
 			System.out.println("[RV=" + ldT(frame.RV) + "]");
 		}
@@ -171,37 +175,37 @@ public class Interpreter {
 		if (instruction instanceof ImcCALL) {
 			ImcCALL instr = (ImcCALL) instruction;
 			int offset = 0;
-			stM(sp + offset, execute(instr.args.getFirst()));
+			stM(stackPointer + offset, execute(instr.args.getFirst()));
 			
 			offset += 4;
 			
 			for (int i = 1; i < instr.args.size(); i++) {
-				stM(sp + offset, execute(instr.args.get(i)));
+				stM(stackPointer + offset, execute(instr.args.get(i)));
 				offset += 4;
 			}
 			if (instr.label.name().equals("_print")) {
-				System.out.println(ldM(sp + 4));
+				System.out.println(ldM(stackPointer + 4));
 				return null;
 			}
 			if (instr.label.name().equals("_getInt")) {
 				Scanner scanner = new Scanner(System.in);
-				stM((Integer) ldM (sp + 4),scanner.nextInt());
+				stM((Integer) ldM (stackPointer + 4),scanner.nextInt());
 				scanner.close();
 				return null;
 			}
 			if (instr.label.name().equals("_putString")) {
-				System.out.println((String) ldM(sp + 4));
+				System.out.println((String) ldM(stackPointer + 4));
 				return null;
 			}
 			if (instr.label.name().equals("_getString")) {
 				Scanner scanner = new Scanner(System.in);
-				stM((Integer) ldM (sp + 4),scanner.next());
+				stM((Integer) ldM (stackPointer + 4),scanner.next());
 				scanner.close();
 				return null;
 			}
 			
 			new Interpreter(CodeGenerator.framesByFrmLabel(instr.label), (ImcSEQ) CodeGenerator.codesByFrmLabel(instr.label));
-			return ldM(sp);
+			return ldM(stackPointer);
 		}
 		
 		if (instruction instanceof ImcCJUMP) {
@@ -244,9 +248,9 @@ public class Interpreter {
 		
 		if (instruction instanceof ImcMALLOC) {
 			ImcMALLOC malloc = (ImcMALLOC) instruction;
-			ImcDataChunk data = new ImcDataChunk(malloc.chunkLabel, malloc.size);
-			Interpreter.locations.put(data.label, offset);
-			Interpreter.stM(offset, data.data);
+			int location = heapPointer;
+			heapPointer += malloc.size;
+			return location;
 		}
 		
 		if (instruction instanceof ImcMOVE) {
@@ -268,8 +272,8 @@ public class Interpreter {
 		
 		if (instruction instanceof ImcNAME) {
 			ImcNAME instr = (ImcNAME) instruction;
-			if (instr.label.name().equals("FP")) return fp;
-			if (instr.label.name().equals("SP")) return sp;
+			if (instr.label.name().equals("FP")) return framePointer;
+			if (instr.label.name().equals("SP")) return stackPointer;
 
 			return locations.get(instr.label);
 		}

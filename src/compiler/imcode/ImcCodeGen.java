@@ -14,7 +14,6 @@ import compiler.frames.FrmParAccess;
 import compiler.frames.FrmTemp;
 import compiler.frames.FrmVarAccess;
 import compiler.seman.SymbDesc;
-import compiler.seman.SymbTable;
 import compiler.seman.type.SemListType;
 import compiler.seman.type.SemClassType;
 import compiler.seman.type.SemPtrType;
@@ -45,13 +44,10 @@ public class ImcCodeGen implements Visitor {
 			ImcSEQ code = (ImcSEQ) ImcDesc.getImcCode(c);
 
 			FrmFrame frame = FrmDesc.getFrame(c);
-			FrmLabel dataLabel = FrmLabel.newLabel();
 			ImcSEQ seq = new ImcSEQ();
-			seq.stmts.add(new ImcMALLOC(size, dataLabel));
 			if (code != null)
 				seq.stmts.add(code);
-			seq.stmts.add(new ImcMOVE(new ImcTEMP(frame.RV), new ImcNAME(
-					dataLabel)));
+			seq.stmts.add(new ImcMOVE(new ImcTEMP(frame.RV), new ImcMALLOC(size)));
 
 			ImcDesc.setImcCode(c, seq);
 			chunks.removeLast();
@@ -225,11 +221,7 @@ public class ImcCodeGen implements Visitor {
 		for (int arg = 0; arg < acceptor.numArgs(); arg++)
 			acceptor.arg(arg).accept(this);
 
-		FrmFrame frame = null;
-		if (SymbTable.fnd(acceptor.name) instanceof AbsFunDef)
-			frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
-		else return;
-		
+		FrmFrame frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
 		ImcCALL fnCall = new ImcCALL(frame.label);
 
 		int diff = currentFrame.level - frame.level;
@@ -395,10 +387,11 @@ public class ImcCodeGen implements Visitor {
 
 			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, fp, new ImcCONST(
 					loc.offset)));
-		} else if (access == null) {
-			FrmFrame frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
-			expr = new ImcMEM(new ImcNAME(frame.label));
-		}
+		} 
+//		else if (access == null) {
+//			FrmFrame frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
+//			expr = new ImcMEM(new ImcNAME(frame.label));
+//		}
 
 		ImcDesc.setImcCode(acceptor, expr);
 	}

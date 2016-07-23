@@ -39,20 +39,20 @@ public class CodeGenerator {
 				}
 				CodeGenerator.insertCode(fn.frame.label, fn);
 				Interpreter.locations.put(((ImcCodeChunk) chnk).frame.label, 
-						Interpreter.offset);
-				Interpreter.stM(Interpreter.offset, ((ImcCodeChunk) chnk).frame.label);
+						Interpreter.heapPointer);
+				Interpreter.stM(Interpreter.heapPointer, ((ImcCodeChunk) chnk).frame.label);
 				
-				Interpreter.offset += 4;
+				Interpreter.heapPointer += 4;
 			}
 			else {
 				ImcDataChunk data = (ImcDataChunk) chnk;
-				Interpreter.locations.put(data.label, Interpreter.offset);
+				Interpreter.locations.put(data.label, Interpreter.heapPointer);
 				if (data.data != null)
-					Interpreter.stM(Interpreter.offset, data.data);
+					Interpreter.stM(Interpreter.heapPointer, data.data);
 				else
-					Interpreter.stM(Interpreter.offset, 0);
+					Interpreter.stM(Interpreter.heapPointer, 0);
 					
-				Interpreter.offset += data.size;
+				Interpreter.heapPointer += data.size;
 			}
 		}
 		return mainFrame;
