@@ -69,7 +69,7 @@ public class SemFunType extends SemPtrType {
 		String str = "";
 		str += "(";
 		for (SemType t : parameterTypes)
-			str += (t == parameterTypes.lastElement() ? "," : "") + t.toString();
+			str += t.toString() + (t == parameterTypes.lastElement() ? "" : ",") ;
 		String res = resultType == null ? "?" : resultType.toString();
 		str += ") -> " + res;
 		return str;

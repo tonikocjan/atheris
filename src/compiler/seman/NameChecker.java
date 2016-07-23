@@ -32,6 +32,7 @@ public class NameChecker implements Visitor {
 						new AbsAtomType(null, AtomType.VOID), new AbsStmts(
 								null, new Vector<>()));
 				SymbTable.insFunc(name, parTypes, print);
+				SymbTable.ins("print", print);
 				SymbDesc.setType(print, new SemFunType(parTypes,
 						new SemAtomType(AtomType.VOID)));
 
@@ -133,12 +134,11 @@ public class NameChecker implements Visitor {
 				String name = "time";
 				Vector<AbsPar> pars = new Vector<>();
 				Vector<SemType> parTypes = new Vector<>();
-
-
 				AbsFunDef time = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomType.INT), new AbsStmts(
 								null, new Vector<>()));
 				SymbTable.insFunc(name, parTypes, time);
+				SymbTable.ins("time", time);
 				SymbDesc.setType(time, new SemFunType(parTypes,
 						new SemAtomType(AtomType.INT)));
 
@@ -152,12 +152,11 @@ public class NameChecker implements Visitor {
 				String name = "rand";
 				Vector<AbsPar> pars = new Vector<>();
 				Vector<SemType> parTypes = new Vector<>();
-
-
 				AbsFunDef rand = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomType.INT), new AbsStmts(
 								null, new Vector<>()));
 				SymbTable.insFunc(name, parTypes, rand);
+				SymbTable.ins("rand", rand);
 				SymbDesc.setType(rand, new SemFunType(parTypes,
 						new SemAtomType(AtomType.INT)));
 
@@ -262,6 +261,13 @@ public class NameChecker implements Visitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
+		AbsDef definition = SymbTable.fnd(acceptor.name);
+		if (definition == null)
+			Report.error(acceptor.position, "Method " + acceptor.name
+					+ " is undefined");
+		
+		SymbDesc.setNameDef(acceptor, definition);
+		
 		for (int arg = 0; arg < acceptor.numArgs(); arg++)
 			acceptor.arg(arg).accept(this);
 	}
@@ -271,8 +277,7 @@ public class NameChecker implements Visitor {
 		try {
 			SymbTable.ins(acceptor.name, acceptor);
 		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Invaid redeclaration of \""
-					+ acceptor.name + "\"");
+			
 		}
 		
 		SymbTable.newScope();

@@ -13,7 +13,7 @@ public class FrmEvaluator implements Visitor {
 	private FrmFrame currentFrame = null;
 	public FrmFrame entryPoint = null;
 	
-	public static final String ENTRY_POINT = "__main";
+	public static final String ENTRY_POINT = "_main";
 	
 	public FrmEvaluator() {
 		AbsFunDef _main = new AbsFunDef(null, ENTRY_POINT, new Vector<>(), 

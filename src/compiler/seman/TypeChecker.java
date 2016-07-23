@@ -282,9 +282,9 @@ public class TypeChecker implements Visitor {
 			parameters.add(parType);
 		}
 
-		AbsDef def = SymbTable.fnd(acceptor.name);
+		AbsDef def = SymbDesc.getNameDef(acceptor);
 		
-		if (def instanceof AbsVarDef) {
+		if (def instanceof AbsVarDef || def instanceof AbsPar) {
 			SemType type = SymbDesc.getType(def);
 			if (!(type instanceof SemFunType))
 				Report.error(acceptor.position, "Cannot call value of non-function type \'"
