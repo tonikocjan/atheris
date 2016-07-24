@@ -1,7 +1,6 @@
 package compiler.imcode;
 
 import compiler.Report;
-import compiler.frames.FrmLabel;
 
 public class ImcMALLOC extends ImcExpr {
 
@@ -14,8 +13,7 @@ public class ImcMALLOC extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "ImcMALLOC");
-		Report.dump(indent + 2, "Size: " + size);
+		Report.dump(indent, "MALLOC size: " + size + " BYTES");
 	}
 
 	@Override
