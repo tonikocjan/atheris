@@ -1,0 +1,4 @@
+
+/* General */
+"general_app_name"          = "Atheris";
+"general_app_hello_message" = "This is Atheris compiler, v0.1";

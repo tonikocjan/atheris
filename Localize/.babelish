@@ -1,0 +1,22 @@
+###################################### CSV2Strings ######################################
+
+## required
+filename: "Atheris Localization"
+
+langs:                               	
+  English: "en"
+
+## optional
+fetch: true                        	# set to true to get file(filename) from google drive
+sheet: 0				# set sheet number
+#excluded_states: ["SKIP", "Android"]  	# Exclude rows with given state
+comments_column: 0                      # Position of column for comments if any
+#state_column: 4                     	# Position of column for state if any
+keys_column: 1                      	# Position of column for keys
+default_lang: "ENGLISH"               	# Header name of column containing fallback value if value is empty
+output_dir: "."   # Path of output files
+output_basenames:                  	# Basename of output files
+- Localizable
+ignore_lang_path: false             	# does not care about lang component path. i.e: en.lproj/
+stripping: true                     	# Strips values inside the spreadsheet
+csv_separator: ","			# CSV column separator character, uses ',' by default

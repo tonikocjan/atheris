@@ -1,5 +1,6 @@
 package compiler;
 
+import managers.LanguageManager;
 import compiler.lincode.CodeGenerator;
 import compiler.lexan.*;
 import compiler.synan.*;
@@ -36,7 +37,15 @@ public class Main {
 	 *            Parametri ukazne vrstice.
 	 */
 	public static void main(String[] args) {
-		System.out.printf("This is Atheris compiler, v0.1:\n");
+		/**
+		 * Load localization.
+		 */
+		LanguageManager.sharedInstance.loadLocalization("Localize/en.lproj/Localizable.strings");
+		
+		/**
+		 * Start compiling.
+		 */
+		System.out.println(LanguageManager.localize("general_app_hello_message"));
 		
 		// Pregled ukazne vrstice.
 		for (int argc = 0; argc < args.length; argc++) {
