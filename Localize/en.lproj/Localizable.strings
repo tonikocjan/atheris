@@ -1,4 +1,21 @@
 
 /* General */
-"general_app_name"          = "Atheris";
-"general_app_hello_message" = "This is Atheris compiler, v0.1";
+"general_compiler_name"                        = "Atheris";
+"general_compiler_message"                     = "This is Atheris compiler, v0.1";
+"general_finished_compiling"                   = ":-) Done.\n";
+"general_executing_file"                       = "----- Executing file %s -----";
+
+/* Errors */
+"error_uknown_phase"                           = "Uknown phase '%s'";
+"error_invalid_stack_size_parameter"           = "Invalid stack size parameter";
+"error_unknown_switch"                         = "Unrecognized switch in the command line";
+"error_source_file_not_specified"              = "Source file name not specified";
+
+/* Lexan errors */
+"lexan_error_opening_file"                     = "Error opening file '%s'";
+"lexan_error_parsing_file"                     = "Error while parsing input file! Exiting ...";
+"lexan_error_invalid_token_in_string_constant" = "Invalid token in string constant";
+"lexan_error_string_not_closed"                = "String literal not properly closed";
+"lexan_error_char_literal_not_closed"          = "Char literal not properly closed";
+"lexan_error_invalid_token"                    = "Invalid token '%c' in identifier";
+"lexan_error_unknown_token"                    = "Unknown token '%c'";

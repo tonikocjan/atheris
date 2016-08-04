@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import managers.LanguageManager;
 import compiler.*;
 
 /**
@@ -87,8 +88,7 @@ public class LexAn {
 						Token.values()[i + Token.INTEGER.ordinal()]);
 
 		} catch (FileNotFoundException e) {
-			Report.error("File [ " + sourceFileName
-					+ " ] does not exist! Exiting.");
+			Report.error(LanguageManager.localize("lexan_error_opening_file", sourceFileName));
 		}
 	}
 
@@ -113,7 +113,7 @@ public class LexAn {
 			return s;
 
 		} catch (IOException e) {
-			Report.error("Error while parsing input file! Exiting ...");
+			Report.error(LanguageManager.localize("lexan_error_parsing_file"));
 		}
 
 		return null;
@@ -191,7 +191,7 @@ public class LexAn {
 							break;
 						Report.error(new Position(startRow, startCol, startRow,
 								startCol + word.length() + 1),
-								"Invalid token in string constant");
+								LanguageManager.localize("lexan_error_invalid_token_in_string_constant"));
 					}
 
 					word.append((char) nxtCh);
@@ -212,7 +212,7 @@ public class LexAn {
 				if (!strClosed) {
 					Report.error(new Position(startRow, startCol, startRow,
 							startCol + word.length()),
-							"String literal not properly closed");
+							LanguageManager.localize("lexan_error_string_not_closed"));
 				}
 
 				return new Symbol(Token.STR_CONST, word.toString(), startRow,
@@ -254,7 +254,7 @@ public class LexAn {
 				if (nxtCh != '\'')
 					Report.error(new Position(startRow, startCol, startRow,
 							startCol + word.length() + 1),
-							"Char constant must end with \"\'\"");
+							LanguageManager.localize("lexan_error_char_literal_not_closed"));
 				return s;
 			}
 
@@ -296,8 +296,7 @@ public class LexAn {
 					if (!isLegalId(nxtCh))
 						Report.error(new Position(startRow, startCol, startRow,
 								startCol + word.length() + 1),
-								"Invalid token \"" + (char) nxtCh
-										+ "\" in identifier");
+								LanguageManager.localize("lexan_error_invalid_token", (char)nxtCh));
 				}
 			}
 
@@ -367,8 +366,8 @@ public class LexAn {
 			 * Unknown character. Report error.
 			 */
 			Report.error(new Position(startRow, startCol, startRow, startCol
-					+ word.length() + 1), "Unknown token \"" + (char) nxtCh
-					+ "\", delete this token");
+					+ word.length() + 1), LanguageManager.localize("lexan_error_unknown_token", 
+																	(char) nxtCh));
 		}
 	}
 

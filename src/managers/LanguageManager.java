@@ -40,7 +40,7 @@ public class LanguageManager {
 		    	if (tmp[0].length() < 2) return false;
 		    	if (tmp[1].length() < 3) return false;
 		    	
-		    	String key = tmp[0].substring(1, tmp[0].length() - 1);
+		    	String key = tmp[0].substring(1, tmp[0].indexOf('"', 1));
 		    	String value = tmp[1].substring(1, tmp[1].length() - 2);
 		    	
 		    	strings.put(key, value);
@@ -66,9 +66,25 @@ public class LanguageManager {
 	/**
 	 * 
 	 * @param key
+	 * @param args
+	 * @return
+	 */
+	public String localizedStringForKey(String key, Object... args) {
+		if (strings.containsKey(key))
+			return String.format(strings.get(key), args);
+		return key;
+	}
+	
+	/**
+	 * 
+	 * @param key
 	 * @return
 	 */
 	public static String localize(String key) {
 		return sharedInstance.localizedStringForKey(key);
+	}
+	
+	public static String localize(String key, Object... args) {
+		return sharedInstance.localizedStringForKey(key, args);
 	}
 }

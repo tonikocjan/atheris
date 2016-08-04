@@ -45,7 +45,7 @@ public class Main {
 		/**
 		 * Start compiling.
 		 */
-		System.out.println(LanguageManager.localize("general_app_hello_message"));
+		System.out.println(LanguageManager.localize("general_compiler_name"));
 		
 		// Pregled ukazne vrstice.
 		for (int argc = 0; argc < args.length; argc++) {
@@ -58,7 +58,7 @@ public class Main {
 						dumpPhases = phase;
 					}
 					else
-						Report.warning("Unknown exec phase '" + phase + "' ignored.");
+						Report.warning(LanguageManager.localize("error_uknown_phase", phase));
 					continue;
 				}
 				if (args[argc].startsWith("--debug=")) {
@@ -72,12 +72,12 @@ public class Main {
 						Interpreter.STACK_SIZE = Integer.parseInt(size);
 					}
 					catch(Exception e) {
-						Report.warning("Invalid stack_size parameter");
+						Report.warning(LanguageManager.localize("error_invalid_stack_size_parameter"));
 					}
 					continue;
 				}
 				// Neznano stikalo.
-				Report.warning("Unrecognized switch in the command line.");
+				Report.warning(LanguageManager.localize("error_unknown_switch"));
 			} else {
 				// Ime izvorne datoteke.
 				if (sourceFileName == null)
@@ -87,7 +87,7 @@ public class Main {
 			}
 		}
 		if (sourceFileName == null)
-			Report.error("Source file name not specified.");
+			Report.error(LanguageManager.localize("error_source_file_not_specified"));
 
 		// Odpiranje datoteke z vmesnimi rezultati.
 		if (dumpPhases != null) Report.openDumpFile(sourceFileName);
@@ -148,8 +148,8 @@ public class Main {
 			FrmDesc.clean();
 			ImcDesc.clean();
 
-			System.out.printf(":-) Done.\n");
-			System.out.printf("----- Executing file %s -----\n", sourceFileName);
+			System.out.printf("");
+			System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
 			
 			// Izvajanje linearizirane vmesne kode
 			Interpreter.stM(Interpreter.getFP() + 4, 0);
@@ -161,8 +161,8 @@ public class Main {
 			if (execPhase.equals("interpret")) break;
 			
 			// Neznana faza prevajanja.
-			if (! execPhase.equals(""))
-				Report.warning("Unknown compiler phase specified.");
+			if (!execPhase.equals(""))
+				Report.warning(LanguageManager.localize("error_uknown_phase", execPhase));
 		}
 
 		// Zapiranje datoteke z vmesnimi rezultati.
