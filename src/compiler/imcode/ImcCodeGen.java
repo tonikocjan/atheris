@@ -129,11 +129,16 @@ public class ImcCodeGen implements Visitor {
 			code = sub;
 		} else if (acceptor.oper == AbsBinExpr.DOT) {
 			SemType t = SymbDesc.getType(acceptor.expr1).actualType();
-			SemClassType type = null;
 
 			if (t instanceof SemClassType) {
-				type = (SemClassType) t;
-				String var = ((AbsVarName) acceptor.expr2).name;
+				SemClassType type  = (SemClassType) t;
+				String var;
+				
+				if (acceptor.expr2 instanceof AbsVarName)
+					var = ((AbsVarName) acceptor.expr2).name;
+				else
+					var = ((AbsFunCall) acceptor.expr2).name;
+				
 				int offset = type.offsetOf(var);
 
 				code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD,
