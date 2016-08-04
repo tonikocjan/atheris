@@ -81,7 +81,7 @@ public class TypeChecker implements Visitor {
 		if (oper == AbsBinExpr.ARR) {
 			if (!t2.sameStructureAs(integer))
 				Report.error(acceptor.expr2.position,
-						"Expected INTEGER type for array index");
+						"Expected Int type for array index");
 			/**
 			 * expr1 is of type ARR(n, t)
 			 */
