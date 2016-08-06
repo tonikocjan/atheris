@@ -38,20 +38,39 @@ public class ImcCodeGen implements Visitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-		int size = SymbDesc.getType(acceptor).size();
+		SemClassType type = (SemClassType) SymbDesc.getType(acceptor);
+		int size = type.size(); 
 
 		for (AbsFunDef c : acceptor.contrustors) {
-			c.accept(this);
-			ImcSEQ code = (ImcSEQ) ImcDesc.getImcCode(c);
-
 			FrmFrame frame = FrmDesc.getFrame(c);
 			ImcSEQ seq = new ImcSEQ();
-			if (code != null)
-				seq.stmts.add(code);
-			seq.stmts.add(new ImcMOVE(new ImcTEMP(frame.RV), new ImcMALLOC(size)));
+			
+			ImcTEMP location = new ImcTEMP(new FrmTemp());
+			seq.stmts.add(new ImcMOVE(location, new ImcMALLOC(size)));
+			ImcTEMP tmp = new ImcTEMP(new FrmTemp());
 
+			for (int i = c.func.numStmts() - 1; i >= 0; i--) {
+				AbsStmt s = c.func.stmt(i);
+				
+				if (s instanceof AbsDef)
+					break;
+				if (!(s instanceof AbsBinExpr)) 
+					Report.error("internal error");
+				
+				AbsBinExpr expr = (AbsBinExpr) s;
+				AbsVarDef var = (AbsVarDef) SymbDesc.getNameDef(expr.expr1);
+				int offset = type.offsetOf(var.name);
+				
+				expr.expr2.accept(this);
+				ImcExpr code = (ImcExpr) ImcDesc.getImcCode(expr.expr2);
+				
+				ImcExpr dst = new ImcBINOP(ImcBINOP.ADD, location, new ImcCONST(offset));
+				ImcMOVE move = new ImcMOVE(new ImcMEM(dst), code);
+				seq.stmts.add(move);
+			}
+
+			seq.stmts.add(new ImcMOVE(new ImcTEMP(frame.RV), location));
 			ImcDesc.setImcCode(c, seq);
-			chunks.removeLast();
 			chunks.add(new ImcCodeChunk(frame, seq));
 		}
 	}
@@ -261,6 +280,8 @@ public class ImcCodeGen implements Visitor {
 
 		chunks.add(new ImcCodeChunk(frame, code));
 		currentFrame = tmpFr;
+		
+		ImcDesc.setImcCode(acceptor, code);
 	}
 
 	@Override
