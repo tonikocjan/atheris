@@ -73,7 +73,7 @@ public class Frames implements Visitor {
 			c.accept(this);
 		}
 		indent += 2;
-		classDef.getDefinitions().accept(this);
+		classDef.statements.accept(this);
 		indent -= 2;
 	}
 

@@ -48,8 +48,8 @@ public class Abstr implements Visitor {
 			c.accept(this);
 		}
 		indent -= 2;
-		for (int i = 0; i < classDef.getDefinitions().numDefs(); i++)
-			classDef.getDefinitions().def(i).accept(this);
+		for (int i = 0; i < classDef.statements.numStmts(); i++)
+			classDef.statements.stmt(i).accept(this);
 		indent -= 2;
 	}
 
