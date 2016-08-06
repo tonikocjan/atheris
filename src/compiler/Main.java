@@ -40,7 +40,7 @@ public class Main {
 		/**
 		 * Load localization.
 		 */
-		LanguageManager.sharedInstance.loadLocalization("Localize/en.lproj/Localizable.strings");
+		LanguageManager.sharedManager.loadLocalization("Localize/en.lproj/Localizable.strings");
 		
 		/**
 		 * Start compiling.

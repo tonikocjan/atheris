@@ -10,7 +10,7 @@ public class LanguageManager {
 	/**
 	 * Singleton.
 	 */
-	public static LanguageManager sharedInstance = new LanguageManager();
+	public static LanguageManager sharedManager = new LanguageManager();
 	
 	/**
 	 * Private default constructor.
@@ -81,10 +81,10 @@ public class LanguageManager {
 	 * @return
 	 */
 	public static String localize(String key) {
-		return sharedInstance.localizedStringForKey(key);
+		return sharedManager.localizedStringForKey(key);
 	}
 	
 	public static String localize(String key, Object... args) {
-		return sharedInstance.localizedStringForKey(key, args);
+		return sharedManager.localizedStringForKey(key, args);
 	}
 }
