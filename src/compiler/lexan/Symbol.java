@@ -128,6 +128,8 @@ public class Symbol {
 		case NEWLINE   : tokenName = "NEWLINE"   ; break;
 		case KW_IN     : tokenName = "IN"   	 ; break;
 		case KW_RETURN : tokenName = "RETURN"    ; break;
+		case KW_PUBLIC : tokenName = "PUBLIC"    ; break;
+		case KW_PRIVATE: tokenName = "PRIVATE"   ; break;
 		
 		default:
 			Report.error("Internal error: token=" + token + " in compiler.lexan.Symbol.toString().");
