@@ -206,12 +206,11 @@ public class SynAn {
 			definition = parseFunDefinition();
 			break;
 		case KW_VAR:
+		case KW_LET:
+		case KW_PUBLIC:
+		case KW_PRIVATE:
 			dump("definition -> variable_definition");
 			definition = parseVarDefinition();
-			break;
-		case KW_LET:
-			dump("definition -> constant_definition");
-			definition = parseConstantDefinition();
 			break;
 		case KW_IMPORT:
 			dump("definition -> import_definition");
@@ -283,64 +282,44 @@ public class SynAn {
 
 	private AbsDef parseVarDefinition() {
 		Position startPos = symbol.position;
-		if (symbol.token == Token.KW_VAR) {
-			Symbol id = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
+		Visibility v = Visibility.Public;
+		boolean constant = false;
+		Symbol id = null;
+		
+		if (symbol.token == Token.KW_PUBLIC)
 			skip();
-			
-			AbsType type = null;
-			
-			if (symbol.token == Token.ASSIGN) {
-				dump("var_definition -> var identifier = expr");
-				return new AbsVarDef(startPos, id.lexeme, type, false);
-			}
-			else if (symbol.token != Token.COLON) 
-				Report.error(previous.position, "Syntax error on token \""
-						+ previous.lexeme + "\", expected \":\"");
-			
+		else if (symbol.token == Token.KW_PRIVATE) {
+			v = Visibility.Private;
 			skip();
-
-			dump("var_definition -> var identifier : type");
-
-			type = parseType();
-			return new AbsVarDef(new Position(startPos, type.position),
-					id.lexeme, type, false);
 		}
-		Report.error(previous.position, "Syntax error on token \""
-				+ previous.lexeme + "\", expected keyword \"var\"");
-
-		return null;
-	}
-	
-	private AbsDef parseConstantDefinition() {
-		Position startPos = symbol.position;
-		if (symbol.token == Token.KW_LET) {
-			Symbol id = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
-			skip();
-			
-			AbsType type = null;
-			
-			if (symbol.token == Token.ASSIGN) {
-				dump("let_definition -> var identifier = expr");
-				return new AbsVarDef(startPos, id.lexeme, type, true);
-			}
-			else if (symbol.token != Token.COLON) 
-				Report.error(previous.position, "Syntax error on token \""
-						+ previous.lexeme + "\", expected \":\"");
-			
-			skip();
-
-			dump("let_definition -> let identifier : type");
-
-			type = parseType();
-			return new AbsVarDef(new Position(startPos, type.position),
-					id.lexeme, type, true);
+		
+		if (symbol.token == Token.KW_VAR)
+			id = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
+		else if (symbol.token == Token.KW_LET) {
+			constant = true;
+			id = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
 		}
-		Report.error(previous.position, "Syntax error on token \""
-				+ previous.lexeme + "\", expected keyword \"let\"");
+		
+		skip();
+		
+		AbsType type = null;
+		
+		if (symbol.token == Token.ASSIGN) {
+			dump("var_definition -> var identifier = expr");
+			return new AbsVarDef(startPos, id.lexeme, type, false);
+		}
+		else if (symbol.token != Token.COLON) 
+			Report.error(previous.position, "Syntax error on token \""
+					+ previous.lexeme + "\", expected \":\"");
+		
+		skip();
 
-		return null;
+		dump("var_definition -> var identifier : type");
+
+		type = parseType();
+		return new AbsVarDef(new Position(startPos, type.position),
+				id.lexeme, type, constant, v);
 	}
-
 
 	private AbsImportDef parseImportDefinition() {
 		Position pos = symbol.position;
@@ -403,6 +382,8 @@ public class SynAn {
 			AbsDef definition;
 			
 			switch (symbol.token) {
+			case KW_PUBLIC:
+			case KW_PRIVATE:
 			case KW_VAR:
 			case KW_LET:
 				definition = parseDefinition();
