@@ -171,6 +171,18 @@ public class TypeChecker implements Visitor {
 				AbsVarDef varDef = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr1);
 				AbsClassDef classDef = (AbsClassDef) SymbTable.fnd(((AbsTypeName)varDef.type).name);
 				AbsDef definition = classDef.statements.findDefinition(name);
+				
+				if (definition == null) {
+					Report.error(acceptor.expr2.position,
+							"Value of type '" + classDef.name + "' has no member '" + name + "'");
+				}
+				else {
+					if (definition instanceof AbsVarDef && 
+							((AbsVarDef) definition).visibility == Visibility.Private)
+						Report.error(acceptor.expr2.position,
+								"Member '" + name + "' is private");
+				}
+				
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				SymbDesc.setNameDef(acceptor, definition);
 			}
