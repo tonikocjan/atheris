@@ -144,59 +144,59 @@ public class SynAn {
 			return parseExpression();
 		}
 	}
+//
+//	private AbsDefs parseDefinitions() {
+//		dump("definitions -> definition definitions'");
+//		AbsDef definition = parseDefinition();
+//
+//		Vector<AbsDef> absDefs = parseDefinitions_();
+//		absDefs.add(0, definition);
+//		return new AbsDefs(new Position(absDefs.firstElement().position,
+//				absDefs.lastElement().position), absDefs);
+//	}
 
-	private AbsDefs parseDefinitions() {
-		dump("definitions -> definition definitions'");
-		AbsDef definition = parseDefinition();
-
-		Vector<AbsDef> absDefs = parseDefinitions_();
-		absDefs.add(0, definition);
-		return new AbsDefs(new Position(absDefs.firstElement().position,
-				absDefs.lastElement().position), absDefs);
-	}
-
-	private Vector<AbsDef> parseDefinitions_() {
-		switch (symbol.token) {
-		case EOF:
-			dump("definitions' -> $");
-
-			return new Vector<>();
-		case RBRACE:
-			dump("definitions' -> e");
-			skip();
-
-			return new Vector<>();
-		case SEMIC:
-			dump("definitions' -> ; definitions");
-			skip();
-			if (symbol.token == Token.NEWLINE)
-				skip();
-			
-			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
-				return new Vector<>();
-
-			AbsDef definition = parseDefinition();
-			Vector<AbsDef> absDefs = parseDefinitions_();
-			absDefs.add(0, definition);
-			return absDefs;
-		case NEWLINE:
-			dump("definitions' -> \n definitions");
-			skip();
-			
-			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
-				return new Vector<>();
-
-			definition = parseDefinition();
-			absDefs = parseDefinitions_();
-			absDefs.add(0, definition);
-			return absDefs;
-		default:
-			Report.error(symbol.position, "Syntax error on token \""
-					+ previous.lexeme
-					+ "\", expected \";\" or \"}\" after this token");
-		}
-		return null;
-	}
+//	private Vector<AbsDef> parseDefinitions_() {
+//		switch (symbol.token) {
+//		case EOF:
+//			dump("definitions' -> $");
+//
+//			return new Vector<>();
+//		case RBRACE:
+//			dump("definitions' -> e");
+//			skip();
+//
+//			return new Vector<>();
+//		case SEMIC:
+//			dump("definitions' -> ; definitions");
+//			skip();
+//			if (symbol.token == Token.NEWLINE)
+//				skip();
+//			
+//			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
+//				return new Vector<>();
+//
+//			AbsDef definition = parseDefinition();
+//			Vector<AbsDef> absDefs = parseDefinitions_();
+//			absDefs.add(0, definition);
+//			return absDefs;
+//		case NEWLINE:
+//			dump("definitions' -> \n definitions");
+//			skip();
+//			
+//			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
+//				return new Vector<>();
+//
+//			definition = parseDefinition();
+//			absDefs = parseDefinitions_();
+//			absDefs.add(0, definition);
+//			return absDefs;
+//		default:
+//			Report.error(symbol.position, "Syntax error on token \""
+//					+ previous.lexeme
+//					+ "\", expected \";\" or \"}\" after this token");
+//		}
+//		return null;
+//	}
 
 	private AbsDef parseDefinition() {
 		AbsDef definition = null;
@@ -399,19 +399,34 @@ public class SynAn {
 	
 	private Vector<AbsStmt> parseClassDefinitions() {
 		Vector<AbsStmt> statements = new Vector<>();
-		while (symbol.token == Token.KW_LET || symbol.token == Token.KW_VAR) {
-			AbsVarDef def = (AbsVarDef) parseDefinition();
-			statements.add(0, def);
+		while (true) {
+			AbsDef definition;
 			
-			if (symbol.token == Token.ASSIGN) {
-				skip();
-				dump("var_definition -> = expression");
+			switch (symbol.token) {
+			case KW_VAR:
+			case KW_LET:
+				definition = parseDefinition();
+				statements.add(0, definition);
 				
-				AbsVarName varName = new AbsVarName(def.position, def.name);
-				AbsExpr e = parseExpression();
+				if (symbol.token == Token.ASSIGN) {
+					skip();
+					dump("var_definition -> = expression");
+					
+					AbsVarName varName = new AbsVarName(definition.position, 
+							((AbsVarDef)definition).name);
+					AbsExpr e = parseExpression();
 
-				statements.add(new AbsBinExpr(new Position(def.position, e.position), 
-						AbsBinExpr.ASSIGN, varName, e));
+					statements.add(new AbsBinExpr(new Position(definition.position, e.position), 
+							AbsBinExpr.ASSIGN, varName, e));
+				}
+				break;
+			case KW_FUN:
+				definition = parseDefinition();
+				break;
+			case RBRACE:
+				return statements;
+			default:
+				Report.error(symbol.position, "Syntax error todooooo");
 			}
 			
 			if (symbol.token == Token.SEMIC)
@@ -419,8 +434,6 @@ public class SynAn {
 			if (symbol.token == Token.NEWLINE)
 				skip();
 		}
-		
-		return statements;
 	}
 
 	private AbsType parseType() {
