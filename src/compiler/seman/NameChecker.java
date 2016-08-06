@@ -205,7 +205,7 @@ public class NameChecker implements Visitor {
 					+ "\'");
 		}
 		SymbTable.newScope();
-		acceptor.getDefinitions().accept(this);
+		acceptor.statements.accept(this);
 		SymbTable.oldScope();
 	}
 

@@ -321,7 +321,7 @@ public class SynAn {
 			
 			if (symbol.token == Token.ASSIGN) {
 				dump("let_definition -> var identifier = expr");
-				return new AbsVarDef(startPos, id.lexeme, type, false);
+				return new AbsVarDef(startPos, id.lexeme, type, true);
 			}
 			else if (symbol.token != Token.COLON) 
 				Report.error(previous.position, "Syntax error on token \""
@@ -333,7 +333,7 @@ public class SynAn {
 
 			type = parseType();
 			return new AbsVarDef(new Position(startPos, type.position),
-					id.lexeme, type, false);
+					id.lexeme, type, true);
 		}
 		Report.error(previous.position, "Syntax error on token \""
 				+ previous.lexeme + "\", expected keyword \"let\"");
@@ -381,21 +381,46 @@ public class SynAn {
 	
 	private AbsClassDef parseClassDefinition() {
 		Position start = symbol.position;
-		
 		String name = skip(new Symbol(Token.IDENTIFIER, "IDENTIFIER", null)).lexeme;
 		
 		skip(new Symbol(Token.LBRACE, "{", null));
 		skip(new Symbol(Token.NEWLINE, "\n", null));
 		skip();
 		
-		AbsDefs definitions = parseDefinitions();
+		Vector<AbsStmt> statements = parseClassDefinitions();
 		if (symbol.token != Token.RBRACE)
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", expected \"}\"");
 		skip();
 		
-		return new AbsClassDef(name, new Position(start, definitions.position), 
-				definitions);
+		Position end = statements.lastElement().position;
+		return new AbsClassDef(name, new Position(start, end), statements);
+	}
+	
+	private Vector<AbsStmt> parseClassDefinitions() {
+		Vector<AbsStmt> statements = new Vector<>();
+		while (symbol.token == Token.KW_LET || symbol.token == Token.KW_VAR) {
+			AbsVarDef def = (AbsVarDef) parseDefinition();
+			statements.add(0, def);
+			
+			if (symbol.token == Token.ASSIGN) {
+				skip();
+				dump("var_definition -> = expression");
+				
+				AbsVarName varName = new AbsVarName(def.position, def.name);
+				AbsExpr e = parseExpression();
+
+				statements.add(new AbsBinExpr(new Position(def.position, e.position), 
+						AbsBinExpr.ASSIGN, varName, e));
+			}
+			
+			if (symbol.token == Token.SEMIC)
+				skip();
+			if (symbol.token == Token.NEWLINE)
+				skip();
+		}
+		
+		return statements;
 	}
 
 	private AbsType parseType() {

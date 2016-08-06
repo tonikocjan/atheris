@@ -35,7 +35,7 @@ public class AbsFunDef extends AbsDef {
 	 *            Seznam parametrov.
 	 * @param type
 	 *            Opis tipa rezultata funkcije.
-	 * @param expr
+	 * @param stmts
 	 *            Jedro funkcije.
 	 */
 	public AbsFunDef(Position pos, String name, Vector<AbsPar> pars, AbsType type, AbsStmts stmts) {

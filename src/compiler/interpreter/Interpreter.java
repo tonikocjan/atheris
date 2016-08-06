@@ -65,7 +65,7 @@ public class Interpreter {
 	private void printMemory() {
 		for (Map.Entry<FrmLabel, Integer> entry : locations.entrySet()) {
 			System.out.println("Label: " + entry.getKey() + 
-								", Adress: " + entry.getValue() + 
+								", Address: " + entry.getValue() + 
 								", Value: " + mems.get(entry.getValue()));
 			if (entry.getKey().name().equals("L8")) {
 				System.out.println("Label: " + entry.getKey() + 
@@ -112,7 +112,7 @@ public class Interpreter {
 				pc++;
 			
 			if (shouldPrintMemory) {
-				System.out.println(pc);
+				System.out.println(frame.label.name() + ": " + pc);
 				printMemory();
 				System.out.println();
 			}

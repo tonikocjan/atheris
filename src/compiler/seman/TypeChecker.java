@@ -27,17 +27,20 @@ public class TypeChecker implements Visitor {
 		ArrayList<SemType> types = new ArrayList<>();
 		ArrayList<String> names = new ArrayList<>();
 
-		for (int i = 0; i < acceptor.getDefinitions().numDefs(); i++) {
-			AbsDef def = acceptor.getDefinitions().def(i);
-			def.accept(this);
-			types.add(SymbDesc.getType(def));
-
-			if (def instanceof AbsVarDef)
-				names.add(((AbsVarDef) def).name);
-			else if (def instanceof AbsFunDef)
-				names.add(((AbsFunDef) def).name);
-			else
-				Report.error("Semantic error @ AbsClassDef-typeChecker");
+		for (int i = 0; i < acceptor.statements.numStmts(); i++) {
+			AbsStmt stmt = acceptor.statements.stmt(i);
+			stmt.accept(this);
+			
+			if (stmt instanceof AbsDef) {
+				types.add(SymbDesc.getType(stmt));
+	
+				if (stmt instanceof AbsVarDef)
+					names.add(((AbsVarDef) stmt).name);
+				else if (stmt instanceof AbsFunDef)
+					names.add(((AbsFunDef) stmt).name);
+				else
+					Report.error("Semantic error @ AbsClassDef-typeChecker");
+			}
 		}
 		SymbDesc.setType(acceptor, new SemClassType(acceptor.getName(), 
 													names,
@@ -164,9 +167,10 @@ public class TypeChecker implements Visitor {
 				name = ((AbsFunCall) acceptor.expr2).name;
 
 			if (!(SymbDesc.getNameDef(acceptor.expr1) instanceof AbsPar)) {
+				// TODO: zrihtej to vse je v pizdi!!
 				AbsVarDef varDef = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr1);
 				AbsClassDef classDef = (AbsClassDef) SymbTable.fnd(((AbsTypeName)varDef.type).name);
-				AbsDef definition = classDef.definitions.findDefinition(name);
+				AbsDef definition = classDef.statements.findDefinition(name);
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				SymbDesc.setNameDef(acceptor, definition);
 			}

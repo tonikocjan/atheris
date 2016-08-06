@@ -47,8 +47,6 @@ public class InitializationChecker implements Visitor {
 	 * @param def
 	 */
 	private void initializeVariable(AbsVarDef def) {
-		if (isInitialized(def) && def.isConstant) 
-			Report.error(def.position, "Cannot assign value to constant '" + def.name + "'");
 		initializedVariables.add(def);
 	}
 	
@@ -72,7 +70,8 @@ public class InitializationChecker implements Visitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-		
+		for (AbsFunDef c : acceptor.contrustors)
+			c.accept(this);
 	}
 
 	@Override
@@ -132,6 +131,7 @@ public class InitializationChecker implements Visitor {
 
 	@Override
 	public void visit(AbsFor acceptor) {
+		initializedVariables.add((AbsVarDef) SymbDesc.getNameDef(acceptor.iterator));
 		acceptor.body.accept(this);
 	}
 
@@ -194,6 +194,8 @@ public class InitializationChecker implements Visitor {
 			}
 		}
 		else {
+			if (isInitialized(def) && def.isConstant) 
+				Report.error(acceptor.position, "Cannot assign value to a constant '" + def.name + "'");
 			initializeVariable(def);
 		}
 	}

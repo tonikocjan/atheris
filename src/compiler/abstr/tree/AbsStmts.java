@@ -19,10 +19,10 @@ public class AbsStmts extends AbsTree {
 	}
 
 	/**
-	 * Vrne izbrano stvek.
+	 * Vrne izbran stavek.
 	 * 
 	 * @param index
-	 *            Indeks definicije.
+	 *            Indeks stavka.
 	 * @return Definicija na izbranem mestu v seznamu.
 	 */
 	public AbsStmt stmt(int index) {
@@ -30,12 +30,24 @@ public class AbsStmts extends AbsTree {
 	}
 
 	/**
-	 * Vrne stevilo definicij v seznamu.
+	 * Vrne število stavkov v seznamu.
 	 * 
-	 * @return Stevilo definicij v seznamu.
+	 * @return Število stavkov v seznamu.
 	 */
 	public int numStmts() {
 		return stmts.length;
+	}
+	
+	public AbsDef findDefinition(String name) {
+		for (AbsStmt s : stmts) {
+			if (s instanceof AbsVarDef)
+				if (((AbsVarDef) s).name.equals(name))
+					return (AbsDef) s;
+			if (s instanceof AbsFunDef)
+				if (((AbsFunDef) s).name.equals(name))
+					return (AbsDef) s;
+		}
+		return null;
 	}
 	
 	

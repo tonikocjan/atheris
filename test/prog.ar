@@ -1,13 +1,8 @@
 class A {
-	var x: Int;
-	var y: Int;
-};
+	var x: Int = 12
+	let y: Int = 10
+}
 
-func test(x: Int, y: Int) A {
-	var a: A = A();
-	a.x = x;
-	a.y = y;
-	return a;
-};
-
-print(test(10, 20).x);
+let a: A = A()
+print(a.x)
+print(a.y)

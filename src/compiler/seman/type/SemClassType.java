@@ -23,7 +23,7 @@ public class SemClassType extends SemPtrType {
 	public SemClassType(String name, ArrayList<String> names, ArrayList<SemType> types) {
 		if (names.size() != types.size())
 			Report.error("Internal error :: compiler.seman.type.SemStructType: "
-					+ "names size not equal types size");
+					+ "names count not equal types count");
 
 		int size = 0;
 		for (int i = 0; i < names.size(); i++) {
@@ -36,6 +36,10 @@ public class SemClassType extends SemPtrType {
 	
 	public LinkedHashMap<String, SemType> getMembers() {
 		return members;
+	}
+	
+	public boolean containsMember(String member) {
+		return members.containsKey(member);
 	}
 	
 	public int offsetOf(String name) {

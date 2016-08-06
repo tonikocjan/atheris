@@ -1,0 +1,70 @@
+CODE CHUNK: label=_A
+  FRAME(A: level=1,label=_A,sizeLocs=8,sizeArgs=0,size=16,FP=T18,RV=T19)
+  SEQ
+    MOVE
+      TEMP name=T20
+      MALLOC size: 8 BYTES
+    MOVE
+      MEM
+        BINOP op=+
+          TEMP name=T20
+          CONST value=0
+      CONST value=10
+    MOVE
+      MEM
+        BINOP op=+
+          TEMP name=T20
+          CONST value=4
+      CONST value=12
+    MOVE
+      TEMP name=T19
+      TEMP name=T20
+DATA CHUNK: label=_a size=4
+CODE CHUNK: label=__main
+  FRAME(_main: level=0,label=__main,sizeLocs=0,sizeArgs=8,size=16,FP=T16,RV=T17)
+  SEQ
+    MOVE
+      TEMP name=T22
+      TEMP name=T16
+    MOVE
+      TEMP name=T23
+      CALL label=_A
+        TEMP name=T22
+    MOVE
+      MEM
+        NAME label=_a
+      TEMP name=T23
+    MOVE
+      TEMP name=T24
+      TEMP name=T16
+    MOVE
+      TEMP name=T25
+      MEM
+        BINOP op=+
+          MEM
+            NAME label=_a
+          CONST value=4
+    MOVE
+      TEMP name=T26
+      CALL label=_print
+        TEMP name=T24
+        TEMP name=T25
+    EXP
+      TEMP name=T26
+    MOVE
+      TEMP name=T27
+      TEMP name=T16
+    MOVE
+      TEMP name=T28
+      MEM
+        BINOP op=+
+          MEM
+            NAME label=_a
+          CONST value=0
+    MOVE
+      TEMP name=T29
+      CALL label=_print
+        TEMP name=T27
+        TEMP name=T28
+    EXP
+      TEMP name=T29

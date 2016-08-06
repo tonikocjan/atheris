@@ -66,7 +66,7 @@ public class SemAn implements Visitor {
 			c.accept(this);
 		}
 		indent -= 2;
-		indent += 2; classDef.getDefinitions().accept(this); indent -= 2;
+		indent += 2; classDef.statements.accept(this); indent -= 2;
 	}
 	
 	public void visit(AbsAtomConst atomConst) {
