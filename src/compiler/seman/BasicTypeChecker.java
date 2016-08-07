@@ -13,7 +13,7 @@ import compiler.seman.type.*;
  * @author sliva
  * @implementation Toni Kocjan
  */
-public class TypeChecker implements ASTVisitor {
+public class BasicTypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsListType acceptor) {
@@ -124,6 +124,7 @@ public class TypeChecker implements ASTVisitor {
 			else if (t2.canCastTo(t1)) {
 				SymbDesc.setType(acceptor, t1);
 				SymbDesc.setType(acceptor.expr2, t2);
+				success = true;
 			}
 			else if (t2 instanceof SemAtomType && ((SemAtomType) t2).type == AtomType.NIL
 					&& t1 instanceof SemPtrType) {
@@ -176,12 +177,10 @@ public class TypeChecker implements ASTVisitor {
 					Report.error(acceptor.expr2.position,
 							"Value of type '" + classDef.name + "' has no member '" + name + "'");
 				}
-				else {
-					if (definition instanceof AbsVarDef && 
-							((AbsVarDef) definition).visibility == Visibility.Private)
-						Report.error(acceptor.expr2.position,
-								"Member '" + name + "' is private");
-				}
+				if (definition instanceof AbsVarDef && 
+						((AbsVarDef) definition).visibility == Visibility.Private)
+					Report.error(acceptor.expr2.position,
+							"Member '" + name + "' is private");
 				
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				SymbDesc.setNameDef(acceptor, definition);
@@ -517,5 +516,10 @@ public class TypeChecker implements ASTVisitor {
 		
 		SymbDesc.setType(funType, new SemFunType(parameters, 
 				SymbDesc.getType(funType.returnType)));
+	}
+
+	@Override
+	public void visit(AbsControlTransferExpr acceptor) {
+		///
 	}
 }
