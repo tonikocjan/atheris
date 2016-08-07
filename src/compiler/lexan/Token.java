@@ -54,7 +54,7 @@ public enum Token {
 	/** Vrsta simbola: tip double.  */								DOUBLE,
 	/** Vrsta simbola: tip bool.  */								BOOL,
 	/** Vrsta simbola: tip char.  */								CHAR,
-	/** Vrsta simbola: tip char.  */								VOID,
+	/** Vrsta simbola: tip void.  */								VOID,
 	
 	/** Vrsta simbola: kljucna beseda else.  */						KW_ELSE,
 	/** Vrsta simbola: kljucna beseda for.  */						KW_FOR,
@@ -64,13 +64,14 @@ public enum Token {
 	/** Vrsta simbola: kljucna beseda while.  */					KW_WHILE,
 	/** Vrsta simbola: ključna beseda struct.  */					KW_STRUCT,
 	/** Vrsta simbola: ključna beseda import.  */ 					KW_IMPORT,
-	/** Vrsta simbola: ključna beseda import.  */ 					KW_LET,
-	/** Vrsta simbola: ključna beseda import.  */ 					KW_NIL,
-	/** Vrsta simbola: ključna beseda import.  */ 					KW_SELF,
-	/** Vrsta simbola: ključna beseda import.  */ 					KW_CLASS,
-	/** Vrsta simbola: ključna beseda import.  */ 					KW_IN,
-	/** Vrsta simbola: ključna beseda import.  */ 					KW_RETURN,
-	/** Vrsta simbola: ključna beseda import.  */ 					KW_PUBLIC,
-	/** Vrsta simbola: ključna beseda import.  */ 					KW_PRIVATE
-
+	/** Vrsta simbola: ključna beseda let.  */ 						KW_LET,
+	/** Vrsta simbola: ključna beseda nil.  */ 						KW_NIL,
+	/** Vrsta simbola: ključna beseda self.  */ 					KW_SELF,
+	/** Vrsta simbola: ključna beseda class.  */ 					KW_CLASS,
+	/** Vrsta simbola: ključna beseda in.  */ 						KW_IN,
+	/** Vrsta simbola: ključna beseda return.  */ 					KW_RETURN,
+	/** Vrsta simbola: ključna beseda public.  */ 					KW_PUBLIC,
+	/** Vrsta simbola: ključna beseda private.  */ 					KW_PRIVATE,
+	/** Vrsta simbola: ključna beseda continue.  */ 				KW_CONTINUE,
+	/** Vrsta simbola: ključna beseda break.  */ 					KW_BREAK
 }

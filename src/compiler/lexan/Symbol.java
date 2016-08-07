@@ -108,8 +108,8 @@ public class Symbol {
 		
 		case ASSIGN    : tokenName = "ASSIGN"    ; break;
 		
-		case BOOL	   : tokenName = "BOOLEAN" ; break;
-		case VOID	   : tokenName = "VOID"    ; break;
+		case BOOL	   : tokenName = "BOOLEAN"	 ; break;
+		case VOID	   : tokenName = "VOID" 	 ; break;
 		case INTEGER   : tokenName = "INTEGER"   ; break;
 		case STRING    : tokenName = "STRING"    ; break;
 		case CHAR      : tokenName = "CHAR"      ; break;
@@ -125,11 +125,13 @@ public class Symbol {
 		
 		case KW_IMPORT : tokenName = "IMPORT"    ; break;
 		
-		case NEWLINE   : tokenName = "NEWLINE"   ; break;
-		case KW_IN     : tokenName = "IN"   	 ; break;
-		case KW_RETURN : tokenName = "RETURN"    ; break;
-		case KW_PUBLIC : tokenName = "PUBLIC"    ; break;
-		case KW_PRIVATE: tokenName = "PRIVATE"   ; break;
+		case NEWLINE   	 : tokenName = "NEWLINE"   ; break;
+		case KW_IN     	 : tokenName = "IN"   	 ; break;
+		case KW_RETURN 	 : tokenName = "RETURN"    ; break;
+		case KW_PUBLIC 	 : tokenName = "PUBLIC"    ; break;
+		case KW_PRIVATE	 : tokenName = "PRIVATE"   ; break;
+		case KW_BREAK	 : tokenName = "PRIVATE"   ; break;
+		case KW_CONTINUE : tokenName = "PRIVATE"   ; break;
 		
 		default:
 			Report.error("Internal error: token=" + token + " in compiler.lexan.Symbol.toString().");

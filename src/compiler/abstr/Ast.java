@@ -380,4 +380,9 @@ public class Ast implements ASTVisitor {
 		Report.dump(indent + 2, funType.toString());
 	}
 
+	@Override
+	public void visit(AbsControlTransferExpr controlTransfer) {
+		Report.dump(indent, "AbsControlTransferStmt: " + controlTransfer.control);
+	}
+
 }

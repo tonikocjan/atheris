@@ -439,4 +439,9 @@ public class NameChecker implements ASTVisitor {
 		funType.returnType.accept(this);
 	}
 
+	@Override
+	public void visit(AbsControlTransferExpr acceptor) {
+		///
+	}
+
 }

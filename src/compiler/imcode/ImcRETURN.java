@@ -1,7 +1,6 @@
 package compiler.imcode;
 
 import compiler.*;
-import compiler.frames.FrmLabel;
 
 /**
  * Return.

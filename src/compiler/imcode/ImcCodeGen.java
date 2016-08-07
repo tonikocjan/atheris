@@ -47,7 +47,6 @@ public class ImcCodeGen implements ASTVisitor {
 			
 			ImcTEMP location = new ImcTEMP(new FrmTemp());
 			seq.stmts.add(new ImcMOVE(location, new ImcMALLOC(size)));
-			ImcTEMP tmp = new ImcTEMP(new FrmTemp());
 
 			for (int i = c.func.numStmts() - 1; i >= 0; i--) {
 				AbsStmt s = c.func.stmt(i);
@@ -424,15 +423,32 @@ public class ImcCodeGen implements ASTVisitor {
 		acceptor.cond.accept(this);
 		acceptor.body.accept(this);
 
-		FrmLabel l1 = FrmLabel.newLabel(), l2 = FrmLabel.newLabel(), l3 = FrmLabel
-				.newLabel();
+		FrmLabel l1 = FrmLabel.newLabel(), 
+				 l2 = FrmLabel.newLabel(), 
+				 l3 = FrmLabel.newLabel();
+		
+		ImcSEQ body = (ImcSEQ) ImcDesc.getImcCode(acceptor.body);
+		for (int i = 0; i < body.stmts.size(); i++) {
+			ImcStmt s = body.stmts.get(i);
+			if (s instanceof ImcEXP) {
+				ImcExpr e = ((ImcEXP) s).expr;
+				if (e instanceof ImcCONTROL) {
+					switch (((ImcCONTROL) e).control) {
+					case Continue:
+						body.stmts.set(i,new ImcJUMP(l1));
+					case Break:
+						body.stmts.set(i,new ImcJUMP(l3));
+					}
+				}
+			}
+		}
 
 		ImcSEQ statements = new ImcSEQ();
 		statements.stmts.add(new ImcLABEL(l1));
-		statements.stmts.add(new ImcCJUMP((ImcExpr) ImcDesc
-				.getImcCode(acceptor.cond), l2, l3));
+		statements.stmts.add(new ImcCJUMP(
+				(ImcExpr) ImcDesc.getImcCode(acceptor.cond), l2, l3));
 		statements.stmts.add(new ImcLABEL(l2));
-		statements.stmts.add((ImcStmt) ImcDesc.getImcCode(acceptor.body));
+		statements.stmts.add(body);
 		statements.stmts.add(new ImcJUMP(l1));
 		statements.stmts.add(new ImcLABEL(l3));
 
@@ -524,7 +540,12 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunType funType) {
-		
+		///
+	}
+
+	@Override
+	public void visit(AbsControlTransferExpr acceptor) {
+		ImcDesc.setImcCode(acceptor, new ImcCONTROL(acceptor.control));
 	}
 
 }

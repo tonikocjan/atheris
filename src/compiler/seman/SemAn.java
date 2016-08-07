@@ -430,4 +430,9 @@ public class SemAn implements ASTVisitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 	}
+
+	@Override
+	public void visit(AbsControlTransferExpr acceptor) {
+		Report.dump(indent, "AbsControlTransferStmt: " + acceptor.control);		
+	}
 }

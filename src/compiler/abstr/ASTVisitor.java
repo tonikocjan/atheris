@@ -29,4 +29,5 @@ public interface ASTVisitor {
 	public void visit(AbsReturnExpr  acceptor);
 	public void visit(AbsListExpr 	 acceptor);
 	public void visit(AbsFunType     acceptor);
+	public void visit(AbsControlTransferExpr acceptor);
 }
