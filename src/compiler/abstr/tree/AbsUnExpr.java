@@ -38,6 +38,6 @@ public class AbsUnExpr extends AbsExpr {
 		this.expr = expr;
 	}
 
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
+	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

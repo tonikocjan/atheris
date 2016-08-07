@@ -1,8 +1,9 @@
-class A {
-	var x: Int = 12
-	let y: Int = 10
+func test(x: Int) {
+	let a = { (x: Int) in
+		print(x)
+	}
+	
+	a()
 }
 
-let a: A = A()
-print(a.x)
-print(a.y)
+test(20)

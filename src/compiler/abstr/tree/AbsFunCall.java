@@ -56,6 +56,6 @@ public class AbsFunCall extends AbsExpr {
 		return args.length;
 	}
 
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
+	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

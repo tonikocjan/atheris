@@ -61,6 +61,6 @@ public class AbsDefs extends AbsTree {
 		return null;
 	}
 	
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
+	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

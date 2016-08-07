@@ -6,12 +6,12 @@ import compiler.abstr.tree.*;
 /**
  * @author sliva
  */
-public class Abstr implements Visitor {
+public class Ast implements ASTVisitor {
 
 	/** Ali se izpisujejo vmesni rezultati. */
 	private boolean dump;
 
-	public Abstr(boolean dump) {
+	public Ast(boolean dump) {
 		this.dump = dump;
 	}
 

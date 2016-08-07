@@ -110,7 +110,7 @@ public class Main {
 			if (execPhase.equals("synan")) break;
 			
 			// Abstraktna sintaksa.
-			Abstr ast = new Abstr(dumpPhases.contains("ast"));
+			Ast ast = new Ast(dumpPhases.contains("ast"));
 			ast.dump(source);
 			if (execPhase.equals("ast")) break;
 			

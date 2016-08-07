@@ -32,6 +32,6 @@ public class AbsWhile extends AbsExpr {
 		this.body = body;
 	}
 
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
+	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

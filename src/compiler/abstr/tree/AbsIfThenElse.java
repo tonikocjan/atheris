@@ -38,6 +38,6 @@ public class AbsIfThenElse extends AbsExpr {
 		this.elseBody = elseBody;
 	}
 
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
+	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

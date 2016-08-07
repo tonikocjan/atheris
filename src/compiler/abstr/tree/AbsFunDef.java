@@ -68,5 +68,5 @@ public class AbsFunDef extends AbsDef {
 		return pars.length;
 	}
 
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
+	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 }

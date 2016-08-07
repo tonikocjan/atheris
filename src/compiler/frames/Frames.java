@@ -11,7 +11,7 @@ import compiler.seman.type.*;
  * 
  * @author sliva
  */
-public class Frames implements Visitor {
+public class Frames implements ASTVisitor {
 
 	/** Ali se izpisujejo vmesni rezultati. */
 	private boolean dump;

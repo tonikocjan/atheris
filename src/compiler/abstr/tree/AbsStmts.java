@@ -3,7 +3,7 @@ package compiler.abstr.tree;
 import java.util.Vector;
 
 import compiler.Position;
-import compiler.abstr.Visitor;
+import compiler.abstr.ASTVisitor;
 
 public class AbsStmts extends AbsTree {
 
@@ -51,6 +51,6 @@ public class AbsStmts extends AbsTree {
 	}
 	
 	
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
+	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

@@ -15,7 +15,7 @@ import compiler.seman.type.*;
  * 
  * @implementation Toni Kocjan
  */
-public class NameChecker implements Visitor {
+public class NameChecker implements ASTVisitor {
 	
 	public NameChecker() {
 		try {

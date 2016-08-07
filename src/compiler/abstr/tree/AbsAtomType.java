@@ -45,6 +45,6 @@ public class AbsAtomType extends AbsType {
 		}
 	}
 	
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
+	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

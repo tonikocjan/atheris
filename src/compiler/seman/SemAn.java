@@ -10,7 +10,7 @@ import compiler.seman.type.*;
  * 
  * @author sliva
  */
-public class SemAn implements Visitor {
+public class SemAn implements ASTVisitor {
 
 	/** Ali se izpisujejo vmesni rezultati. */
 	private boolean dump;

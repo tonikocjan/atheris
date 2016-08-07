@@ -3,7 +3,7 @@ package compiler.abstr.tree;
 import java.util.Vector;
 
 import compiler.Position;
-import compiler.abstr.Visitor;
+import compiler.abstr.ASTVisitor;
 
 public class AbsFunType extends AbsType {
 	
@@ -38,8 +38,8 @@ public class AbsFunType extends AbsType {
 	}
 
 	@Override
-	public void accept(Visitor visitor) {
-		visitor.visit(this);
+	public void accept(ASTVisitor aSTVisitor) {
+		aSTVisitor.visit(this);
 	}
 
 }

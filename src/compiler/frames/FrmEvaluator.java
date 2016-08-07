@@ -2,12 +2,12 @@ package compiler.frames;
 
 import java.util.Vector;
 
-import compiler.abstr.Visitor;
+import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;
 import compiler.seman.SymbDesc;
 import compiler.seman.type.SemFunType;
 
-public class FrmEvaluator implements Visitor {
+public class FrmEvaluator implements ASTVisitor {
 
 	private int currentLevel = 1;
 	private FrmFrame currentFrame = null;

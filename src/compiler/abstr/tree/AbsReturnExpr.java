@@ -1,7 +1,7 @@
 package compiler.abstr.tree;
 
 import compiler.Position;
-import compiler.abstr.Visitor;
+import compiler.abstr.ASTVisitor;
 
 public class AbsReturnExpr extends AbsExpr {
 
@@ -15,8 +15,8 @@ public class AbsReturnExpr extends AbsExpr {
 	}
 
 	@Override
-	public void accept(Visitor visitor) {
-		visitor.visit(this);
+	public void accept(ASTVisitor aSTVisitor) {
+		aSTVisitor.visit(this);
 	}
 
 }

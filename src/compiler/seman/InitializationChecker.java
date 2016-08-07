@@ -3,7 +3,7 @@ package compiler.seman;
 import java.util.HashSet;
 
 import compiler.Report;
-import compiler.abstr.Visitor;
+import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsAtomConst;
 import compiler.abstr.tree.AbsAtomType;
 import compiler.abstr.tree.AbsBinExpr;
@@ -35,7 +35,7 @@ import compiler.abstr.tree.AbsWhile;
  * @author toni
  *
  */
-public class InitializationChecker implements Visitor {
+public class InitializationChecker implements ASTVisitor {
 	
 	/**
 	 * List of already initialized variables

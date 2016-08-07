@@ -55,6 +55,6 @@ public class AbsBinExpr extends AbsExpr {
 		this.expr2 = expr2;
 	}
 
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
+	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

@@ -20,7 +20,7 @@ import compiler.seman.type.SemClassType;
 import compiler.seman.type.SemPtrType;
 import compiler.seman.type.SemType;
 
-public class ImcCodeGen implements Visitor {
+public class ImcCodeGen implements ASTVisitor {
 
 	public LinkedList<ImcChunk> chunks;
 	public ImcCodeChunk entryPointCode = null;
@@ -280,8 +280,6 @@ public class ImcCodeGen implements Visitor {
 
 		chunks.add(new ImcCodeChunk(frame, code));
 		currentFrame = tmpFr;
-		
-		ImcDesc.setImcCode(acceptor, code);
 	}
 
 	@Override
@@ -467,9 +465,9 @@ public class ImcCodeGen implements Visitor {
 				seq.stmts.add(s);
 			}
 		}
-		scope--;
 		ImcDesc.setImcCode(acceptor, seq);
 
+		scope--;
 		if (scope == 0) {
 			entryPointCode = new ImcCodeChunk(currentFrame, seq);
 			chunks.add(entryPointCode);

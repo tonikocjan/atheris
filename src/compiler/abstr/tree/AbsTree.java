@@ -22,6 +22,6 @@ public abstract class AbsTree {
 		this.position = pos;
 	}
 
-	public abstract void accept(Visitor visitor);
+	public abstract void accept(ASTVisitor aSTVisitor);
 
 }

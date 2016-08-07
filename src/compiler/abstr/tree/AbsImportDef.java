@@ -3,7 +3,7 @@ package compiler.abstr.tree;
 import java.util.HashSet;
 
 import compiler.Position;
-import compiler.abstr.Visitor;
+import compiler.abstr.ASTVisitor;
 
 public class AbsImportDef extends AbsDef {
 	
@@ -23,5 +23,5 @@ public class AbsImportDef extends AbsDef {
 	}
 
 	@Override
-	public void accept(Visitor visitor) { visitor.visit(this); }
+	public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 }

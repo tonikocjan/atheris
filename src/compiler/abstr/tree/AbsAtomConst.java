@@ -32,6 +32,6 @@ public class AbsAtomConst extends AbsExpr {
 		this.value = value;
 	}
 	
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
+	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

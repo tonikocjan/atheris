@@ -13,7 +13,7 @@ import compiler.seman.type.*;
  * @author sliva
  * @implementation Toni Kocjan
  */
-public class TypeChecker implements Visitor {
+public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsListType acceptor) {
