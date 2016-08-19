@@ -79,7 +79,7 @@ public class SynAn {
 			return new Vector<>();
 		case RBRACE:
 			dump("definitions' -> e");
-			// skip();
+//			skip();
 
 			return new Vector<>();
 		case SEMIC:
@@ -89,7 +89,7 @@ public class SynAn {
 			
 			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
 				return new Vector<AbsStmt>();
-
+		case IDENTIFIER:
 			AbsStmt statement = parseStatement();
 			Vector<AbsStmt> absStmts = parseStatements_(statement);
 			absStmts.add(0, statement);
@@ -659,6 +659,7 @@ public class SynAn {
 		case RBRACKET:
 		case KW_ELSE:
 		case LBRACE:
+		case IDENTIFIER:
 		case KW_FOR:
 		case COMMA:
 		case EOF:
@@ -718,6 +719,7 @@ public class SynAn {
 		case NEWLINE:
 		case RPARENT:
 		case ASSIGN:
+		case IDENTIFIER:
 		case RBRACE:
 		case LBRACE:
 		case RBRACKET:
@@ -779,6 +781,7 @@ public class SynAn {
 		case COLON:
 		case RPARENT:
 		case ASSIGN:
+		case IDENTIFIER:
 		case RBRACE:
 		case LBRACE:
 		case RBRACKET:
@@ -837,6 +840,7 @@ public class SynAn {
 		case COLON:
 		case RPARENT:
 		case ASSIGN:
+		case IDENTIFIER:
 		case RBRACE:
 		case LBRACE:
 		case RBRACKET:
@@ -937,6 +941,7 @@ public class SynAn {
 		case NEWLINE:
 		case RPARENT:
 		case ASSIGN:
+		case IDENTIFIER:
 		case RBRACE:
 		case LBRACE:
 		case RBRACKET:
@@ -1016,6 +1021,7 @@ public class SynAn {
 		case ASSIGN:
 		case RBRACE:
 		case LBRACE:
+		case IDENTIFIER:
 		case RBRACKET:
 		case KW_ELSE:
 		case COMMA:
@@ -1161,6 +1167,7 @@ public class SynAn {
 		case NEWLINE:
 		case COLON:
 		case RPARENT:
+		case IDENTIFIER:
 		case ASSIGN:
 		case RBRACE:
 		case LBRACE:
@@ -1395,7 +1402,7 @@ public class SynAn {
 			return new AbsIfThenElse(new Position(start, s.position), e1,
 					stmts, s);
 		}
-
+		
 		return new AbsIfThen(new Position(start, stmts.position), e1, stmts);
 	}
 	
