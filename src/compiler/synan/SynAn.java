@@ -288,7 +288,7 @@ public class SynAn {
 	private AbsDef parseVarDefinition() {
 		Position startPos = symbol.position;
 		Visibility v = Visibility.Public;
-		boolean constant = false;
+		boolean isConstant = false;
 		Symbol id = null;
 		
 		if (symbol.token == Token.KW_PUBLIC)
@@ -301,7 +301,7 @@ public class SynAn {
 		if (symbol.token == Token.KW_VAR)
 			id = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
 		else if (symbol.token == Token.KW_LET) {
-			constant = true;
+			isConstant = true;
 			id = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
 		}
 		
@@ -311,7 +311,7 @@ public class SynAn {
 		
 		if (symbol.token == Token.ASSIGN) {
 			dump("var_definition -> var identifier = expr");
-			return new AbsVarDef(startPos, id.lexeme, type, false);
+			return new AbsVarDef(startPos, id.lexeme, type, isConstant);
 		}
 		else if (symbol.token != Token.COLON) 
 			Report.error(previous.position, "Syntax error on token \""
@@ -323,7 +323,7 @@ public class SynAn {
 
 		type = parseType();
 		return new AbsVarDef(new Position(startPos, type.position),
-				id.lexeme, type, constant, v);
+				id.lexeme, type, isConstant, v);
 	}
 
 	private AbsImportDef parseImportDefinition() {
@@ -1424,8 +1424,8 @@ public class SynAn {
 
 				elseBody = parseStatements();
 				skip();
-				break;
 			}
+			break;
 		}
 
 		Position lastPos = elseBody != null ? 
