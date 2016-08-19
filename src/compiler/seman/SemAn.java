@@ -258,7 +258,7 @@ public class SemAn implements ASTVisitor {
 		indent += 2; funDef.func.accept(this); indent -= 2;
 	}
 	
-	public void visit(AbsIfThen ifThen) {
+	public void visit(AbsIfExpr ifThen) {
 		Report.dump(indent, "AbsIfThen " + ifThen.position.toString() + ":");
 		{
 			SemType typ = SymbDesc.getType(ifThen);

@@ -1,6 +1,5 @@
 package compiler.seman;
 
-import java.util.HashSet;
 
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
@@ -16,7 +15,7 @@ import compiler.abstr.tree.AbsFor;
 import compiler.abstr.tree.AbsFunCall;
 import compiler.abstr.tree.AbsFunDef;
 import compiler.abstr.tree.AbsFunType;
-import compiler.abstr.tree.AbsIfThen;
+import compiler.abstr.tree.AbsIfExpr;
 import compiler.abstr.tree.AbsIfThenElse;
 import compiler.abstr.tree.AbsImportDef;
 import compiler.abstr.tree.AbsListExpr;
@@ -44,7 +43,7 @@ public class InitializationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsListType acceptor) {
-
+		///
 	}
 
 	@Override
@@ -128,7 +127,7 @@ public class InitializationChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsIfThen acceptor) {
+	public void visit(AbsIfExpr acceptor) {
 		acceptor.cond.accept(this);
 		InitTable.newScope();
 		acceptor.thenBody.accept(this);

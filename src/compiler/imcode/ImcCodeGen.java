@@ -282,7 +282,7 @@ public class ImcCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsIfThen acceptor) {
+	public void visit(AbsIfExpr acceptor) {
 		acceptor.cond.accept(this);
 		acceptor.thenBody.accept(this);
 

@@ -16,8 +16,7 @@ public interface ASTVisitor {
     public void visit(AbsFor         acceptor);
 	public void visit(AbsFunCall     acceptor);
 	public void visit(AbsFunDef      acceptor);
-	public void visit(AbsIfThen      accpetor);
-	public void visit(AbsIfThenElse  accpetor);
+	public void visit(AbsIfExpr      accpetor);
 	public void visit(AbsPar         acceptor);
 	public void visit(AbsTypeName    acceptor);
 	public void visit(AbsUnExpr      acceptor);

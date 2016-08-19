@@ -63,10 +63,15 @@ public class SynAn {
 
 	private AbsStmts parseStatements() {
 		dump("statements -> statement statements'");
+		
+		Vector<AbsStmt> absStmts = new Vector<>();
+		if (symbol.token == Token.RBRACE)
+			return new AbsStmts(symbol.position, absStmts);
+		
 		AbsStmt statement = parseStatement();
-
-		Vector<AbsStmt> absStmts = parseStatements_(statement);
-		absStmts.add(0, statement);
+		absStmts.add(statement);
+		absStmts.addAll(parseStatements_(statement));
+		
 		return new AbsStmts(new Position(absStmts.firstElement().position,
 				absStmts.lastElement().position), absStmts);
 	}
@@ -1359,51 +1364,74 @@ public class SynAn {
 		return null;
 	}
 
+	private Condition parseIfCondition() {
+		dump("if_expression -> if epression { statements }");
+
+		skip();
+		AbsExpr condition = parseExpression();
+		if (symbol.token != Token.LBRACE)
+			Report.error(symbol.position, "Syntax error on token \""
+					+ previous.lexeme + "\", expected '{' after this token");
+		skip(new Symbol(Token.NEWLINE, "NEWLINE", null));
+		skip();
+		AbsStmts s = parseStatements();
+		if (symbol.token != Token.RBRACE)
+			Report.error(symbol.position, "Syntax error on token \""
+					+ previous.lexeme + "\", expected '}' after this token");
+		skip();
+		return new Condition(condition, s);
+	}
+	
 	private AbsExpr parseIf() {
 		if (symbol.token == Token.KW_IF) {
-			dump("if_expression -> if epression { statements }");
-
 			Position start = symbol.position;
-			skip();
-			AbsExpr condition = parseExpression();
-			if (symbol.token != Token.LBRACE)
-				Report.error(symbol.position, "Syntax error on token \""
-						+ previous.lexeme + "\", expected '{' after this token");
-			skip(new Symbol(Token.NEWLINE, "NEWLINE", null));
-			skip();
-			AbsStmts s = parseStatements();
-			if (symbol.token != Token.RBRACE)
-				Report.error(symbol.position, "Syntax error on token \""
-						+ previous.lexeme + "\", expected '}' after this token");
-			skip();
-			return parseIf_(start, condition, s);
+			return parseIf_(start, parseIfCondition());
 		}
 		Report.error(previous.position,
 				"Syntax error, expected keyword \"while\"");
 		return null;
 	}
 
-	private AbsExpr parseIf_(Position start, AbsExpr e1, AbsStmts stmts) {
+	private AbsExpr parseIf_(Position start, Condition condition) {
 		if (symbol.token == Token.NEWLINE) 
 			skip();
 		
-		if (symbol.token == Token.KW_ELSE) {
-			dump("if_expression' -> else { statements }");
-			skip();
-
-			if (symbol.token != Token.LBRACE)
-				Report.error(symbol.position, "Syntax error on token \""
-						+ previous.lexeme + "\", expected '{' after this token");
-			skip(new Symbol(Token.NEWLINE, "NEWLINE", null));
-			skip();
-
-			AbsStmts s = parseStatements();
-			skip();
-			return new AbsIfThenElse(new Position(start, s.position), e1,
-					stmts, s);
-		}
+		Vector<Condition> conditions = new Vector<>();
+		conditions.add(condition);
+		AbsStmts elseBody = null;
 		
-		return new AbsIfThen(new Position(start, stmts.position), e1, stmts);
+		while (true) {
+			if (symbol.token == Token.KW_ELSE) {
+				skip();
+				
+				if (symbol.token == Token.KW_IF) {
+					dump("if_expression' -> else if { statements }");
+					conditions.add(parseIfCondition());
+					
+					if (symbol.token == Token.NEWLINE) 
+						skip();
+					continue;
+				}
+
+				if (symbol.token != Token.LBRACE)
+					Report.error(symbol.position, "Syntax error on token \""
+							+ previous.lexeme + "\", expected '{' after this token");
+				
+				dump("if_expression' -> else { statements }");
+
+				skip(new Symbol(Token.NEWLINE, "NEWLINE", null));
+				skip();
+
+				elseBody = parseStatements();
+				skip();
+				break;
+			}
+		}
+
+		Position lastPos = elseBody != null ? 
+				elseBody.position : conditions.lastElement().body.position;
+		return new AbsIfExpr(new Position(condition.cond.position, lastPos), 
+				conditions, elseBody);
 	}
 	
 	private AbsExpr parseBracket() {

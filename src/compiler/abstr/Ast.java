@@ -245,27 +245,14 @@ public class Ast implements ASTVisitor {
 		indent -= 2;
 	}
 
-	public void visit(AbsIfThen ifThen) {
-		Report.dump(indent, "AbsIfThen " + ifThen.position.toString() + ":");
+	public void visit(AbsIfExpr ifExpr) {
+		Report.dump(indent, "AbsIfExpr " + ifExpr.position.toString() + ":");
 		indent += 2;
-		ifThen.cond.accept(this);
-		indent -= 2;
-		indent += 2;
-		ifThen.thenBody.accept(this);
-		indent -= 2;
-	}
-
-	public void visit(AbsIfThenElse ifThenElse) {
-		Report.dump(indent, "AbsIfThenElse " + ifThenElse.position.toString()
-				+ ":");
-		indent += 2;
-		ifThenElse.cond.accept(this);
-		indent -= 2;
-		indent += 2;
-		ifThenElse.thenBody.accept(this);
-		indent -= 2;
-		indent += 2;
-		ifThenElse.elseBody.accept(this);
+		for (Condition c : ifExpr.conditions) {
+			c.cond.accept(this);
+			c.body.accept(this);
+		}
+		ifExpr.elseBody.accept(this);
 		indent -= 2;
 	}
 

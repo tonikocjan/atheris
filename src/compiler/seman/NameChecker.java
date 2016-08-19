@@ -291,7 +291,7 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsIfThen acceptor) {
+	public void visit(AbsIfExpr acceptor) {
 		acceptor.cond.accept(this);
 		SymbTable.newScope();
 		acceptor.thenBody.accept(this);
