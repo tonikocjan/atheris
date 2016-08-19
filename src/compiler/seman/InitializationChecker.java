@@ -38,28 +38,6 @@ import compiler.abstr.tree.AbsWhile;
  */
 public class InitializationChecker implements ASTVisitor {
 	
-	/**
-	 * List of already initialized variables
-	 */
-	private HashSet<AbsVarDef> initializedVariables = new HashSet<>();
-	
-	/**
-	 * 
-	 * @param def
-	 */
-	private void initializeVariable(AbsVarDef def) {
-		initializedVariables.add(def);
-	}
-	
-	/**
-	 * 
-	 * @param def
-	 * @return
-	 */
-	private boolean isInitialized(AbsVarDef def) {
-		return initializedVariables.contains(def);
-	}
-	
 	private boolean shouldCheckIfInitialized = true;
 	
 	///
@@ -132,8 +110,10 @@ public class InitializationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFor acceptor) {
-		initializedVariables.add((AbsVarDef) SymbDesc.getNameDef(acceptor.iterator));
+		InitTable.newScope();
+		InitTable.initialize((AbsVarDef) SymbDesc.getNameDef(acceptor.iterator));
 		acceptor.body.accept(this);
+		InitTable.oldScope();
 	}
 
 	@Override
@@ -150,13 +130,17 @@ public class InitializationChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsIfThen acceptor) {
 		acceptor.cond.accept(this);
+		InitTable.newScope();
 		acceptor.thenBody.accept(this);
+		InitTable.oldScope();
 	}
 
 	@Override
 	public void visit(AbsIfThenElse acceptor) {
 		acceptor.cond.accept(this);
+		InitTable.newScope();
 		acceptor.thenBody.accept(this);
+		InitTable.oldScope();
 		acceptor.elseBody.accept(this);
 	}
 
@@ -189,15 +173,15 @@ public class InitializationChecker implements ASTVisitor {
 		AbsVarDef def = (AbsVarDef) SymbDesc.getNameDef(acceptor);
 
 		if (shouldCheckIfInitialized) {
-			if (!isInitialized(def)) {
+			if (!InitTable.isInitialized(def)) {
 				String s = def.isConstant ? "Constant '" : "Variable '";
 				Report.error(acceptor.position, s + def.name + "' used before being initialized");
 			}
 		}
 		else {
-			if (isInitialized(def) && def.isConstant) 
+			if (InitTable.isInitialized(def) && def.isConstant) 
 				Report.error(acceptor.position, "Cannot assign value to a constant '" + def.name + "'");
-			initializeVariable(def);
+			InitTable.initialize(def);
 		}
 	}
 
@@ -232,7 +216,7 @@ public class InitializationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunType acceptor) {
-		
+		///
 	}
 
 	@Override
