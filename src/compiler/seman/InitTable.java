@@ -1,6 +1,7 @@
 package compiler.seman;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -11,7 +12,8 @@ public class InitTable {
 	/**
 	 * Already initialized variables.
 	 */
-	private static HashMap<AbsVarDef, Integer> initTable = new HashMap<>();
+	private static HashSet<AbsVarDef> initTable = new HashSet<>();
+	private static HashMap<AbsVarDef, HashSet<Integer>> scopes = new HashMap<>();
 	
 	/**
 	 * Current initialization scope.
@@ -20,10 +22,15 @@ public class InitTable {
 	
 	/**
 	 * Initialize variable.
-	 * @return true if variable was not initialized before, otherwise false
 	 */
-	public static boolean initialize(AbsVarDef var) {
-		return initTable.put(var, scope) == null ? true : false;
+	public static void initialize(AbsVarDef var) {
+		initTable.add(var);
+		
+		HashSet<Integer> currentScope = scopes.get(var);
+		if (currentScope == null)
+			currentScope = new HashSet<>();
+		currentScope.add(scope);
+		scopes.put(var, currentScope);
 	}
 	
 	/**
@@ -31,6 +38,7 @@ public class InitTable {
 	 */
 	public static void uninitialize(AbsVarDef var) {
 		initTable.remove(var);
+		scopes.remove(var);
 	}
 	
 	/**
@@ -38,7 +46,7 @@ public class InitTable {
 	 * @return true if variable is initialized, otherwise false
 	 */
 	public static boolean isInitialized(AbsVarDef var) {
-		return initTable.containsKey(var);
+		return initTable.contains(var);
 	}
 	
 	/**
@@ -53,13 +61,17 @@ public class InitTable {
 	 * Remove all initializations in current scope and go to previous scope
 	 */
 	public static void oldScope() {
-		Iterator<Map.Entry<AbsVarDef, Integer>> iter = initTable.entrySet().iterator();
+		// TODO: - O(n), should increase speed? 
+		Iterator<Map.Entry<AbsVarDef, HashSet<Integer>>> iter = scopes.entrySet().iterator();
 		while (iter.hasNext()) {
-		    Map.Entry<AbsVarDef, Integer> entry = iter.next();
-		    
-		    if (entry.getValue() == scope)
+		    Map.Entry<AbsVarDef, HashSet<Integer>> entry = iter.next();
+		    entry.getValue().remove(scope);
+		    if (entry.getValue().size() == 0) {
+		    	initTable.remove(entry.getKey());
 		    	iter.remove();
+		    }
 		}
+
 		scope--;
 	}
 }
