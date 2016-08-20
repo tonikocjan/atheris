@@ -155,12 +155,12 @@ public class SynAn {
 			dump("expression -> continue");
 			skip();
 			return new AbsControlTransferStmt(symbol.position, 
-					ControlTransfer.Continue);
+					ControlTransferEnum.Continue);
 		case KW_BREAK:
 			dump("expression -> break");
 			skip();
 			return new AbsControlTransferStmt(symbol.position, 
-					ControlTransfer.Break);
+					ControlTransferEnum.Break);
 		
 		/**
 		 * Parse expression.

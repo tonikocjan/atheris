@@ -538,7 +538,7 @@ public class ImcCodeGen implements ASTVisitor {
 		if (startLabelStack.isEmpty() || endLabelStack.isEmpty())
 			return;
 		
-		if (acceptor.control == ControlTransfer.Continue)
+		if (acceptor.control == ControlTransferEnum.Continue)
 			// Jump to continue label (beginning of the loop)
 			ImcDesc.setImcCode(acceptor, new ImcJUMP(startLabelStack.peek()));
 		else

@@ -5,9 +5,9 @@ import compiler.abstr.ASTVisitor;
 
 public class AbsControlTransferStmt extends AbsStmt {
 	
-	public final ControlTransfer control;
+	public final ControlTransferEnum control;
 
-	public AbsControlTransferStmt(Position pos, ControlTransfer control) {
+	public AbsControlTransferStmt(Position pos, ControlTransferEnum control) {
 		super(pos);
 		this.control = control;
 	}
