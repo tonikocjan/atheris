@@ -1,7 +1,9 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.stmt;
 
 import compiler.*;
 import compiler.abstr.*;
+import compiler.abstr.tree.AbsStmts;
+import compiler.abstr.tree.expr.AbsExpr;
 
 /**
  * Zanka brez eksplicitnega stevca.

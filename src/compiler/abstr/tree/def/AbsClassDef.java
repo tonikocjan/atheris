@@ -1,9 +1,13 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.def;
 
 import java.util.Vector;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
+import compiler.abstr.tree.AbsStmt;
+import compiler.abstr.tree.AbsStmts;
+import compiler.abstr.tree.AtomTypeEnum;
+import compiler.abstr.tree.type.AbsAtomType;
 
 public class AbsClassDef extends AbsTypeDef {
 	
@@ -26,7 +30,7 @@ public class AbsClassDef extends AbsTypeDef {
 		AbsFunDef contructor = new AbsFunDef(pos, 
 				name, 
 				new Vector<>(), 
-				new AbsAtomType(pos, AtomType.VOID), 
+				new AbsAtomType(pos, AtomTypeEnum.VOID), 
 				new AbsStmts(pos, statements));
 		contrustors.add(contructor);
 	}

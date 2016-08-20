@@ -1,7 +1,7 @@
 package compiler.seman.type;
 
 import compiler.*;
-import compiler.abstr.tree.AtomType;
+import compiler.abstr.tree.AtomTypeEnum;
 
 /**
  * Opis atomarnih podatkovnih tipov.
@@ -11,7 +11,7 @@ import compiler.abstr.tree.AtomType;
 public class SemAtomType extends SemType {
 
 	/* Tip. */
-	public final AtomType type;
+	public final AtomTypeEnum type;
 
 	/**
 	 * Ustvari nov opis atomarnega tipa.
@@ -19,7 +19,7 @@ public class SemAtomType extends SemType {
 	 * @param type
 	 *            Atomarni tip.
 	 */
-	public SemAtomType(AtomType type) {
+	public SemAtomType(AtomTypeEnum type) {
 		this.type = type;
 	}
 
@@ -70,6 +70,6 @@ public class SemAtomType extends SemType {
 	public boolean canCastTo(SemType t) {
 		if (!(t instanceof SemAtomType)) return false;
 		// int can be castet to double
-		return ((SemAtomType) t).type == AtomType.DOB && type == AtomType.INT;
+		return ((SemAtomType) t).type == AtomTypeEnum.DOB && type == AtomTypeEnum.INT;
 	}
 }

@@ -5,6 +5,29 @@ import java.util.Vector;
 import compiler.Report;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
+import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsFunDef;
+import compiler.abstr.tree.def.AbsImportDef;
+import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsVarDef;
+import compiler.abstr.tree.expr.AbsAtomConstExpr;
+import compiler.abstr.tree.expr.AbsBinExpr;
+import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsIfExpr;
+import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsUnExpr;
+import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsControlTransferStmt;
+import compiler.abstr.tree.stmt.AbsFor;
+import compiler.abstr.tree.stmt.AbsWhile;
+import compiler.abstr.tree.type.AbsAtomType;
+import compiler.abstr.tree.type.AbsFunType;
+import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsType;
+import compiler.abstr.tree.type.AbsTypeName;
 import compiler.frames.*;
 import compiler.lexan.LexAn;
 import compiler.synan.SynAn;
@@ -21,20 +44,20 @@ public class NameChecker implements ASTVisitor {
 		try {
 			{
 				String name = "print";
-				Vector<AbsPar> pars = new Vector<>();
+				Vector<AbsParDef> pars = new Vector<>();
 				Vector<SemType> parTypes = new Vector<>();
 				
-				parTypes.add(new SemAtomType(AtomType.INT));
-				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-						AtomType.INT)));
+				parTypes.add(new SemAtomType(AtomTypeEnum.INT));
+				pars.add(new AbsParDef(null, "x", new AbsAtomType(null,
+						AtomTypeEnum.INT)));
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
-						new AbsAtomType(null, AtomType.VOID), new AbsStmts(
+						new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(
 								null, new Vector<>()));
 				SymbTable.insFunc(name, parTypes, print);
 				SymbTable.ins("print", print);
 				SymbDesc.setType(print, new SemFunType(parTypes,
-						new SemAtomType(AtomType.VOID)));
+						new SemAtomType(AtomTypeEnum.VOID)));
 
 				FrmFrame frame = new FrmFrame(print, 1);
 				frame.numPars = 1;
@@ -44,19 +67,19 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "print";
-				Vector<AbsPar> pars = new Vector<>();
+				Vector<AbsParDef> pars = new Vector<>();
 				Vector<SemType> parTypes = new Vector<>();
-				parTypes.add(new SemAtomType(AtomType.DOB));
+				parTypes.add(new SemAtomType(AtomTypeEnum.DOB));
 
-				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-						AtomType.DOB)));
+				pars.add(new AbsParDef(null, "x", new AbsAtomType(null,
+						AtomTypeEnum.DOB)));
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
-						new AbsAtomType(null, AtomType.VOID), new AbsStmts(
+						new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(
 								null, new Vector<>()));
 				SymbTable.insFunc(name, parTypes, print);
 				SymbDesc.setType(print, new SemFunType(parTypes,
-						new SemAtomType(AtomType.VOID)));
+						new SemAtomType(AtomTypeEnum.VOID)));
 
 				FrmFrame frame = new FrmFrame(print, 1);
 				frame.numPars = 1;
@@ -66,19 +89,19 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "print";
-				Vector<AbsPar> pars = new Vector<>();
+				Vector<AbsParDef> pars = new Vector<>();
 				Vector<SemType> parTypes = new Vector<>();
-				parTypes.add(new SemAtomType(AtomType.STR));
+				parTypes.add(new SemAtomType(AtomTypeEnum.STR));
 
-				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-						AtomType.INT)));
+				pars.add(new AbsParDef(null, "x", new AbsAtomType(null,
+						AtomTypeEnum.INT)));
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
-						new AbsAtomType(null, AtomType.VOID), new AbsStmts(
+						new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(
 								null, new Vector<>()));
 				SymbTable.insFunc(name, parTypes, print);
 				SymbDesc.setType(print, new SemFunType(parTypes,
-						new SemAtomType(AtomType.VOID)));
+						new SemAtomType(AtomTypeEnum.VOID)));
 
 				FrmFrame frame = new FrmFrame(print, 1);
 				frame.numPars = 1;
@@ -88,19 +111,19 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "print";
-				Vector<AbsPar> pars = new Vector<>();
+				Vector<AbsParDef> pars = new Vector<>();
 				Vector<SemType> parTypes = new Vector<>();
-				parTypes.add(new SemAtomType(AtomType.CHR));
+				parTypes.add(new SemAtomType(AtomTypeEnum.CHR));
 
-				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-						AtomType.CHR)));
+				pars.add(new AbsParDef(null, "x", new AbsAtomType(null,
+						AtomTypeEnum.CHR)));
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
-						new AbsAtomType(null, AtomType.VOID), new AbsStmts(
+						new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(
 								null, new Vector<>()));
 				SymbTable.insFunc(name, parTypes, print);
 				SymbDesc.setType(print, new SemFunType(parTypes,
-						new SemAtomType(AtomType.VOID)));
+						new SemAtomType(AtomTypeEnum.VOID)));
 
 				FrmFrame frame = new FrmFrame(print, 1);
 				frame.numPars = 1;
@@ -110,19 +133,19 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "print";
-				Vector<AbsPar> pars = new Vector<>();
+				Vector<AbsParDef> pars = new Vector<>();
 				Vector<SemType> parTypes = new Vector<>();
-				parTypes.add(new SemAtomType(AtomType.LOG));
+				parTypes.add(new SemAtomType(AtomTypeEnum.LOG));
 
-				pars.add(new AbsPar(null, "x", new AbsAtomType(null,
-						AtomType.LOG)));
+				pars.add(new AbsParDef(null, "x", new AbsAtomType(null,
+						AtomTypeEnum.LOG)));
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
-						new AbsAtomType(null, AtomType.VOID), new AbsStmts(
+						new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(
 								null, new Vector<>()));
 				SymbTable.insFunc(name, parTypes, print);
 				SymbDesc.setType(print, new SemFunType(parTypes,
-						new SemAtomType(AtomType.VOID)));
+						new SemAtomType(AtomTypeEnum.VOID)));
 
 				FrmFrame frame = new FrmFrame(print, 1);
 				frame.numPars = 1;
@@ -132,15 +155,15 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "time";
-				Vector<AbsPar> pars = new Vector<>();
+				Vector<AbsParDef> pars = new Vector<>();
 				Vector<SemType> parTypes = new Vector<>();
 				AbsFunDef time = new AbsFunDef(null, name, pars,
-						new AbsAtomType(null, AtomType.INT), new AbsStmts(
+						new AbsAtomType(null, AtomTypeEnum.INT), new AbsStmts(
 								null, new Vector<>()));
 				SymbTable.insFunc(name, parTypes, time);
 				SymbTable.ins("time", time);
 				SymbDesc.setType(time, new SemFunType(parTypes,
-						new SemAtomType(AtomType.INT)));
+						new SemAtomType(AtomTypeEnum.INT)));
 
 				FrmFrame frame = new FrmFrame(time, 1);
 				frame.numPars = 0;
@@ -150,15 +173,15 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "rand";
-				Vector<AbsPar> pars = new Vector<>();
+				Vector<AbsParDef> pars = new Vector<>();
 				Vector<SemType> parTypes = new Vector<>();
 				AbsFunDef rand = new AbsFunDef(null, name, pars,
-						new AbsAtomType(null, AtomType.INT), new AbsStmts(
+						new AbsAtomType(null, AtomTypeEnum.INT), new AbsStmts(
 								null, new Vector<>()));
 				SymbTable.insFunc(name, parTypes, rand);
 				SymbTable.ins("rand", rand);
 				SymbDesc.setType(rand, new SemFunType(parTypes,
-						new SemAtomType(AtomType.INT)));
+						new SemAtomType(AtomTypeEnum.INT)));
 
 				FrmFrame frame = new FrmFrame(rand, 1);
 				frame.numPars = 0;
@@ -168,18 +191,18 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "rand";
-				Vector<AbsPar> pars = new Vector<>();
+				Vector<AbsParDef> pars = new Vector<>();
 				Vector<SemType> parTypes = new Vector<>();
-				parTypes.add(new SemAtomType(AtomType.INT));
-				pars.add(new AbsPar(null, "bound", new AbsAtomType(null,
-						AtomType.INT)));
+				parTypes.add(new SemAtomType(AtomTypeEnum.INT));
+				pars.add(new AbsParDef(null, "bound", new AbsAtomType(null,
+						AtomTypeEnum.INT)));
 
 				AbsFunDef rand = new AbsFunDef(null, name, pars,
-						new AbsAtomType(null, AtomType.INT), new AbsStmts(
+						new AbsAtomType(null, AtomTypeEnum.INT), new AbsStmts(
 								null, new Vector<>()));
 				SymbTable.insFunc(name, parTypes, rand);
 				SymbDesc.setType(rand, new SemFunType(parTypes,
-						new SemAtomType(AtomType.INT)));
+						new SemAtomType(AtomTypeEnum.INT)));
 
 				FrmFrame frame = new FrmFrame(rand, 1);
 				frame.numPars = 0;
@@ -210,7 +233,7 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsAtomConst acceptor) {
+	public void visit(AbsAtomConstExpr acceptor) {
 
 	}
 
@@ -308,7 +331,7 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsPar acceptor) {
+	public void visit(AbsParDef acceptor) {
 		try {
 			SymbTable.ins(acceptor.name, acceptor);
 		} catch (SemIllegalInsertException e) {
@@ -347,7 +370,7 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsVarName acceptor) {
+	public void visit(AbsVarNameExpr acceptor) {
 		AbsDef definition = SymbTable.fnd(acceptor.name);
 		
 		if (definition == null)

@@ -5,6 +5,28 @@ import java.util.*;
 import compiler.Report;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
+import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsFunDef;
+import compiler.abstr.tree.def.AbsImportDef;
+import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsVarDef;
+import compiler.abstr.tree.expr.AbsAtomConstExpr;
+import compiler.abstr.tree.expr.AbsBinExpr;
+import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsIfExpr;
+import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsUnExpr;
+import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsControlTransferStmt;
+import compiler.abstr.tree.stmt.AbsFor;
+import compiler.abstr.tree.stmt.AbsWhile;
+import compiler.abstr.tree.type.AbsAtomType;
+import compiler.abstr.tree.type.AbsFunType;
+import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsTypeName;
 import compiler.frames.FrmAccess;
 import compiler.frames.FrmDesc;
 import compiler.frames.FrmFrame;
@@ -102,14 +124,14 @@ public class ImcCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsAtomConst acceptor) {
-		if (acceptor.type == AtomType.INT)
+	public void visit(AbsAtomConstExpr acceptor) {
+		if (acceptor.type == AtomTypeEnum.INT)
 			ImcDesc.setImcCode(acceptor,
 					new ImcCONST(Integer.parseInt(acceptor.value)));
-		else if (acceptor.type == AtomType.LOG)
+		else if (acceptor.type == AtomTypeEnum.LOG)
 			ImcDesc.setImcCode(acceptor,
 					new ImcCONST(acceptor.value.equals("true") ? 1 : 0));
-		else if (acceptor.type == AtomType.STR) {
+		else if (acceptor.type == AtomTypeEnum.STR) {
 			FrmLabel l = FrmLabel.newLabel();
 			ImcDataChunk str = new ImcDataChunk(l, 4);
 			str.data = new String(acceptor.value.substring(1,
@@ -117,12 +139,12 @@ public class ImcCodeGen implements ASTVisitor {
 					+ "\0");
 			chunks.add(str);
 			ImcDesc.setImcCode(acceptor, new ImcMEM(new ImcNAME(l)));
-		} else if (acceptor.type == AtomType.CHR) {
+		} else if (acceptor.type == AtomTypeEnum.CHR) {
 			ImcDesc.setImcCode(acceptor, new ImcCONST(acceptor.value.charAt(0)));
-		} else if (acceptor.type == AtomType.DOB) {
+		} else if (acceptor.type == AtomTypeEnum.DOB) {
 			ImcDesc.setImcCode(acceptor,
 					new ImcCONST(Double.parseDouble(acceptor.value)));
-		} else if (acceptor.type == AtomType.NIL) {
+		} else if (acceptor.type == AtomTypeEnum.NIL) {
 			ImcDesc.setImcCode(acceptor, new ImcCONST(0));
 		}
 	}
@@ -179,8 +201,8 @@ public class ImcCodeGen implements ASTVisitor {
 				SemClassType type  = (SemClassType) t;
 				String var;
 				
-				if (acceptor.expr2 instanceof AbsVarName)
-					var = ((AbsVarName) acceptor.expr2).name;
+				if (acceptor.expr2 instanceof AbsVarNameExpr)
+					var = ((AbsVarNameExpr) acceptor.expr2).name;
 				else
 					var = ((AbsFunCall) acceptor.expr2).name;
 				
@@ -339,7 +361,7 @@ public class ImcCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsPar acceptor) {
+	public void visit(AbsParDef acceptor) {
 		///
 	}
 
@@ -387,7 +409,7 @@ public class ImcCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsVarName acceptor) {
+	public void visit(AbsVarNameExpr acceptor) {
 		FrmAccess access = FrmDesc.getAccess(SymbDesc.getNameDef(acceptor));
 		ImcExpr expr = null;
 
@@ -538,7 +560,7 @@ public class ImcCodeGen implements ASTVisitor {
 		if (startLabelStack.isEmpty() || endLabelStack.isEmpty())
 			return;
 		
-		if (acceptor.control == ControlTransferEnum.Continue)
+		if (acceptor.control == ControlTransfer.Continue)
 			// Jump to continue label (beginning of the loop)
 			ImcDesc.setImcCode(acceptor, new ImcJUMP(startLabelStack.peek()));
 		else

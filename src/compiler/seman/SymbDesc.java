@@ -3,6 +3,7 @@ package compiler.seman;
 import java.util.*;
 
 import compiler.abstr.tree.*;
+import compiler.abstr.tree.def.AbsDef;
 import compiler.seman.type.*;
 
 /**

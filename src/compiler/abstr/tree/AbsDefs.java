@@ -4,6 +4,9 @@ import java.util.*;
 
 import compiler.*;
 import compiler.abstr.*;
+import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsFunDef;
+import compiler.abstr.tree.def.AbsVarDef;
 
 /**
  * Seznam definicij.

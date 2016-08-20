@@ -2,6 +2,27 @@ package compiler.abstr;
 
 import compiler.*;
 import compiler.abstr.tree.*;
+import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsFunDef;
+import compiler.abstr.tree.def.AbsImportDef;
+import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsVarDef;
+import compiler.abstr.tree.expr.AbsAtomConstExpr;
+import compiler.abstr.tree.expr.AbsBinExpr;
+import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsIfExpr;
+import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsUnExpr;
+import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsControlTransferStmt;
+import compiler.abstr.tree.stmt.AbsFor;
+import compiler.abstr.tree.stmt.AbsWhile;
+import compiler.abstr.tree.type.AbsAtomType;
+import compiler.abstr.tree.type.AbsFunType;
+import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsTypeName;
 
 /**
  * @author sliva
@@ -53,7 +74,7 @@ public class Ast implements ASTVisitor {
 		indent -= 2;
 	}
 
-	public void visit(AbsAtomConst atomConst) {
+	public void visit(AbsAtomConstExpr atomConst) {
 		switch (atomConst.type) {
 		case LOG:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
@@ -256,7 +277,7 @@ public class Ast implements ASTVisitor {
 		indent -= 2;
 	}
 
-	public void visit(AbsPar par) {
+	public void visit(AbsParDef par) {
 		Report.dump(indent, "AbsPar " + par.position.toString() + ": "
 				+ par.name);
 		indent += 2;
@@ -312,7 +333,7 @@ public class Ast implements ASTVisitor {
 		indent -= 2;
 	}
 
-	public void visit(AbsVarName varName) {
+	public void visit(AbsVarNameExpr varName) {
 		Report.dump(indent, "AbsVarName " + varName.position.toString() + ": "
 				+ varName.name);
 	}

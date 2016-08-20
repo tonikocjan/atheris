@@ -1,9 +1,11 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.def;
 
 import java.util.*;
 
 import compiler.*;
 import compiler.abstr.*;
+import compiler.abstr.tree.AbsStmts;
+import compiler.abstr.tree.type.AbsType;
 
 /**
  * Definicija funckije.
@@ -16,7 +18,7 @@ public class AbsFunDef extends AbsDef {
 	public final String name;
 	
 	/** Seznam parametrov. */
-	private final AbsPar pars[];
+	private final AbsParDef pars[];
 
 	/** Opis tipa rezultata funkcije. */
 	public final AbsType type;
@@ -38,10 +40,10 @@ public class AbsFunDef extends AbsDef {
 	 * @param stmts
 	 *            Jedro funkcije.
 	 */
-	public AbsFunDef(Position pos, String name, Vector<AbsPar> pars, AbsType type, AbsStmts stmts) {
+	public AbsFunDef(Position pos, String name, Vector<AbsParDef> pars, AbsType type, AbsStmts stmts) {
 		super(pos);
 		this.name = name;
-		this.pars = new AbsPar[pars.size()];
+		this.pars = new AbsParDef[pars.size()];
 		for (int par = 0; par < pars.size(); par++)
 			this.pars[par] = pars.elementAt(par);
 		this.type = type;
@@ -55,7 +57,7 @@ public class AbsFunDef extends AbsDef {
 	 *            Indeks parametra.
 	 * @return Parameter na izbranem mestu.
 	 */
-	public AbsPar par(int index) {
+	public AbsParDef par(int index) {
 		return pars[index];
 	}
 

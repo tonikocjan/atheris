@@ -1,4 +1,4 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.expr;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;

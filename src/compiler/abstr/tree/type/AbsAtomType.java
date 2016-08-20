@@ -1,7 +1,8 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.type;
 
 import compiler.*;
 import compiler.abstr.*;
+import compiler.abstr.tree.AtomTypeEnum;
 
 /**
  * Opis atomarnega tipa.
@@ -11,7 +12,7 @@ import compiler.abstr.*;
 public class AbsAtomType extends AbsType {
 	
 	/** Tip. */
-	public final AtomType type;
+	public final AtomTypeEnum type;
 
 	/**
 	 * Ustvari opis konkretnega tipa.
@@ -21,7 +22,7 @@ public class AbsAtomType extends AbsType {
 	 * @param type
 	 *            Konkretni tip.
 	 */
-	public AbsAtomType(Position pos, AtomType type) {
+	public AbsAtomType(Position pos, AtomTypeEnum type) {
 		super(pos);
 		this.type = type;
 	}

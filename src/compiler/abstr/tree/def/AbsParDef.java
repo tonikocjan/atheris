@@ -1,7 +1,8 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.def;
 
 import compiler.*;
 import compiler.abstr.*;
+import compiler.abstr.tree.type.AbsType;
 
 /**
  * Opis parametra funckije.
@@ -9,7 +10,7 @@ import compiler.abstr.*;
  * @author sliva
  *
  */
-public class AbsPar extends AbsDef {
+public class AbsParDef extends AbsDef {
 
 	/** Ime parametra. */
 	public final String name;
@@ -27,7 +28,7 @@ public class AbsPar extends AbsDef {
 	 * @param type
 	 *            Tip parametra.
 	 */
-	public AbsPar(Position pos, String name, AbsType type) {
+	public AbsParDef(Position pos, String name, AbsType type) {
 		super(pos);
 		this.name = name;
 		this.type = type;

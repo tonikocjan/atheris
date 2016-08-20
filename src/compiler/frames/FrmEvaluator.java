@@ -4,6 +4,27 @@ import java.util.Vector;
 
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;
+import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsFunDef;
+import compiler.abstr.tree.def.AbsImportDef;
+import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsVarDef;
+import compiler.abstr.tree.expr.AbsAtomConstExpr;
+import compiler.abstr.tree.expr.AbsBinExpr;
+import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsIfExpr;
+import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsUnExpr;
+import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsControlTransferStmt;
+import compiler.abstr.tree.stmt.AbsFor;
+import compiler.abstr.tree.stmt.AbsWhile;
+import compiler.abstr.tree.type.AbsAtomType;
+import compiler.abstr.tree.type.AbsFunType;
+import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsTypeName;
 import compiler.seman.SymbDesc;
 import compiler.seman.type.SemFunType;
 
@@ -17,7 +38,7 @@ public class FrmEvaluator implements ASTVisitor {
 	
 	public FrmEvaluator() {
 		AbsFunDef _main = new AbsFunDef(null, ENTRY_POINT, new Vector<>(), 
-				new AbsAtomType(null, AtomType.VOID), new AbsStmts(null, new Vector<>()));
+				new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(null, new Vector<>()));
 
 		entryPoint = new FrmFrame(_main, 0);
 		entryPoint.label = FrmLabel.newLabel(ENTRY_POINT);
@@ -41,7 +62,7 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsAtomConst acceptor) {
+	public void visit(AbsAtomConstExpr acceptor) {
 
 	}
 
@@ -125,7 +146,7 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsPar acceptor) {
+	public void visit(AbsParDef acceptor) {
 		FrmDesc.setAccess(acceptor, new FrmParAccess(acceptor, currentFrame));
 	}
 
@@ -149,7 +170,7 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsVarName acceptor) {
+	public void visit(AbsVarNameExpr acceptor) {
 
 	}
 

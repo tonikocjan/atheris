@@ -3,6 +3,7 @@ package compiler.frames;
 import java.util.*;
 
 import compiler.abstr.tree.*;
+import compiler.abstr.tree.def.AbsFunDef;
 
 /**
  * Klicni zapis funkcije.

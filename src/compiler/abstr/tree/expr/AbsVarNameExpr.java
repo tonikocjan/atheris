@@ -1,4 +1,4 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.expr;
 
 import compiler.*;
 import compiler.abstr.*;
@@ -8,7 +8,7 @@ import compiler.abstr.*;
  * 
  * @author sliva
  */
-public class AbsVarName extends AbsExpr {
+public class AbsVarNameExpr extends AbsExpr {
 	
 	/** Ime spremenljivke. */
 	public final String name;
@@ -21,7 +21,7 @@ public class AbsVarName extends AbsExpr {
 	 * @param name
 	 *            Ime spremenljivke.
 	 */
-	public AbsVarName(Position pos, String name) {
+	public AbsVarNameExpr(Position pos, String name) {
 		super(pos);
 		this.name = name;
 	}

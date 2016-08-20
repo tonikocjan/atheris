@@ -1,6 +1,7 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.expr;
 
 import compiler.*;
+import compiler.abstr.tree.AbsStmt;
 
 /**
  * Izraz.

@@ -1,9 +1,10 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.def;
 
 import java.util.HashSet;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
+import compiler.abstr.tree.AbsDefs;
 
 public class AbsImportDef extends AbsDef {
 	

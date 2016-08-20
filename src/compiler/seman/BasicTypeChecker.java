@@ -5,6 +5,30 @@ import java.util.*;
 import compiler.*;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
+import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsFunDef;
+import compiler.abstr.tree.def.AbsImportDef;
+import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsTypeDef;
+import compiler.abstr.tree.def.AbsVarDef;
+import compiler.abstr.tree.expr.AbsAtomConstExpr;
+import compiler.abstr.tree.expr.AbsBinExpr;
+import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsIfExpr;
+import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsUnExpr;
+import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsControlTransferStmt;
+import compiler.abstr.tree.stmt.AbsFor;
+import compiler.abstr.tree.stmt.AbsWhile;
+import compiler.abstr.tree.type.AbsAtomType;
+import compiler.abstr.tree.type.AbsFunType;
+import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsType;
+import compiler.abstr.tree.type.AbsTypeName;
 import compiler.seman.type.*;
 
 /**
@@ -53,7 +77,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsAtomConst acceptor) {
+	public void visit(AbsAtomConstExpr acceptor) {
 		SymbDesc.setType(acceptor, new SemAtomType(acceptor.type));
 	}
 
@@ -72,9 +96,9 @@ public class BasicTypeChecker implements ASTVisitor {
 		SemType t1 = SymbDesc.getType(acceptor.expr1);
 		SemType t2 = SymbDesc.getType(acceptor.expr2);
 
-		SemType integer = new SemAtomType(AtomType.INT);
-		SemType logical = new SemAtomType(AtomType.LOG);
-		SemType double_ = new SemAtomType(AtomType.DOB);
+		SemType integer = new SemAtomType(AtomTypeEnum.INT);
+		SemType logical = new SemAtomType(AtomTypeEnum.LOG);
+		SemType double_ = new SemAtomType(AtomTypeEnum.DOB);
 
 		int oper = acceptor.oper;
 
@@ -126,7 +150,7 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor.expr2, t2);
 				success = true;
 			}
-			else if (t2 instanceof SemAtomType && ((SemAtomType) t2).type == AtomType.NIL
+			else if (t2 instanceof SemAtomType && ((SemAtomType) t2).type == AtomTypeEnum.NIL
 					&& t1 instanceof SemPtrType) {
 				SymbDesc.setType(acceptor.expr2, t1);
 				SymbDesc.setType(acceptor, t1);
@@ -148,7 +172,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			 * Handle list.length
 			 */
 			if (t1 instanceof SemListType) {
-				String name = ((AbsVarName) acceptor.expr2).name;
+				String name = ((AbsVarNameExpr) acceptor.expr2).name;
 				if (!name.equals("count"))
 					Report.error("Lists have no attribute named \"" + name
 							+ "\"");
@@ -162,12 +186,12 @@ public class BasicTypeChecker implements ASTVisitor {
 						"Left expression must be a class type to use '.' operator");
 			
 			String name;
-			if (acceptor.expr2 instanceof AbsVarName)
-				name = ((AbsVarName) acceptor.expr2).name;
+			if (acceptor.expr2 instanceof AbsVarNameExpr)
+				name = ((AbsVarNameExpr) acceptor.expr2).name;
 			else
 				name = ((AbsFunCall) acceptor.expr2).name;
 
-			if (!(SymbDesc.getNameDef(acceptor.expr1) instanceof AbsPar)) {
+			if (!(SymbDesc.getNameDef(acceptor.expr1) instanceof AbsParDef)) {
 				// TODO: zrihtej to vse je v pizdi!!
 				AbsVarDef varDef = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr1);
 				AbsClassDef classDef = (AbsClassDef) SymbTable.fnd(((AbsTypeName)varDef.type).name);
@@ -266,7 +290,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsExprs acceptor) {
 		if (acceptor.numExprs() == 0)
-			SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
+			SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.VOID));
 		else {
 			for (int expr = 0; expr < acceptor.numExprs(); expr++)
 				acceptor.expr(expr).accept(this);
@@ -282,7 +306,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		SemType type = ((SemListType)SymbDesc.getType(acceptor.collection)).type;
 
 		SymbDesc.setType(SymbDesc.getNameDef(acceptor.iterator), type);
-		SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
+		SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.VOID));
 		
 		acceptor.iterator.accept(this);
 		acceptor.body.accept(this);
@@ -299,7 +323,7 @@ public class BasicTypeChecker implements ASTVisitor {
 
 		AbsDef def = SymbDesc.getNameDef(acceptor);
 		
-		if (def instanceof AbsVarDef || def instanceof AbsPar) {
+		if (def instanceof AbsVarDef || def instanceof AbsParDef) {
 			SemType type = SymbDesc.getType(def);
 			if (!(type instanceof SemFunType))
 				Report.error(acceptor.position, "Cannot call value of non-function type \'"
@@ -369,8 +393,8 @@ public class BasicTypeChecker implements ASTVisitor {
 			c.body.accept(this);
 			
 			if (SymbDesc.getType(c.cond).sameStructureAs(
-					new SemAtomType(AtomType.LOG)))
-				SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
+					new SemAtomType(AtomTypeEnum.LOG)))
+				SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.VOID));
 			else
 				Report.error(c.cond.position,
 						"Condition must be of type Bool");
@@ -382,7 +406,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsPar acceptor) {
+	public void visit(AbsParDef acceptor) {
 		acceptor.type.accept(this);
 		SemType type = SymbDesc.getType(acceptor.type);
 
@@ -410,15 +434,15 @@ public class BasicTypeChecker implements ASTVisitor {
 		SemType type = SymbDesc.getType(acceptor.expr);
 
 		if (acceptor.oper == AbsUnExpr.NOT) {
-			if (type.sameStructureAs(new SemAtomType(AtomType.LOG)))
-				SymbDesc.setType(acceptor, new SemAtomType(AtomType.LOG));
+			if (type.sameStructureAs(new SemAtomType(AtomTypeEnum.LOG)))
+				SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.LOG));
 			else
 				Report.error(acceptor.position,
 						"Operator \"!\" is not defined for type " + type);
 		} else if (acceptor.oper == AbsUnExpr.ADD
 				|| acceptor.oper == AbsUnExpr.SUB) {
-			if (type.sameStructureAs(new SemAtomType(AtomType.INT)))
-				SymbDesc.setType(acceptor, new SemAtomType(AtomType.INT));
+			if (type.sameStructureAs(new SemAtomType(AtomTypeEnum.INT)))
+				SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.INT));
 			else
 				Report.error(acceptor.position,
 						"Operators \"+\" and \"-\" are not defined for type "
@@ -436,7 +460,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsVarName acceptor) {
+	public void visit(AbsVarNameExpr acceptor) {
 		SymbDesc.setType(acceptor,
 				SymbDesc.getType(SymbDesc.getNameDef(acceptor)));
 	}
@@ -447,8 +471,8 @@ public class BasicTypeChecker implements ASTVisitor {
 		acceptor.body.accept(this);
 
 		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new SemAtomType(AtomType.LOG)))
-			SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
+				new SemAtomType(AtomTypeEnum.LOG)))
+			SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.VOID));
 		else
 			Report.error(acceptor.cond.position,
 					"Condition must be typed as Boolean");
@@ -478,7 +502,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			returnExpr.expr.accept(this);
 			SymbDesc.setType(returnExpr, SymbDesc.getType(returnExpr.expr));
 		} else
-			SymbDesc.setType(returnExpr, new SemAtomType(AtomType.VOID));
+			SymbDesc.setType(returnExpr, new SemAtomType(AtomTypeEnum.VOID));
 	}
 
 	@Override

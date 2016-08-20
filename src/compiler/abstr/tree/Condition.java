@@ -1,5 +1,7 @@
 package compiler.abstr.tree;
 
+import compiler.abstr.tree.expr.AbsExpr;
+
 /**
  * Simple structure holding condition and body which executed when condition is positive.
  */

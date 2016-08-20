@@ -1,4 +1,4 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.type;
 
 import compiler.*;
 import compiler.abstr.*;

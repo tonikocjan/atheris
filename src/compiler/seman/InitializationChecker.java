@@ -3,32 +3,32 @@ package compiler.seman;
 
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
-import compiler.abstr.tree.AbsAtomConst;
-import compiler.abstr.tree.AbsAtomType;
-import compiler.abstr.tree.AbsBinExpr;
-import compiler.abstr.tree.AbsClassDef;
-import compiler.abstr.tree.AbsControlTransferStmt;
 import compiler.abstr.tree.AbsDefs;
-import compiler.abstr.tree.AbsExpr;
 import compiler.abstr.tree.AbsExprs;
-import compiler.abstr.tree.AbsFor;
-import compiler.abstr.tree.AbsFunCall;
-import compiler.abstr.tree.AbsFunDef;
-import compiler.abstr.tree.AbsFunType;
-import compiler.abstr.tree.AbsIfExpr;
-import compiler.abstr.tree.AbsImportDef;
-import compiler.abstr.tree.AbsListExpr;
-import compiler.abstr.tree.AbsListType;
-import compiler.abstr.tree.AbsPar;
-import compiler.abstr.tree.AbsReturnExpr;
 import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.AbsStmts;
-import compiler.abstr.tree.AbsTypeName;
-import compiler.abstr.tree.AbsUnExpr;
-import compiler.abstr.tree.AbsVarDef;
-import compiler.abstr.tree.AbsVarName;
-import compiler.abstr.tree.AbsWhile;
 import compiler.abstr.tree.Condition;
+import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsFunDef;
+import compiler.abstr.tree.def.AbsImportDef;
+import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsVarDef;
+import compiler.abstr.tree.expr.AbsAtomConstExpr;
+import compiler.abstr.tree.expr.AbsBinExpr;
+import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsIfExpr;
+import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsUnExpr;
+import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsControlTransferStmt;
+import compiler.abstr.tree.stmt.AbsFor;
+import compiler.abstr.tree.stmt.AbsWhile;
+import compiler.abstr.tree.type.AbsAtomType;
+import compiler.abstr.tree.type.AbsFunType;
+import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsTypeName;
 
 /**
  * Initialization checking phase of the compiler.
@@ -53,7 +53,7 @@ public class InitializationChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsAtomConst acceptor) {
+	public void visit(AbsAtomConstExpr acceptor) {
 		
 	}
 
@@ -142,7 +142,7 @@ public class InitializationChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsPar acceptor) {
+	public void visit(AbsParDef acceptor) {
 		
 	}
 
@@ -162,8 +162,8 @@ public class InitializationChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsVarName acceptor) {
-		if (SymbDesc.getNameDef(acceptor) instanceof AbsPar || 
+	public void visit(AbsVarNameExpr acceptor) {
+		if (SymbDesc.getNameDef(acceptor) instanceof AbsParDef || 
 				SymbDesc.getNameDef(acceptor) instanceof AbsFunDef)
 			return;
 		

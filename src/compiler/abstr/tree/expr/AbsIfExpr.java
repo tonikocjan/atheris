@@ -1,9 +1,11 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.expr;
 
 import java.util.Vector;
 
 import compiler.*;
 import compiler.abstr.*;
+import compiler.abstr.tree.AbsStmts;
+import compiler.abstr.tree.Condition;
 
 /**
  * Conditional expression.

@@ -1,13 +1,15 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.stmt;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
+import compiler.abstr.tree.AbsStmt;
+import compiler.abstr.tree.ControlTransfer;
 
 public class AbsControlTransferStmt extends AbsStmt {
 	
-	public final ControlTransferEnum control;
+	public final ControlTransfer control;
 
-	public AbsControlTransferStmt(Position pos, ControlTransferEnum control) {
+	public AbsControlTransferStmt(Position pos, ControlTransfer control) {
 		super(pos);
 		this.control = control;
 	}

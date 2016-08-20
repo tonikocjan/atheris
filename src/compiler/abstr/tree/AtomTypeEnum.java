@@ -1,5 +1,5 @@
 package compiler.abstr.tree;
 
-public enum AtomType {
+public enum AtomTypeEnum {
 	LOG, INT, STR, DOB, CHR, VOID, NIL
 }

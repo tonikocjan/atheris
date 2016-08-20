@@ -5,6 +5,29 @@ import java.util.Vector;
 import compiler.Position;
 import compiler.Report;
 import compiler.abstr.tree.*;
+import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsFunDef;
+import compiler.abstr.tree.def.AbsImportDef;
+import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsVarDef;
+import compiler.abstr.tree.expr.AbsAtomConstExpr;
+import compiler.abstr.tree.expr.AbsBinExpr;
+import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsIfExpr;
+import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsUnExpr;
+import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsControlTransferStmt;
+import compiler.abstr.tree.stmt.AbsFor;
+import compiler.abstr.tree.stmt.AbsWhile;
+import compiler.abstr.tree.type.AbsAtomType;
+import compiler.abstr.tree.type.AbsFunType;
+import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsType;
+import compiler.abstr.tree.type.AbsTypeName;
 import compiler.lexan.*;
 
 /**
@@ -117,7 +140,7 @@ public class SynAn {
 			dump("var_definition -> = expression");
 			
 			AbsVarDef var = (AbsVarDef) prevStmt;
-			AbsVarName varName = new AbsVarName(var.position, var.name);
+			AbsVarNameExpr varName = new AbsVarNameExpr(var.position, var.name);
 			AbsExpr e = parseExpression();
 			
 			absStmts = parseStatements_(null);
@@ -155,12 +178,12 @@ public class SynAn {
 			dump("expression -> continue");
 			skip();
 			return new AbsControlTransferStmt(symbol.position, 
-					ControlTransferEnum.Continue);
+					ControlTransfer.Continue);
 		case KW_BREAK:
 			dump("expression -> break");
 			skip();
 			return new AbsControlTransferStmt(symbol.position, 
-					ControlTransferEnum.Break);
+					ControlTransfer.Break);
 		
 		/**
 		 * Parse expression.
@@ -267,7 +290,7 @@ public class SynAn {
 			skip();
 			dump("function_definition -> func identifier ( parameters ) function_definition'");
 
-			Vector<AbsPar> params = parseParameters();
+			Vector<AbsParDef> params = parseParameters();
 
 			return parseFunDefinition_(startPos, id, params);
 		}
@@ -278,12 +301,12 @@ public class SynAn {
 	}
 
 	private AbsFunDef parseFunDefinition_(Position startPos, Symbol id,
-			Vector<AbsPar> params) {
+			Vector<AbsParDef> params) {
 		AbsType type = null;
 
 		if (symbol.token == Token.LBRACE) {
 			dump("function_definition' -> { statements } ");
-			type = new AbsAtomType(symbol.position, AtomType.VOID);
+			type = new AbsAtomType(symbol.position, AtomTypeEnum.VOID);
 		} else {
 			dump("function_definition' -> type { statements } ");
 			type = parseType();
@@ -419,7 +442,7 @@ public class SynAn {
 					skip();
 					dump("var_definition -> = expression");
 					
-					AbsVarName varName = new AbsVarName(definition.position, 
+					AbsVarNameExpr varName = new AbsVarNameExpr(definition.position, 
 							((AbsVarDef)definition).name);
 					AbsExpr e = parseExpression();
 
@@ -456,32 +479,32 @@ public class SynAn {
 			dump("type -> logical");
 			skip();
 
-			return new AbsAtomType(s.position, AtomType.LOG);
+			return new AbsAtomType(s.position, AtomTypeEnum.LOG);
 		case INTEGER:
 			dump("type -> integer");
 			skip();
 
-			return new AbsAtomType(s.position, AtomType.INT);
+			return new AbsAtomType(s.position, AtomTypeEnum.INT);
 		case STRING:
 			dump("type -> string");
 			skip();
 
-			return new AbsAtomType(s.position, AtomType.STR);
+			return new AbsAtomType(s.position, AtomTypeEnum.STR);
 		case CHAR:
 			dump("type -> char");
 			skip();
 
-			return new AbsAtomType(s.position, AtomType.CHR);
+			return new AbsAtomType(s.position, AtomTypeEnum.CHR);
 		case DOUBLE:
 			dump("type -> double");
 			skip();
 
-			return new AbsAtomType(s.position, AtomType.DOB);
+			return new AbsAtomType(s.position, AtomTypeEnum.DOB);
 		case VOID:
 			dump("type -> void");
 			skip();
 
-			return new AbsAtomType(s.position, AtomType.VOID);
+			return new AbsAtomType(s.position, AtomTypeEnum.VOID);
 		case LBRACKET:
 			skip();
 			dump("type -> [ type ]");
@@ -523,7 +546,7 @@ public class SynAn {
 		return null;
 	}
 
-	private Vector<AbsPar> parseParameters() {
+	private Vector<AbsParDef> parseParameters() {
 		if (symbol.token == Token.RPARENT) {
 			skip();
 			return new Vector<>();
@@ -531,21 +554,21 @@ public class SynAn {
 
 		dump("parameters -> parameter parameters'");
 
-		AbsPar paramater = parseParameter();
-		Vector<AbsPar> params = new Vector<>();
+		AbsParDef paramater = parseParameter();
+		Vector<AbsParDef> params = new Vector<>();
 		params.add(paramater);
 		params.addAll(parseParameters_());
 
 		return params;
 	}
 
-	private Vector<AbsPar> parseParameters_() {
+	private Vector<AbsParDef> parseParameters_() {
 		if (symbol.token == Token.COMMA) {
 			dump("parameters' -> parameters");
 			skip();
 
-			AbsPar parameter = parseParameter();
-			Vector<AbsPar> params = new Vector<>();
+			AbsParDef parameter = parseParameter();
+			Vector<AbsParDef> params = new Vector<>();
 			params.add(parameter);
 			params.addAll(parseParameters_());
 			return params;
@@ -559,7 +582,7 @@ public class SynAn {
 		return new Vector<>();
 	}
 
-	private AbsPar parseParameter() {
+	private AbsParDef parseParameter() {
 		if (symbol.token == Token.IDENTIFIER) {
 			Symbol id = symbol;
 
@@ -569,7 +592,7 @@ public class SynAn {
 			dump("parameter -> identifier : type");
 
 			AbsType type = parseType();
-			return new AbsPar(new Position(id.position, type.position),
+			return new AbsParDef(new Position(id.position, type.position),
 					id.lexeme, type);
 		}
 		Report.error(symbol.position,
@@ -1232,37 +1255,37 @@ public class SynAn {
 			dump("atom_expression -> log_const");
 			skip();
 
-			return new AbsAtomConst(current.position, AtomType.LOG,
+			return new AbsAtomConstExpr(current.position, AtomTypeEnum.LOG,
 					current.lexeme);
 		case INT_CONST:
 			dump("atom_expression -> int_const");
 			skip();
 
-			return new AbsAtomConst(current.position, AtomType.INT,
+			return new AbsAtomConstExpr(current.position, AtomTypeEnum.INT,
 					current.lexeme);
 		case STR_CONST:
 			dump("atom_expression -> str_const");
 			skip();
 
-			return new AbsAtomConst(current.position, AtomType.STR,
+			return new AbsAtomConstExpr(current.position, AtomTypeEnum.STR,
 					current.lexeme);
 		case CHAR_CONST:
 			dump("atom_expression -> char_const");
 			skip();
 
-			return new AbsAtomConst(current.position, AtomType.CHR,
+			return new AbsAtomConstExpr(current.position, AtomTypeEnum.CHR,
 					current.lexeme);
 		case DOUBLE_CONST:
 			dump("atom_expression -> double_const");
 			skip();
 
-			return new AbsAtomConst(current.position, AtomType.DOB,
+			return new AbsAtomConstExpr(current.position, AtomTypeEnum.DOB,
 					current.lexeme);
 		case KW_NIL:
 			dump("atom_expression -> nil");
 			skip();
 
-			return new AbsAtomConst(current.position, AtomType.NIL,
+			return new AbsAtomConstExpr(current.position, AtomTypeEnum.NIL,
 					current.lexeme);
 		case KW_IF:
 			dump("atom_expression -> if_expression");
@@ -1292,7 +1315,7 @@ public class SynAn {
 						absExprs);
 			} else {
 				dump("atom_expression -> identifier");
-				return new AbsVarName(current.position, current.lexeme);
+				return new AbsVarNameExpr(current.position, current.lexeme);
 			}
 		case LBRACKET:
 			return parseBracket();
@@ -1340,7 +1363,7 @@ public class SynAn {
 						+ "\", expected \"}\" after this token");
 			skip();
 
-			return new AbsFor(new Position(start, s.position), new AbsVarName(
+			return new AbsFor(new Position(start, s.position), new AbsVarNameExpr(
 					count.position, count.lexeme), e, s);
 		}
 		Report.error(symbol.position, "Syntax error, expected keyword \"for\"");
@@ -1470,7 +1493,7 @@ public class SynAn {
 						+ "\", expected keyword \"for\" after this token");
 			
 			Symbol count = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
-			AbsVarName var = new AbsVarName(count.position, count.lexeme);
+			AbsVarNameExpr var = new AbsVarNameExpr(count.position, count.lexeme);
 			skip();
 			
 			if (symbol.token != Token.KW_IN)

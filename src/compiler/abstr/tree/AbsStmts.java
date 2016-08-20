@@ -4,6 +4,9 @@ import java.util.Vector;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
+import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsFunDef;
+import compiler.abstr.tree.def.AbsVarDef;
 
 public class AbsStmts extends AbsTree {
 

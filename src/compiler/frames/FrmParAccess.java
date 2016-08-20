@@ -1,6 +1,7 @@
 package compiler.frames;
 
 import compiler.abstr.tree.*;
+import compiler.abstr.tree.def.AbsParDef;
 import compiler.seman.*;
 import compiler.seman.type.*;
 
@@ -12,7 +13,7 @@ import compiler.seman.type.*;
 public class FrmParAccess extends FrmAccess {
 
 	/** Opis argumenta.  */
-	public AbsPar par;
+	public AbsParDef par;
 
 	/** Klicni zapis funkcije, v kateri je parameter deklariran.  */
 	public FrmFrame frame;
@@ -25,7 +26,7 @@ public class FrmParAccess extends FrmAccess {
 	 * @param par Parameter.
 	 * @param frame Klicni zapis.
 	 */
-	public FrmParAccess(AbsPar par, FrmFrame frame) {
+	public FrmParAccess(AbsParDef par, FrmFrame frame) {
 		this.par = par;
 		this.frame = frame;
 		

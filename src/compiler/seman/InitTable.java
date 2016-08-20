@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
-import compiler.abstr.tree.AbsVarDef;
+import compiler.abstr.tree.def.AbsVarDef;
 
 public class InitTable {
 	

@@ -1,6 +1,6 @@
 package compiler.abstr.tree;
 
-public enum ControlTransferEnum {
+public enum ControlTransfer {
 	Continue,
 	Break
 }

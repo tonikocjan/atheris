@@ -1,7 +1,9 @@
-package compiler.abstr.tree;
+package compiler.abstr.tree.def;
 
 import compiler.*;
 import compiler.abstr.*;
+import compiler.abstr.tree.VisibilityEnum;
+import compiler.abstr.tree.type.AbsType;
 
 /**
  * Definicija spremenljivke.

@@ -4,6 +4,7 @@ import java.util.*;
 
 import compiler.*;
 import compiler.abstr.tree.*;
+import compiler.abstr.tree.def.AbsDef;
 import compiler.seman.type.SemType;
 
 public class SymbTable {

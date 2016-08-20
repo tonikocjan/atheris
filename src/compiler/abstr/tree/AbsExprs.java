@@ -4,6 +4,7 @@ import java.util.*;
 
 import compiler.*;
 import compiler.abstr.*;
+import compiler.abstr.tree.expr.AbsExpr;
 
 /**
  * Opis izrazov.
