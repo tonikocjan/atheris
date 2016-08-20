@@ -1532,6 +1532,9 @@ public class SynAn {
 		if (symbol.token == TokenEnum.NEWLINE)
 			skip();
 		
+		if (symbol.token == TokenEnum.KW_CASE || symbol.token == TokenEnum.KW_DEFAULT)
+			Report.error(symbol.position, "Case should have at least one executable statement");
+		
 		AbsStmts body = parseStatements();
 		Position casePos = new Position(start, body.position);
 		
