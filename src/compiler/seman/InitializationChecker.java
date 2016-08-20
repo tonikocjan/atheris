@@ -7,7 +7,7 @@ import compiler.abstr.tree.AbsAtomConst;
 import compiler.abstr.tree.AbsAtomType;
 import compiler.abstr.tree.AbsBinExpr;
 import compiler.abstr.tree.AbsClassDef;
-import compiler.abstr.tree.AbsControlTransferExpr;
+import compiler.abstr.tree.AbsControlTransferStmt;
 import compiler.abstr.tree.AbsDefs;
 import compiler.abstr.tree.AbsExpr;
 import compiler.abstr.tree.AbsExprs;
@@ -217,7 +217,7 @@ public class InitializationChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsControlTransferExpr acceptor) {
+	public void visit(AbsControlTransferStmt acceptor) {
 		///
 	}
 

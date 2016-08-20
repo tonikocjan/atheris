@@ -324,37 +324,7 @@ public class Frames implements ASTVisitor {
 	}
 
 	public void visit(AbsIfExpr ifThen) {
-		Report.dump(indent, "AbsIfThen " + ifThen.position.toString() + ":");
-		{
-			SemType typ = SymbDesc.getType(ifThen);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
-		}
-		indent += 2;
-		ifThen.cond.accept(this);
-		indent -= 2;
-		indent += 2;
-		ifThen.thenBody.accept(this);
-		indent -= 2;
-	}
-
-	public void visit(AbsIfThenElse ifThenElse) {
-		Report.dump(indent, "AbsIfThenElse " + ifThenElse.position.toString()
-				+ ":");
-		{
-			SemType typ = SymbDesc.getType(ifThenElse);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
-		}
-		indent += 2;
-		ifThenElse.cond.accept(this);
-		indent -= 2;
-		indent += 2;
-		ifThenElse.thenBody.accept(this);
-		indent -= 2;
-		indent += 2;
-		ifThenElse.elseBody.accept(this);
-		indent -= 2;
+		// TODO
 	}
 
 	public void visit(AbsPar par) {
@@ -546,6 +516,11 @@ public class Frames implements ASTVisitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}		
+	}
+
+	@Override
+	public void visit(AbsControlTransferStmt acceptor) {
+		// TODO Auto-generated method stub
 	}
 
 }

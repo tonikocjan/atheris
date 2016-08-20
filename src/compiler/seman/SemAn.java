@@ -425,7 +425,7 @@ public class SemAn implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsControlTransferExpr acceptor) {
+	public void visit(AbsControlTransferStmt acceptor) {
 		Report.dump(indent, "AbsControlTransferStmt: " + acceptor.control);		
 	}
 }

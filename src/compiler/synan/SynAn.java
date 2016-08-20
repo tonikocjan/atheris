@@ -136,6 +136,9 @@ public class SynAn {
 
 	private AbsStmt parseStatement() {
 		switch (symbol.token) {
+		/**
+		 * Parse definition.
+		 */
 		case KW_VAR:
 		case KW_LET:
 		case KW_STRUCT:
@@ -144,6 +147,24 @@ public class SynAn {
 		case KW_IMPORT:
 			dump("statement -> definition");
 			return parseDefinition();
+			
+		/**
+		 * Parse control transfer statement.
+		 */
+		case KW_CONTINUE:
+			dump("expression -> continue");
+			skip();
+			return new AbsControlTransferStmt(symbol.position, 
+					ControlTransfer.Continue);
+		case KW_BREAK:
+			dump("expression -> break");
+			skip();
+			return new AbsControlTransferStmt(symbol.position, 
+					ControlTransfer.Break);
+		
+		/**
+		 * Parse expression.
+		 */
 		default:
 			dump("statement -> expression");
 			return parseExpression();
@@ -636,16 +657,6 @@ public class SynAn {
 		case KW_RETURN:
 			dump("expression -> logical_ior_expression");
 			return parseExpression_(parseIorExpression());
-		case KW_CONTINUE:
-			dump("expression -> continue");
-			skip();
-			return parseExpression_(new AbsControlTransferExpr(symbol.position, 
-					ControlTransfer.Continue));
-		case KW_BREAK:
-			dump("expression -> break");
-			skip();
-			return parseExpression_(new AbsControlTransferExpr(symbol.position, 
-					ControlTransfer.Break));
 		default:
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", delete this token");

@@ -436,7 +436,7 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsControlTransferExpr acceptor) {
+	public void visit(AbsControlTransferStmt acceptor) {
 		///
 	}
 

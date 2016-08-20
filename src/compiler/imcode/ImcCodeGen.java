@@ -22,9 +22,30 @@ import compiler.seman.type.SemType;
 
 public class ImcCodeGen implements ASTVisitor {
 
+	/**
+	 * Data and code chunks.
+	 */
 	public LinkedList<ImcChunk> chunks;
+	
+	/**
+	 * Code to be executed at the beginning of execution.
+	 */
 	public ImcCodeChunk entryPointCode = null;
+	
+	///
+	
+	/**
+	 * Current frame (used for return expr). 
+	 */
 	private FrmFrame currentFrame = null;
+	
+	/**
+	 *  Labels for control transfer (break and continue) statements.
+	 */
+	private FrmLabel breakLabel = null,
+					 continueLabel = null;
+	
+	///
 
 	public ImcCodeGen(FrmFrame entryPoint) {
 		currentFrame = entryPoint;
@@ -521,7 +542,7 @@ public class ImcCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsControlTransferExpr acceptor) {
+	public void visit(AbsControlTransferStmt acceptor) {
 		ImcDesc.setImcCode(acceptor, new ImcCONTROL(acceptor.control));
 	}
 

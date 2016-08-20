@@ -511,7 +511,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsControlTransferExpr acceptor) {
+	public void visit(AbsControlTransferStmt acceptor) {
 		///
 	}
 }

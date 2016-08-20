@@ -3,11 +3,11 @@ package compiler.abstr.tree;
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
 
-public class AbsControlTransferExpr extends AbsExpr {
+public class AbsControlTransferStmt extends AbsStmt {
 	
 	public final ControlTransfer control;
 
-	public AbsControlTransferExpr(Position pos, ControlTransfer control) {
+	public AbsControlTransferStmt(Position pos, ControlTransfer control) {
 		super(pos);
 		this.control = control;
 	}

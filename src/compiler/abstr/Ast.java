@@ -368,7 +368,7 @@ public class Ast implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsControlTransferExpr controlTransfer) {
+	public void visit(AbsControlTransferStmt controlTransfer) {
 		Report.dump(indent, "AbsControlTransferStmt: " + controlTransfer.control);
 	}
 
