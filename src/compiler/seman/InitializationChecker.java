@@ -16,7 +16,6 @@ import compiler.abstr.tree.AbsFunCall;
 import compiler.abstr.tree.AbsFunDef;
 import compiler.abstr.tree.AbsFunType;
 import compiler.abstr.tree.AbsIfExpr;
-import compiler.abstr.tree.AbsIfThenElse;
 import compiler.abstr.tree.AbsImportDef;
 import compiler.abstr.tree.AbsListExpr;
 import compiler.abstr.tree.AbsListType;
@@ -29,6 +28,7 @@ import compiler.abstr.tree.AbsUnExpr;
 import compiler.abstr.tree.AbsVarDef;
 import compiler.abstr.tree.AbsVarName;
 import compiler.abstr.tree.AbsWhile;
+import compiler.abstr.tree.Condition;
 
 /**
  * Initialization checking phase of the compiler.
@@ -128,19 +128,17 @@ public class InitializationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsIfExpr acceptor) {
-		acceptor.cond.accept(this);
-		InitTable.newScope();
-		acceptor.thenBody.accept(this);
-		InitTable.oldScope();
-	}
+		for (Condition c : acceptor.conditions) {
+			c.cond.accept(this);
 
-	@Override
-	public void visit(AbsIfThenElse acceptor) {
-		acceptor.cond.accept(this);
-		InitTable.newScope();
-		acceptor.thenBody.accept(this);
-		InitTable.oldScope();
-		acceptor.elseBody.accept(this);
+			InitTable.newScope();
+			c.body.accept(this);
+			InitTable.oldScope();
+		}
+
+		if (acceptor.elseBody != null) {
+			acceptor.elseBody.accept(this);
+		}
 	}
 
 	@Override
@@ -173,8 +171,8 @@ public class InitializationChecker implements ASTVisitor {
 
 		if (shouldCheckIfInitialized) {
 			if (!InitTable.isInitialized(def)) {
-				String s = def.isConstant ? "Constant '" : "Variable '";
-				Report.error(acceptor.position, s + def.name + "' used before being initialized");
+				String errorMsg = def.isConstant ? "Constant '" : "Variable '";
+				Report.error(acceptor.position, errorMsg + def.name + "' used before being initialized");
 			}
 		}
 		else {

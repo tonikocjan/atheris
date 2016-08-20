@@ -33,15 +33,16 @@ public class CodeGenerator {
 			if (chnk instanceof ImcCodeChunk) {
 				ImcCodeChunk fn = (ImcCodeChunk) chnk;
 				fn.lincode = fn.imcode.linear();
-				if (fn.frame.label.name().equals("__main__")) {
-					mainFrame = fn;
-					
-				}
+				
 				CodeGenerator.insertCode(fn.frame.label, fn);
+				
 				Interpreter.locations.put(((ImcCodeChunk) chnk).frame.label, 
 						Interpreter.heapPointer);
-				
 				Interpreter.heapPointer += 4;
+
+				if (fn.frame.label.name().equals("__main__")) {
+					mainFrame = fn;
+				}
 			}
 			else {
 				ImcDataChunk data = (ImcDataChunk) chnk;

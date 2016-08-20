@@ -283,67 +283,44 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsIfExpr acceptor) {
-		acceptor.cond.accept(this);
-		acceptor.thenBody.accept(this);
-
-		ImcCode thenBody = ImcDesc.getImcCode(acceptor.thenBody);
-		ImcStmt expr = null;
-
-		if (thenBody instanceof ImcExpr)
-			expr = new ImcEXP((ImcExpr) thenBody);
-		else
-			expr = (ImcStmt) thenBody;
-
-		ImcExpr cond = (ImcExpr) ImcDesc.getImcCode(acceptor.cond);
-		FrmLabel l1 = FrmLabel.newLabel(), l2 = FrmLabel.newLabel();
-
 		ImcSEQ statements = new ImcSEQ();
-		statements.stmts.add(new ImcCJUMP(cond, l1, l2));
-		statements.stmts.add(new ImcLABEL(l1));
-		statements.stmts.add(expr);
-		statements.stmts.add(new ImcLABEL(l2));
+		FrmLabel endLabel = FrmLabel.newLabel();
 
-		ImcDesc.setImcCode(acceptor, statements);
-	}
+		for (Condition c : acceptor.conditions) {
+			c.cond.accept(this);
+			c.body.accept(this);
 
-	@Override
-	public void visit(AbsIfThenElse acceptor) {
-		acceptor.cond.accept(this);
-		acceptor.thenBody.accept(this);
-		acceptor.elseBody.accept(this);
+			ImcExpr cond = (ImcExpr) ImcDesc.getImcCode(c.cond);
+			ImcStmt body = (ImcStmt) ImcDesc.getImcCode(c.body);
+			FrmLabel l1 = FrmLabel.newLabel(),
+					 l2 = FrmLabel.newLabel();
+	
+			statements.stmts.add(new ImcCJUMP(cond, l1, l2));
+			statements.stmts.add(new ImcLABEL(l1));
+			statements.stmts.add(body);
+			statements.stmts.add(new ImcJUMP(endLabel));
+			statements.stmts.add(new ImcLABEL(l2));
+		}
 
-		ImcCode e1 = ImcDesc.getImcCode(acceptor.thenBody);
-		ImcCode e2 = ImcDesc.getImcCode(acceptor.elseBody);
+		if (acceptor.elseBody != null) {
+			acceptor.elseBody.accept(this);	
+			
+			ImcStmt body = (ImcStmt) ImcDesc.getImcCode(acceptor.elseBody);
+			statements.stmts.add(body);
+		}
 
-		ImcExpr cond = (ImcExpr) ImcDesc.getImcCode(acceptor.cond);
-		ImcStmt expr1 = (e1 instanceof ImcStmt) ? (ImcStmt) e1 : new ImcEXP(
-				(ImcExpr) e1);
-		ImcStmt expr2 = (e2 instanceof ImcStmt) ? (ImcStmt) e2 : new ImcEXP(
-				(ImcExpr) e2);
-
-		FrmLabel l1 = FrmLabel.newLabel(), l2 = FrmLabel.newLabel(), l3 = FrmLabel
-				.newLabel();
-
-		ImcSEQ statements = new ImcSEQ();
-		statements.stmts.add(new ImcCJUMP(cond, l1, l2));
-		statements.stmts.add(new ImcLABEL(l1));
-		statements.stmts.add(expr1);
-		statements.stmts.add(new ImcJUMP(l3));
-		statements.stmts.add(new ImcLABEL(l2));
-		statements.stmts.add(expr2);
-		statements.stmts.add(new ImcLABEL(l3));
-
+		statements.stmts.add(new ImcLABEL(endLabel));
 		ImcDesc.setImcCode(acceptor, statements);
 	}
 
 	@Override
 	public void visit(AbsPar acceptor) {
-
+		///
 	}
 
 	@Override
 	public void visit(AbsTypeName acceptor) {
-
+		///
 	}
 
 	@Override

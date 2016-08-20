@@ -364,29 +364,21 @@ public class BasicTypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsIfExpr acceptor) {
-		acceptor.cond.accept(this);
-		acceptor.thenBody.accept(this);
+		for (Condition c : acceptor.conditions) {
+			c.cond.accept(this);
+			c.body.accept(this);
+			
+			if (SymbDesc.getType(c.cond).sameStructureAs(
+					new SemAtomType(AtomType.LOG)))
+				SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
+			else
+				Report.error(c.cond.position,
+						"Condition must be of type Bool");
+		}
 
-		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new SemAtomType(AtomType.LOG)))
-			SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
-		else
-			Report.error(acceptor.cond.position,
-					"Condition must be of type LOGICAL");
-	}
-
-	@Override
-	public void visit(AbsIfThenElse acceptor) {
-		acceptor.cond.accept(this);
-		acceptor.thenBody.accept(this);
-		acceptor.elseBody.accept(this);
-
-		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new SemAtomType(AtomType.LOG)))
-			SymbDesc.setType(acceptor, new SemAtomType(AtomType.VOID));
-		else
-			Report.error(acceptor.cond.position,
-					"Condition must be of type LOGICAL");
+		if (acceptor.elseBody != null) {
+			acceptor.elseBody.accept(this);
+		}
 	}
 
 	@Override

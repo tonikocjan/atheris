@@ -1,7 +1,6 @@
 package compiler.abstr.tree;
 
 import compiler.*;
-import compiler.abstr.*;
 
 /**
  * Definicija tipa.

@@ -115,15 +115,13 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsIfExpr acceptor) {
-		acceptor.cond.accept(this);
-		acceptor.thenBody.accept(this);
-	}
+		for (Condition c : acceptor.conditions) {
+			c.cond.accept(this);
+			c.body.accept(this);
+		}
 
-	@Override
-	public void visit(AbsIfThenElse acceptor) {
-		acceptor.cond.accept(this);
-		acceptor.thenBody.accept(this);
-		acceptor.elseBody.accept(this);
+		if (acceptor.elseBody != null)
+			acceptor.elseBody.accept(this);
 	}
 
 	@Override

@@ -155,7 +155,7 @@ public class Main {
 			if (mainFrame != null)
 				new Interpreter(mainFrame.frame, mainFrame.imcode.linear());
 			else
-				new Interpreter(frmEval.entryPoint, imcodegen.entryPointCode.imcode.linear());
+				new Interpreter(frmEval.entryPoint, imcodegen.entryPointCode.lincode);
 			
 			if (execPhase.equals("interpret")) break;
 			

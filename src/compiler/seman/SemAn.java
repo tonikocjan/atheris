@@ -258,27 +258,20 @@ public class SemAn implements ASTVisitor {
 		indent += 2; funDef.func.accept(this); indent -= 2;
 	}
 	
-	public void visit(AbsIfExpr ifThen) {
-		Report.dump(indent, "AbsIfThen " + ifThen.position.toString() + ":");
-		{
-			SemType typ = SymbDesc.getType(ifThen);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
+	public void visit(AbsIfExpr ifExpr) {
+		Report.dump(indent, "AbsIfExpr " + ifExpr.position.toString() + ":");
+		SemType typ = SymbDesc.getType(ifExpr);
+		if (typ != null)
+			Report.dump(indent + 2, "#typed as " + typ.toString());
+		
+		indent += 2;
+		for (Condition c : ifExpr.conditions) {
+			c.cond.accept(this);
+			c.body.accept(this);
 		}
-		indent += 2; ifThen.cond.accept(this); indent -= 2;		
-		indent += 2; ifThen.thenBody.accept(this); indent -= 2;		
-	}
-	
-	public void visit(AbsIfThenElse ifThenElse) {
-		Report.dump(indent, "AbsIfThenElse " + ifThenElse.position.toString() + ":");
-		{
-			SemType typ = SymbDesc.getType(ifThenElse);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
-		}
-		indent += 2; ifThenElse.cond.accept(this); indent -= 2;		
-		indent += 2; ifThenElse.thenBody.accept(this); indent -= 2;		
-		indent += 2; ifThenElse.elseBody.accept(this); indent -= 2;		
+		if (ifExpr.elseBody != null)
+			ifExpr.elseBody.accept(this);
+		indent -= 2;
 	}
 	
 	public void visit(AbsPar par) {

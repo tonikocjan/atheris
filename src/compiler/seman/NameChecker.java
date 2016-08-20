@@ -292,23 +292,19 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsIfExpr acceptor) {
-		acceptor.cond.accept(this);
-		SymbTable.newScope();
-		acceptor.thenBody.accept(this);
-		SymbTable.oldScope();
-	}
+		for (Condition c : acceptor.conditions) {
+			c.cond.accept(this);
 
-	@Override
-	public void visit(AbsIfThenElse acceptor) {
-		acceptor.cond.accept(this);
+			SymbTable.newScope();
+			c.body.accept(this);
+			SymbTable.oldScope();
+		}
 
-		SymbTable.newScope();
-		acceptor.thenBody.accept(this);
-		SymbTable.oldScope();
-
-		SymbTable.newScope();
-		acceptor.elseBody.accept(this);
-		SymbTable.oldScope();
+		if (acceptor.elseBody != null) {
+			SymbTable.newScope();
+			acceptor.elseBody.accept(this);
+			SymbTable.oldScope();
+		}
 	}
 
 	@Override

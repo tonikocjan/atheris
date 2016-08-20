@@ -17,7 +17,7 @@ public class ImcCodeChunk extends ImcChunk {
 	public ImcStmt imcode;
 
 	/** Linearna vmesna koda.  */
-	public ImcStmt lincode;
+	public ImcSEQ lincode;
 
 	/**
 	 * Ustvari nov fragment kode.
