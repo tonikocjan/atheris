@@ -556,6 +556,11 @@ public class BasicTypeChecker implements ASTVisitor {
 						"Expression of type \"" + caseType.toString() + 
 						"\" cannot match values of type \"" + switchType.toString() +"\"");
 		}
+		
+		if (switchStmt.defaultBody != null)
+			switchStmt.defaultBody.accept(this);
+		
+		SymbDesc.setType(switchStmt, new SemAtomType(AtomTypeEnum.VOID));
 	}
 
 	@Override

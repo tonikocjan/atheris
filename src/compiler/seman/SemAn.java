@@ -469,7 +469,7 @@ public class SemAn implements ASTVisitor {
 		{
 			SemType typ = SymbDesc.getType(switchStmt.subjectExpr);
 			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
+				Report.dump(indent, "#typed as " + typ.toString());
 		}
 		indent -= 2;
 		

@@ -1,6 +1,5 @@
 package compiler.frames;
 
-import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.AbsParDef;
 import compiler.seman.*;
 import compiler.seman.type.*;

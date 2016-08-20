@@ -19,9 +19,11 @@ import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsCaseStmt;
 import compiler.abstr.tree.stmt.AbsControlTransferStmt;
 import compiler.abstr.tree.stmt.AbsForStmt;
 import compiler.abstr.tree.stmt.AbsIfStmt;
+import compiler.abstr.tree.stmt.AbsSwitchStmt;
 import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
@@ -566,6 +568,16 @@ public class ImcCodeGen implements ASTVisitor {
 		else
 			// Jump to break label (end of the loop)
 			ImcDesc.setImcCode(acceptor, new ImcJUMP(endLabelStack.peek()));
+	}
+
+	@Override
+	public void visit(AbsSwitchStmt acceptor) {
+		
+	}
+
+	@Override
+	public void visit(AbsCaseStmt acceptor) {
+		
 	}
 
 }
