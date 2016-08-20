@@ -59,7 +59,7 @@ public class ImcCodeGen implements ASTVisitor {
 	///
 	
 	/**
-	 * Current frame (used for return expr). 
+	 * Frame stack (used for return expr). 
 	 */
 	private Stack<FrmFrame> frameStack = new Stack<>();
 	
@@ -74,6 +74,11 @@ public class ImcCodeGen implements ASTVisitor {
 	 * If scope equals zero, code being generated is entry point code.
 	 */
 	private int scope = 0;
+	
+	/**
+	 * Switch stmt subject expr stack 
+	 */
+	private Stack<ImcExpr> switchSubjectExprs = new Stack<>();
 	
 	///
 
@@ -559,25 +564,64 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsControlTransferStmt acceptor) {
-		if (startLabelStack.isEmpty() || endLabelStack.isEmpty())
-			return;
-		
-		if (acceptor.control == ControlTransfer.Continue)
-			// Jump to continue label (beginning of the loop)
-			ImcDesc.setImcCode(acceptor, new ImcJUMP(startLabelStack.peek()));
-		else
-			// Jump to break label (end of the loop)
-			ImcDesc.setImcCode(acceptor, new ImcJUMP(endLabelStack.peek()));
+		if (acceptor.control == ControlTransfer.Continue) {
+			if (!startLabelStack.isEmpty()) 
+				// Jump to continue label (beginning of the loop)
+				ImcDesc.setImcCode(acceptor, new ImcJUMP(startLabelStack.peek()));
+		}
+		else {
+			if (!endLabelStack.isEmpty())
+				// Jump to break label (end of the loop)
+				ImcDesc.setImcCode(acceptor, new ImcJUMP(endLabelStack.peek()));
+		}
 	}
 
 	@Override
 	public void visit(AbsSwitchStmt acceptor) {
+		acceptor.subjectExpr.accept(this);
+
+		ImcSEQ switchCode = new ImcSEQ();
 		
+		ImcExpr subjectExpr = (ImcExpr) ImcDesc.getImcCode(acceptor.subjectExpr);
+		switchSubjectExprs.push(subjectExpr);
+		
+		FrmLabel endLabel = FrmLabel.newLabel();
+		endLabelStack.push(endLabel);
+		
+		for (AbsCaseStmt singleCase : acceptor.cases) {
+			singleCase.accept(this);
+			switchCode.stmts.add((ImcStmt) ImcDesc.getImcCode(singleCase));
+		}
+		
+		if (acceptor.defaultBody != null) {
+			acceptor.defaultBody.accept(this);
+			switchCode.stmts.add((ImcStmt) ImcDesc.getImcCode(acceptor.defaultBody));
+		}
+		
+		switchCode.stmts.add(new ImcLABEL(endLabel));
+		endLabelStack.pop();
+		ImcDesc.setImcCode(acceptor, switchCode);
 	}
 
 	@Override
 	public void visit(AbsCaseStmt acceptor) {
+		acceptor.expr.accept(this);
+		acceptor.body.accept(this);
 		
+		ImcExpr expr = (ImcExpr) ImcDesc.getImcCode(acceptor.expr);
+		ImcStmt body = (ImcStmt) ImcDesc.getImcCode(acceptor.body);
+		ImcExpr cond = new ImcBINOP(ImcBINOP.EQU, expr, switchSubjectExprs.peek());
+		
+		FrmLabel startLabel = FrmLabel.newLabel();
+		FrmLabel endLabel = FrmLabel.newLabel();
+		
+		ImcSEQ caseCode = new ImcSEQ();
+		caseCode.stmts.add(new ImcCJUMP(cond, startLabel, endLabel));
+		caseCode.stmts.add(new ImcLABEL(startLabel));
+		caseCode.stmts.add(body);
+		caseCode.stmts.add(new ImcLABEL(endLabel));
+		
+		ImcDesc.setImcCode(acceptor, caseCode);
 	}
 
 }
