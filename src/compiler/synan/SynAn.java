@@ -308,14 +308,14 @@ public class SynAn {
 
 	private AbsDef parseVarDefinition() {
 		Position startPos = symbol.position;
-		Visibility v = Visibility.Public;
+		VisibilityEnum v = VisibilityEnum.Public;
 		boolean isConstant = false;
 		Symbol id = null;
 		
 		if (symbol.token == Token.KW_PUBLIC)
 			skip();
 		else if (symbol.token == Token.KW_PRIVATE) {
-			v = Visibility.Private;
+			v = VisibilityEnum.Private;
 			skip();
 		}
 		

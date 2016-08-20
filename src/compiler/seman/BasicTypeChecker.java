@@ -178,7 +178,7 @@ public class BasicTypeChecker implements ASTVisitor {
 							"Value of type '" + classDef.name + "' has no member '" + name + "'");
 				}
 				if (definition instanceof AbsVarDef && 
-						((AbsVarDef) definition).visibility == Visibility.Private)
+						((AbsVarDef) definition).visibilityEnum == VisibilityEnum.Private)
 					Report.error(acceptor.expr2.position,
 							"Member '" + name + "' is private");
 				

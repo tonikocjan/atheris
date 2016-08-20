@@ -20,7 +20,7 @@ public class AbsVarDef extends AbsDef {
 	public final boolean isConstant;
 	
 	/** Is variable public / private (used for class members) */
-	public final Visibility visibility;
+	public final VisibilityEnum visibilityEnum;
 
 	/**
 	 * Ustvari novo definicijo spremenljivke.
@@ -37,7 +37,7 @@ public class AbsVarDef extends AbsDef {
 		this.name = name;
 		this.type = type;
 		this.isConstant = false;
-		this.visibility = Visibility.Private;
+		this.visibilityEnum = VisibilityEnum.Private;
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class AbsVarDef extends AbsDef {
 		this.name = name;
 		this.type = type;
 		this.isConstant = constant;
-		this.visibility = Visibility.Private;
+		this.visibilityEnum = VisibilityEnum.Private;
 	}
 	
 	/**
@@ -68,12 +68,12 @@ public class AbsVarDef extends AbsDef {
 	 * @param type
 	 *            Opis tipa spremenljivke.
 	 */
-	public AbsVarDef(Position pos, String name, AbsType type, boolean constant, Visibility visibility) {
+	public AbsVarDef(Position pos, String name, AbsType type, boolean constant, VisibilityEnum visibilityEnum) {
 		super(pos);
 		this.name = name;
 		this.type = type;
 		this.isConstant = constant;
-		this.visibility = visibility;
+		this.visibilityEnum = visibilityEnum;
 	}
 
 
