@@ -32,10 +32,9 @@ import compiler.abstr.tree.type.AbsTypeName;
 import compiler.lexan.*;
 
 /**
- * Sintaksni analizator.
+ * Syntax parser.
  * 
- * @author sliva
- * @implementation Toni Kocjan
+ * @author Toni Kocjan
  */
 public class SynAn {
 
