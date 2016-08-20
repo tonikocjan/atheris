@@ -10,7 +10,7 @@ import compiler.*;
 public class Symbol {
 	
 	/** Vrsta simbola. */
-	public final Token token;
+	public final TokenEnum tokenEnum;
 
 	/** Znakovna predstavitev simbola. */
 	public final String lexeme;
@@ -21,7 +21,7 @@ public class Symbol {
 	/**
 	 * Ustvari nov leksikalni simbol.
 	 * 
-	 * @param token
+	 * @param tokenEnum
 	 *            Vrsta simbola.
 	 * @param lexeme
 	 *            Znakovna predstavitev simbola.
@@ -34,8 +34,8 @@ public class Symbol {
 	 * @param endColumn
 	 *            Stolpec konca simbola v izvorni datoteki.
 	 */
-	public Symbol(Token token, String lexeme, int begLine, int begColumn, int endLine, int endColumn) {
-		this.token = token;
+	public Symbol(TokenEnum tokenEnum, String lexeme, int begLine, int begColumn, int endLine, int endColumn) {
+		this.tokenEnum = tokenEnum;
 		this.lexeme = lexeme;
 		this.position = new Position(begLine, begColumn, endLine, endColumn);
 	}
@@ -43,15 +43,15 @@ public class Symbol {
 	/**
 	 * Ustvari nov leksikalni simbol.
 	 * 
-	 * @param token
+	 * @param tokenEnum
 	 *            Vrsta simbola.
 	 * @param lexeme
 	 *            Znakovna predstavitev simbola.
 	 * @param position
 	 *            Polozaj simbola v izvorni datoteki.
 	 */
-	public Symbol(Token token, String lexeme, Position position) {
-		this.token = token;
+	public Symbol(TokenEnum tokenEnum, String lexeme, Position position) {
+		this.tokenEnum = tokenEnum;
 		this.lexeme = lexeme;
 		this.position = position;
 	}
@@ -59,7 +59,7 @@ public class Symbol {
 	@Override
 	public String toString() {
 		String tokenName = "";
-		switch (token) {
+		switch (tokenEnum) {
 
 		case EOF       : tokenName = "EOF"       ; break;
 		
@@ -130,11 +130,14 @@ public class Symbol {
 		case KW_RETURN 	 : tokenName = "RETURN"    ; break;
 		case KW_PUBLIC 	 : tokenName = "PUBLIC"    ; break;
 		case KW_PRIVATE	 : tokenName = "PRIVATE"   ; break;
-		case KW_BREAK	 : tokenName = "PRIVATE"   ; break;
-		case KW_CONTINUE : tokenName = "PRIVATE"   ; break;
+		case KW_BREAK	 : tokenName = "BREAK"   ; break;
+		case KW_CONTINUE : tokenName = "CONTINUE"   ; break;
+		case KW_SWITCH : tokenName = "SWITCH"   ; break;
+		case KW_CASE : tokenName = "CASE"   ; break;
+		case KW_DEFAULT : tokenName = "DEFAULT"   ; break;
 		
 		default:
-			Report.error("Internal error: token=" + token + " in compiler.lexan.Symbol.toString().");
+			Report.error("Internal error: token=" + tokenEnum + " in compiler.lexan.Symbol.toString().");
 		}
 		return tokenName + ":" + lexeme;
 	}

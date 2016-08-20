@@ -5,7 +5,7 @@ package compiler.lexan;
  * 
  * @author sliva
  */
-public enum Token {
+public enum TokenEnum {
 
 	/** Vrsta simbola: konec datoteke. */							EOF,
 	
@@ -14,8 +14,8 @@ public enum Token {
 	/** Vrsta simbola: logicna konstanta. */						LOG_CONST,
 	/** Vrsta simbola: celo stevilo. */								INT_CONST,
 	/** Vrsta simbola: niz. */										STR_CONST,
-	/** Vrsta simbola: ključna beseda import.  */ 					DOUBLE_CONST,
-	/** Vrsta simbola: ključna beseda import.  */ 					CHAR_CONST,
+	/** Vrsta simbola: decimal constant.  */	 					DOUBLE_CONST,
+	/** Vrsta simbola: char constant.  */		 					CHAR_CONST,
 
 	/** Vrsta simbola: logicni in. */								AND,
 	/** Vrsta simbola: logicni ali. */								IOR,
@@ -73,5 +73,8 @@ public enum Token {
 	/** Vrsta simbola: ključna beseda public.  */ 					KW_PUBLIC,
 	/** Vrsta simbola: ključna beseda private.  */ 					KW_PRIVATE,
 	/** Vrsta simbola: ključna beseda continue.  */ 				KW_CONTINUE,
-	/** Vrsta simbola: ključna beseda break.  */ 					KW_BREAK
+	/** Vrsta simbola: ključna beseda break.  */ 					KW_BREAK,
+	/** Vrsta simbola: ključna beseda switch.  */ 					KW_SWITCH,
+	/** Vrsta simbola: ključna beseda case.  */ 					KW_CASE,
+	/** Vrsta simbola: ključna beseda default.  */ 					KW_DEFAULT,
 }
