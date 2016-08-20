@@ -19,6 +19,7 @@ import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsConditionalStmt;
 import compiler.abstr.tree.stmt.AbsControlTransferStmt;
 import compiler.abstr.tree.stmt.AbsForStmt;
 import compiler.abstr.tree.stmt.AbsIfStmt;
@@ -184,6 +185,19 @@ public class SynAn {
 			skip();
 			return new AbsControlTransferStmt(symbol.position, 
 					ControlTransfer.Break);
+		
+		/**
+		 * Parse conditional statements
+		 */
+		case KW_IF:
+			dump("atom_expression -> if_expression");
+			return parseIf();
+		case KW_WHILE:
+			dump("atom_expression -> while expression { expression }");
+			return parseWhileLoop();
+		case KW_FOR:
+			dump("atom_expression -> for indentifier in expression { expression }");
+			return parseForLoop();
 		
 		/**
 		 * Parse expression.
@@ -1287,15 +1301,6 @@ public class SynAn {
 
 			return new AbsAtomConstExpr(current.position, AtomTypeEnum.NIL,
 					current.lexeme);
-		case KW_IF:
-			dump("atom_expression -> if_expression");
-			return parseIf();
-		case KW_WHILE:
-			dump("atom_expression -> while expression { expression }");
-			return parseWhileLoop();
-		case KW_FOR:
-			dump("atom_expression -> for indentifier in expression { expression }");
-			return parseForLoop();
 		case IDENTIFIER:
 			skip();
 			if (symbol.token == Token.LPARENT) {
@@ -1335,7 +1340,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseForLoop() {
+	private AbsConditionalStmt parseForLoop() {
 		if (symbol.token == Token.KW_FOR) {
 			Position start = symbol.position;
 			Symbol count = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
@@ -1371,7 +1376,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseWhileLoop() {
+	private AbsConditionalStmt parseWhileLoop() {
 		if (symbol.token == Token.KW_WHILE) {
 			Position start = symbol.position;
 			skip();
@@ -1416,7 +1421,7 @@ public class SynAn {
 		return new Condition(condition, s);
 	}
 	
-	private AbsExpr parseIf() {
+	private AbsConditionalStmt parseIf() {
 		if (symbol.token == Token.KW_IF) {
 			Position start = symbol.position;
 			return parseIf_(start, parseIfCondition());
@@ -1426,7 +1431,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseIf_(Position start, Condition condition) {
+	private AbsConditionalStmt parseIf_(Position start, Condition condition) {
 		if (symbol.token == Token.NEWLINE) 
 			skip();
 		
@@ -1481,39 +1486,39 @@ public class SynAn {
 		
 		AbsExpr e1 = parseExpression();
 		
-		if (symbol.token == Token.KW_FOR) {
-			dump("[] -> [ expression for identifier in expression ]");
-			Vector<AbsStmt> stmt = new Vector<>();
-			stmt.add(e1);
-			AbsStmts s = new AbsStmts(new Position(start, e1.position), stmt);
-			
-			if (symbol.token != Token.KW_FOR)
-				Report.error(previous.position, "Syntax error on token \""
-						+ previous.lexeme
-						+ "\", expected keyword \"for\" after this token");
-			
-			Symbol count = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
-			AbsVarNameExpr var = new AbsVarNameExpr(count.position, count.lexeme);
-			skip();
-			
-			if (symbol.token != Token.KW_IN)
-				Report.error(previous.position, "Syntax error on token \""
-						+ previous.lexeme
-						+ "\", expected keyword \"in\" after this token");
-			skip();
-			
-			AbsExpr e2 = parseExpression();
-			
-			if (symbol.token != Token.RBRACKET)
-				Report.error(previous.position, "Syntax error on token \""
-						+ previous.lexeme
-						+ "\", expected \"]\" after this token");
-			skip();
-			
-			return new AbsForStmt(new Position(start, e2.position), var, e2, s);
-		}
+//		if (symbol.token == Token.KW_FOR) {
+//			dump("[] -> [ expression for identifier in expression ]");
+//			Vector<AbsStmt> stmt = new Vector<>();
+//			stmt.add(e1);
+//			AbsStmts s = new AbsStmts(new Position(start, e1.position), stmt);
+//			
+//			if (symbol.token != Token.KW_FOR)
+//				Report.error(previous.position, "Syntax error on token \""
+//						+ previous.lexeme
+//						+ "\", expected keyword \"for\" after this token");
+//			
+//			Symbol count = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
+//			AbsVarNameExpr var = new AbsVarNameExpr(count.position, count.lexeme);
+//			skip();
+//			
+//			if (symbol.token != Token.KW_IN)
+//				Report.error(previous.position, "Syntax error on token \""
+//						+ previous.lexeme
+//						+ "\", expected keyword \"in\" after this token");
+//			skip();
+//			
+//			AbsExpr e2 = parseExpression();
+//			
+//			if (symbol.token != Token.RBRACKET)
+//				Report.error(previous.position, "Syntax error on token \""
+//						+ previous.lexeme
+//						+ "\", expected \"]\" after this token");
+//			skip();
+//			
+//			return new AbsForStmt(new Position(start, e2.position), var, e2, s);
+//		}
 		
-		else if (symbol.token == Token.COMMA) {
+		/*else */if (symbol.token == Token.COMMA) {
 			dump("[] -> [expression, expressions']");
 			Vector<AbsExpr> elements = new Vector<>();
 			elements.add(e1);
