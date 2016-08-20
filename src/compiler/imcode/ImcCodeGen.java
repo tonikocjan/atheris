@@ -44,6 +44,12 @@ public class ImcCodeGen implements ASTVisitor {
 	 */
 	private FrmLabel breakLabel = null,
 					 continueLabel = null;
+
+	/**
+	 * Current function scope.
+	 * If scope equals zero, code being generated is entry point code.
+	 */
+	private int scope = 0;
 	
 	///
 
@@ -426,25 +432,11 @@ public class ImcCodeGen implements ASTVisitor {
 				 l3 = FrmLabel.newLabel();
 		
 		ImcSEQ body = (ImcSEQ) ImcDesc.getImcCode(acceptor.body);
-		for (int i = 0; i < body.stmts.size(); i++) {
-			ImcStmt s = body.stmts.get(i);
-			if (s instanceof ImcEXP) {
-				ImcExpr e = ((ImcEXP) s).expr;
-				if (e instanceof ImcCONTROL) {
-					switch (((ImcCONTROL) e).control) {
-					case Continue:
-						body.stmts.set(i,new ImcJUMP(l1));
-					case Break:
-						body.stmts.set(i,new ImcJUMP(l3));
-					}
-				}
-			}
-		}
-
+		ImcExpr cond = (ImcExpr) ImcDesc.getImcCode(acceptor.cond);
+		
 		ImcSEQ statements = new ImcSEQ();
 		statements.stmts.add(new ImcLABEL(l1));
-		statements.stmts.add(new ImcCJUMP(
-				(ImcExpr) ImcDesc.getImcCode(acceptor.cond), l2, l3));
+		statements.stmts.add(new ImcCJUMP(cond, l2, l3));
 		statements.stmts.add(new ImcLABEL(l2));
 		statements.stmts.add(body);
 		statements.stmts.add(new ImcJUMP(l1));
@@ -457,8 +449,6 @@ public class ImcCodeGen implements ASTVisitor {
 	public void visit(AbsImportDef acceptor) {
 		acceptor.imports.accept(this);
 	}
-
-	int scope = 0;
 
 	@Override
 	public void visit(AbsStmts acceptor) {
