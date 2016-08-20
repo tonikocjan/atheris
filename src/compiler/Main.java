@@ -99,7 +99,7 @@ public class Main {
 			// Leksikalna analiza.
 			LexAn lexAn = new LexAn(sourceFileName, dumpPhases.contains("lexan"));
 			if (execPhase.equals("lexan")) {
-				while (lexAn.lexAn().tokenEnum != TokenEnum.EOF) {
+				while (lexAn.lexAn().token != TokenEnum.EOF) {
 				}
 				break;
 			}

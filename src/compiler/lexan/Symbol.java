@@ -10,7 +10,7 @@ import compiler.*;
 public class Symbol {
 	
 	/** Vrsta simbola. */
-	public final TokenEnum tokenEnum;
+	public final TokenEnum token;
 
 	/** Znakovna predstavitev simbola. */
 	public final String lexeme;
@@ -35,7 +35,7 @@ public class Symbol {
 	 *            Stolpec konca simbola v izvorni datoteki.
 	 */
 	public Symbol(TokenEnum tokenEnum, String lexeme, int begLine, int begColumn, int endLine, int endColumn) {
-		this.tokenEnum = tokenEnum;
+		this.token = tokenEnum;
 		this.lexeme = lexeme;
 		this.position = new Position(begLine, begColumn, endLine, endColumn);
 	}
@@ -51,7 +51,7 @@ public class Symbol {
 	 *            Polozaj simbola v izvorni datoteki.
 	 */
 	public Symbol(TokenEnum tokenEnum, String lexeme, Position position) {
-		this.tokenEnum = tokenEnum;
+		this.token = tokenEnum;
 		this.lexeme = lexeme;
 		this.position = position;
 	}
@@ -59,7 +59,7 @@ public class Symbol {
 	@Override
 	public String toString() {
 		String tokenName = "";
-		switch (tokenEnum) {
+		switch (token) {
 
 		case EOF       : tokenName = "EOF"       ; break;
 		
@@ -137,7 +137,7 @@ public class Symbol {
 		case KW_DEFAULT : tokenName = "DEFAULT"   ; break;
 		
 		default:
-			Report.error("Internal error: token=" + tokenEnum + " in compiler.lexan.Symbol.toString().");
+			Report.error("Internal error: token=" + token + " in compiler.lexan.Symbol.toString().");
 		}
 		return tokenName + ":" + lexeme;
 	}

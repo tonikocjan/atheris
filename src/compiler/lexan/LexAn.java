@@ -312,7 +312,7 @@ public class LexAn {
 				/**
 				 * Handle newline
 				 */
-				if (op.tokenEnum == TokenEnum.NEWLINE) {
+				if (op.token == TokenEnum.NEWLINE) {
 					// skip all whitespaces
 					do {
 						if (nxtCh == 10) {
@@ -343,7 +343,7 @@ public class LexAn {
 				nxtCh = tmpCh;
 				startCol++;
 
-				if (op.tokenEnum == TokenEnum.NEWLINE) {
+				if (op.token == TokenEnum.NEWLINE) {
 					startRow++;
 					startCol = 1;
 				}
@@ -528,7 +528,7 @@ public class LexAn {
 			return;
 		if (Report.dumpFile() == null)
 			return;
-		if (symb.tokenEnum == TokenEnum.EOF)
+		if (symb.token == TokenEnum.EOF)
 			Report.dumpFile().println(symb.toString());
 		else
 			Report.dumpFile().println(
