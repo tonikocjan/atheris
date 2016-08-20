@@ -17,9 +17,11 @@ import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsCaseStmt;
 import compiler.abstr.tree.stmt.AbsControlTransferStmt;
 import compiler.abstr.tree.stmt.AbsForStmt;
 import compiler.abstr.tree.stmt.AbsIfStmt;
+import compiler.abstr.tree.stmt.AbsSwitchStmt;
 import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
@@ -214,4 +216,20 @@ public class FrmEvaluator implements ASTVisitor {
 		///
 	}
 
+	@Override
+	public void visit(AbsSwitchStmt switchStmt) {
+		switchStmt.subjectExpr.accept(this);
+		
+		for (AbsCaseStmt singleCase : switchStmt.cases)
+			singleCase.accept(this);
+		
+		if (switchStmt.defaultBody != null)
+			switchStmt.defaultBody.accept(this);
+	}
+
+	@Override
+	public void visit(AbsCaseStmt acceptor) {
+		acceptor.expr.accept(this);
+		acceptor.body.accept(this);
+	}
 }
