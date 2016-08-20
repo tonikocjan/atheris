@@ -37,13 +37,13 @@ public class ImcCodeGen implements ASTVisitor {
 	/**
 	 * Current frame (used for return expr). 
 	 */
-	private FrmFrame currentFrame = null;
+	private Stack<FrmFrame> frameStack = new Stack<>();
 	
 	/**
 	 *  Labels for control transfer (break and continue) statements.
 	 */
-	private FrmLabel breakLabel = null,
-					 continueLabel = null;
+	private Stack<FrmLabel> startLabelStack = new Stack<>();
+	private Stack<FrmLabel> endLabelStack = new Stack<>();
 
 	/**
 	 * Current function scope.
@@ -54,7 +54,7 @@ public class ImcCodeGen implements ASTVisitor {
 	///
 
 	public ImcCodeGen(FrmFrame entryPoint) {
-		currentFrame = entryPoint;
+		frameStack.add(entryPoint);
 		chunks = new LinkedList<ImcChunk>();
 	}
 
@@ -275,11 +275,11 @@ public class ImcCodeGen implements ASTVisitor {
 		FrmFrame frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
 		ImcCALL fnCall = new ImcCALL(frame.label);
 
-		int diff = currentFrame.level - frame.level;
+		int diff = frameStack.peek().level - frame.level;
 		if (diff == 0)
 			fnCall.args.add(new ImcCONST(0xFFAAFF));
 		else {
-			ImcExpr SL = new ImcTEMP(currentFrame.FP);
+			ImcExpr SL = new ImcTEMP(frameStack.peek().FP);
 			if (diff > 0)
 				for (int i = 0; i < diff + 1; i++)
 					SL = new ImcMEM(SL);
@@ -296,16 +296,14 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
-		FrmFrame frame = FrmDesc.getFrame(acceptor);
-		FrmFrame tmpFr = currentFrame;
-		currentFrame = frame;
-
+		frameStack.push(FrmDesc.getFrame(acceptor));
 		acceptor.func.accept(this);
+		
 		ImcSEQ code = (ImcSEQ) ImcDesc.getImcCode(acceptor.func);
-		code.stmts.add(new ImcLABEL(currentFrame.endLabel));
-
-		chunks.add(new ImcCodeChunk(frame, code));
-		currentFrame = tmpFr;
+		code.stmts.add(new ImcLABEL(frameStack.peek().endLabel));
+		chunks.add(new ImcCodeChunk(frameStack.peek(), code));
+		
+		frameStack.pop();
 	}
 
 	@Override
@@ -397,9 +395,9 @@ public class ImcCodeGen implements ASTVisitor {
 			expr = new ImcMEM(new ImcNAME(((FrmVarAccess) access).label));
 		else if (access instanceof FrmLocAccess) {
 			FrmLocAccess loc = (FrmLocAccess) access;
-			int diff = currentFrame.level - loc.frame.level;
+			int diff = frameStack.peek().level - loc.frame.level;
 
-			ImcExpr fp = new ImcTEMP(currentFrame.FP);
+			ImcExpr fp = new ImcTEMP(frameStack.peek().FP);
 			for (int i = 0; i < diff; i++)
 				fp = new ImcMEM(fp);
 
@@ -407,9 +405,9 @@ public class ImcCodeGen implements ASTVisitor {
 					loc.offset)));
 		} else if (access instanceof FrmParAccess) {
 			FrmParAccess loc = (FrmParAccess) access;
-			int diff = currentFrame.level - loc.frame.level;
+			int diff = frameStack.peek().level - loc.frame.level;
 
-			ImcExpr fp = new ImcTEMP(currentFrame.FP);
+			ImcExpr fp = new ImcTEMP(frameStack.peek().FP);
 			for (int i = 0; i < diff; i++)
 				fp = new ImcMEM(fp);
 
@@ -424,12 +422,14 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsWhile acceptor) {
-		acceptor.cond.accept(this);
-		acceptor.body.accept(this);
-
 		FrmLabel l1 = FrmLabel.newLabel(), 
 				 l2 = FrmLabel.newLabel(), 
 				 l3 = FrmLabel.newLabel();
+		startLabelStack.push(l1);
+		endLabelStack.push(l3);
+		
+		acceptor.cond.accept(this);
+		acceptor.body.accept(this);
 		
 		ImcSEQ body = (ImcSEQ) ImcDesc.getImcCode(acceptor.body);
 		ImcExpr cond = (ImcExpr) ImcDesc.getImcCode(acceptor.cond);
@@ -443,6 +443,8 @@ public class ImcCodeGen implements ASTVisitor {
 		statements.stmts.add(new ImcLABEL(l3));
 
 		ImcDesc.setImcCode(acceptor, statements);
+		startLabelStack.pop();
+		endLabelStack.pop();
 	}
 
 	@Override
@@ -473,7 +475,7 @@ public class ImcCodeGen implements ASTVisitor {
 
 		scope--;
 		if (scope == 0) {
-			entryPointCode = new ImcCodeChunk(currentFrame, seq);
+			entryPointCode = new ImcCodeChunk(frameStack.peek(), seq);
 			chunks.add(entryPointCode);
 		}
 	}
@@ -481,7 +483,7 @@ public class ImcCodeGen implements ASTVisitor {
 	@Override
 	public void visit(AbsReturnExpr acceptor) {
 		ImcSEQ seq = new ImcSEQ();
-		ImcTEMP rv = new ImcTEMP(currentFrame.RV);
+		ImcTEMP rv = new ImcTEMP(frameStack.peek().RV);
 
 		if (acceptor.expr != null) {
 			acceptor.expr.accept(this);
@@ -491,7 +493,7 @@ public class ImcCodeGen implements ASTVisitor {
 		} else
 			ImcDesc.setImcCode(acceptor, new ImcRETURN(null));
 
-		seq.stmts.add(new ImcJUMP(currentFrame.endLabel));
+		seq.stmts.add(new ImcJUMP(frameStack.peek().endLabel));
 		ImcDesc.setImcCode(acceptor, seq);
 	}
 
@@ -533,7 +535,12 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsControlTransferStmt acceptor) {
-		ImcDesc.setImcCode(acceptor, new ImcCONTROL(acceptor.control));
+		if (acceptor.control == ControlTransfer.Continue)
+			// Jump to continue label (beginning of the loop)
+			ImcDesc.setImcCode(acceptor, new ImcJUMP(startLabelStack.peek()));
+		else
+			// Jump to break label (end of the loop)
+			ImcDesc.setImcCode(acceptor, new ImcJUMP(endLabelStack.peek()));
 	}
 
 }
