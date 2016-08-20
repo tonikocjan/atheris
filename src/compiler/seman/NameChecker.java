@@ -19,9 +19,11 @@ import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsCaseStmt;
 import compiler.abstr.tree.stmt.AbsControlTransferStmt;
 import compiler.abstr.tree.stmt.AbsForStmt;
 import compiler.abstr.tree.stmt.AbsIfStmt;
+import compiler.abstr.tree.stmt.AbsSwitchStmt;
 import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
@@ -36,7 +38,7 @@ import compiler.seman.type.*;
 /**
  * Preverjanje in razresevanje imen (razen imen komponent).
  * 
- * @implementation Toni Kocjan
+ * @author Toni Kocjan
  */
 public class NameChecker implements ASTVisitor {
 	
@@ -459,8 +461,29 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsControlTransferStmt acceptor) {
+	public void visit(AbsControlTransferStmt transferStmt) {
 		///
 	}
 
+	@Override
+	public void visit(AbsSwitchStmt switchStmt) {
+		switchStmt.subjectExpr.accept(this);
+		
+		for (AbsCaseStmt singleCase : switchStmt.cases)
+			singleCase.accept(this);
+		
+		if (switchStmt.defaultBody != null) {
+			SymbTable.newScope();
+			switchStmt.defaultBody.accept(this);
+			SymbTable.oldScope();
+		}
+	}
+
+	@Override
+	public void visit(AbsCaseStmt acceptor) {
+		acceptor.expr.accept(this);
+		SymbTable.newScope();
+		acceptor.body.accept(this);
+		SymbTable.oldScope();
+	}
 }

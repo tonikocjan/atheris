@@ -17,9 +17,11 @@ import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsCaseStmt;
 import compiler.abstr.tree.stmt.AbsControlTransferStmt;
 import compiler.abstr.tree.stmt.AbsForStmt;
 import compiler.abstr.tree.stmt.AbsIfStmt;
+import compiler.abstr.tree.stmt.AbsSwitchStmt;
 import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
@@ -449,5 +451,56 @@ public class SemAn implements ASTVisitor {
 	@Override
 	public void visit(AbsControlTransferStmt acceptor) {
 		Report.dump(indent, "AbsControlTransferStmt: " + acceptor.control);		
+	}
+
+	@Override
+	public void visit(AbsSwitchStmt switchStmt) {
+		Report.dump(indent, "AbsSwitchStmt " + switchStmt.position.toString() + ":");
+		indent += 2;
+		{
+			SemType typ = SymbDesc.getType(switchStmt);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		
+		Report.dump(indent, "Subject expr:");
+		indent += 2;
+		switchStmt.subjectExpr.accept(this);
+		{
+			SemType typ = SymbDesc.getType(switchStmt.subjectExpr);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		indent -= 2;
+		
+		for (AbsCaseStmt singleCase : switchStmt.cases)
+			singleCase.accept(this);
+		
+		if (switchStmt.defaultBody != null) {
+			Report.dump(indent, "Default:");
+			indent += 2;
+			switchStmt.defaultBody.accept(this);
+			{
+				SemType typ = SymbDesc.getType(switchStmt.defaultBody);
+				if (typ != null)
+					Report.dump(indent + 2, "#typed as " + typ.toString());
+			}
+			indent -= 2;
+		}
+		
+		indent -= 2;		
+	}
+
+	@Override
+	public void visit(AbsCaseStmt acceptor) {
+		Report.dump(indent, "Case:");
+		indent += 2; acceptor.expr.accept(this); indent -= 2;
+		{
+			SemType typ = SymbDesc.getType(acceptor.expr);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		Report.dump(indent, "Body:");
+		indent += 2; acceptor.body.accept(this); indent -= 2;		
 	}
 }

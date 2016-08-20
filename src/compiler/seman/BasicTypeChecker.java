@@ -20,9 +20,11 @@ import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
+import compiler.abstr.tree.stmt.AbsCaseStmt;
 import compiler.abstr.tree.stmt.AbsControlTransferStmt;
 import compiler.abstr.tree.stmt.AbsForStmt;
 import compiler.abstr.tree.stmt.AbsIfStmt;
+import compiler.abstr.tree.stmt.AbsSwitchStmt;
 import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
@@ -537,5 +539,30 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsControlTransferStmt acceptor) {
 		///
+	}
+
+	@Override
+	public void visit(AbsSwitchStmt switchStmt) {
+		switchStmt.subjectExpr.accept(this);
+		
+		SemType switchType = SymbDesc.getType(switchStmt.subjectExpr);
+		
+		for (AbsCaseStmt singleCase : switchStmt.cases) {
+			singleCase.accept(this);
+			
+			SemType caseType = SymbDesc.getType(singleCase.expr);
+			if (!caseType.sameStructureAs(switchType))
+				Report.error(singleCase.expr.position, 
+						"Expression of type \"" + caseType.toString() + 
+						"\" cannot match values of type \"" + switchType.toString() +"\"");
+		}
+	}
+
+	@Override
+	public void visit(AbsCaseStmt acceptor) {
+		acceptor.expr.accept(this);
+		SymbTable.newScope();
+		acceptor.body.accept(this);
+		SymbTable.oldScope();
 	}
 }
