@@ -15,14 +15,14 @@ import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
-import compiler.abstr.tree.expr.AbsIfExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
 import compiler.abstr.tree.stmt.AbsControlTransferStmt;
-import compiler.abstr.tree.stmt.AbsFor;
-import compiler.abstr.tree.stmt.AbsWhile;
+import compiler.abstr.tree.stmt.AbsForStmt;
+import compiler.abstr.tree.stmt.AbsIfStmt;
+import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
@@ -1363,7 +1363,7 @@ public class SynAn {
 						+ "\", expected \"}\" after this token");
 			skip();
 
-			return new AbsFor(new Position(start, s.position), new AbsVarNameExpr(
+			return new AbsForStmt(new Position(start, s.position), new AbsVarNameExpr(
 					count.position, count.lexeme), e, s);
 		}
 		Report.error(symbol.position, "Syntax error, expected keyword \"for\"");
@@ -1387,7 +1387,7 @@ public class SynAn {
 							+ "\", expected '}' after this token");
 				skip();
 
-				return new AbsWhile(new Position(start, s.position), e1, s);
+				return new AbsWhileStmt(new Position(start, s.position), e1, s);
 			}
 			Report.error(previous.position, "Syntax error on token \""
 					+ previous.lexeme + "\", expected \"{\" after this token");
@@ -1464,7 +1464,7 @@ public class SynAn {
 
 		Position lastPos = elseBody != null ? 
 				elseBody.position : conditions.lastElement().body.position;
-		return new AbsIfExpr(new Position(condition.cond.position, lastPos), 
+		return new AbsIfStmt(new Position(condition.cond.position, lastPos), 
 				conditions, elseBody);
 	}
 	
@@ -1510,7 +1510,7 @@ public class SynAn {
 						+ "\", expected \"]\" after this token");
 			skip();
 			
-			return new AbsFor(new Position(start, e2.position), var, e2, s);
+			return new AbsForStmt(new Position(start, e2.position), var, e2, s);
 		}
 		
 		else if (symbol.token == Token.COMMA) {

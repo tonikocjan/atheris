@@ -1,4 +1,4 @@
-package compiler.abstr.tree.expr;
+package compiler.abstr.tree.stmt;
 
 import java.util.Vector;
 
@@ -13,7 +13,7 @@ import compiler.abstr.tree.Condition;
  * @author sliva
  */
 // TODO: this should be AbsStmt
-public class AbsIfExpr extends AbsExpr {
+public class AbsIfStmt extends AbsConditionalStmt {
 	
 	/**
 	 * Vector holding all of the conditions for this if expression.
@@ -35,7 +35,7 @@ public class AbsIfExpr extends AbsExpr {
 	 * @param elseBody
 	 *            Code to be executed when conditions fail.
 	 */
-	public AbsIfExpr(Position pos, Vector<Condition> conditions, AbsStmts elseBody) {
+	public AbsIfStmt(Position pos, Vector<Condition> conditions, AbsStmts elseBody) {
 		super(pos);
 		this.conditions = conditions;
 		this.elseBody = elseBody;

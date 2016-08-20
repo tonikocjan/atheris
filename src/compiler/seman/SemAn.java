@@ -13,14 +13,14 @@ import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
-import compiler.abstr.tree.expr.AbsIfExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
 import compiler.abstr.tree.stmt.AbsControlTransferStmt;
-import compiler.abstr.tree.stmt.AbsFor;
-import compiler.abstr.tree.stmt.AbsWhile;
+import compiler.abstr.tree.stmt.AbsForStmt;
+import compiler.abstr.tree.stmt.AbsIfStmt;
+import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
@@ -237,7 +237,7 @@ public class SemAn implements ASTVisitor {
 		}
 	}
 	
-	public void visit(AbsFor forStmt) {
+	public void visit(AbsForStmt forStmt) {
 		Report.dump(indent, "AbsFor " + forStmt.position.toString() + ":");
 		{
 			SemType typ = SymbDesc.getType(forStmt);
@@ -280,7 +280,7 @@ public class SemAn implements ASTVisitor {
 		indent += 2; funDef.func.accept(this); indent -= 2;
 	}
 	
-	public void visit(AbsIfExpr ifExpr) {
+	public void visit(AbsIfStmt ifExpr) {
 		Report.dump(indent, "AbsIfExpr " + ifExpr.position.toString() + ":");
 		SemType typ = SymbDesc.getType(ifExpr);
 		if (typ != null)
@@ -374,7 +374,7 @@ public class SemAn implements ASTVisitor {
 		}
 	}
 	
-	public void visit(AbsWhile whileStmt) {
+	public void visit(AbsWhileStmt whileStmt) {
 		Report.dump(indent, "AbsWhileName " + whileStmt.position.toString() + ":");
 		{
 			SemType typ = SymbDesc.getType(whileStmt);

@@ -4,9 +4,9 @@ import compiler.*;
 import compiler.abstr.tree.AbsStmt;
 
 /**
- * Izraz.
+ * Expression.
  * 
- * @author sliva
+ * @author toni kocjan
  */
 public abstract class AbsExpr extends AbsStmt {
 

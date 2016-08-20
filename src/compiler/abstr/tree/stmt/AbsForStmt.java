@@ -11,7 +11,7 @@ import compiler.abstr.tree.expr.AbsVarNameExpr;
  * 
  * @author sliva
  */
-public class AbsFor extends AbsExpr {
+public class AbsForStmt extends AbsConditionalStmt {
 	
 //	/** Stevec. */
 //	public final AbsVarName count;
@@ -37,7 +37,7 @@ public class AbsFor extends AbsExpr {
 	 * @param body
 	 *            Jedro zanke.
 	 */
-	public AbsFor(Position pos, AbsVarNameExpr count, AbsExpr collection, AbsStmts body) {
+	public AbsForStmt(Position pos, AbsVarNameExpr count, AbsExpr collection, AbsStmts body) {
 		super(pos);
 		this.iterator = count;
 		this.collection = collection;

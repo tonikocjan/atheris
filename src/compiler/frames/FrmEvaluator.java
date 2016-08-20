@@ -13,14 +13,14 @@ import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
-import compiler.abstr.tree.expr.AbsIfExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
 import compiler.abstr.tree.stmt.AbsControlTransferStmt;
-import compiler.abstr.tree.stmt.AbsFor;
-import compiler.abstr.tree.stmt.AbsWhile;
+import compiler.abstr.tree.stmt.AbsForStmt;
+import compiler.abstr.tree.stmt.AbsIfStmt;
+import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
@@ -98,7 +98,7 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsFor acceptor) {
+	public void visit(AbsForStmt acceptor) {
 		SymbDesc.getNameDef(acceptor.iterator).accept(this);
 		acceptor.iterator.accept(this);
 		acceptor.collection.accept(this);
@@ -135,7 +135,7 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsIfExpr acceptor) {
+	public void visit(AbsIfStmt acceptor) {
 		for (Condition c : acceptor.conditions) {
 			c.cond.accept(this);
 			c.body.accept(this);
@@ -175,7 +175,7 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsWhile acceptor) {
+	public void visit(AbsWhileStmt acceptor) {
 		acceptor.cond.accept(this);
 		acceptor.body.accept(this);
 	}

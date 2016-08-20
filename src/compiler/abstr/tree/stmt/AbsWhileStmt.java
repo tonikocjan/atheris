@@ -10,7 +10,7 @@ import compiler.abstr.tree.expr.AbsExpr;
  * 
  * @author sliva
  */
-public class AbsWhile extends AbsExpr {
+public class AbsWhileStmt extends AbsConditionalStmt {
 	
 	/** Pogoj. */
 	public final AbsExpr cond;
@@ -28,7 +28,7 @@ public class AbsWhile extends AbsExpr {
 	 * @param body
 	 *            Jedro zanke.
 	 */
-	public AbsWhile(Position pos, AbsExpr cond, AbsStmts body) {
+	public AbsWhileStmt(Position pos, AbsExpr cond, AbsStmts body) {
 		super(pos);
 		this.cond = cond;
 		this.body = body;
