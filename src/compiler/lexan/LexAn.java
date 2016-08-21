@@ -39,11 +39,14 @@ public class LexAn {
 	/**
 	 * Reserved keywords.
 	 */
-	private static final String[] keywords = new String[] { 
+	private static final String[] keywords = new String[] 
+			{ 
 			"Int", "String", "Double", "Bool", "Char", "Void", "else", 
 			"for", "func", "if", "var", "while", "struct", "import", 
 			"let", "nil", "self", "class", "in", "return", "public", 
-			"private", "continue", "break", "switch", "case", "default" };
+			"private", "continue", "break", "switch", "case", "default",
+			"enum" 
+			};
 
 	/**
 	 * Current caracter.

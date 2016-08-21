@@ -135,6 +135,7 @@ public class Symbol {
 		case KW_SWITCH : tokenName = "SWITCH"   ; break;
 		case KW_CASE : tokenName = "CASE"   ; break;
 		case KW_DEFAULT : tokenName = "DEFAULT"   ; break;
+		case KW_ENUM : tokenName = "ENUM"   ; break;
 		
 		default:
 			Report.error("Internal error: token=" + token + " in compiler.lexan.Symbol.toString().");
