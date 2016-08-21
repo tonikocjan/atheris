@@ -589,12 +589,15 @@ public class Frames implements ASTVisitor {
 	@Override
 	public void visit(AbsCaseStmt acceptor) {
 		Report.dump(indent, "Case:");
-		indent += 2; acceptor.expr.accept(this); indent -= 2;
-		{
-			SemType typ = SymbDesc.getType(acceptor.expr);
+		indent += 2; 
+		for (AbsExpr e : acceptor.exprs) {
+			e.accept(this);
+
+			SemType typ = SymbDesc.getType(e);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
+		indent -= 2;
 		Report.dump(indent, "Body:");
 		indent += 2; acceptor.body.accept(this); indent -= 2;		
 	}

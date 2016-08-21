@@ -605,18 +605,29 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsCaseStmt acceptor) {
-		acceptor.expr.accept(this);
+		ImcExpr caseCondition = null;
+		
+		for (AbsExpr e : acceptor.exprs) {
+			e.accept(this);
+			ImcExpr expr = (ImcExpr) ImcDesc.getImcCode(e);
+			ImcExpr cond = new ImcBINOP(ImcBINOP.EQU, expr, switchSubjectExprs.peek());
+			
+			if (caseCondition == null)
+				caseCondition = cond; 
+			else
+				caseCondition = new ImcBINOP(ImcBINOP.OR, caseCondition, cond);
+		}
+		
 		acceptor.body.accept(this);
 		
-		ImcExpr expr = (ImcExpr) ImcDesc.getImcCode(acceptor.expr);
 		ImcStmt body = (ImcStmt) ImcDesc.getImcCode(acceptor.body);
-		ImcExpr cond = new ImcBINOP(ImcBINOP.EQU, expr, switchSubjectExprs.peek());
+		
 		
 		FrmLabel startLabel = FrmLabel.newLabel();
 		FrmLabel endLabel = FrmLabel.newLabel();
 		
 		ImcSEQ caseCode = new ImcSEQ();
-		caseCode.stmts.add(new ImcCJUMP(cond, startLabel, endLabel));
+		caseCode.stmts.add(new ImcCJUMP(caseCondition, startLabel, endLabel));
 		caseCode.stmts.add(new ImcLABEL(startLabel));
 		caseCode.stmts.add(body);
 		caseCode.stmts.add(new ImcLABEL(endLabel));

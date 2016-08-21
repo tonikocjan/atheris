@@ -1,5 +1,6 @@
 package compiler.synan;
 
+import java.util.LinkedList;
 import java.util.Vector;
 
 import compiler.Position;
@@ -1522,11 +1523,18 @@ public class SynAn {
 		Position start = symbol.position;
 		skip();
 		
-		AbsExpr expr = parseExpression();
+		LinkedList<AbsExpr> expressions = new LinkedList<>();
+		expressions.add(parseExpression());
+		
+		// join conditions
+		while (symbol.token == TokenEnum.COMMA) {
+			skip();
+			expressions.add(parseExpression());
+		}
 
 		if (symbol.token != TokenEnum.COLON)
 			Report.error(symbol.position,
-					"Syntax error, expected \":\"");
+					"Syntax error, case expression must be followed by \":\"");
 		skip();
 		
 		if (symbol.token == TokenEnum.NEWLINE)
@@ -1538,7 +1546,7 @@ public class SynAn {
 		AbsStmts body = parseStatements();
 		Position casePos = new Position(start, body.position);
 		
-		return new AbsCaseStmt(casePos, expr, body);
+		return new AbsCaseStmt(casePos, expressions, body);
 	}
 	
 	private AbsExpr parseBracket() {

@@ -229,7 +229,8 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsCaseStmt acceptor) {
-		acceptor.expr.accept(this);
+		for (AbsExpr e : acceptor.exprs)
+			e.accept(this);
 		acceptor.body.accept(this);
 	}
 }

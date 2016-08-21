@@ -549,12 +549,13 @@ public class BasicTypeChecker implements ASTVisitor {
 		
 		for (AbsCaseStmt singleCase : switchStmt.cases) {
 			singleCase.accept(this);
-			
-			SemType caseType = SymbDesc.getType(singleCase.expr);
-			if (!caseType.sameStructureAs(switchType))
-				Report.error(singleCase.expr.position, 
-						"Expression of type \"" + caseType.toString() + 
-						"\" cannot match values of type \"" + switchType.toString() +"\"");
+			for (AbsExpr e : singleCase.exprs) {
+				SemType caseType = SymbDesc.getType(e);
+				if (!caseType.sameStructureAs(switchType))
+					Report.error(e.position, 
+							"Expression of type \"" + caseType.toString() + 
+							"\" cannot match values of type \"" + switchType.toString() +"\"");
+			}
 		}
 		
 		if (switchStmt.defaultBody != null)
@@ -565,7 +566,8 @@ public class BasicTypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsCaseStmt acceptor) {
-		acceptor.expr.accept(this);
+		for (AbsExpr e : acceptor.exprs)
+			e.accept(this);
 		SymbTable.newScope();
 		acceptor.body.accept(this);
 		SymbTable.oldScope();

@@ -239,7 +239,8 @@ public class InitializationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsCaseStmt acceptor) {
-		acceptor.expr.accept(this);
+		for (AbsExpr e : acceptor.exprs)
+			e.accept(this);
 		InitTable.newScope();
 		acceptor.body.accept(this);
 		InitTable.oldScope();
