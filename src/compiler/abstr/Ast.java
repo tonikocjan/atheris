@@ -3,6 +3,8 @@ package compiler.abstr;
 import compiler.*;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsEnumDef;
+import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
@@ -62,7 +64,7 @@ public class Ast implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef classDef) {
-		Report.dump(indent, "AbsStructType " + classDef.position.toString()
+		Report.dump(indent, "AbsClassDef " + classDef.position.toString()
 				+ ":");
 		indent += 2;
 		Report.dump(indent, "Constructors: ");
@@ -427,5 +429,33 @@ public class Ast implements ASTVisitor {
 		indent -= 2;
 		Report.dump(indent, "Body:");
 		indent += 2; acceptor.body.accept(this); indent -= 2;
+	}
+
+	@Override
+	public void visit(AbsEnumDef enumDef) {
+		Report.dump(indent, "AbsEnumDef " + enumDef.position.toString() + ":");
+		if (enumDef.type != null) {
+			indent += 2;
+			enumDef.type.accept(this);
+			indent -= 2;
+		}
+		indent += 2;
+		for (AbsEnumMemberDef def : enumDef.definitions)
+			def.accept(this);
+		indent -= 2;
+	}
+
+	@Override
+	public void visit(AbsEnumMemberDef def) {
+		Report.dump(indent, "Name:");
+		indent += 2;
+		def.name.accept(this);
+		indent -= 2;
+		if (def.value != null) {
+			Report.dump(indent, "Raw value:");
+			indent += 2;
+			def.value.accept(this);
+			indent -= 2;
+		}
 	}
 }

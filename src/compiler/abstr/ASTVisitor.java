@@ -2,6 +2,8 @@ package compiler.abstr;
 
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsEnumDef;
+import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
@@ -53,4 +55,6 @@ public interface ASTVisitor {
 	public void visit(AbsControlTransferStmt acceptor);
 	public void visit(AbsSwitchStmt acceptor);
 	public void visit(AbsCaseStmt acceptor);
+	public void visit(AbsEnumDef acceptor);
+	public void visit(AbsEnumMemberDef acceptor);
 }

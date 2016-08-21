@@ -8,6 +8,8 @@ import compiler.Report;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsEnumDef;
+import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
@@ -167,6 +169,7 @@ public class SynAn {
 		case KW_LET:
 		case KW_STRUCT:
 		case KW_CLASS:
+		case KW_ENUM:
 		case KW_FUN:
 		case KW_IMPORT:
 			dump("statement -> definition");
@@ -285,6 +288,10 @@ public class SynAn {
 		case KW_CLASS:
 			dump("definition -> class_definition");
 			definition = parseClassDefinition();
+			break;
+		case KW_ENUM:
+			dump("definition -> enum_definition");
+			definition = parseEnumDefinition();
 			break;
 		default:
 			if (symbol.token != TokenEnum.EOF)
@@ -432,7 +439,7 @@ public class SynAn {
 		skip(new Symbol(TokenEnum.NEWLINE, "\n", null));
 		skip();
 		
-		Vector<AbsStmt> statements = parseClassDefinitions();
+		Vector<AbsStmt> statements = parseClassMemberDefinitions();
 		if (symbol.token != TokenEnum.RBRACE)
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", expected \"}\"");
@@ -442,7 +449,7 @@ public class SynAn {
 		return new AbsClassDef(name, new Position(start, end), statements);
 	}
 	
-	private Vector<AbsStmt> parseClassDefinitions() {
+	private Vector<AbsStmt> parseClassMemberDefinitions() {
 		Vector<AbsStmt> statements = new Vector<>();
 		while (true) {
 			AbsDef definition;
@@ -481,6 +488,74 @@ public class SynAn {
 			if (symbol.token == TokenEnum.NEWLINE)
 				skip();
 		}
+	}
+	
+	private AbsEnumDef parseEnumDefinition() {
+		Position start = symbol.position;
+		String name = skip(new Symbol(TokenEnum.IDENTIFIER, "IDENTIFIER", null)).lexeme;
+		AbsType type = null;
+		
+		skip();
+		if (symbol.token == TokenEnum.COLON) {
+			skip();
+			type = parseType();
+		}
+		
+		if (symbol.token != TokenEnum.LBRACE)
+			Report.error(symbol.position, "Enum must begin with \"{\"");
+		
+		skip(new Symbol(TokenEnum.NEWLINE, "\n", null));
+		skip(new Symbol(TokenEnum.IDENTIFIER, "IDENTIFIER", null));
+		
+		LinkedList<AbsEnumMemberDef> enumDefinitions = parseEnumMemberDefinitions();
+		if (symbol.token != TokenEnum.RBRACE)
+			Report.error(symbol.position, "Syntax error on token \""
+					+ symbol.lexeme + "\", expected \"}\"");
+		skip();
+		
+		Position end = enumDefinitions.getLast().position;
+		return new AbsEnumDef(new Position(start, end), name, enumDefinitions, type);
+	}
+	
+	private LinkedList<AbsEnumMemberDef> parseEnumMemberDefinitions() {
+		LinkedList<AbsEnumMemberDef> definitions = new LinkedList<>();
+		
+		while (true) {
+			AbsVarNameExpr name = new AbsVarNameExpr(symbol.position, symbol.lexeme);
+			
+			skip();
+			if (symbol.token == TokenEnum.ASSIGN) {
+				skip();
+				
+				AbsExpr value = parseExpression();
+				if (!(value instanceof AbsAtomConstExpr))
+					Report.error(value.position, "Raw value for enum definition must be literal");
+				
+				Position definitionPos = new Position(name.position, value.position);
+				definitions.add(new AbsEnumMemberDef(definitionPos, 
+						name, (AbsAtomConstExpr) value));
+			}
+			else
+				definitions.add(new AbsEnumMemberDef(name.position, name, null));
+			
+			if (symbol.token == TokenEnum.COMMA) {
+				skip();
+				if (symbol.token == TokenEnum.NEWLINE)
+					skip();
+				if (symbol.token != TokenEnum.IDENTIFIER)
+					Report.error("todo1");
+			}
+			else {
+				if (symbol.token == TokenEnum.NEWLINE)
+					skip();
+				break;
+			}
+		}
+		
+		if (symbol.token != TokenEnum.RBRACE)
+			Report.error("todo");
+		
+		return definitions;
 	}
 
 	private AbsType parseType() {
