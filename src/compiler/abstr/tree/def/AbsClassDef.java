@@ -11,17 +11,15 @@ import compiler.abstr.tree.type.AbsAtomType;
 
 public class AbsClassDef extends AbsTypeDef {
 	
-	/** Definicije znotraj razreda */
-//	public final AbsDefs definitions;
+	/** Definitions inside class */
 	public final AbsStmts statements;
 	
-	/** Konstruktorji */
+	/** Constructors (initializers) */
 	public final Vector<AbsFunDef> contrustors = new Vector<>();
 	
 	public AbsClassDef(String name, Position pos, Vector<AbsStmt> statements) {
 		super(pos, name);
 		
-//		this.definitions = definitions;
 		Position start = statements.firstElement().position;
 		Position end = statements.lastElement().position;
 		this.statements = new AbsStmts(new Position(start, end), statements);
@@ -34,11 +32,6 @@ public class AbsClassDef extends AbsTypeDef {
 				new AbsStmts(pos, statements));
 		contrustors.add(contructor);
 	}
-
-//	public AbsDefs getDefinitions() {
-//		return definitions;
-//	}
-	
 	
 	public String getName() {
 		return name;
