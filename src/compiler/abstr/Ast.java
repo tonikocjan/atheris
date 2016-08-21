@@ -421,7 +421,10 @@ public class Ast implements ASTVisitor {
 	@Override
 	public void visit(AbsCaseStmt acceptor) {
 		Report.dump(indent, "Case:");
-		indent += 2; acceptor.expr.accept(this); indent -= 2;
+		indent += 2; 
+		for (AbsExpr e : acceptor.exprs)
+			e.accept(this);
+		indent -= 2;
 		Report.dump(indent, "Body:");
 		indent += 2; acceptor.body.accept(this); indent -= 2;
 	}
