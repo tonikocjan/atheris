@@ -57,7 +57,7 @@ public class AbsVarDef extends AbsDef {
 		this.name = name;
 		this.type = type;
 		this.isConstant = constant;
-		this.visibilityEnum = VisibilityEnum.Private;
+		this.visibilityEnum = VisibilityEnum.Public;
 	}
 	
 	/**
