@@ -9,6 +9,8 @@ import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.AbsStmts;
 import compiler.abstr.tree.Condition;
 import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsEnumDef;
+import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
@@ -244,6 +246,18 @@ public class InitializationChecker implements ASTVisitor {
 		InitTable.newScope();
 		acceptor.body.accept(this);
 		InitTable.oldScope();
+	}
+
+	@Override
+	public void visit(AbsEnumDef acceptor) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(AbsEnumMemberDef acceptor) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

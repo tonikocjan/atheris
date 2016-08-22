@@ -6,21 +6,35 @@ import java.util.List;
 import java.util.Map;
 
 import compiler.Report;
+import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsDef;
 
 public class SemClassType extends SemPtrType {
+	
+	/**
+	 * Definition.
+	 */
+	public final AbsClassDef definition;
 
+	/**
+	 * Map containing members types.
+	 */
 	private final LinkedHashMap<String, SemType> members = new LinkedHashMap<>();
-	private final String name;
+	
+	/**
+	 * Sum of sizes for all members.
+	 */
 	private final int size;
 
 	/**
-	 * Ustvari nov opis strukture.
+	 * Create new class type.
 	 * 
 	 * @param name name of structure
-	 * @param names List of names for each definition
-	 * @param types List of types for each definition
+	 * @param names list of names for each definition
+	 * @param types list of types for each definition
 	 */
-	public SemClassType(String name, ArrayList<String> names, ArrayList<SemType> types) {
+	public SemClassType(AbsClassDef definition, 
+			ArrayList<String> names, ArrayList<SemType> types) {
 		if (names.size() != types.size())
 			Report.error("Internal error :: compiler.seman.type.SemClassType: "
 					+ "names count not equal types count");
@@ -31,7 +45,7 @@ public class SemClassType extends SemPtrType {
 			size += types.get(i).size();
 		}
 		this.size = size;
-		this.name = name;
+		this.definition = definition;
 	}
 	
 	public LinkedHashMap<String, SemType> getMembers() {
@@ -42,6 +56,11 @@ public class SemClassType extends SemPtrType {
 		return members.containsKey(member);
 	}
 	
+	/**
+	 * Calculate offset for member.
+	 * @param name member name
+	 * @return offset of that member
+	 */
 	public int offsetOf(String name) {
 		int offset = 0;
 		
@@ -54,7 +73,7 @@ public class SemClassType extends SemPtrType {
 	}
 	
 	public String getName() {
-		return name;
+		return definition.name;
 	}
 
 	@Override
@@ -76,12 +95,16 @@ public class SemClassType extends SemPtrType {
 		}
 		return true;
 	}
+	
+	public AbsDef findMemberForName(String name) {
+		return definition.statements.findDefinitionForName(name);
+	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		int i = 0;
-		sb.append(name + "(");
+		sb.append(definition.name + "(");
 		for (Map.Entry<String, SemType> entry : members.entrySet()) {
 			sb.append(entry.getKey() + ":" + entry.getValue().toString());
 			if (++i < members.size()) sb.append(";");

@@ -7,6 +7,8 @@ import compiler.abstr.*;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsEnumDef;
+import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
@@ -77,7 +79,7 @@ public class BasicTypeChecker implements ASTVisitor {
 					Report.error("Semantic error @ AbsClassDef-typeChecker");
 			}
 		}
-		SymbDesc.setType(acceptor, new SemClassType(acceptor.getName(), 
+		SymbDesc.setType(acceptor, new SemClassType(acceptor, 
 													names,
 													types));
 		for (AbsFunDef c : acceptor.contrustors) {
@@ -203,14 +205,12 @@ public class BasicTypeChecker implements ASTVisitor {
 				name = ((AbsFunCall) acceptor.expr2).name;
 
 			if (!(SymbDesc.getNameDef(acceptor.expr1) instanceof AbsParDef)) {
-				// TODO: zrihtej to vse je v pizdi!!
-				AbsVarDef varDef = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr1);
-				AbsClassDef classDef = (AbsClassDef) SymbTable.fnd(((AbsTypeName)varDef.type).name);
-				AbsDef definition = classDef.statements.findDefinition(name);
+				SemClassType classType = (SemClassType) t1;
+				AbsDef definition = classType.findMemberForName(name);
 				
 				if (definition == null) {
 					Report.error(acceptor.expr2.position,
-							"Value of type '" + classDef.name + "' has no member '" + name + "'");
+							"Value of type '" + classType.getName() + "' has no member '" + name + "'");
 				}
 				if (definition instanceof AbsVarDef && 
 						((AbsVarDef) definition).visibilityEnum == VisibilityEnum.Private)
@@ -580,5 +580,17 @@ public class BasicTypeChecker implements ASTVisitor {
 		SymbTable.newScope();
 		acceptor.body.accept(this);
 		SymbTable.oldScope();
+	}
+
+	@Override
+	public void visit(AbsEnumDef acceptor) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(AbsEnumMemberDef acceptor) {
+		// TODO Auto-generated method stub
+		
 	}
 }
