@@ -58,8 +58,17 @@ public class BasicTypeChecker implements ASTVisitor {
 			stmt.accept(this);
 			
 			if (stmt instanceof AbsDef) {
-				types.add(SymbDesc.getType(stmt));
-	
+				SemType memberType = SymbDesc.getType(stmt);
+				
+				if (memberType == null && 
+						i + 1 < acceptor.statements.numStmts() &&
+						!(acceptor.statements.stmt(i + 1) instanceof AbsDef)) {
+					acceptor.statements.stmt(i + 1).accept(this);
+					memberType = SymbDesc.getType(acceptor.statements.stmt(i + 1));
+				}
+				
+				types.add(memberType);
+				
 				if (stmt instanceof AbsVarDef)
 					names.add(((AbsVarDef) stmt).name);
 				else if (stmt instanceof AbsFunDef)
