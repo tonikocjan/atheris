@@ -29,7 +29,7 @@ public class FrmParAccess extends FrmAccess {
 		this.par = par;
 		this.frame = frame;
 		
-		SemType type = SymbDesc.getType(this.par).actualType();
+		Type type = SymbDesc.getType(this.par).actualType();
 		this.offset = 0 + frame.sizePars;
 		frame.sizePars = frame.sizePars + type.size();
 		frame.numPars++;

@@ -46,13 +46,13 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
-		SymbDesc.setType(acceptor, new SemListType(SymbDesc.getType(acceptor.type), 
+		SymbDesc.setType(acceptor, new ArrayType(SymbDesc.getType(acceptor.type), 
 				acceptor.count));
 	}
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-		ArrayList<SemType> types = new ArrayList<>();
+		ArrayList<Type> types = new ArrayList<>();
 		ArrayList<String> names = new ArrayList<>();
 
 		for (int i = 0; i < acceptor.statements.numStmts(); i++) {
@@ -60,7 +60,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			stmt.accept(this);
 			
 			if (stmt instanceof AbsDef) {
-				SemType memberType = SymbDesc.getType(stmt);
+				Type memberType = SymbDesc.getType(stmt);
 				
 				if (memberType == null && 
 						i + 1 < acceptor.statements.numStmts() &&
@@ -80,23 +80,23 @@ public class BasicTypeChecker implements ASTVisitor {
 			}
 		}
 		
-		SemClassType classType = new SemClassType(acceptor, names, types);
+		ClassType classType = new ClassType(acceptor, names, types);
 		SymbDesc.setType(acceptor, new CanType(classType));
 		
 		for (AbsFunDef c : acceptor.contrustors) {
 			c.accept(this);
-			SymbDesc.setType(c, new SemFunType(new Vector<>(), classType));
+			SymbDesc.setType(c, new FunctionType(new Vector<>(), classType));
 		}
 	}
 
 	@Override
 	public void visit(AbsAtomConstExpr acceptor) {
-		SymbDesc.setType(acceptor, new SemAtomType(acceptor.type));
+		SymbDesc.setType(acceptor, new AtomType(acceptor.type));
 	}
 
 	@Override
 	public void visit(AbsAtomType acceptor) {
-		SymbDesc.setType(acceptor, new SemAtomType(acceptor.type));
+		SymbDesc.setType(acceptor, new AtomType(acceptor.type));
 	}
 
 	@Override
@@ -106,12 +106,12 @@ public class BasicTypeChecker implements ASTVisitor {
 		if (acceptor.oper != AbsBinExpr.DOT)
 			acceptor.expr2.accept(this);
 
-		SemType t1 = SymbDesc.getType(acceptor.expr1);
-		SemType t2 = SymbDesc.getType(acceptor.expr2);
+		Type t1 = SymbDesc.getType(acceptor.expr1);
+		Type t2 = SymbDesc.getType(acceptor.expr2);
 
-		SemType integer = new SemAtomType(AtomTypeEnum.INT);
-		SemType logical = new SemAtomType(AtomTypeEnum.LOG);
-		SemType double_ = new SemAtomType(AtomTypeEnum.DOB);
+		Type integer = new AtomType(AtomTypeEnum.INT);
+		Type logical = new AtomType(AtomTypeEnum.LOG);
+		Type double_ = new AtomType(AtomTypeEnum.DOB);
 
 		int oper = acceptor.oper;
 
@@ -125,8 +125,8 @@ public class BasicTypeChecker implements ASTVisitor {
 			/**
 			 * expr1 is of type ARR(n, t)
 			 */
-			if (t1 instanceof SemListType) {
-				SymbDesc.setType(acceptor, ((SemListType) t1).type);
+			if (t1 instanceof ArrayType) {
+				SymbDesc.setType(acceptor, ((ArrayType) t1).type);
 			} else
 				Report.error(acceptor.expr1.position,
 						"Type \'" + t1 + "\' has no subscript members");
@@ -150,9 +150,9 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor, t2);
 				success = true;
 			}
-			else if (t1 instanceof SemListType && 
-					t2 instanceof SemListType && 
-					(((SemListType) t1).type.sameStructureAs(((SemListType) t2).type))) {
+			else if (t1 instanceof ArrayType && 
+					t2 instanceof ArrayType && 
+					(((ArrayType) t1).type.sameStructureAs(((ArrayType) t2).type))) {
 				SymbDesc.setType(acceptor.expr1, t2);
 				SymbDesc.setType(acceptor, t2);
 				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
@@ -163,8 +163,8 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor.expr2, t2);
 				success = true;
 			}
-			else if (t2 instanceof SemAtomType && ((SemAtomType) t2).type == AtomTypeEnum.NIL
-					&& t1 instanceof SemPtrType) {
+			else if (t2 instanceof AtomType && ((AtomType) t2).type == AtomTypeEnum.NIL
+					&& t1 instanceof PointerType) {
 				SymbDesc.setType(acceptor.expr2, t1);
 				SymbDesc.setType(acceptor, t1);
 				success = true;
@@ -184,7 +184,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			/**
 			 * Handle list.length
 			 */
-			if (t1 instanceof SemListType) {
+			if (t1 instanceof ArrayType) {
 				String name = ((AbsVarNameExpr) acceptor.expr2).name;
 				if (!name.equals("count"))
 					Report.error("Lists have no attribute named \"" + name
@@ -194,7 +194,7 @@ public class BasicTypeChecker implements ASTVisitor {
 				return;
 			}
 
-			if (!(t1 instanceof SemClassType) && !(t1 instanceof SemEnumType)) {
+			if (!(t1 instanceof ClassType) && !(t1 instanceof EnumType)) {
 				if (acceptor.expr2 instanceof AbsVarNameExpr)
 					Report.error(acceptor.position,
 
@@ -204,7 +204,7 @@ public class BasicTypeChecker implements ASTVisitor {
 						"Cannot use dot ('.') operator on type \"" + t1.toString() + "\"");
 			}
 			
-			if (t1 instanceof SemClassType) {
+			if (t1 instanceof ClassType) {
 				String name;
 				if (acceptor.expr2 instanceof AbsVarNameExpr)
 					name = ((AbsVarNameExpr) acceptor.expr2).name;
@@ -212,7 +212,7 @@ public class BasicTypeChecker implements ASTVisitor {
 					name = ((AbsFunCall) acceptor.expr2).name;
 	
 				if (!(SymbDesc.getNameDef(acceptor.expr1) instanceof AbsParDef)) {
-					SemClassType classType = (SemClassType) t1;
+					ClassType classType = (ClassType) t1;
 					AbsDef definition = classType.findMemberForName(name);
 					
 					if (definition == null) {
@@ -228,24 +228,24 @@ public class BasicTypeChecker implements ASTVisitor {
 					SymbDesc.setNameDef(acceptor, definition);
 				}
 	
-				SemClassType sType = (SemClassType) t1;
-				SemType type = sType.getMembers().get(name);
+				ClassType sType = (ClassType) t1;
+				Type type = sType.getMembers().get(name);
 	
 				SymbDesc.setType(acceptor.expr2, type);
 				SymbDesc.setType(acceptor, type);
 				return;
 			}
 			
-			if (t1 instanceof SemEnumType) {
+			if (t1 instanceof EnumType) {
 				if (!(acceptor.expr2 instanceof AbsVarNameExpr)) {
 					if (acceptor.expr2 instanceof AbsFunCall)
 						Report.error(acceptor.expr2.position, "Invalid use of '()' to call a value of non-function type");
 					Report.error(acceptor.expr2.position, "todo");
 				}
 
-				AbsDef definition = ((SemEnumType) t1).findMemberDefinitionForName(((AbsVarNameExpr)acceptor.expr2).name);
+				AbsDef definition = ((EnumType) t1).findMemberDefinitionForName(((AbsVarNameExpr)acceptor.expr2).name);
 				t2 = SymbDesc.getType(definition);
-				String enumName = ((SemEnumType) t1).definition.name;
+				String enumName = ((EnumType) t1).definition.name;
 				
 				if (!t1.sameStructureAs(t2))
 					Report.error(acceptor.expr2.position, "Type \"" + enumName + "\" has no member \"" + t2.toString() + "\"");
@@ -329,7 +329,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsExprs acceptor) {
 		if (acceptor.numExprs() == 0)
-			SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.VOID));
+			SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.VOID));
 		else {
 			for (int expr = 0; expr < acceptor.numExprs(); expr++)
 				acceptor.expr(expr).accept(this);
@@ -342,10 +342,10 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsForStmt acceptor) {
 		acceptor.collection.accept(this);
-		SemType type = ((SemListType)SymbDesc.getType(acceptor.collection)).type;
+		Type type = ((ArrayType)SymbDesc.getType(acceptor.collection)).type;
 
 		SymbDesc.setType(SymbDesc.getNameDef(acceptor.iterator), type);
-		SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.VOID));
+		SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.VOID));
 		
 		acceptor.iterator.accept(this);
 		acceptor.body.accept(this);
@@ -353,42 +353,42 @@ public class BasicTypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-		Vector<SemType> parameters = new Vector<>();
+		Vector<Type> parameters = new Vector<>();
 		for (int arg = 0; arg < acceptor.numArgs(); arg++) {
 			acceptor.arg(arg).accept(this);
-			SemType parType = SymbDesc.getType(acceptor.arg(arg));
+			Type parType = SymbDesc.getType(acceptor.arg(arg));
 			parameters.add(parType);
 		}
 
 		AbsDef def = SymbDesc.getNameDef(acceptor);
 		
 		if (def instanceof AbsVarDef || def instanceof AbsParDef) {
-			SemType type = SymbDesc.getType(def);
-			if (!(type instanceof SemFunType))
+			Type type = SymbDesc.getType(def);
+			if (!(type instanceof FunctionType))
 				Report.error(acceptor.position, "Cannot call value of non-function type \'"
 								+ type.toString() + "\'");
-			SemFunType t = new SemFunType(parameters, ((SemFunType)type).resultType);
+			FunctionType t = new FunctionType(parameters, ((FunctionType)type).resultType);
 			if (!type.sameStructureAs(t)) 
 				Report.error("Error todo");
 			SymbDesc.setNameDef(acceptor, def);
-			SymbDesc.setType(acceptor, ((SemFunType) SymbDesc.getType(def)).resultType);
+			SymbDesc.setType(acceptor, ((FunctionType) SymbDesc.getType(def)).resultType);
 		}
 		else {
 			AbsDef definition = SymbTable.fndFunc(acceptor.name, parameters);
 			if (definition == null) {
 				Report.error(acceptor.position, "Method " + acceptor.name
-						+ new SemFunType(parameters, null).toString()
+						+ new FunctionType(parameters, null).toString()
 						+ " is undefined");
 			}
 			SymbDesc.setNameDef(acceptor, definition);
 			SymbDesc.setType(acceptor,
-					((SemFunType) SymbDesc.getType(definition)).resultType);
+					((FunctionType) SymbDesc.getType(definition)).resultType);
 		}
 	}
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
-		Vector<SemType> parameters = new Vector<>();
+		Vector<Type> parameters = new Vector<>();
 		for (int par = 0; par < acceptor.numPars(); par++) {
 			acceptor.par(par).accept(this);
 			parameters.add(SymbDesc.getType(acceptor.par(par)));
@@ -396,7 +396,7 @@ public class BasicTypeChecker implements ASTVisitor {
 
 		acceptor.type.accept(this);
 
-		SemFunType funType = new SemFunType(parameters,
+		FunctionType funType = new FunctionType(parameters,
 				SymbDesc.getType(acceptor.type));
 		SymbDesc.setType(acceptor, funType);
 
@@ -414,7 +414,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		for (int i = 0; i < acceptor.func.numStmts(); i++) {
 			AbsStmt stmt = acceptor.func.stmt(i);
 			if (stmt instanceof AbsReturnExpr) {
-				SemType t = SymbDesc.getType(stmt);
+				Type t = SymbDesc.getType(stmt);
 				if (!t.sameStructureAs(funType.resultType))
 					Report.error(stmt.position,
 							"Return type doesn't match, expected \""
@@ -432,8 +432,8 @@ public class BasicTypeChecker implements ASTVisitor {
 			c.body.accept(this);
 			
 			if (SymbDesc.getType(c.cond).sameStructureAs(
-					new SemAtomType(AtomTypeEnum.LOG)))
-				SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.VOID));
+					new AtomType(AtomTypeEnum.LOG)))
+				SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.VOID));
 			else
 				Report.error(c.cond.position,
 						"Condition must be of type Bool");
@@ -447,7 +447,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsParDef acceptor) {
 		acceptor.type.accept(this);
-		SemType type = SymbDesc.getType(acceptor.type);
+		Type type = SymbDesc.getType(acceptor.type);
 
 		SymbDesc.setType(acceptor, type);
 	}
@@ -458,7 +458,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		if (!(definition instanceof AbsTypeDef))
 			Report.error(acceptor.position, "Expected type definition");
 
-		SemType type = SymbDesc.getType(definition);
+		Type type = SymbDesc.getType(definition);
 
 		if (type == null)
 			Report.error(acceptor.position, "Type \"" + acceptor.name
@@ -470,18 +470,18 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsUnExpr acceptor) {
 		acceptor.expr.accept(this);
-		SemType type = SymbDesc.getType(acceptor.expr);
+		Type type = SymbDesc.getType(acceptor.expr);
 
 		if (acceptor.oper == AbsUnExpr.NOT) {
-			if (type.sameStructureAs(new SemAtomType(AtomTypeEnum.LOG)))
-				SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.LOG));
+			if (type.sameStructureAs(new AtomType(AtomTypeEnum.LOG)))
+				SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.LOG));
 			else
 				Report.error(acceptor.position,
 						"Operator \"!\" is not defined for type " + type);
 		} else if (acceptor.oper == AbsUnExpr.ADD
 				|| acceptor.oper == AbsUnExpr.SUB) {
-			if (type.sameStructureAs(new SemAtomType(AtomTypeEnum.INT)))
-				SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.INT));
+			if (type.sameStructureAs(new AtomType(AtomTypeEnum.INT)))
+				SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.INT));
 			else
 				Report.error(acceptor.position,
 						"Operators \"+\" and \"-\" are not defined for type "
@@ -493,7 +493,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	public void visit(AbsVarDef acceptor) {
 		if (acceptor.type != null) {
 			acceptor.type.accept(this);
-			SemType type = SymbDesc.getType(acceptor.type);
+			Type type = SymbDesc.getType(acceptor.type);
 			SymbDesc.setType(acceptor, type);
 		}
 	}
@@ -510,8 +510,8 @@ public class BasicTypeChecker implements ASTVisitor {
 		acceptor.body.accept(this);
 
 		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new SemAtomType(AtomTypeEnum.LOG)))
-			SymbDesc.setType(acceptor, new SemAtomType(AtomTypeEnum.VOID));
+				new AtomType(AtomTypeEnum.LOG)))
+			SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.VOID));
 		else
 			Report.error(acceptor.cond.position,
 					"Condition must be typed as Boolean");
@@ -541,15 +541,15 @@ public class BasicTypeChecker implements ASTVisitor {
 			returnExpr.expr.accept(this);
 			SymbDesc.setType(returnExpr, SymbDesc.getType(returnExpr.expr));
 		} else
-			SymbDesc.setType(returnExpr, new SemAtomType(AtomTypeEnum.VOID));
+			SymbDesc.setType(returnExpr, new AtomType(AtomTypeEnum.VOID));
 	}
 
 	@Override
 	public void visit(AbsListExpr absListExpr) {
-		Vector<SemType> vec = new Vector<>();
+		Vector<Type> vec = new Vector<>();
 		for (AbsExpr e : absListExpr.expressions) {
 			e.accept(this);
-			SemType t = SymbDesc.getType(e);
+			Type t = SymbDesc.getType(e);
 
 			if (!vec.isEmpty() && !vec.firstElement().sameStructureAs(t))
 				Report.error(e.position, "Error, invalid expression type");
@@ -557,19 +557,19 @@ public class BasicTypeChecker implements ASTVisitor {
 			vec.add(SymbDesc.getType(e));
 		}
 
-		SymbDesc.setType(absListExpr, new SemListType(vec.firstElement(), vec.size()));
+		SymbDesc.setType(absListExpr, new ArrayType(vec.firstElement(), vec.size()));
 	}
 
 	@Override
 	public void visit(AbsFunType funType) {
-		Vector<SemType> parameters = new Vector<>();
+		Vector<Type> parameters = new Vector<>();
 		for (AbsType t : funType.parameterTypes) {
 			t.accept(this);
 			parameters.add(SymbDesc.getType(t));
 		}
 		funType.returnType.accept(this);
 		
-		SymbDesc.setType(funType, new SemFunType(parameters, 
+		SymbDesc.setType(funType, new FunctionType(parameters, 
 				SymbDesc.getType(funType.returnType)));
 	}
 
@@ -582,12 +582,12 @@ public class BasicTypeChecker implements ASTVisitor {
 	public void visit(AbsSwitchStmt switchStmt) {
 		switchStmt.subjectExpr.accept(this);
 		
-		SemType switchType = SymbDesc.getType(switchStmt.subjectExpr);
+		Type switchType = SymbDesc.getType(switchStmt.subjectExpr);
 		
 		for (AbsCaseStmt singleCase : switchStmt.cases) {
 			singleCase.accept(this);
 			for (AbsExpr e : singleCase.exprs) {
-				SemType caseType = SymbDesc.getType(e);
+				Type caseType = SymbDesc.getType(e);
 				if (!caseType.sameStructureAs(switchType))
 					Report.error(e.position, 
 							"Expression of type \"" + caseType.toString() + 
@@ -598,7 +598,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		if (switchStmt.defaultBody != null)
 			switchStmt.defaultBody.accept(this);
 		
-		SymbDesc.setType(switchStmt, new SemAtomType(AtomTypeEnum.VOID));
+		SymbDesc.setType(switchStmt, new AtomType(AtomTypeEnum.VOID));
 	}
 
 	@Override
@@ -612,12 +612,12 @@ public class BasicTypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumDef acceptor) {
-		SemEnumType enumType = new SemEnumType(acceptor);
-		SemAtomType enumRawValueType = null;
+		EnumType enumType = new EnumType(acceptor);
+		AtomType enumRawValueType = null;
 		
 		if (acceptor.type != null) {
 			acceptor.type.accept(this);
-			enumRawValueType = (SemAtomType) SymbDesc.getType(acceptor.type);
+			enumRawValueType = (AtomType) SymbDesc.getType(acceptor.type);
 		}
 		
 		String previousValue = null;
@@ -632,7 +632,7 @@ public class BasicTypeChecker implements ASTVisitor {
 					Report.error(def.value.position, "Enum member cannot have a raw value "
 							+ "if the enum doesn't have a raw type");
 				
-				SemType rawValueType = SymbDesc.getType(def.value);
+				Type rawValueType = SymbDesc.getType(def.value);
 				if (!rawValueType.sameStructureAs(enumRawValueType))
 					Report.error(def.value.position, "Cannot convert value of type \"" + 
 							rawValueType.toString() + "\" to type \"" + enumRawValueType.toString() + "\"");

@@ -8,7 +8,7 @@ import compiler.abstr.tree.AtomTypeEnum;
  * 
  * @author sliva
  */
-public class SemAtomType extends SemType {
+public class AtomType extends Type {
 
 	/* Tip. */
 	public final AtomTypeEnum type;
@@ -19,14 +19,14 @@ public class SemAtomType extends SemType {
 	 * @param type
 	 *            Atomarni tip.
 	 */
-	public SemAtomType(AtomTypeEnum type) {
+	public AtomType(AtomTypeEnum type) {
 		this.type = type;
 	}
 
 	@Override
-	public boolean sameStructureAs(SemType type) {
-		if (type.actualType() instanceof SemAtomType) {
-			SemAtomType atomType = (SemAtomType) (type.actualType());
+	public boolean sameStructureAs(Type type) {
+		if (type.actualType() instanceof AtomType) {
+			AtomType atomType = (AtomType) (type.actualType());
 			return this.type == atomType.type;
 		} else
 			return false;
@@ -67,9 +67,9 @@ public class SemAtomType extends SemType {
 	}
 
 	@Override
-	public boolean canCastTo(SemType t) {
-		if (!(t instanceof SemAtomType)) return false;
+	public boolean canCastTo(Type t) {
+		if (!(t instanceof AtomType)) return false;
 		// int can be castet to double
-		return ((SemAtomType) t).type == AtomTypeEnum.DOB && type == AtomTypeEnum.INT;
+		return ((AtomType) t).type == AtomTypeEnum.DOB && type == AtomTypeEnum.INT;
 	}
 }

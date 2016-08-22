@@ -7,13 +7,13 @@ import java.util.*;
  * 
  * @author sliva
  */
-public class SemFunType extends SemPtrType {
+public class FunctionType extends PointerType {
 
 	/** Tipi parametrov. */
-	public final Vector<SemType> parameterTypes;
+	public final Vector<Type> parameterTypes;
 
 	/** Tipa rezultata. */
-	public final SemType resultType;
+	public final Type resultType;
 
 	/**
 	 * Ustvari nov opis funkcijskega tipa.
@@ -23,7 +23,7 @@ public class SemFunType extends SemPtrType {
 	 * @param resultType
 	 *            Tip rezultata.
 	 */
-	public SemFunType(Vector<SemType> parTypes, SemType resultType) {
+	public FunctionType(Vector<Type> parTypes, Type resultType) {
 		this.parameterTypes = parTypes;
 		this.resultType = resultType;
 	}
@@ -44,14 +44,14 @@ public class SemFunType extends SemPtrType {
 	 *            Indeks zahtevanega parametra.
 	 * @return Tip zahtevanega parametra.
 	 */
-	public SemType getParType(int index) {
+	public Type getParType(int index) {
 		return parameterTypes.elementAt(index);
 	}
 
 	@Override
-	public boolean sameStructureAs(SemType type) {
-		if (type.actualType() instanceof SemFunType) {
-			SemFunType funType = (SemFunType) (type.actualType());
+	public boolean sameStructureAs(Type type) {
+		if (type.actualType() instanceof FunctionType) {
+			FunctionType funType = (FunctionType) (type.actualType());
 			if (this.getNumPars() != funType.getNumPars())
 				return false;
 			for (int par = 0; par < getNumPars(); par++)
@@ -68,7 +68,7 @@ public class SemFunType extends SemPtrType {
 	public String toString() {
 		String str = "";
 		str += "(";
-		for (SemType t : parameterTypes)
+		for (Type t : parameterTypes)
 			str += t.toString() + (t == parameterTypes.lastElement() ? "" : ",") ;
 		String res = resultType == null ? "?" : resultType.toString();
 		str += ") -> " + res;
@@ -78,14 +78,14 @@ public class SemFunType extends SemPtrType {
 	@Override
 	public int size() {
 		int input = 4;
-		for (SemType t : parameterTypes)
+		for (Type t : parameterTypes)
 			input += t.size();
 		
 		return Math.max(resultType.size(), input);
 	}
 
 	@Override
-	public boolean canCastTo(SemType t) {
+	public boolean canCastTo(Type t) {
 		return false;
 	}
 

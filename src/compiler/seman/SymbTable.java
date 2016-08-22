@@ -5,7 +5,7 @@ import java.util.*;
 import compiler.*;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.AbsDef;
-import compiler.seman.type.SemType;
+import compiler.seman.type.Type;
 
 public class SymbTable {
 
@@ -83,7 +83,7 @@ public class SymbTable {
 	 * @throws SemIllegalInsertException
 	 *             Ce definicija imena na trenutnem nivoju gnezdenja ze obstaja.
 	 */
-	public static void insFunc(String name, Vector<SemType> parameters, AbsDef newDef)
+	public static void insFunc(String name, Vector<Type> parameters, AbsDef newDef)
 			throws SemIllegalInsertException {
 		HashMap<String, AbsDef> hashmap = functions.get(name);
 		
@@ -145,7 +145,7 @@ public class SymbTable {
 	 * @param parameters tipi parametrov klica funkcije
 	 * @return
 	 */
-	public static AbsDef fndFunc(String name, Vector<SemType> parameters) {
+	public static AbsDef fndFunc(String name, Vector<Type> parameters) {
 		if (functions.get(name) != null)
 			return functions.get(name).get(parameters.toString());
 		return null;

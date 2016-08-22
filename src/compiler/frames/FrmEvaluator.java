@@ -28,7 +28,7 @@ import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsTypeName;
 import compiler.seman.SymbDesc;
-import compiler.seman.type.SemFunType;
+import compiler.seman.type.FunctionType;
 
 public class FrmEvaluator implements ASTVisitor {
 
@@ -79,8 +79,8 @@ public class FrmEvaluator implements ASTVisitor {
 		acceptor.expr2.accept(this);
 		
 		if (acceptor.oper == AbsBinExpr.ASSIGN) {
-			if (SymbDesc.getType(acceptor.expr1) instanceof SemFunType &&
-					SymbDesc.getType(acceptor.expr2) instanceof SemFunType) {
+			if (SymbDesc.getType(acceptor.expr1) instanceof FunctionType &&
+					SymbDesc.getType(acceptor.expr2) instanceof FunctionType) {
 				FrmDesc.setFrame(SymbDesc.getNameDef(acceptor.expr1), 
 						FrmDesc.getFrame(SymbDesc.getNameDef(acceptor.expr2)));	
 			}

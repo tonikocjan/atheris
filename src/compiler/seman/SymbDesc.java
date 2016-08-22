@@ -68,7 +68,7 @@ public class SymbDesc {
 	}
 
 	/** Tipizacija vozlisc drevesa. */
-	private static HashMap<AbsTree, SemType> type = new HashMap<AbsTree, SemType>();
+	private static HashMap<AbsTree, Type> type = new HashMap<AbsTree, Type>();
 
 	/**
 	 * Poveze vozlisce drevesa z opisom tipa.
@@ -78,7 +78,7 @@ public class SymbDesc {
 	 * @param typ
 	 *            Opis tipa.
 	 */
-	public static void setType(AbsTree node, SemType typ) {
+	public static void setType(AbsTree node, Type typ) {
 		type.put(node, typ);
 	}
 
@@ -89,8 +89,8 @@ public class SymbDesc {
 	 *            Vozlisce drevesa.
 	 * @return Opis tipa.
 	 */
-	public static SemType getType(AbsTree node) {
-		SemType typ = type.get(node);
+	public static Type getType(AbsTree node) {
+		Type typ = type.get(node);
 		return typ;
 	}
 

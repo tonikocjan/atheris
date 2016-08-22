@@ -3,10 +3,10 @@ package compiler.seman.type;
 /**
  * Opis podatkovnega tipa.
  */
-public abstract class SemType {
+public abstract class Type {
 
 	/** Vrne konkretno predstavitev tega tipa. */
-	public SemType actualType() {
+	public Type actualType() {
 		return this;
 	}
 
@@ -17,13 +17,13 @@ public abstract class SemType {
 	 *            Podani tip.
 	 * @return Ali je podani tip strukturno enak temu tipu.
 	 */
-	public abstract boolean sameStructureAs(SemType type);
+	public abstract boolean sameStructureAs(Type type);
 	
 	/**
 	 * @param type
 	 * @return true, if this type can be castet to type t
 	 */
-	public abstract boolean canCastTo(SemType t);
+	public abstract boolean canCastTo(Type t);
 	
 	/**
 	 * Vrne velikost podatkovnega tipa v bytih.

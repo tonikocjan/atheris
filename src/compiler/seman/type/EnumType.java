@@ -3,7 +3,7 @@ package compiler.seman.type;
 import compiler.abstr.tree.def.AbsEnumDef;
 import compiler.abstr.tree.def.AbsEnumMemberDef;
 
-public class SemEnumType extends SemType {
+public class EnumType extends Type {
 
 	/**
 	 * Definition.
@@ -13,7 +13,7 @@ public class SemEnumType extends SemType {
 	/**
 	 * Create new enumeration.
 	 */
-	public SemEnumType(AbsEnumDef definition) {
+	public EnumType(AbsEnumDef definition) {
 		this.definition = definition;
 	}
 	
@@ -25,11 +25,11 @@ public class SemEnumType extends SemType {
 	}
 
 	@Override
-	public boolean sameStructureAs(SemType type) {
-		if (!(type instanceof SemEnumType))
+	public boolean sameStructureAs(Type type) {
+		if (!(type instanceof EnumType))
 			return false;
 		
-		SemEnumType otherEnumType = (SemEnumType) type;
+		EnumType otherEnumType = (EnumType) type;
 		return otherEnumType.definition.name.equals(definition.name);
 	}
 
@@ -56,7 +56,7 @@ public class SemEnumType extends SemType {
 	}
 
 	@Override
-	public boolean canCastTo(SemType t) {
+	public boolean canCastTo(Type t) {
 		return false;
 	}
 

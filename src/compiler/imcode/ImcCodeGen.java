@@ -39,10 +39,10 @@ import compiler.frames.FrmParAccess;
 import compiler.frames.FrmTemp;
 import compiler.frames.FrmVarAccess;
 import compiler.seman.SymbDesc;
-import compiler.seman.type.SemListType;
-import compiler.seman.type.SemClassType;
-import compiler.seman.type.SemPtrType;
-import compiler.seman.type.SemType;
+import compiler.seman.type.ArrayType;
+import compiler.seman.type.ClassType;
+import compiler.seman.type.PointerType;
+import compiler.seman.type.Type;
 
 public class ImcCodeGen implements ASTVisitor {
 
@@ -94,7 +94,7 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-		SemClassType type = (SemClassType) SymbDesc.getType(acceptor);
+		ClassType type = (ClassType) SymbDesc.getType(acceptor);
 		int size = type.size(); 
 
 		for (AbsFunDef c : acceptor.contrustors) {
@@ -191,7 +191,7 @@ public class ImcCodeGen implements ASTVisitor {
 		else if (acceptor.oper == AbsBinExpr.ASSIGN) {
 			code = new ImcMOVE(e1, e2);
 		} else if (acceptor.oper == AbsBinExpr.ARR) {
-			SemListType type = (SemListType) SymbDesc.getType(acceptor.expr1);
+			ArrayType type = (ArrayType) SymbDesc.getType(acceptor.expr1);
 			int size = type.type.size();
 			
 			code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcBINOP(
@@ -202,10 +202,10 @@ public class ImcCodeGen implements ASTVisitor {
 			ImcBINOP sub = new ImcBINOP(ImcBINOP.SUB, e1, mul);
 			code = sub;
 		} else if (acceptor.oper == AbsBinExpr.DOT) {
-			SemType t = SymbDesc.getType(acceptor.expr1).actualType();
+			Type t = SymbDesc.getType(acceptor.expr1).actualType();
 
-			if (t instanceof SemClassType) {
-				SemClassType type  = (SemClassType) t;
+			if (t instanceof ClassType) {
+				ClassType type  = (ClassType) t;
 				String var;
 				
 				if (acceptor.expr2 instanceof AbsVarNameExpr)
@@ -217,8 +217,8 @@ public class ImcCodeGen implements ASTVisitor {
 
 				code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD,
 						e1, new ImcCONST(offset)));
-			} else if (t instanceof SemListType) {
-				code = new ImcCONST(((SemListType) t).count);
+			} else if (t instanceof ArrayType) {
+				code = new ImcCONST(((ArrayType) t).count);
 			}
 		}
 
@@ -261,11 +261,11 @@ public class ImcCodeGen implements ASTVisitor {
 		acceptor.body.accept(this);
 
 		ImcSEQ bodyCode = (ImcSEQ) ImcDesc.getImcCode(acceptor.body);
-		SemType type = SymbDesc.getType(acceptor.collection);
+		Type type = SymbDesc.getType(acceptor.collection);
 		int count = 0;
-		if (type instanceof SemListType) {
-			count = ((SemListType) type).count;
-			type = ((SemListType) type).type;
+		if (type instanceof ArrayType) {
+			count = ((ArrayType) type).count;
+			type = ((ArrayType) type).type;
 		}
 
 		ImcExpr size = new ImcCONST(type.size());
@@ -406,9 +406,9 @@ public class ImcCodeGen implements ASTVisitor {
 	@Override
 	public void visit(AbsVarDef acceptor) {
 		FrmAccess x = FrmDesc.getAccess(acceptor);
-		SemType y = SymbDesc.getType(acceptor);
+		Type y = SymbDesc.getType(acceptor);
 		int size = y.size();
-		if (y instanceof SemPtrType)
+		if (y instanceof PointerType)
 			size = 4;
 
 		if (x instanceof FrmVarAccess)
@@ -528,8 +528,8 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsListExpr acceptor) {
-		int size = ((SemListType) SymbDesc.getType(acceptor)).count;
-		int elSize = ((SemListType) SymbDesc.getType(acceptor)).type.size();
+		int size = ((ArrayType) SymbDesc.getType(acceptor)).count;
+		int elSize = ((ArrayType) SymbDesc.getType(acceptor)).type.size();
 
 		FrmLabel label = FrmLabel.newLabel();
 		ImcDataChunk chunk = new ImcDataChunk(label, size * elSize);

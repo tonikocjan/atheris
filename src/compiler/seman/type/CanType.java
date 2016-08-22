@@ -6,25 +6,25 @@ package compiler.seman.type;
  *
  */
 // TODO: What should this type be called?
-public class CanType extends SemType {
+public class CanType extends Type {
 	
-	public final SemType childType;
+	public final Type childType;
 	
-	public CanType(SemClassType child) {
+	public CanType(ClassType child) {
 		this.childType = child;
 	}
 	
-	public CanType(SemEnumType child) {
+	public CanType(EnumType child) {
 		this.childType = child;
 	}
 
 	@Override
-	public boolean sameStructureAs(SemType type) {
+	public boolean sameStructureAs(Type type) {
 		return false;
 	}
 
 	@Override
-	public boolean canCastTo(SemType t) {
+	public boolean canCastTo(Type t) {
 		return false;
 	}
 
@@ -35,10 +35,10 @@ public class CanType extends SemType {
 
 	@Override
 	public String toString() {
-		if (childType instanceof SemClassType)
-			return ((SemClassType) childType).getName() + ".Type";
+		if (childType instanceof ClassType)
+			return ((ClassType) childType).getName() + ".Type";
 		else
-			return ((SemEnumType) childType).definition.name + ".Type";
+			return ((EnumType) childType).definition.name + ".Type";
 	}
 
 }

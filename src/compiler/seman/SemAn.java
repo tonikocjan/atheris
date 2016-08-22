@@ -72,7 +72,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsListType listType) {
 		Report.dump(indent, "AbsListType " + listType.position.toString() + ": " + "[" + listType.count + "]");
 		{
-			SemType typ = SymbDesc.getType(listType);
+			Type typ = SymbDesc.getType(listType);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -83,7 +83,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsClassDef classDef) {
 		Report.dump(indent, "AbsClassDef " + classDef.position.toString() + ": " + classDef.getName());		
 		{
-			SemType typ = SymbDesc.getType(classDef);
+			Type typ = SymbDesc.getType(classDef);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -119,7 +119,7 @@ public class SemAn implements ASTVisitor {
 			Report.error("Internal error :: compiler.abstr.Seman.visit(AbsAtomConst)");
 		}
 		{
-			SemType typ = SymbDesc.getType(atomConst);
+			Type typ = SymbDesc.getType(atomConst);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -149,7 +149,7 @@ public class SemAn implements ASTVisitor {
 			Report.error("Internal error :: compiler.abstr.Seman.visit(AbsAtomType)");
 		}
 		{
-			SemType typ = SymbDesc.getType(atomType);
+			Type typ = SymbDesc.getType(atomType);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -209,7 +209,7 @@ public class SemAn implements ASTVisitor {
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
 		}
 		{
-			SemType typ = SymbDesc.getType(binExpr);
+			Type typ = SymbDesc.getType(binExpr);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -220,7 +220,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsDefs defs) {
 		Report.dump(indent, "AbsDefs " + defs.position.toString() + ":");
 		{
-			SemType typ = SymbDesc.getType(defs);
+			Type typ = SymbDesc.getType(defs);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -232,7 +232,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsExprs exprs) {
 		Report.dump(indent, "AbsExprs " + exprs.position.toString() + ":");
 		{
-			SemType typ = SymbDesc.getType(exprs);
+			Type typ = SymbDesc.getType(exprs);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -244,7 +244,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsForStmt forStmt) {
 		Report.dump(indent, "AbsFor " + forStmt.position.toString() + ":");
 		{
-			SemType typ = SymbDesc.getType(forStmt);
+			Type typ = SymbDesc.getType(forStmt);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -261,7 +261,7 @@ public class SemAn implements ASTVisitor {
 				Report.dump(indent + 2, "#defined at " + def.position.toString());
 		}
 		{
-			SemType typ = SymbDesc.getType(funCall);
+			Type typ = SymbDesc.getType(funCall);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -273,7 +273,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsFunDef funDef) {
 		Report.dump(indent, "AbsFunDef " + funDef.position.toString() + ": " + funDef.name);
 		{
-			SemType typ = SymbDesc.getType(funDef);
+			Type typ = SymbDesc.getType(funDef);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -286,7 +286,7 @@ public class SemAn implements ASTVisitor {
 	
 	public void visit(AbsIfStmt ifExpr) {
 		Report.dump(indent, "AbsIfExpr " + ifExpr.position.toString() + ":");
-		SemType typ = SymbDesc.getType(ifExpr);
+		Type typ = SymbDesc.getType(ifExpr);
 		if (typ != null)
 			Report.dump(indent + 2, "#typed as " + typ.toString());
 		
@@ -303,7 +303,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsParDef par) {
 		Report.dump(indent, "AbsPar " + par.position.toString() + ": " + par.name);
 		{
-			SemType typ = SymbDesc.getType(par);
+			Type typ = SymbDesc.getType(par);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -318,7 +318,7 @@ public class SemAn implements ASTVisitor {
 				Report.dump(indent + 2, "#defined at " + def.position.toString());
 		}
 		{
-			SemType typ = SymbDesc.getType(typeName);
+			Type typ = SymbDesc.getType(typeName);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -345,7 +345,7 @@ public class SemAn implements ASTVisitor {
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
 		}
 		{
-			SemType typ = SymbDesc.getType(unExpr);
+			Type typ = SymbDesc.getType(unExpr);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -357,7 +357,7 @@ public class SemAn implements ASTVisitor {
 		if (varDef.isConstant)
 			Report.dump(indent + 2, "#CONSTANT");
 		{
-			SemType typ = SymbDesc.getType(varDef);
+			Type typ = SymbDesc.getType(varDef);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -372,7 +372,7 @@ public class SemAn implements ASTVisitor {
 				Report.dump(indent + 2, "#defined at " + def.position.toString());
 		}
 		{
-			SemType typ = SymbDesc.getType(varName);
+			Type typ = SymbDesc.getType(varName);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -381,7 +381,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsWhileStmt whileStmt) {
 		Report.dump(indent, "AbsWhileName " + whileStmt.position.toString() + ":");
 		{
-			SemType typ = SymbDesc.getType(whileStmt);
+			Type typ = SymbDesc.getType(whileStmt);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -393,7 +393,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsImportDef importDef) {
 		Report.dump(indent, "AbsImportDef " + importDef.position + ":");
 		{
-			SemType typ = SymbDesc.getType(importDef);
+			Type typ = SymbDesc.getType(importDef);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -404,7 +404,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsStmts stmts) {
 		Report.dump(indent, "AbsStmts " + stmts.position.toString() + ":");
 		{
-			SemType typ = SymbDesc.getType(stmts);
+			Type typ = SymbDesc.getType(stmts);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());	
 		}
@@ -418,7 +418,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsReturnExpr returnExpr) {
 		Report.dump(indent, "AbsReturnExpr " + returnExpr.position.toString());
 		{
-			SemType typ = SymbDesc.getType(returnExpr);
+			Type typ = SymbDesc.getType(returnExpr);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -429,7 +429,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsListExpr absListExpr) {
 		Report.dump(indent, "AbsListExpr " + absListExpr.position.toString());
 		{
-			SemType typ = SymbDesc.getType(absListExpr);
+			Type typ = SymbDesc.getType(absListExpr);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -444,7 +444,7 @@ public class SemAn implements ASTVisitor {
 		Report.dump(indent, "AbsFunType " + funType.position.toString() + ":");
 		Report.dump(indent + 2, funType.toString());
 		{
-			SemType typ = SymbDesc.getType(funType);
+			Type typ = SymbDesc.getType(funType);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -460,7 +460,7 @@ public class SemAn implements ASTVisitor {
 		Report.dump(indent, "AbsSwitchStmt " + switchStmt.position.toString() + ":");
 		indent += 2;
 		{
-			SemType typ = SymbDesc.getType(switchStmt);
+			Type typ = SymbDesc.getType(switchStmt);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -469,7 +469,7 @@ public class SemAn implements ASTVisitor {
 		indent += 2;
 		switchStmt.subjectExpr.accept(this);
 		{
-			SemType typ = SymbDesc.getType(switchStmt.subjectExpr);
+			Type typ = SymbDesc.getType(switchStmt.subjectExpr);
 			if (typ != null)
 				Report.dump(indent, "#typed as " + typ.toString());
 		}
@@ -483,7 +483,7 @@ public class SemAn implements ASTVisitor {
 			indent += 2;
 			switchStmt.defaultBody.accept(this);
 			{
-				SemType typ = SymbDesc.getType(switchStmt.defaultBody);
+				Type typ = SymbDesc.getType(switchStmt.defaultBody);
 				if (typ != null)
 					Report.dump(indent + 2, "#typed as " + typ.toString());
 			}
@@ -500,7 +500,7 @@ public class SemAn implements ASTVisitor {
 		for (AbsExpr e : acceptor.exprs) {
 			e.accept(this);
 
-			SemType typ = SymbDesc.getType(e);
+			Type typ = SymbDesc.getType(e);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -513,7 +513,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsEnumDef enumDef) {
 		Report.dump(indent, "AbsEnumDef " + enumDef.position.toString() + ": " + enumDef.name);		
 		{
-			SemType typ = SymbDesc.getType(enumDef);
+			Type typ = SymbDesc.getType(enumDef);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
@@ -533,7 +533,7 @@ public class SemAn implements ASTVisitor {
 	public void visit(AbsEnumMemberDef acceptor) {
 		acceptor.name.accept(this);
 		{
-			SemType typ = SymbDesc.getType(acceptor);
+			Type typ = SymbDesc.getType(acceptor);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
