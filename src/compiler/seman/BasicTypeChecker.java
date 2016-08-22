@@ -194,7 +194,8 @@ public class BasicTypeChecker implements ASTVisitor {
 				return;
 			}
 
-			if (!(t1 instanceof ClassType) && !(t1 instanceof EnumType)) {
+			if (!(t1 instanceof ClassType) && 
+					!((t1 instanceof CanType) && ((CanType)t1).childType instanceof EnumType)) {
 				if (acceptor.expr2 instanceof AbsVarNameExpr)
 					Report.error(acceptor.position,
 
@@ -236,22 +237,24 @@ public class BasicTypeChecker implements ASTVisitor {
 				return;
 			}
 			
-			if (t1 instanceof EnumType) {
+			if (t1 instanceof CanType) {
+				EnumType enumType = (EnumType) ((CanType) t1).childType;
+				
 				if (!(acceptor.expr2 instanceof AbsVarNameExpr)) {
 					if (acceptor.expr2 instanceof AbsFunCall)
 						Report.error(acceptor.expr2.position, "Invalid use of '()' to call a value of non-function type");
 					Report.error(acceptor.expr2.position, "todo");
 				}
 
-				AbsDef definition = ((EnumType) t1).findMemberDefinitionForName(((AbsVarNameExpr)acceptor.expr2).name);
+				AbsDef definition = ((EnumType) enumType).findMemberDefinitionForName(((AbsVarNameExpr)acceptor.expr2).name);
 				t2 = SymbDesc.getType(definition);
-				String enumName = ((EnumType) t1).definition.name;
+				String enumName = ((EnumType) enumType).enumDefinition.name;
 				
-				if (!t1.sameStructureAs(t2))
+				if (!enumType.sameStructureAs(t2))
 					Report.error(acceptor.expr2.position, "Type \"" + enumName + "\" has no member \"" + t2.toString() + "\"");
 				
-				SymbDesc.setType(acceptor.expr2, t1);
-				SymbDesc.setType(acceptor, t1);
+				SymbDesc.setType(acceptor.expr2, enumType);
+				SymbDesc.setType(acceptor, enumType);
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				return;
 			}
@@ -663,7 +666,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			}
 		}
 		
-		SymbDesc.setType(acceptor, enumType);
+		SymbDesc.setType(acceptor, new CanType(enumType));
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
+import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsType;
 
 public class AbsEnumDef extends AbsTypeDef {
@@ -17,7 +18,7 @@ public class AbsEnumDef extends AbsTypeDef {
 	 * Type of raw values.
 	 * If null, definitions dont have raw values.
 	 */
-	public final AbsType type;
+	public final AbsAtomType type;
 
 	/**
 	 * Construct enum definition.
@@ -27,7 +28,7 @@ public class AbsEnumDef extends AbsTypeDef {
 	 * @param type type for each definitions' raw value
 	 */
 	public AbsEnumDef(Position pos, String name, 
-			LinkedList<AbsEnumMemberDef> definitions, AbsType type) {
+			LinkedList<AbsEnumMemberDef> definitions, AbsAtomType type) {
 		super(pos, name);
 		
 		this.definitions = definitions;

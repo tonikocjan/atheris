@@ -514,7 +514,8 @@ public class SynAn {
 		skip();
 		
 		Position end = enumDefinitions.getLast().position;
-		return new AbsEnumDef(new Position(start, end), name, enumDefinitions, type);
+		return new AbsEnumDef(new Position(start, end), name, enumDefinitions, 
+				(AbsAtomType) type);
 	}
 	
 	private LinkedList<AbsEnumMemberDef> parseEnumMemberDefinitions() {

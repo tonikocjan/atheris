@@ -9,6 +9,7 @@ import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.AbsStmts;
 import compiler.abstr.tree.Condition;
 import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsEnumDef;
 import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
@@ -33,6 +34,7 @@ import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsTypeName;
+import compiler.seman.type.EnumType;
 
 /**
  * Initialization checking phase of the compiler.
@@ -255,12 +257,16 @@ public class InitializationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumDef acceptor) {
-		///
+		for (AbsDef def : acceptor.definitions)
+			def.accept(this);
 	}
 
 	@Override
 	public void visit(AbsEnumMemberDef acceptor) {
-		///
+		EnumType type = (EnumType) SymbDesc.getType(acceptor);
+		
+		if (type.definition.statements.numStmts() > 0)
+			InitTable.initialize((AbsVarDef) type.definition.statements.stmt(0));
 	}
 
 }

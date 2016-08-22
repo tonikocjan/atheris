@@ -38,7 +38,7 @@ public class CanType extends Type {
 		if (childType instanceof ClassType)
 			return ((ClassType) childType).getName() + ".Type";
 		else
-			return ((EnumType) childType).definition.name + ".Type";
+			return ((EnumType) childType).enumDefinition.name + ".Type";
 	}
 
 }

@@ -17,12 +17,22 @@ public class AbsClassDef extends AbsTypeDef {
 	/** Constructors (initializers) */
 	public final Vector<AbsFunDef> contrustors = new Vector<>();
 	
+	/**
+	 * 
+	 * @param name
+	 * @param pos
+	 * @param statements
+	 */
 	public AbsClassDef(String name, Position pos, Vector<AbsStmt> statements) {
 		super(pos, name);
 		
-		Position start = statements.firstElement().position;
-		Position end = statements.lastElement().position;
-		this.statements = new AbsStmts(new Position(start, end), statements);
+		if (statements.size() > 0) {
+			Position start = statements.firstElement().position;
+			Position end = statements.lastElement().position;
+			this.statements = new AbsStmts(new Position(start, end), statements);
+		}
+		else
+			this.statements = new AbsStmts(pos, statements);
 
 		// add default constructor
 		AbsFunDef contructor = new AbsFunDef(pos, 
