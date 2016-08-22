@@ -170,6 +170,7 @@ public class InitializationChecker implements ASTVisitor {
 		if (SymbDesc.getNameDef(acceptor) instanceof AbsParDef || 
 				SymbDesc.getNameDef(acceptor) instanceof AbsFunDef ||
 				SymbDesc.getNameDef(acceptor) instanceof AbsEnumDef ||
+				SymbDesc.getNameDef(acceptor) instanceof AbsClassDef ||
 				SymbDesc.getNameDef(acceptor) instanceof AbsEnumMemberDef )
 			return;
 		

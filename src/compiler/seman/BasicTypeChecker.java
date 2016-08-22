@@ -79,13 +79,13 @@ public class BasicTypeChecker implements ASTVisitor {
 					Report.error("Semantic error @ AbsClassDef-typeChecker");
 			}
 		}
-		SymbDesc.setType(acceptor, new SemClassType(acceptor, 
-													names,
-													types));
+		
+		SemClassType classType = new SemClassType(acceptor, names, types);
+		SymbDesc.setType(acceptor, new CanType(classType));
+		
 		for (AbsFunDef c : acceptor.contrustors) {
 			c.accept(this);
-			SymbDesc.setType(c, new SemFunType(new Vector<>(), 
-					SymbDesc.getType(acceptor)));
+			SymbDesc.setType(c, new SemFunType(new Vector<>(), classType));
 		}
 	}
 
@@ -194,9 +194,16 @@ public class BasicTypeChecker implements ASTVisitor {
 				return;
 			}
 
-			if (!(t1 instanceof SemClassType) && !(t1 instanceof SemEnumType))
-				Report.error(acceptor.position,
+			if (!(t1 instanceof SemClassType) && !(t1 instanceof SemEnumType)) {
+				if (acceptor.expr2 instanceof AbsVarNameExpr)
+					Report.error(acceptor.position,
+
+							"Instance member \"" + ((AbsVarNameExpr) acceptor.expr2).name + 
+							"\" cannot be used on type \"" + t1.toString() + "\"");
+				Report.error(acceptor.position, 
 						"Cannot use dot ('.') operator on type \"" + t1.toString() + "\"");
+			}
+			
 			if (t1 instanceof SemClassType) {
 				String name;
 				if (acceptor.expr2 instanceof AbsVarNameExpr)

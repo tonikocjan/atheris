@@ -31,5 +31,10 @@ public abstract class SemType {
 	 * @return Velikost podatkovnega tipa v bytih.
 	 */
 	public abstract int size();
+	
+	/**
+	 * Convert type to string.
+	 */
+	public abstract String toString();
 
 }
