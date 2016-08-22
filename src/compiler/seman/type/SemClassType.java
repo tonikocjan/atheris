@@ -22,7 +22,7 @@ public class SemClassType extends SemPtrType {
 	 */
 	public SemClassType(String name, ArrayList<String> names, ArrayList<SemType> types) {
 		if (names.size() != types.size())
-			Report.error("Internal error :: compiler.seman.type.SemStructType: "
+			Report.error("Internal error :: compiler.seman.type.SemClassType: "
 					+ "names count not equal types count");
 
 		int size = 0;

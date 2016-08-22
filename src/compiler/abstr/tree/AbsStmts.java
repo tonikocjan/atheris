@@ -41,18 +41,6 @@ public class AbsStmts extends AbsTree {
 		return stmts.length;
 	}
 	
-	public AbsDef findDefinition(String name) {
-		for (AbsStmt s : stmts) {
-			if (s instanceof AbsVarDef)
-				if (((AbsVarDef) s).name.equals(name))
-					return (AbsDef) s;
-			if (s instanceof AbsFunDef)
-				if (((AbsFunDef) s).name.equals(name))
-					return (AbsDef) s;
-		}
-		return null;
-	}
-	
 	
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
