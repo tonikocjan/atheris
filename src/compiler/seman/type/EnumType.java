@@ -3,7 +3,7 @@ package compiler.seman.type;
 import compiler.abstr.tree.def.AbsEnumDef;
 import compiler.abstr.tree.def.AbsEnumMemberDef;
 
-public class EnumType extends Type {
+public class EnumType extends PointerType {
 
 	/**
 	 * Definition.
