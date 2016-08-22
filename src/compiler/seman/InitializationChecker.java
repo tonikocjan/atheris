@@ -127,7 +127,9 @@ public class InitializationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
+		InitTable.newScope();
 		acceptor.func.accept(this);
+		InitTable.oldScope();
 	}
 
 	@Override
@@ -253,14 +255,12 @@ public class InitializationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumDef acceptor) {
-		// TODO Auto-generated method stub
-		
+		///
 	}
 
 	@Override
 	public void visit(AbsEnumMemberDef acceptor) {
-		// TODO Auto-generated method stub
-		
+		///
 	}
 
 }
