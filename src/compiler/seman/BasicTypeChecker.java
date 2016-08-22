@@ -171,7 +171,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			}
 			
 			if (!success)
-				Report.error(acceptor.position, "Cannot assign type " + t2
+				Report.error(acceptor.position, "Cannot convert valueof type " + t2
 						+ " to type " + t1);
 			
 			return;
@@ -194,39 +194,60 @@ public class BasicTypeChecker implements ASTVisitor {
 				return;
 			}
 
-			if (!(t1 instanceof SemClassType))
+			if (!(t1 instanceof SemClassType) && !(t1 instanceof SemEnumType))
 				Report.error(acceptor.position,
-						"Left expression must be a class type to use '.' operator");
-			
-			String name;
-			if (acceptor.expr2 instanceof AbsVarNameExpr)
-				name = ((AbsVarNameExpr) acceptor.expr2).name;
-			else
-				name = ((AbsFunCall) acceptor.expr2).name;
-
-			if (!(SymbDesc.getNameDef(acceptor.expr1) instanceof AbsParDef)) {
-				SemClassType classType = (SemClassType) t1;
-				AbsDef definition = classType.findMemberForName(name);
-				
-				if (definition == null) {
-					Report.error(acceptor.expr2.position,
-							"Value of type '" + classType.getName() + "' has no member '" + name + "'");
+						"Cannot use dot ('.') operator on type \"" + t1.toString() + "\"");
+			if (t1 instanceof SemClassType) {
+				String name;
+				if (acceptor.expr2 instanceof AbsVarNameExpr)
+					name = ((AbsVarNameExpr) acceptor.expr2).name;
+				else
+					name = ((AbsFunCall) acceptor.expr2).name;
+	
+				if (!(SymbDesc.getNameDef(acceptor.expr1) instanceof AbsParDef)) {
+					SemClassType classType = (SemClassType) t1;
+					AbsDef definition = classType.findMemberForName(name);
+					
+					if (definition == null) {
+						Report.error(acceptor.expr2.position,
+								"Value of type '" + classType.getName() + "' has no member '" + name + "'");
+					}
+					if (definition instanceof AbsVarDef && 
+							((AbsVarDef) definition).visibilityEnum == VisibilityEnum.Private)
+						Report.error(acceptor.expr2.position,
+								"Member '" + name + "' is private");
+					
+					SymbDesc.setNameDef(acceptor.expr2, definition);
+					SymbDesc.setNameDef(acceptor, definition);
 				}
-				if (definition instanceof AbsVarDef && 
-						((AbsVarDef) definition).visibilityEnum == VisibilityEnum.Private)
-					Report.error(acceptor.expr2.position,
-							"Member '" + name + "' is private");
-				
-				SymbDesc.setNameDef(acceptor.expr2, definition);
-				SymbDesc.setNameDef(acceptor, definition);
+	
+				SemClassType sType = (SemClassType) t1;
+				SemType type = sType.getMembers().get(name);
+	
+				SymbDesc.setType(acceptor.expr2, type);
+				SymbDesc.setType(acceptor, type);
+				return;
 			}
+			
+			if (t1 instanceof SemEnumType) {
+				if (!(acceptor.expr2 instanceof AbsVarNameExpr)) {
+					if (acceptor.expr2 instanceof AbsFunCall)
+						Report.error(acceptor.expr2.position, "Invalid use of '()' to call a value of non-function type");
+					Report.error(acceptor.expr2.position, "todo");
+				}
 
-			SemClassType sType = (SemClassType) t1;
-			SemType type = sType.getMembers().get(name);
-
-			SymbDesc.setType(acceptor.expr2, type);
-			SymbDesc.setType(acceptor, type);
-			return;
+				AbsDef definition = ((SemEnumType) t1).findMemberDefinitionForName(((AbsVarNameExpr)acceptor.expr2).name);
+				t2 = SymbDesc.getType(definition);
+				String enumName = ((SemEnumType) t1).definition.name;
+				
+				if (!t1.sameStructureAs(t2))
+					Report.error(acceptor.expr2.position, "Type \"" + enumName + "\" has no member \"" + t2.toString() + "\"");
+				
+				SymbDesc.setType(acceptor.expr2, t1);
+				SymbDesc.setType(acceptor, t1);
+				SymbDesc.setNameDef(acceptor.expr2, definition);
+				return;
+			}
 		}
 
 		/**
@@ -584,13 +605,65 @@ public class BasicTypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumDef acceptor) {
-		// TODO Auto-generated method stub
+		SemEnumType enumType = new SemEnumType(acceptor);
+		SemAtomType enumRawValueType = null;
 		
+		if (acceptor.type != null) {
+			acceptor.type.accept(this);
+			enumRawValueType = (SemAtomType) SymbDesc.getType(acceptor.type);
+		}
+		
+		String previousValue = null;
+		int iterator = 0;
+		
+		for (AbsEnumMemberDef def : acceptor.definitions) {
+			def.accept(this);
+			SymbDesc.setType(def, enumType);
+			
+			if (def.value != null) {
+				if (enumRawValueType == null)
+					Report.error(def.value.position, "Enum member cannot have a raw value "
+							+ "if the enum doesn't have a raw type");
+				
+				SemType rawValueType = SymbDesc.getType(def.value);
+				if (!rawValueType.sameStructureAs(enumRawValueType))
+					Report.error(def.value.position, "Cannot convert value of type \"" + 
+							rawValueType.toString() + "\" to type \"" + enumRawValueType.toString() + "\"");
+				SymbDesc.setType(def, enumType);
+				
+				previousValue = def.value.value;
+			}
+			else if (enumRawValueType != null) {
+				if (enumRawValueType.type != AtomTypeEnum.STR &&
+						enumRawValueType.type != AtomTypeEnum.INT)
+					Report.error(def.position, "Enum members require explicit raw values when the raw type is not integer or string literal");
+				
+				String value = null;
+				
+				if (enumRawValueType.type == AtomTypeEnum.STR)
+					value = def.name.name;
+				else if (enumRawValueType.type == AtomTypeEnum.INT) {
+					if (previousValue == null)
+						value = "" + iterator;
+					else
+						value = "" + (Integer.parseInt(previousValue) + 1);
+				}
+				
+				def.value = new AbsAtomConstExpr(def.position, enumRawValueType.type, value);
+
+				previousValue = value;
+				iterator++;
+			}
+		}
+		
+		SymbDesc.setType(acceptor, enumType);
 	}
 
 	@Override
 	public void visit(AbsEnumMemberDef acceptor) {
-		// TODO Auto-generated method stub
+		acceptor.name.accept(this);
 		
+		if (acceptor.value != null)
+			acceptor.value.accept(this);
 	}
 }

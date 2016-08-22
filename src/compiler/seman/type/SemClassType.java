@@ -104,6 +104,7 @@ public class SemClassType extends SemPtrType {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		int i = 0;
+		sb.append("Class: ");
 		sb.append(definition.name + "(");
 		for (Map.Entry<String, SemType> entry : members.entrySet()) {
 			sb.append(entry.getKey() + ":" + entry.getValue().toString());

@@ -5,6 +5,8 @@ import compiler.abstr.*;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsEnumDef;
+import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
@@ -79,7 +81,7 @@ public class SemAn implements ASTVisitor {
 	
 	@Override
 	public void visit(AbsClassDef classDef) {
-		Report.dump(indent, "AbsClassType " + classDef.position.toString() + ": " + classDef.getName());		
+		Report.dump(indent, "AbsClassDef " + classDef.position.toString() + ": " + classDef.getName());		
 		{
 			SemType typ = SymbDesc.getType(classDef);
 			if (typ != null)
@@ -505,5 +507,37 @@ public class SemAn implements ASTVisitor {
 		indent -= 2;
 		Report.dump(indent, "Body:");
 		indent += 2; acceptor.body.accept(this); indent -= 2;		
+	}
+
+	@Override
+	public void visit(AbsEnumDef enumDef) {
+		Report.dump(indent, "AbsEnumDef " + enumDef.position.toString() + ": " + enumDef.name);		
+		{
+			SemType typ = SymbDesc.getType(enumDef);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+
+		indent += 2;
+		if (enumDef.type != null)
+			enumDef.type.accept(this);		
+		indent -= 2;
+		
+		indent += 2;
+		for (AbsDef def : enumDef.definitions)
+			def.accept(this);
+		indent -= 2;
+	}
+
+	@Override
+	public void visit(AbsEnumMemberDef acceptor) {
+		acceptor.name.accept(this);
+		{
+			SemType typ = SymbDesc.getType(acceptor);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		if (acceptor.value != null)
+			acceptor.value.accept(this);
 	}
 }

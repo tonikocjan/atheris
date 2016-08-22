@@ -168,7 +168,9 @@ public class InitializationChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsVarNameExpr acceptor) {
 		if (SymbDesc.getNameDef(acceptor) instanceof AbsParDef || 
-				SymbDesc.getNameDef(acceptor) instanceof AbsFunDef)
+				SymbDesc.getNameDef(acceptor) instanceof AbsFunDef ||
+				SymbDesc.getNameDef(acceptor) instanceof AbsEnumDef ||
+				SymbDesc.getNameDef(acceptor) instanceof AbsEnumMemberDef )
 			return;
 		
 		AbsVarDef def = (AbsVarDef) SymbDesc.getNameDef(acceptor);

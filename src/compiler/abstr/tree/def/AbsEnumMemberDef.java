@@ -8,7 +8,7 @@ import compiler.abstr.tree.expr.AbsVarNameExpr;
 public class AbsEnumMemberDef extends AbsDef {
 	
 	public final AbsVarNameExpr name;
-	public final AbsAtomConstExpr value;
+	public AbsAtomConstExpr value;
 
 	public AbsEnumMemberDef(Position pos, AbsVarNameExpr name, AbsAtomConstExpr value) {
 		super(pos);

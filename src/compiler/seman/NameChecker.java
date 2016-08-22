@@ -492,13 +492,28 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumDef acceptor) {
-		// TODO Auto-generated method stub
-		
+		try {
+			SymbTable.ins(acceptor.name, acceptor);
+		} catch (SemIllegalInsertException e) {
+			Report.error(acceptor.position, "Invalid redeclaration of \'" + 
+					acceptor.name + "\'");
+		}
+		if (acceptor.type != null)
+			acceptor.type.accept(this);
+		SymbTable.newScope();
+		for (AbsDef def : acceptor.definitions)
+			def.accept(this);
+		SymbTable.oldScope();
 	}
 
 	@Override
 	public void visit(AbsEnumMemberDef acceptor) {
-		// TODO Auto-generated method stub
-		
+		try {
+			SymbTable.ins(acceptor.name.name, acceptor);
+		} catch (SemIllegalInsertException e) {
+			Report.error(acceptor.position, "Invalid redeclaration of \'" + 
+					acceptor.name.name + "\'");
+		}
+		acceptor.name.accept(this);
 	}
 }
