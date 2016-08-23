@@ -520,11 +520,13 @@ public class SynAn {
 	
 	private LinkedList<AbsEnumMemberDef> parseEnumMemberDefinitions() {
 		LinkedList<AbsEnumMemberDef> definitions = new LinkedList<>();
+
+		if (symbol.token != TokenEnum.KW_CASE)
+			Report.error(symbol.position, "Enum member definition "
+					+ "must begin with \"case\" keyword");
+		skip(new Symbol(TokenEnum.IDENTIFIER, "IDENTIFIER", null));
 		
 		while (true) {
-			if (symbol.token != TokenEnum.KW_CASE)
-				Report.error(symbol.position, "Enum member definition must begin with \"case\" keyword");
-			skip(new Symbol(TokenEnum.IDENTIFIER, "IDENTIFIER", null));
 			
 			AbsVarNameExpr name = new AbsVarNameExpr(symbol.position, symbol.lexeme);
 			
@@ -543,16 +545,17 @@ public class SynAn {
 			else
 				definitions.add(new AbsEnumMemberDef(name.position, name, null));
 			
-			if (symbol.token == TokenEnum.COMMA) {
+			if (symbol.token == TokenEnum.COMMA)
 				skip();
-				if (symbol.token == TokenEnum.NEWLINE)
-					skip();
-				continue;
-			}
-			else {
-				if (symbol.token == TokenEnum.NEWLINE)
-					skip();
-				break;
+			else if (symbol.token == TokenEnum.NEWLINE) {
+				skip();
+				if (symbol.token == TokenEnum.RBRACE)
+					break;
+
+				if (symbol.token != TokenEnum.KW_CASE)
+					Report.error(symbol.position, "Enum member definition "
+							+ "must begin with \"case\" keyword");
+				skip();
 			}
 		}
 		

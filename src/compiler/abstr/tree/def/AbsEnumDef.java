@@ -9,7 +9,7 @@ import compiler.abstr.tree.type.AbsAtomType;
 public class AbsEnumDef extends AbsTypeDef {
 	
 	/**
-	 * Enumeration definitions.
+	 * Enumeration member definitions.
 	 */
 	public final LinkedList<AbsEnumMemberDef> definitions;
 	
