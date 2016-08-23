@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.type.AbsAtomType;
-import compiler.abstr.tree.type.AbsType;
 
 public class AbsEnumDef extends AbsTypeDef {
 	

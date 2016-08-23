@@ -12,9 +12,10 @@ import compiler.abstr.tree.def.AbsVarDef;
 public class EnumType extends ClassType {
 
 	/**
-	 * Definition.
+	 * Enumeration definition.
 	 */
-	public final AbsEnumDef enumDefinition;	
+	public final AbsEnumDef enumDefinition;
+
 
 	/**
 	 * Create new enumeration.
@@ -54,7 +55,21 @@ public class EnumType extends ClassType {
 				return def;
 		return null;
 	}
+	
+	public int offsetForDefinitionName(String name) {
+		int offset = 0;
+		for (AbsEnumMemberDef def : enumDefinition.definitions) {
+			if (def.name.name.equals(name)) return offset;
+			offset++;
+		}
+		return -1;
+	}
 
+	@Override
+	public String getName() {
+		return enumDefinition.name;
+	}
+	
 	@Override
 	public boolean sameStructureAs(Type type) {
 		if (!(type instanceof EnumType))

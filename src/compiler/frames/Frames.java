@@ -5,6 +5,8 @@ import compiler.abstr.*;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsEnumDef;
+import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
@@ -348,8 +350,20 @@ public class Frames implements ASTVisitor {
 		indent -= 2;
 	}
 
-	public void visit(AbsIfStmt ifThen) {
-		// TODO
+	public void visit(AbsIfStmt ifExpr) {
+		Report.dump(indent, "AbsIfExpr " + ifExpr.position.toString() + ":");
+		Type typ = SymbDesc.getType(ifExpr);
+		if (typ != null)
+			Report.dump(indent + 2, "#typed as " + typ.toString());
+		
+		indent += 2;
+		for (Condition c : ifExpr.conditions) {
+			c.cond.accept(this);
+			c.body.accept(this);
+		}
+		if (ifExpr.elseBody != null)
+			ifExpr.elseBody.accept(this);
+		indent -= 2;
 	}
 
 	public void visit(AbsParDef par) {
@@ -545,7 +559,7 @@ public class Frames implements ASTVisitor {
 
 	@Override
 	public void visit(AbsControlTransferStmt acceptor) {
-		// TODO Auto-generated method stub
+		Report.dump(indent, "AbsControlTransferStmt: " + acceptor.control);	
 	}
 	
 	@Override
@@ -600,6 +614,38 @@ public class Frames implements ASTVisitor {
 		indent -= 2;
 		Report.dump(indent, "Body:");
 		indent += 2; acceptor.body.accept(this); indent -= 2;		
+	}
+
+	@Override
+	public void visit(AbsEnumDef enumDef) {
+		Report.dump(indent, "AbsEnumDef " + enumDef.position.toString() + ": " + enumDef.name);		
+		{
+			Type typ = SymbDesc.getType(enumDef);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+
+		indent += 2;
+		if (enumDef.type != null)
+			enumDef.type.accept(this);		
+		indent -= 2;
+		
+		indent += 2;
+		for (AbsDef def : enumDef.definitions)
+			def.accept(this);
+		indent -= 2;
+	}
+
+	@Override
+	public void visit(AbsEnumMemberDef acceptor) {
+		acceptor.name.accept(this);
+		{
+			Type typ = SymbDesc.getType(acceptor);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		if (acceptor.value != null)
+			acceptor.value.accept(this);
 	}
 
 }

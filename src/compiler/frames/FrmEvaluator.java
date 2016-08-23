@@ -5,6 +5,8 @@ import java.util.Vector;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsEnumDef;
+import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
@@ -232,5 +234,15 @@ public class FrmEvaluator implements ASTVisitor {
 		for (AbsExpr e : acceptor.exprs)
 			e.accept(this);
 		acceptor.body.accept(this);
+	}
+
+	@Override
+	public void visit(AbsEnumDef acceptor) {
+		///
+	}
+
+	@Override
+	public void visit(AbsEnumMemberDef acceptor) {
+		///
 	}
 }
