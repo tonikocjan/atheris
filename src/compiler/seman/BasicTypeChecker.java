@@ -248,13 +248,16 @@ public class BasicTypeChecker implements ASTVisitor {
 					Report.error(acceptor.expr2.position, "todo");
 				}
 
-				AbsDef definition = ((EnumType) enumType).findMemberForName(((AbsVarNameExpr)acceptor.expr2).name);
-				t2 = SymbDesc.getType(definition);
+				String memberName = ((AbsVarNameExpr)acceptor.expr2).name;
 				String enumName = ((EnumType) enumType).enumDefinition.name;
 				
+				AbsDef definition = ((EnumType) enumType).findMemberForName(memberName);
+				
+				t2 = SymbDesc.getType(definition);				
 				if (!enumType.sameStructureAs(t2))
 					Report.error(acceptor.expr2.position, "Type \"" + enumName + "\" has no member \"" + t2.toString() + "\"");
 				
+				enumType.setDefinitionForThisType(memberName);
 				SymbDesc.setType(acceptor.expr2, enumType);
 				SymbDesc.setType(acceptor, enumType);
 				SymbDesc.setNameDef(acceptor.expr2, definition);
@@ -394,9 +397,10 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsFunDef acceptor) {
 		Vector<Type> parameters = new Vector<>();
-		for (int par = 0; par < acceptor.numPars(); par++) {
-			acceptor.par(par).accept(this);
-			parameters.add(SymbDesc.getType(acceptor.par(par)));
+		
+		for (AbsParDef par : acceptor.getParamaters()) {
+			par.accept(this);
+			parameters.add(SymbDesc.getType(par));
 		}
 
 		acceptor.type.accept(this);
@@ -670,6 +674,15 @@ public class BasicTypeChecker implements ASTVisitor {
 					previousValue = value;
 					iterator++;
 				}
+			}
+			else if (def instanceof AbsFunDef) {
+				FunctionType fnType = (FunctionType) SymbDesc.getType(def);
+				Vector<Type> parTypes = fnType.parameterTypes;
+				parTypes.add(0, enumType);
+				
+				FunctionType newFnType = new FunctionType(parTypes, 
+						fnType.resultType);
+				SymbDesc.setType(def, newFnType);
 			}
 		}
 		

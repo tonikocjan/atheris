@@ -318,7 +318,7 @@ public class SynAn {
 			skip();
 			dump("function_definition -> func identifier ( parameters ) function_definition'");
 
-			Vector<AbsParDef> params = parseParameters();
+			LinkedList<AbsParDef> params = parseParameters();
 
 			return parseFunDefinition_(startPos, id, params);
 		}
@@ -329,7 +329,7 @@ public class SynAn {
 	}
 
 	private AbsFunDef parseFunDefinition_(Position startPos, Symbol id,
-			Vector<AbsParDef> params) {
+			LinkedList<AbsParDef> params) {
 		AbsType type = null;
 
 		if (symbol.token == TokenEnum.LBRACE) {
@@ -655,16 +655,16 @@ public class SynAn {
 		return null;
 	}
 
-	private Vector<AbsParDef> parseParameters() {
+	private LinkedList<AbsParDef> parseParameters() {
 		if (symbol.token == TokenEnum.RPARENT) {
 			skip();
-			return new Vector<>();
+			return new LinkedList<>();
 		}
 
 		dump("parameters -> parameter parameters'");
 
 		AbsParDef paramater = parseParameter();
-		Vector<AbsParDef> params = new Vector<>();
+		LinkedList<AbsParDef> params = new LinkedList<>();
 		params.add(paramater);
 		params.addAll(parseParameters_());
 

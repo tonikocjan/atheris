@@ -1,5 +1,6 @@
 package compiler.frames;
 
+import java.util.LinkedList;
 import java.util.Vector;
 
 import compiler.abstr.ASTVisitor;
@@ -42,7 +43,7 @@ public class FrmEvaluator implements ASTVisitor {
 	public static final String ENTRY_POINT = "_main";
 	
 	public FrmEvaluator() {
-		AbsFunDef _main = new AbsFunDef(null, ENTRY_POINT, new Vector<>(), 
+		AbsFunDef _main = new AbsFunDef(null, ENTRY_POINT, new LinkedList<>(), 
 				new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(null, new Vector<>()));
 
 		entryPoint = new FrmFrame(_main, 0);
@@ -128,8 +129,8 @@ public class FrmEvaluator implements ASTVisitor {
 		FrmFrame tmp = currentFrame;
 		currentFrame = frame;
 
-		for (int i = 0; i < acceptor.numPars(); i++)
-			acceptor.par(i).accept(this);
+		for (AbsParDef par : acceptor.getParamaters())
+			par.accept(this);
 
 		currentLevel++;
 

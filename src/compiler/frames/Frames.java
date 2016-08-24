@@ -337,9 +337,9 @@ public class Frames implements ASTVisitor {
 			if (frame != null)
 				Report.dump(indent + 2, "#framed as " + frame.toString());
 		}
-		for (int par = 0; par < funDef.numPars(); par++) {
+		for (AbsParDef par : funDef.getParamaters()) {
 			indent += 2;
-			funDef.par(par).accept(this);
+			par.accept(this);
 			indent -= 2;
 		}
 		indent += 2;

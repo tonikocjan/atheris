@@ -277,8 +277,8 @@ public class SemAn implements ASTVisitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		for (int par = 0; par < funDef.numPars(); par++) {
-			indent += 2; funDef.par(par).accept(this); indent -= 2;
+		for (AbsParDef par : funDef.getParamaters()) {
+			indent += 2; par.accept(this); indent -= 2;
 		}
 		indent += 2; funDef.type.accept(this); indent -= 2;
 		indent += 2; funDef.func.accept(this); indent -= 2;

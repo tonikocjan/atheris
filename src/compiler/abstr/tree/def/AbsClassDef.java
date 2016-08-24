@@ -1,5 +1,6 @@
 package compiler.abstr.tree.def;
 
+import java.util.LinkedList;
 import java.util.Vector;
 
 import compiler.Position;
@@ -37,7 +38,7 @@ public class AbsClassDef extends AbsTypeDef {
 		// add default constructor
 		AbsFunDef contructor = new AbsFunDef(pos, 
 				name, 
-				new Vector<>(), 
+				new LinkedList<>(), 
 				new AbsAtomType(pos, AtomTypeEnum.VOID), 
 				new AbsStmts(pos, statements));
 		contrustors.add(contructor);

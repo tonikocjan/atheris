@@ -18,7 +18,7 @@ public class AbsFunDef extends AbsDef {
 	public final String name;
 	
 	/** Seznam parametrov. */
-	private final AbsParDef pars[];
+	private final LinkedList<AbsParDef> pars;
 
 	/** Opis tipa rezultata funkcije. */
 	public final AbsType type;
@@ -40,25 +40,16 @@ public class AbsFunDef extends AbsDef {
 	 * @param stmts
 	 *            Jedro funkcije.
 	 */
-	public AbsFunDef(Position pos, String name, Vector<AbsParDef> pars, AbsType type, AbsStmts stmts) {
+	public AbsFunDef(Position pos, String name, LinkedList<AbsParDef> pars, AbsType type, AbsStmts stmts) {
 		super(pos);
 		this.name = name;
-		this.pars = new AbsParDef[pars.size()];
-		for (int par = 0; par < pars.size(); par++)
-			this.pars[par] = pars.elementAt(par);
+		this.pars = pars;
 		this.type = type;
 		this.func = stmts;
 	}
 
-	/**
-	 * Vrne izbrani parameter.
-	 * 
-	 * @param index
-	 *            Indeks parametra.
-	 * @return Parameter na izbranem mestu.
-	 */
-	public AbsParDef par(int index) {
-		return pars[index];
+	public LinkedList<AbsParDef> getParamaters() {
+		return pars;
 	}
 
 	/**
@@ -67,7 +58,7 @@ public class AbsFunDef extends AbsDef {
 	 * @return Stevilo parametrov funkcije.
 	 */
 	public int numPars() {
-		return pars.length;
+		return pars.size();
 	}
 
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }

@@ -1,5 +1,6 @@
 package compiler.seman;
 
+import java.util.LinkedList;
 import java.util.Vector;
 
 import compiler.Report;
@@ -48,7 +49,7 @@ public class NameChecker implements ASTVisitor {
 		try {
 			{
 				String name = "print";
-				Vector<AbsParDef> pars = new Vector<>();
+				LinkedList<AbsParDef> pars = new LinkedList<>();
 				Vector<Type> parTypes = new Vector<>();
 				
 				parTypes.add(new AtomType(AtomTypeEnum.INT));
@@ -71,7 +72,7 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "print";
-				Vector<AbsParDef> pars = new Vector<>();
+				LinkedList<AbsParDef> pars = new LinkedList<>();
 				Vector<Type> parTypes = new Vector<>();
 				parTypes.add(new AtomType(AtomTypeEnum.DOB));
 
@@ -93,7 +94,7 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "print";
-				Vector<AbsParDef> pars = new Vector<>();
+				LinkedList<AbsParDef> pars = new LinkedList<>();
 				Vector<Type> parTypes = new Vector<>();
 				parTypes.add(new AtomType(AtomTypeEnum.STR));
 
@@ -115,7 +116,7 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "print";
-				Vector<AbsParDef> pars = new Vector<>();
+				LinkedList<AbsParDef> pars = new LinkedList<>();
 				Vector<Type> parTypes = new Vector<>();
 				parTypes.add(new AtomType(AtomTypeEnum.CHR));
 
@@ -137,7 +138,7 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "print";
-				Vector<AbsParDef> pars = new Vector<>();
+				LinkedList<AbsParDef> pars = new LinkedList<>();
 				Vector<Type> parTypes = new Vector<>();
 				parTypes.add(new AtomType(AtomTypeEnum.LOG));
 
@@ -159,7 +160,7 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "time";
-				Vector<AbsParDef> pars = new Vector<>();
+				LinkedList<AbsParDef> pars = new LinkedList<>();
 				Vector<Type> parTypes = new Vector<>();
 				AbsFunDef time = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeEnum.INT), new AbsStmts(
@@ -177,7 +178,7 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "rand";
-				Vector<AbsParDef> pars = new Vector<>();
+				LinkedList<AbsParDef> pars = new LinkedList<>();
 				Vector<Type> parTypes = new Vector<>();
 				AbsFunDef rand = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeEnum.INT), new AbsStmts(
@@ -195,7 +196,7 @@ public class NameChecker implements ASTVisitor {
 			}
 			{
 				String name = "rand";
-				Vector<AbsParDef> pars = new Vector<>();
+				LinkedList<AbsParDef> pars = new LinkedList<>();
 				Vector<Type> parTypes = new Vector<>();
 				parTypes.add(new AtomType(AtomTypeEnum.INT));
 				pars.add(new AbsParDef(null, "bound", new AbsAtomType(null,
@@ -309,8 +310,9 @@ public class NameChecker implements ASTVisitor {
 		
 		SymbTable.newScope();
 
-		for (int par = 0; par < acceptor.numPars(); par++)
-			acceptor.par(par).accept(this);
+		for (AbsParDef par : acceptor.getParamaters())
+			par.accept(this);
+		
 		acceptor.type.accept(this);
 		acceptor.func.accept(this);
 

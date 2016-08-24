@@ -258,9 +258,9 @@ public class Ast implements ASTVisitor {
 	public void visit(AbsFunDef funDef) {
 		Report.dump(indent, "AbsFunDef " + funDef.position.toString() + ": "
 				+ funDef.name);
-		for (int par = 0; par < funDef.numPars(); par++) {
+		for (AbsParDef par : funDef.getParamaters()) {
 			indent += 2;
-			funDef.par(par).accept(this);
+			par.accept(this);
 			indent -= 2;
 		}
 		indent += 2;
