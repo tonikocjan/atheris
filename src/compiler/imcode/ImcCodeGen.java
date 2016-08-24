@@ -98,7 +98,7 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-		ClassType type = (ClassType) SymbDesc.getType(acceptor);
+		ClassType type = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
 		int size = type.size(); 
 
 		for (AbsFunDef c : acceptor.contrustors) {
@@ -207,17 +207,22 @@ public class ImcCodeGen implements ASTVisitor {
 			code = sub;
 		} 
 		else if (acceptor.oper == AbsBinExpr.DOT) {
-			Type t = SymbDesc.getType(acceptor.expr1).actualType();
+			Type t = SymbDesc.getType(acceptor.expr1);
 
 			if (t instanceof EnumType) {
-				EnumType enumType = (EnumType) t;
-				String memberName = ((AbsVarNameExpr)((AbsBinExpr) acceptor.expr1).expr2).name;
-				code = ImcDesc.getImcCode(enumType.findMemberDefinitionForName(memberName));
+				if (c2 == null) {
+					EnumType enumType = (EnumType) t;
+					String memberName = ((AbsVarNameExpr)((AbsBinExpr) acceptor.expr1).expr2).name;
+					code = ImcDesc.getImcCode(enumType.findMemberForName(memberName));
+				}
+				else
+					code = c2;
 			}
 			else if (t instanceof ClassType) {
 				ClassType type = (ClassType) t;
 				String var;
 				
+				// FIXME: - Make this better
 				if (acceptor.expr2 instanceof AbsVarNameExpr)
 					var = ((AbsVarNameExpr) acceptor.expr2).name;
 				else
@@ -665,6 +670,9 @@ public class ImcCodeGen implements ASTVisitor {
 			
 			for (AbsDef d : acceptor.definitions) {
 				d.accept(this);
+				
+				if (!(d instanceof AbsEnumMemberDef))
+					continue;
 				
 				ImcExpr value = (ImcExpr) ImcDesc.getImcCode(d);
 				ImcExpr dst = new ImcBINOP(ImcBINOP.ADD, location, new ImcCONST(offset));

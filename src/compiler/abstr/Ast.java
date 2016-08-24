@@ -3,6 +3,7 @@ package compiler.abstr;
 import compiler.*;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsEnumDef;
 import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
@@ -440,7 +441,7 @@ public class Ast implements ASTVisitor {
 			indent -= 2;
 		}
 		indent += 2;
-		for (AbsEnumMemberDef def : enumDef.definitions)
+		for (AbsDef def : enumDef.definitions)
 			def.accept(this);
 		indent -= 2;
 	}

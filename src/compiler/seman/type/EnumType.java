@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsEnumDef;
 import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsVarDef;
@@ -16,6 +17,10 @@ public class EnumType extends ClassType {
 	 */
 	public final AbsEnumDef enumDefinition;
 
+	/**
+	 * 
+	 */
+	private AbsEnumMemberDef thisDefinition;
 
 	/**
 	 * Create new enumeration.
@@ -49,17 +54,29 @@ public class EnumType extends ClassType {
 		return types;
 	}
 	
-	public AbsEnumMemberDef findMemberDefinitionForName(String name) {
-		for (AbsEnumMemberDef def : enumDefinition.definitions)
-			if (def.name.name.equals(name))
+	public void setDefinitionForThisType(String name) {
+		thisDefinition = (AbsEnumMemberDef) findMemberForName(name);
+	}
+	
+	public AbsEnumMemberDef getDefinitionForThisType() {
+		return thisDefinition;
+	}
+	
+	@Override
+	public AbsDef findMemberForName(String name) {
+		for (AbsDef def : enumDefinition.definitions) {
+			String definitionsName = def.getName();
+			
+			if (definitionsName.equals(name))
 				return def;
-		return null;
+		}
+		return super.findMemberForName(name);
 	}
 	
 	public int offsetForDefinitionName(String name) {
 		int offset = 0;
-		for (AbsEnumMemberDef def : enumDefinition.definitions) {
-			if (def.name.name.equals(name)) return offset;
+		for (AbsDef def : enumDefinition.definitions) {
+			if (def.getName().equals(name)) return offset;
 			offset++;
 		}
 		return -1;
@@ -84,10 +101,12 @@ public class EnumType extends ClassType {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Enum: ");
 		sb.append(enumDefinition.name + "(");
-		for (AbsEnumMemberDef def : enumDefinition.definitions) {
-			sb.append(def.name.name);
-			if (def.value != null)
-				sb.append(" - Raw value: " + def.value.value);
+		for (AbsDef def : enumDefinition.definitions) {
+			sb.append(def.getName());
+			if (def instanceof AbsEnumMemberDef) {
+				if (((AbsEnumMemberDef)def).value != null)
+					sb.append(" - Raw value: " + ((AbsEnumMemberDef)def).value.value);
+			}
 			
 			if (def != enumDefinition.definitions.getLast())
 				sb.append(", ");

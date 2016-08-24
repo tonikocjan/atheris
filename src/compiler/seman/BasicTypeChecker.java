@@ -205,6 +205,8 @@ public class BasicTypeChecker implements ASTVisitor {
 						"Cannot use dot ('.') operator on type \"" + t1.toString() + "\"");
 			}
 			
+			// TODO: different type checking for enums
+			
 			if (t1 instanceof ClassType) {
 				String name;
 				if (acceptor.expr2 instanceof AbsVarNameExpr)
@@ -246,7 +248,7 @@ public class BasicTypeChecker implements ASTVisitor {
 					Report.error(acceptor.expr2.position, "todo");
 				}
 
-				AbsDef definition = ((EnumType) enumType).findMemberDefinitionForName(((AbsVarNameExpr)acceptor.expr2).name);
+				AbsDef definition = ((EnumType) enumType).findMemberForName(((AbsVarNameExpr)acceptor.expr2).name);
 				t2 = SymbDesc.getType(definition);
 				String enumName = ((EnumType) enumType).enumDefinition.name;
 				
@@ -626,43 +628,48 @@ public class BasicTypeChecker implements ASTVisitor {
 		String previousValue = null;
 		int iterator = 0;
 		
-		for (AbsEnumMemberDef def : acceptor.definitions) {
+		for (AbsDef def : acceptor.definitions) {
 			def.accept(this);
-			SymbDesc.setType(def, enumType);
-			
-			if (def.value != null) {
-				if (enumRawValueType == null)
-					Report.error(def.value.position, "Enum member cannot have a raw value "
-							+ "if the enum doesn't have a raw type");
-				
-				Type rawValueType = SymbDesc.getType(def.value);
-				if (!rawValueType.sameStructureAs(enumRawValueType))
-					Report.error(def.value.position, "Cannot convert value of type \"" + 
-							rawValueType.toString() + "\" to type \"" + enumRawValueType.toString() + "\"");
-				SymbDesc.setType(def, enumType);
-				
-				previousValue = def.value.value;
-			}
-			else if (enumRawValueType != null) {
-				if (enumRawValueType.type != AtomTypeEnum.STR &&
-						enumRawValueType.type != AtomTypeEnum.INT)
-					Report.error(def.position, "Enum members require explicit raw values when the raw type is not integer or string literal");
-				
-				String value = null;
-				
-				if (enumRawValueType.type == AtomTypeEnum.STR)
-					value = def.name.name;
-				else if (enumRawValueType.type == AtomTypeEnum.INT) {
-					if (previousValue == null)
-						value = "" + iterator;
-					else
-						value = "" + (Integer.parseInt(previousValue) + 1);
-				}
-				
-				def.value = new AbsAtomConstExpr(def.position, enumRawValueType.type, value);
 
-				previousValue = value;
-				iterator++;
+			if (def instanceof AbsEnumMemberDef) {
+				AbsEnumMemberDef enumMemberDef = (AbsEnumMemberDef) def;
+				
+				SymbDesc.setType(enumMemberDef, enumType);
+				
+				if (enumMemberDef.value != null) {
+					if (enumRawValueType == null)
+						Report.error(enumMemberDef.value.position, "Enum member cannot have a raw value "
+								+ "if the enum doesn't have a raw type");
+					
+					Type rawValueType = SymbDesc.getType(enumMemberDef.value);
+					if (!rawValueType.sameStructureAs(enumRawValueType))
+						Report.error(enumMemberDef.value.position, "Cannot convert value of type \"" + 
+								rawValueType.toString() + "\" to type \"" + enumRawValueType.toString() + "\"");
+					SymbDesc.setType(enumMemberDef, enumType);
+					
+					previousValue = enumMemberDef.value.value;
+				}
+				else if (enumRawValueType != null) {
+					if (enumRawValueType.type != AtomTypeEnum.STR &&
+							enumRawValueType.type != AtomTypeEnum.INT)
+						Report.error(enumMemberDef.position, "Enum members require explicit raw values when the raw type is not integer or string literal");
+					
+					String value = null;
+					
+					if (enumRawValueType.type == AtomTypeEnum.STR)
+						value = enumMemberDef.name.name;
+					else if (enumRawValueType.type == AtomTypeEnum.INT) {
+						if (previousValue == null)
+							value = "" + iterator;
+						else
+							value = "" + (Integer.parseInt(previousValue) + 1);
+					}
+					
+					enumMemberDef.value = new AbsAtomConstExpr(enumMemberDef.position, enumRawValueType.type, value);
+	
+					previousValue = value;
+					iterator++;
+				}
 			}
 		}
 		
