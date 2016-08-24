@@ -462,7 +462,7 @@ public class Frames implements ASTVisitor {
 				Report.dump(indent + 2, "#accesed as " + access.toString());
 		}
 		indent += 2;
-		varDef.type.accept(this);
+		if (varDef.type != null) varDef.type.accept(this);
 		indent -= 2;
 	}
 
