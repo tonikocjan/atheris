@@ -41,7 +41,7 @@ import compiler.seman.type.FunctionType;
  * @author toni
  *
  */
-public class InitializationChecker implements ASTVisitor {
+public class InitialisationChecker implements ASTVisitor {
 	
 	private boolean shouldCheckIfInitialized = true;
 	
