@@ -210,11 +210,9 @@ public class ImcCodeGen implements ASTVisitor {
 			Type t = SymbDesc.getType(acceptor.expr1);
 
 			if (t instanceof EnumType) {
-				if (c2 == null) {
-					EnumType enumType = (EnumType) t;
-					String memberName = ((AbsVarNameExpr)((AbsBinExpr) acceptor.expr1).expr2).name;
-					code = ImcDesc.getImcCode(enumType.findMemberForName(memberName));
-				}
+				EnumType enumType = (EnumType) t;
+				if (c2 == null)
+					code = ImcDesc.getImcCode(enumType.getDefinitionForThisType());
 				else
 					code = c2;
 			}
@@ -671,15 +669,17 @@ public class ImcCodeGen implements ASTVisitor {
 			for (AbsDef d : acceptor.definitions) {
 				d.accept(this);
 				
-				if (!(d instanceof AbsEnumMemberDef))
-					continue;
-				
-				ImcExpr value = (ImcExpr) ImcDesc.getImcCode(d);
-				ImcExpr dst = new ImcBINOP(ImcBINOP.ADD, location, new ImcCONST(offset));
-				ImcMOVE move = new ImcMOVE(new ImcMEM(dst), value);
-				enumCode.stmts.add(move);
-				
-				offset += typeSize;
+				if (d instanceof AbsEnumMemberDef) {
+					ImcExpr value = (ImcExpr) ImcDesc.getImcCode(d);
+					ImcExpr dst = new ImcBINOP(ImcBINOP.ADD, location, new ImcCONST(offset));
+					ImcMOVE move = new ImcMOVE(new ImcMEM(dst), value);
+					enumCode.stmts.add(move);
+					
+					offset += typeSize;
+				}
+				else if (d instanceof AbsFunDef) {
+
+				}
 			}
 		}
 		

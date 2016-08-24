@@ -208,14 +208,15 @@ public class BasicTypeChecker implements ASTVisitor {
 			// TODO: different type checking for enums
 			
 			if (t1 instanceof ClassType) {
+				ClassType classType = (ClassType) t1;
 				String name;
+				
 				if (acceptor.expr2 instanceof AbsVarNameExpr)
 					name = ((AbsVarNameExpr) acceptor.expr2).name;
 				else
 					name = ((AbsFunCall) acceptor.expr2).name;
 	
 				if (!(SymbDesc.getNameDef(acceptor.expr1) instanceof AbsParDef)) {
-					ClassType classType = (ClassType) t1;
 					AbsDef definition = classType.findMemberForName(name);
 					
 					if (definition == null) {
@@ -231,8 +232,13 @@ public class BasicTypeChecker implements ASTVisitor {
 					SymbDesc.setNameDef(acceptor, definition);
 				}
 	
-				ClassType sType = (ClassType) t1;
-				Type type = sType.getMembers().get(name);
+				Type type;
+				if (t1 instanceof EnumType && acceptor.expr2 instanceof AbsFunCall) {
+					acceptor.expr2.accept(this);
+					type = SymbDesc.getType(acceptor.expr2);
+				}
+				else
+					type = classType.getMembers().get(name);
 	
 				SymbDesc.setType(acceptor.expr2, type);
 				SymbDesc.setType(acceptor, type);
@@ -257,16 +263,20 @@ public class BasicTypeChecker implements ASTVisitor {
 				if (!enumType.sameStructureAs(t2))
 					Report.error(acceptor.expr2.position, "Type \"" + enumName + "\" has no member \"" + t2.toString() + "\"");
 				
+				EnumType newEnumType = new EnumType(enumType.enumDefinition);
+				newEnumType.setDefinitionForThisType(memberName);
+				
 				enumType.setDefinitionForThisType(memberName);
 				SymbDesc.setType(acceptor.expr2, enumType);
-				SymbDesc.setType(acceptor, enumType);
+				SymbDesc.setType(acceptor, newEnumType);
+
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				return;
 			}
 		}
 
 		/**
-		 * expr1 and expr2 are of type LOGICAL
+		 * expr1 and expr2 are of type Bool
 		 */
 		if (t1.sameStructureAs(logical) && t1.sameStructureAs(t2)) {
 			// ==, !=, <=, >=, <, >, &, |
@@ -278,7 +288,7 @@ public class BasicTypeChecker implements ASTVisitor {
 						"Numeric operations \"+\", \"-\", \"*\", \"/\" and \"%\" are undefined for type LOGICAL");
 		}
 		/**
-		 * expr1 and expr2 are of type INTEGER
+		 * expr1 and expr2 are of type Int
 		 */
 		else if (t1.sameStructureAs(integer) && t1.sameStructureAs(t2)) {
 			// +, -, *, /, %
@@ -292,7 +302,7 @@ public class BasicTypeChecker implements ASTVisitor {
 						"Logical operations \"&\" and \"|\" are undefined for type INTEGER");
 		}
 		/**
-		 * expr1 and expr2 are of type INTEGER
+		 * expr1 and expr2 are of type Double
 		 */
 		else if (t1.sameStructureAs(double_) && t1.sameStructureAs(t2)) {
 			// +, -, *, /, %
@@ -306,8 +316,7 @@ public class BasicTypeChecker implements ASTVisitor {
 						"Logical operations \"&\" and \"|\" are undefined for type INTEGER");
 		}
 		/**
-		 * expr1 or expr2 is DOUBLE and the other is INTEGER (implicit cast to
-		 * double)
+		 * expr1 or expr2 is Double and the other is Int (implicit cast to double)
 		 */
 		else if (t1.sameStructureAs(double_) && t2.sameStructureAs(integer)
 				|| t1.sameStructureAs(integer) && t2.sameStructureAs(double_)) {
@@ -319,7 +328,19 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor, logical);
 			else
 				Report.error(acceptor.position,
-						"Logical operations \"&\" and \"|\" are undefined for type INTEGER");
+						"Logical operations \"&\" and \"|\" are undefined for type Double");
+		}
+		
+		/**
+		 * enumerations
+		 */
+		else if (t1 instanceof EnumType && t1.sameStructureAs(t2)) {
+			if (oper == AbsBinExpr.EQU)
+				SymbDesc.setType(acceptor, logical);
+			else
+				Report.error(acceptor.position,
+						"Operator cannot be applied to operands of type \"" +
+							t1.toString() + "\" and \"" + t2.toString() + "\"");
 		}
 
 		else {
@@ -457,6 +478,8 @@ public class BasicTypeChecker implements ASTVisitor {
 	public void visit(AbsParDef acceptor) {
 		acceptor.type.accept(this);
 		Type type = SymbDesc.getType(acceptor.type);
+		if (type instanceof CanType)
+			type = ((CanType) type).childType;
 
 		SymbDesc.setType(acceptor, type);
 	}
@@ -503,6 +526,9 @@ public class BasicTypeChecker implements ASTVisitor {
 		if (acceptor.type != null) {
 			acceptor.type.accept(this);
 			Type type = SymbDesc.getType(acceptor.type);
+			if (type instanceof CanType)
+				type = ((CanType) type).childType;
+			
 			SymbDesc.setType(acceptor, type);
 		}
 	}
@@ -637,7 +663,6 @@ public class BasicTypeChecker implements ASTVisitor {
 
 			if (def instanceof AbsEnumMemberDef) {
 				AbsEnumMemberDef enumMemberDef = (AbsEnumMemberDef) def;
-				
 				SymbDesc.setType(enumMemberDef, enumType);
 				
 				if (enumMemberDef.value != null) {
@@ -649,8 +674,8 @@ public class BasicTypeChecker implements ASTVisitor {
 					if (!rawValueType.sameStructureAs(enumRawValueType))
 						Report.error(enumMemberDef.value.position, "Cannot convert value of type \"" + 
 								rawValueType.toString() + "\" to type \"" + enumRawValueType.toString() + "\"");
+
 					SymbDesc.setType(enumMemberDef, enumType);
-					
 					previousValue = enumMemberDef.value.value;
 				}
 				else if (enumRawValueType != null) {
@@ -693,7 +718,8 @@ public class BasicTypeChecker implements ASTVisitor {
 	public void visit(AbsEnumMemberDef acceptor) {
 		acceptor.name.accept(this);
 		
-		if (acceptor.value != null)
+		if (acceptor.value != null) {
 			acceptor.value.accept(this);
+		}
 	}
 }

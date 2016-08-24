@@ -36,8 +36,7 @@ public class EnumType extends ClassType {
 		if (definition.type != null)
 			statements.add(new AbsVarDef(definition.position, "rawValue", definition.type));
 		
-		return new AbsClassDef(definition.name, 
-				definition.position, statements);
+		return new AbsClassDef(definition.name, definition.position, statements);
 	}
 	
 	private static ArrayList<String> namesForEnumeration(AbsEnumDef definition) {

@@ -176,10 +176,12 @@ public class InitializationChecker implements ASTVisitor {
 				SymbDesc.getNameDef(acceptor) instanceof AbsFunDef ||
 				SymbDesc.getNameDef(acceptor) instanceof AbsEnumDef ||
 				SymbDesc.getNameDef(acceptor) instanceof AbsClassDef ||
-				SymbDesc.getNameDef(acceptor) instanceof AbsEnumMemberDef )
+				SymbDesc.getNameDef(acceptor) instanceof AbsEnumMemberDef ||
+				/*FIXME*/ acceptor.name.equals("rawValue"))
 			return;
 		
 		AbsVarDef def = (AbsVarDef) SymbDesc.getNameDef(acceptor);
+		if (def == null) return;
 
 		if (shouldCheckIfInitialized) {
 			if (!InitTable.isInitialized(def)) {
@@ -264,10 +266,10 @@ public class InitializationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumMemberDef acceptor) {
-		EnumType type = (EnumType) SymbDesc.getType(acceptor);
-		
-		if (type.definition.statements.numStmts() > 0)
-			InitTable.initialize((AbsVarDef) type.definition.statements.stmt(0));
+//		EnumType type = (EnumType) SymbDesc.getType(acceptor);
+//		
+//		if (type.definition.statements.numStmts() > 0)
+//			InitTable.initialize((AbsVarDef) type.definition.statements.stmt(0));
 	}
 
 }
