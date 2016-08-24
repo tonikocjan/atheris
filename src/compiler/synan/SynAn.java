@@ -447,9 +447,9 @@ public class SynAn {
 		if (symbol.token != TokenEnum.RBRACE)
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", expected \"}\"");
+		Position end = symbol.position;
 		skip();
 		
-		Position end = statements.lastElement().position;
 		return new AbsClassDef(name, new Position(start, end), statements);
 	}
 	
@@ -480,6 +480,7 @@ public class SynAn {
 				break;
 			case KW_FUN:
 				definition = parseDefinition();
+				statements.add(definition);
 				break;
 			case RBRACE:
 				return statements;

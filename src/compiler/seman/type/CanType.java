@@ -20,6 +20,8 @@ public class CanType extends Type {
 
 	@Override
 	public boolean sameStructureAs(Type type) {
+		if (type instanceof CanType)
+			return ((CanType) type).childType.sameStructureAs(childType);
 		return false;
 	}
 

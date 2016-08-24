@@ -99,7 +99,11 @@ public class ImcCodeGen implements ASTVisitor {
 	@Override
 	public void visit(AbsClassDef acceptor) {
 		ClassType type = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
-		int size = type.size(); 
+		int size = type.size();
+		
+		for (AbsStmt s : acceptor.statements.stmts) {
+			s.accept(this);
+		}
 
 		for (AbsFunDef c : acceptor.contrustors) {
 			FrmFrame frame = FrmDesc.getFrame(c);
@@ -218,18 +222,18 @@ public class ImcCodeGen implements ASTVisitor {
 			}
 			else if (t instanceof ClassType) {
 				ClassType type = (ClassType) t;
-				String var;
 				
 				// FIXME: - Make this better
-				if (acceptor.expr2 instanceof AbsVarNameExpr)
-					var = ((AbsVarNameExpr) acceptor.expr2).name;
-				else
-					var = ((AbsFunCall) acceptor.expr2).name;
-				
-				int offset = type.offsetOf(var);
+				if (acceptor.expr2 instanceof AbsVarNameExpr) {
+					String var = ((AbsVarNameExpr) acceptor.expr2).name;
+					int offset = type.offsetOf(var);
 
-				code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD,
-						e1, new ImcCONST(offset)));
+					code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcCONST(offset)));
+				}
+				else {
+					code = c2;
+				}
+				
 			} 
 			else if (t instanceof ArrayType) {
 				code = new ImcCONST(((ArrayType) t).count);
