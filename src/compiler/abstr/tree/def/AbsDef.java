@@ -20,4 +20,5 @@ public abstract class AbsDef extends AbsStmt {
 		super(pos);
 	}
 
+	public abstract String getName();
 }

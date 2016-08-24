@@ -36,4 +36,9 @@ public class AbsParDef extends AbsDef {
 	
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
+	@Override
+	public String getName() {
+		return name;
+	}
+
 }

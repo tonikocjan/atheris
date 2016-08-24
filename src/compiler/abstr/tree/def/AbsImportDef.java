@@ -25,4 +25,9 @@ public class AbsImportDef extends AbsDef {
 
 	@Override
 	public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
+
+	@Override
+	public String getName() {
+		return fileName;
+	}
 }

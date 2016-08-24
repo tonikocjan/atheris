@@ -22,4 +22,9 @@ public class AbsEnumMemberDef extends AbsDef {
 		aSTVisitor.visit(this);
 	}
 
+	@Override
+	public String getName() {
+		return name.name;
+	}
+
 }

@@ -43,11 +43,8 @@ public class AbsStmts extends AbsTree {
 	
 	public AbsDef findDefinitionForName(String name) {
 		for (AbsStmt s : stmts) {
-			if (s instanceof AbsVarDef)
-				if (((AbsVarDef) s).name.equals(name))
-					return (AbsDef) s;
-			if (s instanceof AbsFunDef)
-				if (((AbsFunDef) s).name.equals(name))
+			if (s instanceof AbsDef)
+				if (((AbsDef) s).getName().equals(name))
 					return (AbsDef) s;
 		}
 		return null;

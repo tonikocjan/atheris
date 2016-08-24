@@ -11,7 +11,7 @@ public class AbsEnumDef extends AbsTypeDef {
 	/**
 	 * Enumeration member definitions.
 	 */
-	public final LinkedList<AbsEnumMemberDef> definitions;
+	public final LinkedList<AbsDef> definitions;
 	
 	/**
 	 * Type of raw values.
@@ -27,7 +27,7 @@ public class AbsEnumDef extends AbsTypeDef {
 	 * @param type type for each definitions' raw value
 	 */
 	public AbsEnumDef(Position pos, String name, 
-			LinkedList<AbsEnumMemberDef> definitions, AbsAtomType type) {
+			LinkedList<AbsDef> definitions, AbsAtomType type) {
 		super(pos, name);
 		
 		this.definitions = definitions;
@@ -37,6 +37,11 @@ public class AbsEnumDef extends AbsTypeDef {
 	@Override
 	public void accept(ASTVisitor aSTVisitor) {
 		aSTVisitor.visit(this);
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 }
