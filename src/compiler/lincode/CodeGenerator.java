@@ -15,15 +15,15 @@ public class CodeGenerator {
 	
 	private static HashMap<FrmLabel, ImcCodeChunk> dict = new HashMap<>();
 
-	public static FrmFrame framesByFrmLabel(FrmLabel label) {
+	public static FrmFrame getFrameForLabel(FrmLabel label) {
 		return dict.get(label).frame;
 	}
 	
-	public static ImcCode codesByFrmLabel(FrmLabel label) {
+	public static ImcCode getCodeForLabel(FrmLabel label) {
 		return dict.get(label).lincode;
 	}
 	
-	public static void insertCode(FrmLabel label, ImcCodeChunk code) {
+	public static void insertCodeForLabel(FrmLabel label, ImcCodeChunk code) {
 		dict.put(label, code);
 	}
 
@@ -34,7 +34,7 @@ public class CodeGenerator {
 				ImcCodeChunk fn = (ImcCodeChunk) chnk;
 				fn.lincode = fn.imcode.linear();
 				
-				CodeGenerator.insertCode(fn.frame.label, fn);
+				CodeGenerator.insertCodeForLabel(fn.frame.label, fn);
 				
 				Interpreter.locations.put(((ImcCodeChunk) chnk).frame.label, 
 						Interpreter.heapPointer);

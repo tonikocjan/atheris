@@ -194,7 +194,7 @@ public class Interpreter {
 				return new Random().nextInt((Integer)ldM(stackPointer + 4));
 			}
 			
-			new Interpreter(CodeGenerator.framesByFrmLabel(instr.label), (ImcSEQ) CodeGenerator.codesByFrmLabel(instr.label));
+			new Interpreter(CodeGenerator.getFrameForLabel(instr.label), (ImcSEQ) CodeGenerator.getCodeForLabel(instr.label));
 			return ldM(stackPointer);
 		}
 		
