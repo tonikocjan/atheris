@@ -85,7 +85,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		
 		for (AbsFunDef c : acceptor.contrustors) {
 			c.accept(this);
-			SymbDesc.setType(c, new FunctionType(new Vector<>(), classType));
+			SymbDesc.setType(c, new FunctionType(new Vector<>(), classType, c));
 		}
 	}
 
@@ -148,6 +148,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			if (t1.sameStructureAs(t2)) {
 				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
 				SymbDesc.setType(acceptor, t2);
+				SymbDesc.setType(acceptor.expr1, t2);
 				success = true;
 			}
 			else if (t1 instanceof ArrayType && 
@@ -396,7 +397,8 @@ public class BasicTypeChecker implements ASTVisitor {
 			if (!(type instanceof FunctionType))
 				Report.error(acceptor.position, "Cannot call value of non-function type \'"
 								+ type.toString() + "\'");
-			FunctionType t = new FunctionType(parameters, ((FunctionType)type).resultType);
+			FunctionType t = new FunctionType(parameters, 
+					((FunctionType)type).resultType, ((FunctionType) type).functionDefinition);
 			if (!type.sameStructureAs(t)) 
 				Report.error("Error todo");
 			SymbDesc.setNameDef(acceptor, def);
@@ -406,7 +408,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			AbsDef definition = SymbTable.fndFunc(acceptor.name, parameters);
 			if (definition == null) {
 				Report.error(acceptor.position, "Method " + acceptor.name
-						+ new FunctionType(parameters, null).toString()
+						+ new FunctionType(parameters, null, null).toString()
 						+ " is undefined");
 			}
 			SymbDesc.setNameDef(acceptor, definition);
@@ -427,7 +429,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		acceptor.type.accept(this);
 
 		FunctionType funType = new FunctionType(parameters,
-				SymbDesc.getType(acceptor.type));
+				SymbDesc.getType(acceptor.type), acceptor);
 		SymbDesc.setType(acceptor, funType);
 
 		// insert function into symbol table
@@ -605,7 +607,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		funType.returnType.accept(this);
 		
 		SymbDesc.setType(funType, new FunctionType(parameters, 
-				SymbDesc.getType(funType.returnType)));
+				SymbDesc.getType(funType.returnType), null));
 	}
 
 	@Override
@@ -706,7 +708,7 @@ public class BasicTypeChecker implements ASTVisitor {
 				parTypes.add(0, enumType);
 				
 				FunctionType newFnType = new FunctionType(parTypes, 
-						fnType.resultType);
+						fnType.resultType, (AbsFunDef) def);
 				SymbDesc.setType(def, newFnType);
 			}
 		}

@@ -2,6 +2,8 @@ package compiler.seman.type;
 
 import java.util.*;
 
+import compiler.abstr.tree.def.AbsFunDef;
+
 /**
  * Opis funkcijskega tipa.
  * 
@@ -16,6 +18,11 @@ public class FunctionType extends PointerType {
 	public final Type resultType;
 
 	/**
+	 * Definition.
+	 */
+	public final AbsFunDef functionDefinition;
+
+	/**
 	 * Ustvari nov opis funkcijskega tipa.
 	 * 
 	 * @param parTypes
@@ -23,9 +30,10 @@ public class FunctionType extends PointerType {
 	 * @param resultType
 	 *            Tip rezultata.
 	 */
-	public FunctionType(Vector<Type> parTypes, Type resultType) {
+	public FunctionType(Vector<Type> parTypes, Type resultType, AbsFunDef definition) {
 		this.parameterTypes = parTypes;
 		this.resultType = resultType;
+		this.functionDefinition = definition;
 	}
 
 	/**

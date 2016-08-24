@@ -34,7 +34,7 @@ import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsTypeName;
-import compiler.seman.type.EnumType;
+import compiler.seman.type.FunctionType;
 
 /**
  * Initialization checking phase of the compiler.
@@ -126,8 +126,8 @@ public class InitializationChecker implements ASTVisitor {
 		for (AbsExpr e: acceptor.args)
 			e.accept(this);
 		
-		AbsFunDef funDef = (AbsFunDef) SymbDesc.getNameDef(acceptor);
-		funDef.func.accept(this);
+		FunctionType funType = (FunctionType) SymbDesc.getType(SymbDesc.getNameDef(acceptor));
+		funType.functionDefinition.func.accept(this);
 	}
 
 	@Override
@@ -204,7 +204,7 @@ public class InitializationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsImportDef acceptor) {
-
+		///
 	}
 
 	@Override
