@@ -293,6 +293,10 @@ public class SynAn {
 			dump("definition -> enum_definition");
 			definition = parseEnumDefinition();
 			break;
+		case KW_CASE:
+			dump("definition -> enum_member_definition");
+			definition = parseEnumCaseDefinition();
+			break;
 		default:
 			if (symbol.token != TokenEnum.EOF)
 				Report.error(symbol.position, "Syntax error on token \""
@@ -507,7 +511,7 @@ public class SynAn {
 		skip(new Symbol(TokenEnum.NEWLINE, "\n", null));
 		skip(new Symbol(TokenEnum.KW_CASE, "CASE", null));
 		
-		LinkedList<AbsEnumMemberDef> enumDefinitions = parseEnumMemberDefinitions();
+		LinkedList<AbsDef> enumDefinitions = parseEnumMemberDefinitions();
 		if (symbol.token != TokenEnum.RBRACE)
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", expected \"}\"");
@@ -518,51 +522,57 @@ public class SynAn {
 				(AbsAtomType) type);
 	}
 	
-	private LinkedList<AbsEnumMemberDef> parseEnumMemberDefinitions() {
-		LinkedList<AbsEnumMemberDef> definitions = new LinkedList<>();
-
-		if (symbol.token != TokenEnum.KW_CASE)
-			Report.error(symbol.position, "Enum member definition "
-					+ "must begin with \"case\" keyword");
-		skip(new Symbol(TokenEnum.IDENTIFIER, "IDENTIFIER", null));
+	private LinkedList<AbsDef> parseEnumMemberDefinitions() {
+		LinkedList<AbsDef> definitions = new LinkedList<>();
 		
 		while (true) {
+			AbsDef definition = parseDefinition();
+			definitions.add(definition);
 			
-			AbsVarNameExpr name = new AbsVarNameExpr(symbol.position, symbol.lexeme);
-			
-			skip();
-			if (symbol.token == TokenEnum.ASSIGN) {
-				skip();
-				
-				AbsExpr value = parseExpression();
-				if (!(value instanceof AbsAtomConstExpr))
-					Report.error(value.position, "Raw value for enum definition must be literal");
-				
-				Position definitionPos = new Position(name.position, value.position);
-				definitions.add(new AbsEnumMemberDef(definitionPos, 
-						name, (AbsAtomConstExpr) value));
+			if (symbol.token == TokenEnum.COMMA) {
+				while (symbol.token == TokenEnum.COMMA) {
+					skip();
+					if (symbol.token != TokenEnum.IDENTIFIER)
+						Report.error(symbol.position, "Expected idenfitifer "
+								+ "after comma in enum member definition");
+					definitions.add(parseEnumCaseDefinition());
+				}
 			}
-			else
-				definitions.add(new AbsEnumMemberDef(name.position, name, null));
 			
-			if (symbol.token == TokenEnum.COMMA)
-				skip();
-			else if (symbol.token == TokenEnum.NEWLINE) {
+			if (symbol.token == TokenEnum.NEWLINE) {
 				skip();
 				if (symbol.token == TokenEnum.RBRACE)
 					break;
 
-				if (symbol.token != TokenEnum.KW_CASE)
+				if (symbol.token == TokenEnum.IDENTIFIER)
 					Report.error(symbol.position, "Enum member definition "
 							+ "must begin with \"case\" keyword");
-				skip();
 			}
 		}
-		
+
 		if (symbol.token != TokenEnum.RBRACE)
 			Report.error("todo");
 		
 		return definitions;
+	}
+	
+	private AbsEnumMemberDef parseEnumCaseDefinition() {
+		if (symbol.token == TokenEnum.KW_CASE)
+			skip(new Symbol(TokenEnum.IDENTIFIER, "identifier", null));
+		AbsVarNameExpr name = new AbsVarNameExpr(symbol.position, symbol.lexeme);
+		
+		skip();
+		if (symbol.token == TokenEnum.ASSIGN) {
+			skip();
+			
+			AbsExpr value = parseExpression();
+			if (!(value instanceof AbsAtomConstExpr))
+				Report.error(value.position, "Raw value for enum definition must be literal");
+			
+			Position definitionPos = new Position(name.position, value.position);
+			return new AbsEnumMemberDef(definitionPos, name, (AbsAtomConstExpr) value);
+		}
+		return new AbsEnumMemberDef(name.position, name, null);
 	}
 
 	private AbsType parseType() {
