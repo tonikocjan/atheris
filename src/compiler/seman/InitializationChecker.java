@@ -125,13 +125,14 @@ public class InitializationChecker implements ASTVisitor {
 	public void visit(AbsFunCall acceptor) {
 		for (AbsExpr e: acceptor.args)
 			e.accept(this);
+		
+		AbsFunDef funDef = (AbsFunDef) SymbDesc.getNameDef(acceptor);
+		funDef.func.accept(this);
 	}
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
-		InitTable.newScope();
-		acceptor.func.accept(this);
-		InitTable.oldScope();
+		///
 	}
 
 	@Override
