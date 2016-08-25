@@ -8,6 +8,7 @@ import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.AbsStmts;
 import compiler.abstr.tree.AtomTypeEnum;
+import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.type.AbsAtomType;
 
 public class AbsClassDef extends AbsTypeDef {
@@ -34,7 +35,14 @@ public class AbsClassDef extends AbsTypeDef {
 		}
 		else
 			this.statements = new AbsStmts(pos, statements);
-
+		
+		// FIXME
+//		Vector<AbsStmt> expressions = new Vector<>();
+//		for (AbsStmt s : statements) {
+//			if (s instanceof AbsExpr)
+//				expressions.add(s);
+//		}
+			
 		// add default constructor
 		AbsFunDef contructor = new AbsFunDef(pos, 
 				name, 

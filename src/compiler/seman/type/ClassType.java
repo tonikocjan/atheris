@@ -14,7 +14,7 @@ public class ClassType extends PointerType {
 	/**
 	 * Definition.
 	 */
-	public final AbsClassDef definition;
+	public final AbsClassDef classDefinition;
 
 	/**
 	 * Map containing members types.
@@ -22,16 +22,15 @@ public class ClassType extends PointerType {
 	private final LinkedHashMap<String, Type> members = new LinkedHashMap<>();
 	
 	/**
-	 * Sum of sizes for all members.
+	 * Sum of sizes of all members.
 	 */
 	private final int size;
 
 	/**
 	 * Create new class type.
-	 * 
-	 * @param name name of structure
-	 * @param names list of names for each definition
-	 * @param types list of types for each definition
+	 * @param definition
+	 * @param names
+	 * @param types
 	 */
 	public ClassType(AbsClassDef definition, 
 			ArrayList<String> names, ArrayList<Type> types) {
@@ -45,7 +44,7 @@ public class ClassType extends PointerType {
 			size += types.get(i).size();
 		}
 		this.size = size;
-		this.definition = definition;
+		this.classDefinition = definition;
 	}
 	
 	public LinkedHashMap<String, Type> getMembers() {
@@ -73,7 +72,7 @@ public class ClassType extends PointerType {
 	}
 	
 	public String getName() {
-		return definition.name;
+		return classDefinition.name;
 	}
 
 	@Override
@@ -97,7 +96,7 @@ public class ClassType extends PointerType {
 	}
 	
 	public AbsDef findMemberForName(String name) {
-		return definition.statements.findDefinitionForName(name);
+		return classDefinition.statements.findDefinitionForName(name);
 	}
 
 	@Override
@@ -105,7 +104,7 @@ public class ClassType extends PointerType {
 		StringBuilder sb = new StringBuilder();
 		int i = 0;
 		sb.append("Class: ");
-		sb.append(definition.name + "(");
+		sb.append(classDefinition.name + "(");
 		for (Map.Entry<String, Type> entry : members.entrySet()) {
 			sb.append(entry.getKey() + ":" + entry.getValue().toString());
 			if (++i < members.size()) sb.append(";");
