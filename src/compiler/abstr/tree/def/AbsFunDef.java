@@ -51,6 +51,10 @@ public class AbsFunDef extends AbsDef {
 	public LinkedList<AbsParDef> getParamaters() {
 		return pars;
 	}
+	
+	public void addParamater(AbsParDef newPar) {
+		pars.addFirst(newPar);
+	}
 
 	/**
 	 * Vrne stevilo parametrov funkcije.

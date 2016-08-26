@@ -437,23 +437,23 @@ public class SynAn {
 	
 	private AbsClassDef parseClassDefinition() {
 		Position start = symbol.position;
-		String name = skip(new Symbol(TokenEnum.IDENTIFIER, "IDENTIFIER", null)).lexeme;
+		String className = skip(new Symbol(TokenEnum.IDENTIFIER, "IDENTIFIER", null)).lexeme;
 		
 		skip(new Symbol(TokenEnum.LBRACE, "{", null));
 		skip(new Symbol(TokenEnum.NEWLINE, "\n", null));
 		skip();
 		
-		Vector<AbsStmt> statements = parseClassMemberDefinitions();
+		Vector<AbsStmt> statements = parseClassMemberDefinitions(className);
 		if (symbol.token != TokenEnum.RBRACE)
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", expected \"}\"");
 		Position end = symbol.position;
 		skip();
 		
-		return new AbsClassDef(name, new Position(start, end), statements);
+		return new AbsClassDef(className, new Position(start, end), statements);
 	}
 	
-	private Vector<AbsStmt> parseClassMemberDefinitions() {
+	private Vector<AbsStmt> parseClassMemberDefinitions(String className) {
 		Vector<AbsStmt> statements = new Vector<>();
 		while (true) {
 			AbsDef definition;
@@ -479,8 +479,13 @@ public class SynAn {
 				}
 				break;
 			case KW_FUN:
-				definition = parseDefinition();
-				statements.add(definition);
+				AbsFunDef funDef = (AbsFunDef) parseDefinition();
+				
+				Position parPos = funDef.position;
+				funDef.addParamater(new AbsParDef(parPos, "self", 
+						new AbsTypeName(parPos, className)));
+				
+				statements.add(funDef);
 				break;
 			case RBRACE:
 				return statements;
