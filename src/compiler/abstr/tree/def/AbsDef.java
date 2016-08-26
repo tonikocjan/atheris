@@ -6,19 +6,59 @@ import compiler.abstr.tree.AbsStmt;
 /**
  * Definicija.
  * 
- * @author sliva
+ * @author toni kocjan
  */
 public abstract class AbsDef extends AbsStmt {
+	
+	/**
+	 * Parent definition.
+	 */
+	private AbsDef parentDef;
 
 	/**
-	 * Ustvari novo definicijo.
+	 * Create new definition.
 	 *
 	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
+	 *            Position.
 	 */
 	public AbsDef(Position pos) {
 		super(pos);
+		
+		this.parentDef = null;
+	}
+	
+	/**
+	 * Crate new definition.
+	 *
+	 * @param pos
+	 *            Position.
+	 * @param parent parent definition for this definition
+	 */
+	public AbsDef(Position pos, AbsDef parent) {
+		super(pos);
+		
+		this.parentDef = parent;
 	}
 
+	/**
+	 * 
+	 * @param parent
+	 */
+	public void setParentDefinition(AbsDef parent) {
+		this.parentDef = parent;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public AbsDef getParemtDefinition() {
+		return this.parentDef;
+	}
+	
+	/**
+	 * Name of the definition.
+	 * @return name
+	 */
 	public abstract String getName();
 }

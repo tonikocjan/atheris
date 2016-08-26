@@ -36,6 +36,10 @@ public class AbsClassDef extends AbsTypeDef {
 		else
 			this.definitions = new AbsDefs(pos, definitions);
 		
+		// set this definition as parent for all member definitions
+		for (AbsDef def : this.definitions.definitions)
+			def.setParentDefinition(this);
+		
 		// add default constructor
 		AbsFunDef contructor = new AbsFunDef(pos, 
 				name,
