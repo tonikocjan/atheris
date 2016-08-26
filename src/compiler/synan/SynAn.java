@@ -92,7 +92,7 @@ public class SynAn {
 	private AbsStmts parseStatements() {
 		dump("statements -> statement statements'");
 		
-		Vector<AbsStmt> absStmts = new Vector<>();
+		LinkedList<AbsStmt> absStmts = new LinkedList<>();
 		if (symbol.token == TokenEnum.RBRACE)
 			return new AbsStmts(symbol.position, absStmts);
 		
@@ -100,8 +100,8 @@ public class SynAn {
 		absStmts.add(statement);
 		absStmts.addAll(parseStatements_(statement));
 		
-		return new AbsStmts(new Position(absStmts.firstElement().position,
-				absStmts.lastElement().position), absStmts);
+		return new AbsStmts(new Position(absStmts.getFirst().position,
+				absStmts.getLast().position), absStmts);
 	}
 
 	private Vector<AbsStmt> parseStatements_(AbsStmt prevStmt) {
@@ -435,6 +435,7 @@ public class SynAn {
 		}
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private AbsClassDef parseClassDefinition() {
 		Position start = symbol.position;
 		String className = skip(new Symbol(TokenEnum.IDENTIFIER, "IDENTIFIER", null)).lexeme;
@@ -443,18 +444,23 @@ public class SynAn {
 		skip(new Symbol(TokenEnum.NEWLINE, "\n", null));
 		skip();
 		
-		Vector<AbsStmt> statements = parseClassMemberDefinitions(className);
+		LinkedList[] data = parseClassMemberDefinitions(className);
+		LinkedList<AbsDef> definitions = data[0];
+		
 		if (symbol.token != TokenEnum.RBRACE)
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", expected \"}\"");
 		Position end = symbol.position;
 		skip();
 		
-		return new AbsClassDef(className, new Position(start, end), statements);
+		return new AbsClassDef(className, new Position(start, end), definitions, data[1]);
 	}
 	
-	private Vector<AbsStmt> parseClassMemberDefinitions(String className) {
-		Vector<AbsStmt> statements = new Vector<>();
+	@SuppressWarnings("rawtypes")
+	private LinkedList[] parseClassMemberDefinitions(String className) {
+		LinkedList<AbsDef> definitions = new LinkedList<>();
+		LinkedList<AbsStmt> defaultConstructor = new LinkedList<>();
+		
 		while (true) {
 			AbsDef definition;
 			
@@ -464,7 +470,7 @@ public class SynAn {
 			case KW_VAR:
 			case KW_LET:
 				definition = parseDefinition();
-				statements.add(0, definition);
+				definitions.add(0, definition);
 				
 				if (symbol.token == TokenEnum.ASSIGN) {
 					skip();
@@ -474,21 +480,24 @@ public class SynAn {
 							((AbsVarDef)definition).name);
 					AbsExpr e = parseExpression();
 
-					statements.add(new AbsBinExpr(new Position(definition.position, e.position), 
-							AbsBinExpr.ASSIGN, varName, e));
+					defaultConstructor.add(new AbsBinExpr(
+							new Position(definition.position, e.position),
+							AbsBinExpr.ASSIGN, varName, e)
+					);
 				}
 				break;
 			case KW_FUN:
 				AbsFunDef funDef = (AbsFunDef) parseDefinition();
 				
 				Position parPos = funDef.position;
+				// add implicit "self" parameter to definition
 				funDef.addParamater(new AbsParDef(parPos, "self", 
 						new AbsTypeName(parPos, className)));
 				
-				statements.add(funDef);
+				definitions.add(funDef);
 				break;
 			case RBRACE:
-				return statements;
+				return new LinkedList[] {definitions, defaultConstructor};
 			default:
 				Report.error(symbol.position, "Syntax error todooooo");
 			}

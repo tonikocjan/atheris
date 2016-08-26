@@ -92,7 +92,7 @@ public class SemAn implements ASTVisitor {
 			c.accept(this);
 		}
 		indent -= 2;
-		indent += 2; classDef.statements.accept(this); indent -= 2;
+		indent += 2; classDef.definitions.accept(this); indent -= 2;
 	}
 	
 	public void visit(AbsAtomConstExpr atomConst) {
@@ -224,8 +224,8 @@ public class SemAn implements ASTVisitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		for (int def = 0; def < defs.numDefs(); def++) {
-			indent += 2; defs.def(def).accept(this); indent -= 2;
+		for (AbsDef def : defs.definitions) {
+			indent += 2; def.accept(this); indent -= 2;
 		}
 	}
 	
@@ -409,8 +409,8 @@ public class SemAn implements ASTVisitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());	
 		}
 		
-		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
-			indent += 2; stmts.stmt(stmt).accept(this); indent -= 2;
+		for (AbsStmt stmt : stmts.statements) {
+			indent += 2; stmt.accept(this); indent -= 2;
 		}
 	}
 

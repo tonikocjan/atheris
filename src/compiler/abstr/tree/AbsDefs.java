@@ -15,8 +15,8 @@ import compiler.abstr.tree.def.AbsVarDef;
  */
 public class AbsDefs extends AbsTree {
 
-	/** Elementi seznama definicij. */
-	private AbsDef defs[];
+	/** Definitions. */
+	public final LinkedList<AbsDef> definitions;
 
 	/**
 	 * Ustvari nov seznam definicij.
@@ -26,36 +26,13 @@ public class AbsDefs extends AbsTree {
 	 * @param defs
 	 *            Definicije.
 	 */
-	public AbsDefs(Position pos, Vector<AbsDef> defs) {
+	public AbsDefs(Position pos, LinkedList<AbsDef> defs) {
 		super(pos);
-		this.defs = new AbsDef[defs.size()];
-		for (int def = 0; def < defs.size(); def++)
-			this.defs[def] = defs.elementAt(def);
+		this.definitions = defs;
 	}
 
-	/**
-	 * Vrne izbrano definicijo.
-	 * 
-	 * @param index
-	 *            Indeks definicije.
-	 * @return Definicija na izbranem mestu v seznamu.
-	 */
-	public AbsDef def(int index) {
-		return defs[index];
-	}
-
-	/**
-	 * Vrne stevilo definicij v seznamu.
-	 * 
-	 * @return Stevilo definicij v seznamu.
-	 */
-	public int numDefs() {
-		return defs.length;
-	}
-	
-	
-	public AbsDef findDefinition(String name) {
-		for (AbsDef d : defs) {
+	public AbsDef findDefinitionForName(String name) {
+		for (AbsDef d : definitions) {
 			if (d instanceof AbsVarDef && ((AbsVarDef) d).name.equals(name))
 				return d;
 			if (d instanceof AbsFunDef && ((AbsFunDef) d).name.equals(name))

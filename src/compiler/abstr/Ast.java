@@ -67,16 +67,16 @@ public class Ast implements ASTVisitor {
 	public void visit(AbsClassDef classDef) {
 		Report.dump(indent, "AbsClassDef " + classDef.position.toString()
 				+ ":");
-		indent += 2;
-		Report.dump(indent, "Constructors: ");
-		indent += 2;
 		for (AbsFunDef c : classDef.contrustors) {
 			c.accept(this);
 		}
 		indent -= 2;
-		for (int i = 0; i < classDef.statements.numStmts(); i++)
-			classDef.statements.stmt(i).accept(this);
+		for (AbsDef def : classDef.definitions.definitions)
+			def.accept(this);
 		indent -= 2;
+		indent += 2;
+		Report.dump(indent, "Constructors: ");
+		indent += 2;
 	}
 
 	public void visit(AbsAtomConstExpr atomConst) {
@@ -216,9 +216,9 @@ public class Ast implements ASTVisitor {
 
 	public void visit(AbsDefs defs) {
 		Report.dump(indent, "AbsDefs " + defs.position.toString() + ":");
-		for (int def = 0; def < defs.numDefs(); def++) {
+		for (AbsDef def : defs.definitions) {
 			indent += 2;
-			defs.def(def).accept(this);
+			def.accept(this);
 			indent -= 2;
 		}
 	}
@@ -362,9 +362,9 @@ public class Ast implements ASTVisitor {
 	@Override
 	public void visit(AbsStmts stmts) {
 		Report.dump(indent, "AbsStmts " + stmts.position.toString() + ":");
-		for (int def = 0; def < stmts.numStmts(); def++) {
+		for (AbsStmt s : stmts.statements) {
 			indent += 2;
-			stmts.stmt(def).accept(this);
+			s.accept(this);
 			indent -= 2;
 		}
 	}

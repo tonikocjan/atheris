@@ -96,7 +96,7 @@ public class ClassType extends PointerType {
 	}
 	
 	public AbsDef findMemberForName(String name) {
-		return classDefinition.statements.findDefinitionForName(name);
+		return classDefinition.definitions.findDefinitionForName(name);
 	}
 
 	@Override

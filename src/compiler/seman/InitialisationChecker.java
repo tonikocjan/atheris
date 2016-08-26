@@ -209,7 +209,7 @@ public class InitialisationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsStmts acceptor) {
-		for (AbsStmt s : acceptor.stmts) {
+		for (AbsStmt s : acceptor.statements) {
 			s.accept(this);
 		}
 	}

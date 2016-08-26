@@ -58,7 +58,7 @@ public class NameChecker implements ASTVisitor {
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(
-								null, new Vector<>()));
+								null, new LinkedList<>()));
 				SymbTable.insFunc(name, parTypes, print);
 				SymbTable.ins("print", print);
 				SymbDesc.setType(print, new FunctionType(parTypes,
@@ -81,7 +81,7 @@ public class NameChecker implements ASTVisitor {
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(
-								null, new Vector<>()));
+								null, new LinkedList<>()));
 				SymbTable.insFunc(name, parTypes, print);
 				SymbDesc.setType(print, new FunctionType(parTypes,
 						new AtomType(AtomTypeEnum.VOID), print));
@@ -103,7 +103,7 @@ public class NameChecker implements ASTVisitor {
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(
-								null, new Vector<>()));
+								null, new LinkedList<>()));
 				SymbTable.insFunc(name, parTypes, print);
 				SymbDesc.setType(print, new FunctionType(parTypes,
 						new AtomType(AtomTypeEnum.VOID), print));
@@ -125,7 +125,7 @@ public class NameChecker implements ASTVisitor {
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(
-								null, new Vector<>()));
+								null, new LinkedList<>()));
 				SymbTable.insFunc(name, parTypes, print);
 				SymbDesc.setType(print, new FunctionType(parTypes,
 						new AtomType(AtomTypeEnum.VOID), print));
@@ -147,7 +147,7 @@ public class NameChecker implements ASTVisitor {
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(
-								null, new Vector<>()));
+								null, new LinkedList<>()));
 				SymbTable.insFunc(name, parTypes, print);
 				SymbDesc.setType(print, new FunctionType(parTypes,
 						new AtomType(AtomTypeEnum.VOID), print));
@@ -164,7 +164,7 @@ public class NameChecker implements ASTVisitor {
 				Vector<Type> parTypes = new Vector<>();
 				AbsFunDef time = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeEnum.INT), new AbsStmts(
-								null, new Vector<>()));
+								null, new LinkedList<>()));
 				SymbTable.insFunc(name, parTypes, time);
 				SymbTable.ins("time", time);
 				SymbDesc.setType(time, new FunctionType(parTypes,
@@ -182,7 +182,7 @@ public class NameChecker implements ASTVisitor {
 				Vector<Type> parTypes = new Vector<>();
 				AbsFunDef rand = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeEnum.INT), new AbsStmts(
-								null, new Vector<>()));
+								null, new LinkedList<>()));
 				SymbTable.insFunc(name, parTypes, rand);
 				SymbTable.ins("rand", rand);
 				SymbDesc.setType(rand, new FunctionType(parTypes,
@@ -204,7 +204,7 @@ public class NameChecker implements ASTVisitor {
 
 				AbsFunDef rand = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeEnum.INT), new AbsStmts(
-								null, new Vector<>()));
+								null, new LinkedList<>()));
 				SymbTable.insFunc(name, parTypes, rand);
 				SymbDesc.setType(rand, new FunctionType(parTypes,
 						new AtomType(AtomTypeEnum.INT), rand));
@@ -233,7 +233,7 @@ public class NameChecker implements ASTVisitor {
 					+ "\'");
 		}
 		SymbTable.newScope();
-		acceptor.statements.accept(this);
+		acceptor.definitions.accept(this);
 		SymbTable.oldScope();
 	}
 
@@ -258,8 +258,8 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsDefs acceptor) {
-		for (int def = 0; def < acceptor.numDefs(); def++)
-			acceptor.def(def).accept(this);
+		for (AbsDef def : acceptor.definitions)
+			def.accept(this);
 	}
 
 	@Override
@@ -406,10 +406,8 @@ public class NameChecker implements ASTVisitor {
 				false), false);
 		AbsStmts source = (AbsStmts) synAn.parse();
 
-		Vector<AbsDef> definitions = new Vector<>();
-		for (int i = 0; i < source.numStmts(); i++) {
-			AbsStmt s = source.stmt(i);
-
+		LinkedList<AbsDef> definitions = new LinkedList<>();
+		for (AbsStmt s : source.statements) {
 			// skip statements which are not definitions
 			if (!(s instanceof AbsDef))
 				continue;
@@ -440,8 +438,8 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsStmts stmts) {
-		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
-			stmts.stmt(stmt).accept(this);
+		for (AbsStmt s : stmts.statements) {
+			s.accept(this);
 		}
 	}
 

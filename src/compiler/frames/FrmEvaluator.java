@@ -67,7 +67,7 @@ public class FrmEvaluator implements ASTVisitor {
 		ClassType tmp = classType;
 		classType = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
 		
-		acceptor.statements.accept(this);
+		acceptor.definitions.accept(this);
 		for (AbsFunDef c : acceptor.contrustors) {
 			c.accept(this);
 		}

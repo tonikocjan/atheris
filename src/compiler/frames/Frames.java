@@ -100,7 +100,7 @@ public class Frames implements ASTVisitor {
 			c.accept(this);
 		}
 		indent += 2;
-		classDef.statements.accept(this);
+		classDef.definitions.accept(this);
 		indent -= 2;
 	}
 

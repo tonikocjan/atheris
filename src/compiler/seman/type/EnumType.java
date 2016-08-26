@@ -1,6 +1,7 @@
 package compiler.seman.type;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Vector;
 
 import compiler.abstr.tree.AbsStmt;
@@ -32,11 +33,14 @@ public class EnumType extends ClassType {
 	}
 	
 	private static AbsClassDef classDefinitionForEnumeration(AbsEnumDef definition) {
-		Vector<AbsStmt> statements = new Vector<>();
-		if (definition.type != null)
-			statements.add(new AbsVarDef(definition.position, "rawValue", definition.type));
+		LinkedList<AbsDef> definitions = new LinkedList<>();
+		LinkedList<AbsStmt> constructor = new LinkedList<>();
 		
-		return new AbsClassDef(definition.name, definition.position, statements);
+		if (definition.type != null)
+			definitions.add(new AbsVarDef(definition.position, "rawValue", definition.type));
+		
+		return new AbsClassDef(definition.name, 
+				definition.position, definitions, constructor);
 	}
 	
 	private static ArrayList<String> namesForEnumeration(AbsEnumDef definition) {

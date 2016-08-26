@@ -102,7 +102,7 @@ public class ImcCodeGen implements ASTVisitor {
 		ClassType type = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
 		int size = type.size();
 		
-		for (AbsStmt s : acceptor.statements.stmts) {
+		for (AbsStmt s : acceptor.definitions.stmts) {
 			s.accept(this);
 		}
 

@@ -1,48 +1,24 @@
 package compiler.abstr.tree;
 
-import java.util.Vector;
+import java.util.LinkedList;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.def.AbsDef;
-import compiler.abstr.tree.def.AbsFunDef;
-import compiler.abstr.tree.def.AbsVarDef;
 
 public class AbsStmts extends AbsTree {
 
-	/** Elementi seznama definicij. */
-	public AbsStmt stmts[];
+	/** Statements. */
+	public final LinkedList<AbsStmt> statements;
 	
-	public AbsStmts(Position position, Vector<AbsStmt> absStmts) {
+	public AbsStmts(Position position, LinkedList<AbsStmt> absStmts) {
 		super(position);
 		
-		this.stmts = new AbsStmt[absStmts.size()];
-		for (int def = 0; def < absStmts.size(); def++)
-			this.stmts[def] = absStmts.elementAt(def);
+		this.statements = absStmts;
 	}
 
-	/**
-	 * Vrne izbran stavek.
-	 * 
-	 * @param index
-	 *            Indeks stavka.
-	 * @return Definicija na izbranem mestu v seznamu.
-	 */
-	public AbsStmt stmt(int index) {
-		return stmts[index];
-	}
-
-	/**
-	 * Vrne število stavkov v seznamu.
-	 * 
-	 * @return Število stavkov v seznamu.
-	 */
-	public int numStmts() {
-		return stmts.length;
-	}
-	
 	public AbsDef findDefinitionForName(String name) {
-		for (AbsStmt s : stmts) {
+		for (AbsStmt s : statements) {
 			if (s instanceof AbsDef)
 				if (((AbsDef) s).getName().equals(name))
 					return (AbsDef) s;
