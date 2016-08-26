@@ -2,7 +2,6 @@ package compiler.seman.type;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Vector;
 
 import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.def.AbsClassDef;

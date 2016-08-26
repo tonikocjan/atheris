@@ -1,7 +1,6 @@
 package compiler.abstr.tree.def;
 
 import java.util.LinkedList;
-import java.util.Vector;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
