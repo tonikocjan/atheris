@@ -32,12 +32,15 @@ import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsTypeName;
 import compiler.seman.SymbDesc;
+import compiler.seman.type.CanType;
+import compiler.seman.type.ClassType;
 import compiler.seman.type.FunctionType;
 
 public class FrmEvaluator implements ASTVisitor {
 
 	private int currentLevel = 1;
 	private FrmFrame currentFrame = null;
+	private ClassType classType = null;
 	public FrmFrame entryPoint = null;
 	
 	public static final String ENTRY_POINT = "_main";
@@ -61,10 +64,15 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
+		ClassType tmp = classType;
+		classType = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
+		
 		acceptor.statements.accept(this);
 		for (AbsFunDef c : acceptor.contrustors) {
 			c.accept(this);
 		}
+		
+		classType = tmp;
 	}
 
 	@Override
@@ -87,6 +95,17 @@ public class FrmEvaluator implements ASTVisitor {
 					SymbDesc.getType(acceptor.expr2) instanceof FunctionType) {
 				FrmDesc.setFrame(SymbDesc.getNameDef(acceptor.expr1), 
 						FrmDesc.getFrame(SymbDesc.getNameDef(acceptor.expr2)));	
+			}
+		}
+		else if (acceptor.oper == AbsBinExpr.DOT) {
+			// FIXME
+			if (acceptor.expr1 instanceof AbsVarNameExpr &&
+					acceptor.expr2 instanceof AbsVarNameExpr) {
+				AbsVarDef parentDef = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr1);
+				AbsVarDef memberDef = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr2);
+				FrmMemberAccess memberAccess = (FrmMemberAccess) FrmDesc.getAccess(memberDef);
+				
+				memberAccess.parentDef = parentDef;
 			}
 		}
 	}
@@ -168,11 +187,15 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		if (currentFrame.label.name().equals("_" + ENTRY_POINT))
+		if (classType != null)
+			// member access
+			FrmDesc.setAccess(acceptor, new FrmMemberAccess(acceptor, classType));
+		else if (currentFrame.label.name().equals("_" + ENTRY_POINT))
+			// var access
 			FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
 		else
-			FrmDesc.setAccess(acceptor,
-					new FrmLocAccess(acceptor, currentFrame));
+			// local function acces
+			FrmDesc.setAccess(acceptor, new FrmLocAccess(acceptor, currentFrame));
 	}
 
 	@Override

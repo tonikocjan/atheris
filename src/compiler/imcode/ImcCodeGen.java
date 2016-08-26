@@ -37,6 +37,7 @@ import compiler.frames.FrmFrame;
 import compiler.frames.FrmFunAccess;
 import compiler.frames.FrmLabel;
 import compiler.frames.FrmLocAccess;
+import compiler.frames.FrmMemberAccess;
 import compiler.frames.FrmParAccess;
 import compiler.frames.FrmTemp;
 import compiler.frames.FrmVarAccess;
@@ -221,19 +222,7 @@ public class ImcCodeGen implements ASTVisitor {
 					code = c2;
 			}
 			else if (t instanceof ClassType) {
-				ClassType type = (ClassType) t;
-				
-				// FIXME: - Make this better
-				if (acceptor.expr2 instanceof AbsVarNameExpr) {
-					String var = ((AbsVarNameExpr) acceptor.expr2).name;
-					int offset = type.offsetOf(var);
-
-					code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcCONST(offset)));
-				}
-				else {
-					code = c2;
-				}
-				
+				code = c2;
 			} 
 			else if (t instanceof ArrayType) {
 				code = new ImcCONST(((ArrayType) t).count);
@@ -456,7 +445,15 @@ public class ImcCodeGen implements ASTVisitor {
 
 			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, fp, new ImcCONST(
 					loc.offset)));
-		} else if (access instanceof FrmParAccess) {
+		} 
+		else if (access instanceof FrmMemberAccess) {
+			FrmMemberAccess member = (FrmMemberAccess) access;
+			
+			ImcExpr address = (ImcExpr) ImcDesc.getImcCode(member.parentDef);
+			ImcExpr offset = new ImcCONST(member.offsetForMember());
+			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, address, offset));
+		}
+		else if (access instanceof FrmParAccess) {
 			FrmParAccess loc = (FrmParAccess) access;
 			int diff = frameStack.peek().level - loc.frame.level;
 
