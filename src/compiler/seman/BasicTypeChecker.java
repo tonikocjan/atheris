@@ -54,40 +54,30 @@ public class BasicTypeChecker implements ASTVisitor {
 	public void visit(AbsClassDef acceptor) {
 		ArrayList<Type> types = new ArrayList<>();
 		ArrayList<String> names = new ArrayList<>();
+		
+		for (AbsDef def : acceptor.definitions.definitions)
+			def.accept(this);
 
-		for (int i = 0; i < acceptor.statements.numStmts(); i++) {
-			AbsStmt stmt = acceptor.statements.stmt(i);
-			stmt.accept(this);
+		for (AbsFunDef c : acceptor.contrustors)
+			c.accept(this);
+
+		for (AbsDef def : acceptor.definitions.definitions) {
+			Type memberType = SymbDesc.getType(def);
+			types.add(memberType);
 			
-			if (stmt instanceof AbsDef) {
-				Type memberType = SymbDesc.getType(stmt);
-				
-				if (memberType == null && 
-						i + 1 < acceptor.statements.numStmts() &&
-						!(acceptor.statements.stmt(i + 1) instanceof AbsDef)) {
-					acceptor.statements.stmt(i + 1).accept(this);
-					memberType = SymbDesc.getType(acceptor.statements.stmt(i + 1));
-					i += 1;
-				}
-				
-				types.add(memberType);
-				
-				if (stmt instanceof AbsVarDef)
-					names.add(((AbsVarDef) stmt).name);
-				else if (stmt instanceof AbsFunDef)
-					names.add(((AbsFunDef) stmt).name);
-				else
-					Report.error("Semantic error @ AbsClassDef-typeChecker");
-			}
+			if (def instanceof AbsVarDef)
+				names.add(((AbsVarDef) def).name);
+			else if (def instanceof AbsFunDef)
+				names.add(((AbsFunDef) def).name);
+			else
+				Report.error("Semantic error @ AbsClassDef-typeChecker");
 		}
 		
 		ClassType classType = new ClassType(acceptor, names, types);
 		SymbDesc.setType(acceptor, new CanType(classType));
 		
-		for (AbsFunDef c : acceptor.contrustors) {
-			c.accept(this);
+		for (AbsFunDef c : acceptor.contrustors)
 			SymbDesc.setType(c, new FunctionType(new Vector<>(), classType, c));
-		}
 	}
 
 	@Override
@@ -144,6 +134,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			if (t1 == null) {
 				t1 = t2;
 				SymbDesc.setType(acceptor.expr1, t1);
+				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t1);
 			}
 			
 			if (t1.sameStructureAs(t2)) {
@@ -353,8 +344,8 @@ public class BasicTypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsDefs acceptor) {
-		for (int def = 0; def < acceptor.numDefs(); def++)
-			acceptor.def(def).accept(this);
+		for (AbsDef def : acceptor.definitions)
+			def.accept(this);
 	}
 
 	@Override
@@ -428,9 +419,9 @@ public class BasicTypeChecker implements ASTVisitor {
 		}
 
 		acceptor.type.accept(this);
+		Type returnType = SymbDesc.getType(acceptor.type);
 
-		FunctionType funType = new FunctionType(parameters,
-				SymbDesc.getType(acceptor.type), acceptor);
+		FunctionType funType = new FunctionType(parameters, returnType, acceptor);
 		SymbDesc.setType(acceptor, funType);
 
 		// insert function into symbol table
@@ -444,8 +435,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		acceptor.func.accept(this);
 
 		// check if return type matches
-		for (int i = 0; i < acceptor.func.numStmts(); i++) {
-			AbsStmt stmt = acceptor.func.stmt(i);
+		for (AbsStmt stmt : acceptor.func.statements) {
 			if (stmt instanceof AbsReturnExpr) {
 				Type t = SymbDesc.getType(stmt);
 				if (!t.sameStructureAs(funType.resultType))
@@ -560,16 +550,16 @@ public class BasicTypeChecker implements ASTVisitor {
 		String tmp = Report.fileName;
 		Report.fileName = importDef.fileName;
 
-		for (int def = 0; def < importDef.imports.numDefs(); def++)
-			importDef.imports.def(def).accept(this);
+		for (AbsDef def : importDef.imports.definitions)
+			def.accept(this);
 
 		Report.fileName = tmp;
 	}
 
 	@Override
 	public void visit(AbsStmts stmts) {
-		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
-			stmts.stmt(stmt).accept(this);
+		for (AbsStmt s : stmts.statements) {
+			s.accept(this);
 		}
 	}
 

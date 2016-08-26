@@ -5,50 +5,44 @@ import java.util.Vector;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
+import compiler.abstr.tree.AbsDefs;
 import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.AbsStmts;
 import compiler.abstr.tree.AtomTypeEnum;
-import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.type.AbsAtomType;
 
 public class AbsClassDef extends AbsTypeDef {
 	
 	/** Definitions inside class */
-	public final AbsStmts statements;
+	public final AbsDefs definitions;
 	
 	/** Constructors (initializers) */
-	public final Vector<AbsFunDef> contrustors = new Vector<>();
+	public final LinkedList<AbsFunDef> contrustors = new LinkedList<>();
 	
 	/**
-	 * 
+	 * Create new class definition.
 	 * @param name
 	 * @param pos
 	 * @param statements
 	 */
-	public AbsClassDef(String name, Position pos, Vector<AbsStmt> statements) {
+	public AbsClassDef(String name, Position pos, LinkedList<AbsDef> definitions, 
+			LinkedList<AbsStmt> initExpressions) {
 		super(pos, name);
 		
-		if (statements.size() > 0) {
-			Position start = statements.firstElement().position;
-			Position end = statements.lastElement().position;
-			this.statements = new AbsStmts(new Position(start, end), statements);
+		if (definitions.size() > 0) {
+			Position start = definitions.getFirst().position;
+			Position end = definitions.getLast().position;
+			this.definitions = new AbsDefs(new Position(start, end), definitions);
 		}
 		else
-			this.statements = new AbsStmts(pos, statements);
+			this.definitions = new AbsDefs(pos, definitions);
 		
-		// FIXME
-//		Vector<AbsStmt> expressions = new Vector<>();
-//		for (AbsStmt s : statements) {
-//			if (s instanceof AbsExpr)
-//				expressions.add(s);
-//		}
-			
 		// add default constructor
 		AbsFunDef contructor = new AbsFunDef(pos, 
-				name, 
+				name,
 				new LinkedList<>(), 
 				new AbsAtomType(pos, AtomTypeEnum.VOID), 
-				new AbsStmts(pos, statements));
+				new AbsStmts(pos, initExpressions));
 		contrustors.add(contructor);
 	}
 	

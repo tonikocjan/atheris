@@ -88,11 +88,14 @@ public class SemAn implements ASTVisitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2;
+		Report.dump(indent, "Member definitions:");
+		indent += 2; classDef.definitions.accept(this); indent -= 2;
+		Report.dump(indent, "Default constructor:");
+		indent += 2;
 		for (AbsFunDef c : classDef.contrustors) {
 			c.accept(this);
 		}
-		indent -= 2;
-		indent += 2; classDef.definitions.accept(this); indent -= 2;
+		indent -= 4;
 	}
 	
 	public void visit(AbsAtomConstExpr atomConst) {

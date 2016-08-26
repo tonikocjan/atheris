@@ -232,9 +232,13 @@ public class NameChecker implements ASTVisitor {
 			Report.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName()
 					+ "\'");
 		}
-		SymbTable.newScope();
-		acceptor.definitions.accept(this);
-		SymbTable.oldScope();
+		
+		for (AbsStmt s : acceptor.contrustors.getFirst().func.statements) {
+			AbsBinExpr assign = (AbsBinExpr) s;
+			String name = ((AbsVarNameExpr) assign.expr1).name;
+			SymbDesc.setNameDef(assign.expr1, 
+					acceptor.definitions.findDefinitionForName(name));
+		}
 	}
 
 	@Override
