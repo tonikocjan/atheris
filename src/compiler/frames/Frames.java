@@ -88,20 +88,21 @@ public class Frames implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef classDef) {
-		Report.dump(indent, "AbsClassType " + classDef.position.toString()
-				+ ": " + classDef.getName());
+		Report.dump(indent, "AbsClassDef " + classDef.position.toString() + ": " + classDef.getName());		
 		{
 			Type typ = SymbDesc.getType(classDef);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2;
+		Report.dump(indent, "Member definitions:");
+		indent += 2; classDef.definitions.accept(this); indent -= 2;
+		Report.dump(indent, "Default constructor:");
+		indent += 2;
 		for (AbsFunDef c : classDef.contrustors) {
 			c.accept(this);
 		}
-		indent += 2;
-		classDef.definitions.accept(this);
-		indent -= 2;
+		indent -= 4;
 	}
 
 	public void visit(AbsAtomConstExpr atomConst) {
@@ -264,9 +265,9 @@ public class Frames implements ASTVisitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		for (int def = 0; def < defs.numDefs(); def++) {
+		for (AbsDef def : defs.definitions) {
 			indent += 2;
-			defs.def(def).accept(this);
+			def.accept(this);
 			indent -= 2;
 		}
 	}
@@ -500,7 +501,7 @@ public class Frames implements ASTVisitor {
 
 	@Override
 	public void visit(AbsImportDef acceptor) {
-
+		///
 	}
 
 	@Override
@@ -511,9 +512,9 @@ public class Frames implements ASTVisitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
+		for (AbsStmt s : stmts.statements) {
 			indent += 2;
-			stmts.stmt(stmt).accept(this);
+			s.accept(this);
 			indent -= 2;
 		}
 	}

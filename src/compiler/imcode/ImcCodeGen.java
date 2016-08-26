@@ -102,9 +102,8 @@ public class ImcCodeGen implements ASTVisitor {
 		ClassType type = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
 		int size = type.size();
 		
-		for (AbsStmt s : acceptor.definitions.stmts) {
-			s.accept(this);
-		}
+		for (AbsDef def : acceptor.definitions.definitions)
+			def.accept(this);
 
 		for (AbsFunDef c : acceptor.contrustors) {
 			FrmFrame frame = FrmDesc.getFrame(c);
@@ -113,11 +112,7 @@ public class ImcCodeGen implements ASTVisitor {
 			ImcTEMP location = new ImcTEMP(new FrmTemp());
 			seq.stmts.add(new ImcMOVE(location, new ImcMALLOC(size)));
 
-			for (int i = c.func.numStmts() - 1; i >= 0; i--) {
-				AbsStmt s = c.func.stmt(i);
-				
-				if (s instanceof AbsDef)
-					break;
+			for (AbsStmt s : c.func.statements) {
 				if (!(s instanceof AbsBinExpr)) 
 					Report.error("internal error");
 				
@@ -240,8 +235,8 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsDefs acceptor) {
-		for (int i = 0; i < acceptor.numDefs(); i++)
-			acceptor.def(i).accept(this);
+		for (AbsDef def : acceptor.definitions)
+			def.accept(this);
 	}
 
 	@Override
@@ -506,10 +501,10 @@ public class ImcCodeGen implements ASTVisitor {
 	public void visit(AbsStmts acceptor) {
 		scope++;
 		ImcSEQ seq = new ImcSEQ();
-		for (int stmt = 0; stmt < acceptor.numStmts(); stmt++) {
-			acceptor.stmt(stmt).accept(this);
+		for (AbsStmt stmt : acceptor.statements) {
+			stmt.accept(this);
 
-			ImcCode code = ImcDesc.getImcCode(acceptor.stmt(stmt));
+			ImcCode code = ImcDesc.getImcCode(stmt);
 			if (code != null) {
 				ImcStmt s = null;
 

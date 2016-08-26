@@ -1,7 +1,6 @@
 package compiler.frames;
 
 import java.util.LinkedList;
-import java.util.Vector;
 
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;
@@ -47,7 +46,8 @@ public class FrmEvaluator implements ASTVisitor {
 	
 	public FrmEvaluator() {
 		AbsFunDef _main = new AbsFunDef(null, ENTRY_POINT, new LinkedList<>(), 
-				new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(null, new Vector<>()));
+				new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(null, 
+						new LinkedList<>()));
 
 		entryPoint = new FrmFrame(_main, 0);
 		entryPoint.label = FrmLabel.newLabel(ENTRY_POINT);
@@ -112,8 +112,8 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsDefs acceptor) {
-		for (int def = 0; def < acceptor.numDefs(); def++)
-			acceptor.def(def).accept(this);
+		for (AbsDef def : acceptor.definitions)
+			def.accept(this);
 	}
 
 	@Override
@@ -216,8 +216,8 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsStmts stmts) {
-		for (int stmt = 0; stmt < stmts.numStmts(); stmt++) {
-			stmts.stmt(stmt).accept(this);
+		for (AbsStmt s : stmts.statements) {
+			s.accept(this);
 		}
 	}
 

@@ -28,8 +28,6 @@ import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsTypeName;
-import compiler.seman.SymbDesc;
-import compiler.seman.type.Type;
 
 /**
  * @author sliva
