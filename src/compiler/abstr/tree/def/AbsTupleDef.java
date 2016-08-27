@@ -1,48 +1,32 @@
 package compiler.abstr.tree.def;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
-import compiler.abstr.tree.AbsExprs;
-import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.AbsDefs;
 
-public class AbsTupleDef extends AbsDef {
+public class AbsTupleDef extends AbsTypeDef {
 	
-	/**
-	 * Members of this tuple definition.
-	 */
-	public final LinkedHashMap<String, AbsExpr> members;
-	
+	/** Definitions inside tuple */
+	public final AbsDefs definitions;
 
 	/**
-	 * Create new tuple definition
+	 * Create new tuple type definition
 	 * @param pos position
 	 * @param expressions member expressions
 	 * @param names name of each member
 	 */
-	public AbsTupleDef(Position pos, 
-			LinkedList<AbsExpr> expressions, LinkedList<String> names) {
-		super(pos);
+	public AbsTupleDef(Position pos, LinkedList<AbsDef> defs) {
+		super(pos, "");
 
-		members = new LinkedHashMap<>(names.size());
-		for (int i = 0; i < names.size(); i++)
-			members.put(names.get(i), expressions.get(i));
+		// TODO: position
+		this.definitions = new AbsDefs(pos, defs);
 	}
 
-	/**
-	 * Check if this tuple contains given name.
-	 * @param name name of member
-	 * @return true if it does
-	 */
-	public boolean containsName(String name) {
-		return members.containsKey(name);
-	}
-	
 	@Override
 	public String getName() {
-		return null;
+		return name;
 	}
 
 	@Override
