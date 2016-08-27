@@ -6,6 +6,11 @@ import compiler.Position;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsDefs;
 
+/**
+ * Tuple definition.
+ * @author toni kocjan
+ *
+ */
 public class AbsTupleDef extends AbsTypeDef {
 	
 	/** Definitions inside tuple */
@@ -22,11 +27,6 @@ public class AbsTupleDef extends AbsTypeDef {
 
 		// TODO: position
 		this.definitions = new AbsDefs(pos, defs);
-	}
-
-	@Override
-	public String getName() {
-		return name;
 	}
 
 	@Override

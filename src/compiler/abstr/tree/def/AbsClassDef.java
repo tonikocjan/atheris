@@ -10,9 +10,14 @@ import compiler.abstr.tree.AbsStmts;
 import compiler.abstr.tree.AtomTypeKind;
 import compiler.abstr.tree.type.AbsAtomType;
 
+/**
+ * Class definition.
+ * @author toni kocjan
+ *
+ */
 public class AbsClassDef extends AbsTypeDef {
 	
-	/** Definitions inside class */
+	/** Definitions. */
 	public final AbsDefs definitions;
 	
 	/** Constructors (initializers) */
@@ -49,10 +54,6 @@ public class AbsClassDef extends AbsTypeDef {
 		contrustors.add(contructor);
 	}
 	
-	public String getName() {
-		return name;
-	}
-
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

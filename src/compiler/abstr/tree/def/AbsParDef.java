@@ -5,40 +5,29 @@ import compiler.abstr.*;
 import compiler.abstr.tree.type.AbsType;
 
 /**
- * Opis parametra funckije.
- * 
+ * Parameter definition..
  * @author toni kocjan
  *
  */
 public class AbsParDef extends AbsDef {
 
-	/** Ime parametra. */
-	public final String name;
-
-	/** Tip parametra. */
+	/** Parameter type. */
 	public final AbsType type;
 
 	/**
-	 * Ustvari nov opis parametra.
+	 * Create new parameter definition..
 	 * 
 	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
+	 *            Position.
 	 * @param name
-	 *            Ime parametra.
+	 *            Name.
 	 * @param type
-	 *            Tip parametra.
+	 *            Type.
 	 */
 	public AbsParDef(Position pos, String name, AbsType type) {
-		super(pos);
-		this.name = name;
+		super(pos, name);
 		this.type = type;
 	}
 	
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
 }

@@ -2,13 +2,18 @@ package compiler.abstr.tree;
 
 import compiler.Position;
 
+/**
+ * Statement.
+ * @author toni kocjan
+ *
+ */
 public abstract class AbsStmt extends AbsTree { 
 	
 	/**
-	 * Ustvari nov stavek.
+	 * Create new statement.
 	 * 
 	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
+	 *            Position.
 	 */
 	public AbsStmt(Position pos) {
 		super(pos);

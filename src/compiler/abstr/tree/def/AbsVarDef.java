@@ -6,73 +6,69 @@ import compiler.abstr.tree.VisibilityKind;
 import compiler.abstr.tree.type.AbsType;
 
 /**
- * Definicija spremenljivke.
+ * Variable definition.
  * 
  * @author sliva
  */
 public class AbsVarDef extends AbsDef {
 
-	/** Ime spremenljivke. */
-	public final String name;
-
-	/** Opis tipa spremenljivke. */
+	/** Variable type. */
 	public final AbsType type;
 	
-	/** Ali je spremenljivka konstantna */
+	/** Is this variable a constant. */
 	public final boolean isConstant;
 	
 	/** Is variable public / private (used for class members) */
 	public final VisibilityKind visibilityKind;
 
 	/**
-	 * Ustvari novo definicijo spremenljivke.
+	 * Create new variable definition.
 	 * 
 	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
+	 *            Position.
 	 * @param name
-	 *            Ime spremenljivke.
+	 *            Name.
 	 * @param type
-	 *            Opis tipa spremenljivke.
+	 *            Type.
 	 */
 	public AbsVarDef(Position pos, String name, AbsType type) {
-		super(pos);
-		this.name = name;
-		this.type = type;
-		this.isConstant = false;
-		this.visibilityKind = VisibilityKind.Public;
+		this(pos, name, type, false);
 	}
 	
 	/**
-	 * Ustvari novo definicijo spremenljivke.
+	 * Create new variable definition.
 	 * 
 	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
+	 *            Position.
 	 * @param name
-	 *            Ime spremenljivke.
+	 *            Name.
 	 * @param type
-	 *            Opis tipa spremenljivke.
+	 *            Type.
+	 * @param constant
+	 * 			  Is this variable a constant.
 	 */
 	public AbsVarDef(Position pos, String name, AbsType type, boolean constant) {
-		super(pos);
-		this.name = name;
-		this.type = type;
-		this.isConstant = constant;
-		this.visibilityKind = VisibilityKind.Public;
+		this(pos, name, type, constant, VisibilityKind.Public);
 	}
 	
 	/**
-	 * Ustvari novo definicijo spremenljivke.
+	 * Create new variable definition.
 	 * 
 	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
+	 *            Position.
 	 * @param name
-	 *            Ime spremenljivke.
+	 *            Name.
 	 * @param type
-	 *            Opis tipa spremenljivke.
+	 *            Type.
+	 * @param constant
+	 * 			  Is this variable a constant.
+	 * @param visibilityKind
+	 * 			  Visibility.
 	 */
-	public AbsVarDef(Position pos, String name, AbsType type, boolean constant, VisibilityKind visibilityKind) {
-		super(pos);
-		this.name = name;
+	public AbsVarDef(Position pos, String name, 
+			AbsType type, boolean constant, VisibilityKind visibilityKind) {
+		super(pos, name);
+		
 		this.type = type;
 		this.isConstant = constant;
 		this.visibilityKind = visibilityKind;
@@ -80,10 +76,4 @@ public class AbsVarDef extends AbsDef {
 
 
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
 }

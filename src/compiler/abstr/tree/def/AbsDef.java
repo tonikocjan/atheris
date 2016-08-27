@@ -9,6 +9,11 @@ import compiler.abstr.tree.AbsStmt;
  * @author toni kocjan
  */
 public abstract class AbsDef extends AbsStmt {
+
+	/** 
+	 * Definition name.
+	 */
+	public final String name;
 	
 	/**
 	 * Parent definition.
@@ -21,10 +26,11 @@ public abstract class AbsDef extends AbsStmt {
 	 * @param pos
 	 *            Position.
 	 */
-	public AbsDef(Position pos) {
+	public AbsDef(Position pos, String name) {
 		super(pos);
 		
 		this.parentDef = null;
+		this.name = name;
 	}
 	
 	/**
@@ -32,16 +38,17 @@ public abstract class AbsDef extends AbsStmt {
 	 *
 	 * @param pos
 	 *            Position.
-	 * @param parent parent definition for this definition
+	 * @param parent 
+	 * 			  Parent definition for this definition
 	 */
-	public AbsDef(Position pos, AbsDef parent) {
-		super(pos);
+	public AbsDef(Position pos, String name, AbsDef parent) {
+		this(pos, name);
 		
 		this.parentDef = parent;
 	}
 
 	/**
-	 * 
+	 * Set parent definition.
 	 * @param parent
 	 */
 	public void setParentDefinition(AbsDef parent) {
@@ -49,16 +56,18 @@ public abstract class AbsDef extends AbsStmt {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Get parent definition.
+	 * @return Parent definition.
 	 */
 	public AbsDef getParemtDefinition() {
 		return this.parentDef;
 	}
 	
 	/**
-	 * Name of the definition.
+	 * Get name of the definition.
 	 * @return name
 	 */
-	public abstract String getName();
+	public String getName() {
+		return name;
+	}
 }

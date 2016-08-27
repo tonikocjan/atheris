@@ -4,19 +4,23 @@ import compiler.*;
 import compiler.abstr.*;
 
 /**
- * Asbtraktno sintaksno drevo.
+ * Abstract syntax tree node.
+ * This is base class for all types of nodes.
  * 
- * @author sliva
+ * @author toni kocjan
  */
 public abstract class AbsTree {
 
+	/**
+	 * Position of this node.
+	 */
 	public final Position position;
 
 	/**
-	 * Ustvari novo abstraktno sintaksno drevo.
+	 * Create new abstract syntax tree.
 	 * 
 	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
+	 *            Position.
 	 */
 	public AbsTree(Position pos) {
 		this.position = pos;

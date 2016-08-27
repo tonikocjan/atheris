@@ -2,32 +2,32 @@ package compiler;
 
 /**
  * Doloca polozaj dela izvornega besedila v izvorni datoteki.
- * 
- * @author sliva
+ * Position description in source code.
+ * @author toni kocjan
  */
 public class Position {
 
-	/** Vrstica zacetka dela besedila. */
+	/** Start line. */
 	private final int begLine;
-	/** Stolpec zacetka dela besedila. */
+	/** Start column. */
 	private final int begColumn;
 
-	/** Vrstica konca dela besedila. */
+	/** End line. */
 	private final int endLine;
-	/** Stolpec konca dela besedila. */
+	/** EndColumn */
 	private final int endColumn;
 
 	/**
-	 * Ustvari nov polozaj dela izvornega besedila.
+	 * Create new position.
 	 * 
 	 * @param begLine
-	 *            Vrstica zacetka dela besedila.
+	 *            Start line.
 	 * @param begColumn
-	 *            Stolpec zacetka dela besedila.
+	 *            Start column.
 	 * @param endLine
-	 *            Vrstica konca dela besedila.
+	 *            End line.
 	 * @param endColumn
-	 *            Stolpec konca dela besedila.
+	 *            End column.
 	 */
 	public Position(int begLine, int begColumn, int endLine, int endColumn) {
 		this.begLine = begLine;
@@ -37,25 +37,24 @@ public class Position {
 	}
 
 	/**
-	 * Ustvari not polozaj znaka izvornega besedila.
+	 * Create new position.
 	 * 
 	 * @param line
-	 *            Vrstica znaka v izvornem besedilu.
+	 *            Line of the character's position.
 	 * @param column
-	 *            Stolpec znaka v izvornem besedilu.
+	 *            Column of the character's position.
 	 */
 	public Position(int line, int column) {
 		this(line, column, line, column);
 	}
 
 	/**
-	 * Ustvari nov polozaj dela izvornega besedila na osnovi polozaja prvega in
-	 * zadnjega dela izvornega besedila.
+	 * Create new position based on first part's position and last part's position.
 	 * 
 	 * @param begPos
-	 *            Polozaj prvega dela izvornega besedila.
+	 *            Start position.
 	 * @param endPos
-	 *            Polozaj zadnjega dela izvornega besedila.
+	 *            End position.
 	 */
 	public Position(Position begPos, Position endPos) {
 		this.begLine = begPos.begLine;

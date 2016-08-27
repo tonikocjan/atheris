@@ -6,6 +6,11 @@ import compiler.Position;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.type.AbsAtomType;
 
+/**
+ * Enum definition.
+ * @author toni kocjan
+ *
+ */
 public class AbsEnumDef extends AbsTypeDef {
 	
 	/**
@@ -37,11 +42,6 @@ public class AbsEnumDef extends AbsTypeDef {
 	@Override
 	public void accept(ASTVisitor aSTVisitor) {
 		aSTVisitor.visit(this);
-	}
-
-	@Override
-	public String getName() {
-		return name;
 	}
 
 }

@@ -8,71 +8,76 @@ import compiler.abstr.tree.AbsStmts;
 import compiler.abstr.tree.type.AbsType;
 
 /**
- * Definicija funckije.
+ * Function definition.
  * 
- * @author sliva
+ * @author toni kocjan
  */
 public class AbsFunDef extends AbsDef {
-
-	/** Ime funkcije. */
-	public final String name;
 	
-	/** Seznam parametrov. */
+	/** Parameters. */
 	private final LinkedList<AbsParDef> pars;
 
-	/** Opis tipa rezultata funkcije. */
+	/** Return type. */
 	public final AbsType type;
 	
-	/** Jedro funkcije. */
+	/** Function code. */
 	public final AbsStmts func;
 
 	/**
-	 * Ustvari novo definicijo funckije.
+	 * Create new function definition.
 	 * 
 	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
+	 *            Position.
 	 * @param name
-	 *            Ime funkcije.
+	 *            Function name.
 	 * @param pars
-	 *            Seznam parametrov.
+	 *            Parameter list.
 	 * @param type
-	 *            Opis tipa rezultata funkcije.
+	 *            Return type.
 	 * @param stmts
-	 *            Jedro funkcije.
+	 *            Function code.
 	 */
-	public AbsFunDef(Position pos, String name, LinkedList<AbsParDef> pars, AbsType type, AbsStmts stmts) {
-		super(pos);
-		this.name = name;
+	public AbsFunDef(Position pos, String name, 
+			LinkedList<AbsParDef> pars, AbsType type, AbsStmts stmts) {
+		super(pos, name);
 		this.pars = pars;
 		this.type = type;
 		this.func = stmts;
 	}
 
+	/**
+	 * Get parameters.
+	 * @return Parameters list.
+	 */
 	public LinkedList<AbsParDef> getParamaters() {
 		return pars;
 	}
 	
+	/**
+	 * Get parameter at given index.
+	 * @param index Index.
+	 * @return Parameter at index.
+	 */
 	public AbsParDef getParameterForIndex(int index) {
 		return pars.get(index);
 	}
 	
+	/**
+	 * Add new parameter to this function.
+	 * @param newPar Parameter to be added.
+	 */
 	public void addParamater(AbsParDef newPar) {
 		pars.addFirst(newPar);
 	}
 
 	/**
-	 * Vrne stevilo parametrov funkcije.
-	 * 
-	 * @return Stevilo parametrov funkcije.
+	 * Get parameter count.
+	 * @return Parameter count.
 	 */
 	public int numPars() {
 		return pars.size();
 	}
 
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
-
-	@Override
-	public String getName() {
-		return name;
-	}
+	
 }

@@ -6,28 +6,30 @@ import compiler.Position;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsDefs;
 
+/**
+ * Import definition.
+ * @author toni kocjan
+ *
+ */
 public class AbsImportDef extends AbsDef {
 	
-	/** Ime vključujoče datoteke. */
-	public final String fileName;
-	
-	/** Definicije znotraj importa  */
+	/** Imported definitions.  */
 	public AbsDefs imports;
 	
-	/** Katere definicije želimo importirat (empty => importaj vse) */
+	/** Set of definition names which to be imported. */
 	public final HashSet<String> definitions = new HashSet<>();
 
-	public AbsImportDef(Position pos, String fn) {
-		super(pos);
-		fileName = fn;
+	/**
+	 * Create new import definition.
+	 * @param pos Position.
+	 * @param fileName Name of the file to import.
+	 */
+	public AbsImportDef(Position pos, String fileName) {
+		super(pos, fileName);
 		imports = null;
 	}
 
 	@Override
 	public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
-	@Override
-	public String getName() {
-		return fileName;
-	}
 }

@@ -7,22 +7,22 @@ import compiler.abstr.*;
 import compiler.abstr.tree.expr.AbsExpr;
 
 /**
- * Opis izrazov.
+ * List of expressions..
  * 
  * @author toni kocjan
  */
 public class AbsExprs extends AbsExpr {
 
-	/** Seznam izrazov. */
+	/** Expresisons. */
 	public final LinkedList<AbsExpr> expressions;
 
 	/**
-	 * Ustvari nov opis izrazov.
+	 * Create new expressions list.
 	 * 
 	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
+	 *            Position.
 	 * @param exprs
-	 *            Seznam izrazov.
+	 *            Expressions.
 	 */
 	public AbsExprs(Position pos, LinkedList<AbsExpr> exprs) {
 		super(pos);

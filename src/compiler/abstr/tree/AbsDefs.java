@@ -9,9 +9,9 @@ import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsVarDef;
 
 /**
- * Seznam definicij.
+ * List of definitions.
  * 
- * @author sliva
+ * @author toni kocjan
  */
 public class AbsDefs extends AbsTree {
 
@@ -19,18 +19,23 @@ public class AbsDefs extends AbsTree {
 	public final LinkedList<AbsDef> definitions;
 
 	/**
-	 * Ustvari nov seznam definicij.
+	 * Create new definitions list.
 	 * 
 	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
+	 *            Position.
 	 * @param defs
-	 *            Definicije.
+	 *            Definitions.
 	 */
 	public AbsDefs(Position pos, LinkedList<AbsDef> defs) {
 		super(pos);
 		this.definitions = defs;
 	}
 
+	/**
+	 * Find definition for given name.
+	 * @param name Name of the definition
+	 * @return Definition if found, otherwise null
+	 */
 	public AbsDef findDefinitionForName(String name) {
 		for (AbsDef d : definitions) {
 			if (d instanceof AbsVarDef && ((AbsVarDef) d).name.equals(name))

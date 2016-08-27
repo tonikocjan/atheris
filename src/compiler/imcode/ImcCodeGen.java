@@ -1,10 +1,17 @@
 package compiler.imcode;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Stack;
 
 import compiler.Report;
-import compiler.abstr.*;
-import compiler.abstr.tree.*;
+import compiler.abstr.ASTVisitor;
+import compiler.abstr.tree.AbsDefs;
+import compiler.abstr.tree.AbsExprs;
+import compiler.abstr.tree.AbsStmt;
+import compiler.abstr.tree.AbsStmts;
+import compiler.abstr.tree.AtomTypeKind;
+import compiler.abstr.tree.Condition;
+import compiler.abstr.tree.ControlTransferKind;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsEnumDef;
@@ -49,7 +56,6 @@ import compiler.seman.type.ArrayType;
 import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
 import compiler.seman.type.EnumType;
-import compiler.seman.type.PointerType;
 import compiler.seman.type.TupleType;
 import compiler.seman.type.Type;
 
@@ -234,7 +240,7 @@ public class ImcCodeGen implements ASTVisitor {
 			/**
 			 * Handle classes.
 			 */
-			else if (t instanceof ClassType) {
+			else if (t.isClassType()) {
 				code = c2;
 				
 				// member acces code
@@ -244,20 +250,20 @@ public class ImcCodeGen implements ASTVisitor {
 			/**
 			 * Handle array.length.
 			 */
-			else if (t instanceof ArrayType) {
+			else if (t.isArrayType()) {
 				code = new ImcCONST(((ArrayType) t).count);
 			}
 			/**
 			 * Handle canonical types.
 			 */
-			else if (t instanceof CanType) {
+			else if (t.isCanType()) {
 				EnumType enumType = (EnumType) ((CanType) t).childType;
 				code = new ImcCONST(enumType.offsetForDefinitionName(memberName));
 			}
 			/**
 			 * Handle tuples.
 			 */
-			else if (t instanceof TupleType) {
+			else if (t.isTupleType()) {
 				TupleType tupleType = (TupleType) t;
 
 				// member acces code
@@ -309,7 +315,8 @@ public class ImcCodeGen implements ASTVisitor {
 		ImcSEQ bodyCode = (ImcSEQ) ImcDesc.getImcCode(acceptor.body);
 		Type type = SymbDesc.getType(acceptor.collection);
 		int count = 0;
-		if (type instanceof ArrayType) {
+		
+		if (type.isArrayType()) {
 			count = ((ArrayType) type).count;
 			type = ((ArrayType) type).type;
 		}
@@ -455,7 +462,7 @@ public class ImcCodeGen implements ASTVisitor {
 		Type varType = SymbDesc.getType(acceptor);
 		
 		int size = varType.size();
-		if (varType instanceof PointerType)
+		if (varType.isPointerType())
 			size = 4;
 
 		if (access instanceof FrmVarAccess)

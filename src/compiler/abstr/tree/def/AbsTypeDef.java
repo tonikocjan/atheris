@@ -9,9 +9,6 @@ import compiler.*;
  */
 public abstract class AbsTypeDef extends AbsDef {
 
-	/** Ime tipa. */
-	public final String name;
-
 	/**
 	 * Ustvari novo definicijo tipa.
 	 * 
@@ -21,8 +18,7 @@ public abstract class AbsTypeDef extends AbsDef {
 	 *            Ime tipa.
 	 */
 	public AbsTypeDef(Position pos, String name) {
-		super(pos);
-		this.name = name;
+		super(pos, name);
 	}
 	
 }
