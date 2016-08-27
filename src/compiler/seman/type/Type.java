@@ -33,6 +33,13 @@ public abstract class Type {
 	public abstract int size();
 	
 	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public abstract boolean containsMember(String name);
+	
+	/**
 	 * Convert type to string.
 	 */
 	public abstract String toString();

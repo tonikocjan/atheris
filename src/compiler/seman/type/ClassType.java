@@ -51,8 +51,8 @@ public class ClassType extends PointerType {
 		return members;
 	}
 	
-	public boolean containsMember(String member) {
-		return members.containsKey(member);
+	public boolean containsMember(String name) {
+		return members.containsKey(name);
 	}
 	
 	/**

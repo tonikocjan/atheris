@@ -69,7 +69,12 @@ public class AtomType extends Type {
 	@Override
 	public boolean canCastTo(Type t) {
 		if (!(t instanceof AtomType)) return false;
-		// int can be castet to double
+		// int can be casted to double
 		return ((AtomType) t).type == AtomTypeKind.DOB && type == AtomTypeKind.INT;
+	}
+
+	@Override
+	public boolean containsMember(String name) {
+		return false;
 	}
 }

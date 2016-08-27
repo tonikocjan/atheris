@@ -49,4 +49,9 @@ public class ArrayType extends PointerType {
 	public boolean canCastTo(Type t) {
 		return false;
 	}
+
+	@Override
+	public boolean containsMember(String name) {
+		return false;
+	}
 }

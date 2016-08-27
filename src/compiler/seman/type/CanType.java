@@ -43,4 +43,9 @@ public class CanType extends Type {
 			return ((EnumType) childType).enumDefinition.name + ".Type";
 	}
 
+	@Override
+	public boolean containsMember(String name) {
+		return childType.containsMember(name);
+	}
+
 }

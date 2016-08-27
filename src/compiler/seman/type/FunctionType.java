@@ -97,4 +97,9 @@ public class FunctionType extends PointerType {
 		return false;
 	}
 
+	@Override
+	public boolean containsMember(String name) {
+		return false;
+	}
+
 }
