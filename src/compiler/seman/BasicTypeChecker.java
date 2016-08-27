@@ -12,14 +12,17 @@ import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsTupleDef;
 import compiler.abstr.tree.def.AbsTypeDef;
 import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
 import compiler.abstr.tree.stmt.AbsCaseStmt;
@@ -146,20 +149,21 @@ public class BasicTypeChecker implements ASTVisitor {
 				t1 = t2;
 				SymbDesc.setType(acceptor.expr1, t1);
 				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t1);
+				return;
 			}
 			
 			if (t1.sameStructureAs(t2)) {
 				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
-				SymbDesc.setType(acceptor, t2);
 				SymbDesc.setType(acceptor.expr1, t2);
+				SymbDesc.setType(acceptor, t2);
 				success = true;
 			}
 			else if (t1 instanceof ArrayType && 
 					t2 instanceof ArrayType && 
 					(((ArrayType) t1).type.sameStructureAs(((ArrayType) t2).type))) {
+				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
 				SymbDesc.setType(acceptor.expr1, t2);
 				SymbDesc.setType(acceptor, t2);
-				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
 				success = true;
 			}
 			else if (t2.canCastTo(t1)) {
@@ -188,6 +192,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			/**
 			 * Handle list.length
 			 */
+			// FIXME:
 			if (t1 instanceof ArrayType) {
 				String name = ((AbsVarNameExpr) acceptor.expr2).name;
 				if (!name.equals("count"))
@@ -197,20 +202,18 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor, integer);
 				return;
 			}
+			
+			String memberName;
+			if (acceptor.expr2 instanceof AbsVarNameExpr)
+				memberName = ((AbsVarNameExpr) acceptor.expr2).name;
+			else
+				memberName = ((AbsFunCall) acceptor.expr2).name;
 
-			if (!(t1 instanceof ClassType) && 
-					!((t1 instanceof CanType) && ((CanType)t1).childType instanceof EnumType)) {
-				if (acceptor.expr2 instanceof AbsVarNameExpr)
-					Report.error(acceptor.position,
-
-							"Instance member \"" + ((AbsVarNameExpr) acceptor.expr2).name + 
-							"\" cannot be used on type \"" + t1.toString() + "\"");
-				Report.error(acceptor.position, 
-						"Cannot use dot ('.') operator on type \"" + t1.toString() + "\"");
-			}
+			if (!t1.containsMember(memberName))
+				Report.error("Value of type \"" + t1.toString() + 
+						"\" has no member \"" + memberName + "\"");
 			
 			// TODO: different type checking for enums
-			
 			if (t1 instanceof ClassType) {
 				ClassType classType = (ClassType) t1;
 				String name;
@@ -223,10 +226,6 @@ public class BasicTypeChecker implements ASTVisitor {
 				if (!(SymbDesc.getNameDef(acceptor.expr1) instanceof AbsParDef)) {
 					AbsDef definition = classType.findMemberForName(name);
 					
-					if (definition == null) {
-						Report.error(acceptor.expr2.position,
-								"Value of type '" + classType.getName() + "' has no member '" + name + "'");
-					}
 					if (definition instanceof AbsVarDef && 
 							((AbsVarDef) definition).visibilityKind == VisibilityKind.Private)
 						Report.error(acceptor.expr2.position,
@@ -258,8 +257,7 @@ public class BasicTypeChecker implements ASTVisitor {
 					Report.error(acceptor.expr2.position, "todo");
 				}
 
-				String memberName = ((AbsVarNameExpr)acceptor.expr2).name;
-				String enumName = ((EnumType) enumType).enumDefinition.name;
+				String enumName = enumType.getName();
 				
 				AbsDef definition = ((EnumType) enumType).findMemberForName(memberName);
 				
@@ -277,6 +275,14 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				return;
 			}
+			if (t1 instanceof TupleType) {
+				TupleType tupleType = (TupleType) t1;
+				
+				SymbDesc.setType(acceptor.expr2, tupleType.typeForName(memberName));
+				SymbDesc.setType(acceptor, tupleType.typeForName(memberName));
+			}
+			
+			return;
 		}
 
 		/**
@@ -361,14 +367,11 @@ public class BasicTypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsExprs acceptor) {
-		if (acceptor.numExprs() == 0)
+		if (acceptor.expressions.size() == 0)
 			SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.VOID));
 		else {
-			for (int expr = 0; expr < acceptor.numExprs(); expr++)
-				acceptor.expr(expr).accept(this);
-
-			SymbDesc.setType(acceptor,
-					SymbDesc.getType(acceptor.expr(acceptor.numExprs() - 1)));
+			for (AbsExpr e : acceptor.expressions)
+				e.accept(this);
 		}
 	}
 
@@ -726,5 +729,46 @@ public class BasicTypeChecker implements ASTVisitor {
 		if (acceptor.value != null) {
 			acceptor.value.accept(this);
 		}
+	}
+
+	@Override
+	public void visit(AbsTupleDef acceptor) {
+		LinkedList<Type> types = new LinkedList<>();
+		LinkedList<String> names = new LinkedList<>();
+		
+		for (AbsDef def : acceptor.definitions.definitions) {
+			def.accept(this);
+			
+			names.add(def.getName());
+			types.add(SymbDesc.getType(def));
+		}
+		
+		TupleType tupleType = new TupleType(acceptor, types, names);
+		SymbDesc.setType(acceptor, tupleType);
+	}
+
+	@Override
+	public void visit(AbsLabeledExpr acceptor) {
+		acceptor.expr.accept(this);
+		
+		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.expr));
+	}
+
+	@Override
+	public void visit(AbsTupleExpr acceptor) {
+		acceptor.expressions.accept(this);
+		
+		LinkedList<Type> types = new LinkedList<>();
+		LinkedList<String> names = new LinkedList<>();
+
+		for (AbsExpr e : acceptor.expressions.expressions) {
+			AbsLabeledExpr labeledExpr = (AbsLabeledExpr) e;
+			
+			types.add(SymbDesc.getType(labeledExpr));
+			names.add(labeledExpr.name);
+		}
+		
+		TupleType tupleType = new TupleType(types, names);
+		SymbDesc.setType(acceptor, tupleType);
 	}
 }

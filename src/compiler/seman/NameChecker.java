@@ -1,6 +1,7 @@
 package compiler.seman;
 
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Vector;
 
 import compiler.Report;
@@ -13,13 +14,16 @@ import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsTupleDef;
 import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
 import compiler.abstr.tree.stmt.AbsCaseStmt;
@@ -284,8 +288,8 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsExprs acceptor) {
-		for (int expr = 0; expr < acceptor.numExprs(); expr++)
-			acceptor.expr(expr).accept(this);
+		for (AbsExpr e : acceptor.expressions)
+			e.accept(this);
 	}
 
 	@Override
@@ -535,5 +539,20 @@ public class NameChecker implements ASTVisitor {
 					acceptor.name.name + "\'");
 		}
 		acceptor.name.accept(this);
+	}
+
+	@Override
+	public void visit(AbsTupleDef acceptor) {
+		acceptor.definitions.accept(this);
+	}
+
+	@Override
+	public void visit(AbsLabeledExpr acceptor) {
+		acceptor.expr.accept(this);
+	}
+
+	@Override
+	public void visit(AbsTupleExpr acceptor) {
+		acceptor.expressions.accept(this);
 	}
 }

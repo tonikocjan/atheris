@@ -10,13 +10,16 @@ import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsTupleDef;
 import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
 import compiler.abstr.tree.stmt.AbsCaseStmt;
@@ -239,8 +242,8 @@ public class SemAn implements ASTVisitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		for (int expr = 0; expr < exprs.numExprs(); expr++) {
-			indent += 2; exprs.expr(expr).accept(this); indent -= 2;
+		for (AbsExpr e : exprs.expressions) {
+			indent += 2; e.accept(this); indent -= 2;
 		}
 	}
 	
@@ -542,5 +545,37 @@ public class SemAn implements ASTVisitor {
 		}
 		if (acceptor.value != null)
 			acceptor.value.accept(this);
+	}
+
+	@Override
+	public void visit(AbsTupleDef tupleDef) {
+		Report.dump(indent, "AbsTupleDef " + tupleDef.position.toString());		
+		{
+			Type typ = SymbDesc.getType(tupleDef);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}		
+	}
+
+	@Override
+	public void visit(AbsLabeledExpr labeledExpr) {
+		Report.dump(indent, "AbsLabeledExpr " + labeledExpr.position.toString());
+		indent += 2;
+		Report.dump(indent, "Label: " + labeledExpr.name);
+		labeledExpr.expr.accept(this);
+		{
+			Type typ = SymbDesc.getType(labeledExpr);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		indent -= 2;
+	}
+
+	@Override
+	public void visit(AbsTupleExpr tupleExpr) {
+		Report.dump(indent, "AbsTupleExpr " + tupleExpr.position.toString());
+		indent += 2;
+		tupleExpr.expressions.accept(this);
+		indent -= 2;
 	}
 }
