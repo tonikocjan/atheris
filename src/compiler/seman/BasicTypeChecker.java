@@ -130,7 +130,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			/**
 			 * expr1 is of type ARR(n, t)
 			 */
-			if (t1 instanceof ArrayType) {
+			if (t1.isArrayType()) {
 				SymbDesc.setType(acceptor, ((ArrayType) t1).type);
 			} else
 				Report.error(acceptor.expr1.position,
@@ -158,9 +158,7 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor, t2);
 				success = true;
 			}
-			else if (t1 instanceof ArrayType && 
-					t2 instanceof ArrayType && 
-					(((ArrayType) t1).type.sameStructureAs(((ArrayType) t2).type))) {
+			else if (t1.isArrayType() && t2.isArrayType() && t1.sameStructureAs(t2)) {
 				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
 				SymbDesc.setType(acceptor.expr1, t2);
 				SymbDesc.setType(acceptor, t2);
@@ -171,8 +169,7 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor.expr2, t2);
 				success = true;
 			}
-			else if (t2 instanceof AtomType && ((AtomType) t2).type == AtomTypeKind.NIL
-					&& t1 instanceof PointerType) {
+			else if (t2.isBuiltinNilType() && t1.isPointerType()) {
 				SymbDesc.setType(acceptor.expr2, t1);
 				SymbDesc.setType(acceptor, t1);
 				success = true;
@@ -193,7 +190,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			 * Handle list.length
 			 */
 			// FIXME:
-			if (t1 instanceof ArrayType) {
+			if (t1.isArrayType()) {
 				String name = ((AbsVarNameExpr) acceptor.expr2).name;
 				if (!name.equals("count"))
 					Report.error("Lists have no attribute named \"" + name
@@ -216,7 +213,7 @@ public class BasicTypeChecker implements ASTVisitor {
 						"\" has no member \"" + memberName + "\"");
 			
 			// TODO: different type checking for enums
-			if (t1 instanceof ClassType) {
+			if (t1.isClassType()) {
 				ClassType classType = (ClassType) t1;
 				String name;
 				
@@ -238,7 +235,7 @@ public class BasicTypeChecker implements ASTVisitor {
 				}
 	
 				Type type;
-				if (t1 instanceof EnumType && acceptor.expr2 instanceof AbsFunCall) {
+				if (t1.isEnumType() && acceptor.expr2 instanceof AbsFunCall) {
 					acceptor.expr2.accept(this);
 					type = SymbDesc.getType(acceptor.expr2);
 				}
@@ -250,7 +247,7 @@ public class BasicTypeChecker implements ASTVisitor {
 				return;
 			}
 			
-			if (t1 instanceof CanType) {
+			if (t1.isCanType()) {
 				EnumType enumType = (EnumType) ((CanType) t1).childType;
 				
 				if (!(acceptor.expr2 instanceof AbsVarNameExpr)) {
@@ -277,7 +274,7 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				return;
 			}
-			if (t1 instanceof TupleType) {
+			if (t1.isTupleType()) {
 				TupleType tupleType = (TupleType) t1;
 				
 				SymbDesc.setType(acceptor.expr2, tupleType.typeForName(memberName));
@@ -297,12 +294,12 @@ public class BasicTypeChecker implements ASTVisitor {
 			else
 				Report.error(
 						acceptor.position,
-						"Numeric operations \"+\", \"-\", \"*\", \"/\" and \"%\" are undefined for type LOGICAL");
+						"Numeric operations \"+\", \"-\", \"*\", \"/\" and \"%\" are undefined for type Bool");
 		}
 		/**
 		 * expr1 and expr2 are of type Int
 		 */
-		else if (t1.sameStructureAs(integer) && t1.sameStructureAs(t2)) {
+		else if (t1.isBuiltinIntType() && t2.isBuiltinIntType()) {
 			// +, -, *, /, %
 			if (oper >= 8 && oper <= 12)
 				SymbDesc.setType(acceptor, integer);
@@ -311,12 +308,12 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor, logical);
 			else
 				Report.error(acceptor.position,
-						"Logical operations \"&\" and \"|\" are undefined for type INTEGER");
+						"Logical operations \"&\" and \"|\" are undefined for type Int");
 		}
 		/**
 		 * expr1 and expr2 are of type Double
 		 */
-		else if (t1.sameStructureAs(double_) && t1.sameStructureAs(t2)) {
+		else if (t1.isBuiltinDoubleType() && t2.isBuiltinDoubleType()) {
 			// +, -, *, /, %
 			if (oper >= 8 && oper <= 12)
 				SymbDesc.setType(acceptor, double_);
@@ -325,13 +322,14 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor, logical);
 			else
 				Report.error(acceptor.position,
-						"Logical operations \"&\" and \"|\" are undefined for type INTEGER");
+						"Logical operations \"&\" and \"|\" are undefined for type Double");
 		}
 		/**
-		 * expr1 or expr2 is Double and the other is Int (implicit cast to double)
+		 * expr1 or expr2 is Double and the other is Int (implicit cast to Double)
 		 */
-		else if (t1.sameStructureAs(double_) && t2.sameStructureAs(integer)
-				|| t1.sameStructureAs(integer) && t2.sameStructureAs(double_)) {
+		// FIXME
+		else if (t1.isBuiltinDoubleType() && t2.isBuiltinIntType()
+				|| t1.isBuiltinType() && t2.isBuiltinDoubleType()) {
 			// +, -, *, /, %
 			if (oper >= 8 && oper <= 12)
 				SymbDesc.setType(acceptor, double_);
@@ -344,9 +342,9 @@ public class BasicTypeChecker implements ASTVisitor {
 		}
 		
 		/**
-		 * enumerations
+		 * Enumerations comparison.
 		 */
-		else if (t1 instanceof EnumType && t1.sameStructureAs(t2)) {
+		else if (t1.isEnumType() && t1.sameStructureAs(t2)) {
 			if (oper == AbsBinExpr.EQU)
 				SymbDesc.setType(acceptor, logical);
 			else
@@ -354,7 +352,6 @@ public class BasicTypeChecker implements ASTVisitor {
 						"Operator cannot be applied to operands of type \"" +
 							t1.toString() + "\" and \"" + t2.toString() + "\"");
 		}
-
 		else {
 			Report.error(acceptor.position, "No viable operation for types "
 					+ t1 + " and " + t2);
@@ -487,7 +484,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	public void visit(AbsParDef acceptor) {
 		acceptor.type.accept(this);
 		Type type = SymbDesc.getType(acceptor.type);
-		if (type instanceof CanType)
+		if (type.isCanType())
 			type = ((CanType) type).childType;
 
 		SymbDesc.setType(acceptor, type);
@@ -536,7 +533,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		if (acceptor.type != null) {
 			acceptor.type.accept(this);
 			Type type = SymbDesc.getType(acceptor.type);
-			if (type instanceof CanType)
+			if (type.isCanType())
 				type = ((CanType) type).childType;
 			
 			SymbDesc.setType(acceptor, type);

@@ -1,12 +1,16 @@
 package compiler.seman;
 
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Vector;
 
 import compiler.Report;
-import compiler.abstr.*;
-import compiler.abstr.tree.*;
+import compiler.abstr.ASTVisitor;
+import compiler.abstr.tree.AbsDefs;
+import compiler.abstr.tree.AbsExprs;
+import compiler.abstr.tree.AbsStmt;
+import compiler.abstr.tree.AbsStmts;
+import compiler.abstr.tree.AtomTypeKind;
+import compiler.abstr.tree.Condition;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsEnumDef;
@@ -37,10 +41,14 @@ import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsType;
 import compiler.abstr.tree.type.AbsTypeName;
-import compiler.frames.*;
+import compiler.frames.FrmDesc;
+import compiler.frames.FrmFrame;
+import compiler.frames.FrmLabel;
 import compiler.lexan.LexAn;
+import compiler.seman.type.AtomType;
+import compiler.seman.type.FunctionType;
+import compiler.seman.type.Type;
 import compiler.synan.SynAn;
-import compiler.seman.type.*;
 
 /**
  * Preverjanje in razresevanje imen (razen imen komponent).

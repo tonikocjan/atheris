@@ -146,6 +146,14 @@ public abstract class Type {
 	}
 	
 	/**
+	 * Check if this type is builtin Nil type.
+	 * @return True if it is, otherwise false.
+	 */
+	public boolean isBuiltinNilType() {
+		return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.NIL;
+	}
+	
+	/**
 	 * String representation.
 	 */
 	public abstract String toString();
