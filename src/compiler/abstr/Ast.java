@@ -9,6 +9,7 @@ import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsTupleDef;
 import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
@@ -30,7 +31,7 @@ import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsTypeName;
 
 /**
- * @author sliva
+ * @author toni kocjan
  */
 public class Ast implements ASTVisitor {
 
@@ -223,9 +224,9 @@ public class Ast implements ASTVisitor {
 
 	public void visit(AbsExprs exprs) {
 		Report.dump(indent, "AbsExprs " + exprs.position.toString() + ":");
-		for (int expr = 0; expr < exprs.numExprs(); expr++) {
+		for (AbsExpr e : exprs.expressions) {
 			indent += 2;
-			exprs.expr(expr).accept(this);
+			e.accept(this);
 			indent -= 2;
 		}
 	}
@@ -456,5 +457,17 @@ public class Ast implements ASTVisitor {
 			def.value.accept(this);
 			indent -= 2;
 		}
+	}
+
+	@Override
+	public void visit(AbsTupleDef tupleDef) {
+		Report.dump(indent, "AbsTupleDef " + tupleDef.position.toString() + ":");
+		indent += 2;
+		for (String name : tupleDef.members.keySet()) {
+			Report.dump(indent, "Name:");
+			Report.dump(indent + 2, name);
+			tupleDef.members.get(name).accept(this);
+		}
+		indent -= 2;
 	}
 }

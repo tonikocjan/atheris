@@ -9,12 +9,12 @@ import compiler.abstr.tree.expr.AbsExpr;
 /**
  * Opis izrazov.
  * 
- * @author sliva
+ * @author toni kocjan
  */
 public class AbsExprs extends AbsExpr {
 
 	/** Seznam izrazov. */
-	public final AbsExpr exprs[];
+	public final LinkedList<AbsExpr> expressions;
 
 	/**
 	 * Ustvari nov opis izrazov.
@@ -24,31 +24,10 @@ public class AbsExprs extends AbsExpr {
 	 * @param exprs
 	 *            Seznam izrazov.
 	 */
-	public AbsExprs(Position pos, Vector<AbsExpr> exprs) {
+	public AbsExprs(Position pos, LinkedList<AbsExpr> exprs) {
 		super(pos);
-		this.exprs = new AbsExpr[exprs.size()];
-		for (int expr = 0; expr < exprs.size(); expr++)
-			this.exprs[expr] = exprs.elementAt(expr);
-	}
-
-	/**
-	 * Vrne izbrani izraz.
-	 * 
-	 * @param index
-	 *            Indeks izraza.
-	 * @return Izraz na izbranem mestu.
-	 */
-	public AbsExpr expr(int index) {
-		return exprs[index];
-	}
-
-	/**
-	 * Vrne stevilo izrazov.
-	 * 
-	 * @return Stevilo izrazov.
-	 */
-	public int numExprs() {
-		return exprs.length;
+		
+		this.expressions = exprs;
 	}
 
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }

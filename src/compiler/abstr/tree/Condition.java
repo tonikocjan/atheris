@@ -6,6 +6,7 @@ import compiler.abstr.tree.expr.AbsExpr;
  * Simple structure holding condition and body which executed when condition is positive.
  */
 public class Condition {
+	
 	/** Condition. */
 	public final AbsExpr cond;
 	
