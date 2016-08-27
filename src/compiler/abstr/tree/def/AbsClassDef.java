@@ -7,7 +7,7 @@ import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsDefs;
 import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.AbsStmts;
-import compiler.abstr.tree.AtomTypeEnum;
+import compiler.abstr.tree.AtomTypeKind;
 import compiler.abstr.tree.type.AbsAtomType;
 
 public class AbsClassDef extends AbsTypeDef {
@@ -44,7 +44,7 @@ public class AbsClassDef extends AbsTypeDef {
 		AbsFunDef contructor = new AbsFunDef(pos, 
 				name,
 				new LinkedList<>(), 
-				new AbsAtomType(pos, AtomTypeEnum.VOID), 
+				new AbsAtomType(pos, AtomTypeKind.VOID), 
 				new AbsStmts(pos, initExpressions));
 		contrustors.add(contructor);
 	}

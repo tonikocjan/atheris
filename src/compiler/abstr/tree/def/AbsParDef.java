@@ -7,7 +7,7 @@ import compiler.abstr.tree.type.AbsType;
 /**
  * Opis parametra funckije.
  * 
- * @author sliva
+ * @author toni kocjan
  *
  */
 public class AbsParDef extends AbsDef {

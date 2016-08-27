@@ -136,13 +136,13 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsAtomConstExpr acceptor) {
-		if (acceptor.type == AtomTypeEnum.INT)
+		if (acceptor.type == AtomTypeKind.INT)
 			ImcDesc.setImcCode(acceptor,
 					new ImcCONST(Integer.parseInt(acceptor.value)));
-		else if (acceptor.type == AtomTypeEnum.LOG)
+		else if (acceptor.type == AtomTypeKind.LOG)
 			ImcDesc.setImcCode(acceptor,
 					new ImcCONST(acceptor.value.equals("true") ? 1 : 0));
-		else if (acceptor.type == AtomTypeEnum.STR) {
+		else if (acceptor.type == AtomTypeKind.STR) {
 			FrmLabel l = FrmLabel.newLabel();
 			ImcDataChunk str = new ImcDataChunk(l, 4);
 			str.data = new String(acceptor.value.substring(1,
@@ -150,19 +150,19 @@ public class ImcCodeGen implements ASTVisitor {
 					+ "\0");
 			chunks.add(str);
 			ImcDesc.setImcCode(acceptor, new ImcMEM(new ImcNAME(l)));
-		} else if (acceptor.type == AtomTypeEnum.CHR) {
+		} else if (acceptor.type == AtomTypeKind.CHR) {
 			ImcDesc.setImcCode(acceptor, new ImcCONST(acceptor.value.charAt(0)));
-		} else if (acceptor.type == AtomTypeEnum.DOB) {
+		} else if (acceptor.type == AtomTypeKind.DOB) {
 			ImcDesc.setImcCode(acceptor,
 					new ImcCONST(Double.parseDouble(acceptor.value)));
-		} else if (acceptor.type == AtomTypeEnum.NIL) {
+		} else if (acceptor.type == AtomTypeKind.NIL) {
 			ImcDesc.setImcCode(acceptor, new ImcCONST(0));
 		}
 	}
 
 	@Override
 	public void visit(AbsAtomType acceptor) {
-
+		///
 	}
 
 	@Override
@@ -218,6 +218,10 @@ public class ImcCodeGen implements ASTVisitor {
 			}
 			else if (t instanceof ClassType) {
 				code = c2;
+				
+				// member acces code
+				if (!(acceptor.expr2 instanceof AbsFunCall))
+					code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, e2));
 			} 
 			else if (t instanceof ArrayType) {
 				code = new ImcCONST(((ArrayType) t).count);
@@ -444,9 +448,10 @@ public class ImcCodeGen implements ASTVisitor {
 		else if (access instanceof FrmMemberAccess) {
 			FrmMemberAccess member = (FrmMemberAccess) access;
 			
-			ImcExpr address = (ImcExpr) ImcDesc.getImcCode(member.parentDef);
+//			ImcExpr address = (ImcExpr) ImcDesc.getImcCode(member.memberDef.getParemtDefinition());
 			ImcExpr offset = new ImcCONST(member.offsetForMember());
-			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, address, offset));
+//			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, address, offset));
+			expr = offset;
 		}
 		else if (access instanceof FrmParAccess) {
 			FrmParAccess loc = (FrmParAccess) access;
@@ -580,7 +585,7 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsControlTransferStmt acceptor) {
-		if (acceptor.control == ControlTransfer.Continue) {
+		if (acceptor.control == ControlTransferKind.Continue) {
 			if (!startLabelStack.isEmpty()) 
 				// Jump to continue label (beginning of the loop)
 				ImcDesc.setImcCode(acceptor, new ImcJUMP(startLabelStack.peek()));

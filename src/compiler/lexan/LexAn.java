@@ -35,7 +35,7 @@ public class LexAn {
 	/**
 	 * Map containing all reserved keywords.
 	 */
-	private static Map<String, TokenEnum> keywordsMap = null;
+	private static Map<String, TokenType> keywordsMap = null;
 	/**
 	 * Reserved keywords.
 	 */
@@ -43,7 +43,7 @@ public class LexAn {
 			{ 
 			"Int", "String", "Double", "Bool", "Char", "Void", "else", 
 			"for", "func", "if", "var", "while", "struct", "import", 
-			"let", "nil", "self", "class", "in", "return", "public", 
+			"let", "nil", "class", "in", "return", "public", 
 			"private", "continue", "break", "switch", "case", "default",
 			"enum" 
 			};
@@ -92,7 +92,7 @@ public class LexAn {
 			keywordsMap = new HashMap<>();
 			for (int i = 0; i < keywords.length; i++)
 				keywordsMap.put(keywords[i],
-						TokenEnum.values()[i + TokenEnum.INTEGER.ordinal()]);
+						TokenType.values()[i + TokenType.INTEGER.ordinal()]);
 
 		} catch (FileNotFoundException e) {
 			Report.error(LanguageManager.localize("lexan_error_opening_file", sourceFileName));
@@ -112,7 +112,7 @@ public class LexAn {
 		try {
 			Symbol s = parseSymbol();
 			if (s == null)
-				s = new Symbol(TokenEnum.EOF, "$", startRow, startCol, startRow,
+				s = new Symbol(TokenType.EOF, "$", startRow, startCol, startRow,
 						startCol + 1);
 
 			dump(s);
@@ -159,7 +159,7 @@ public class LexAn {
 				// if next character is not *, return DIV token
 				if (nxtCh != '*') {
 					dontRead = true;
-					return new Symbol(TokenEnum.DIV, "/", startRow, startCol,
+					return new Symbol(TokenType.DIV, "/", startRow, startCol,
 							startRow, startCol + 1);
 				}
 				// else skip characters until */
@@ -182,7 +182,7 @@ public class LexAn {
 			 * Handle EOF.
 			 */
 			if (nxtCh == -1)
-				return new Symbol(TokenEnum.EOF, "$", startRow, startCol, startRow,
+				return new Symbol(TokenType.EOF, "$", startRow, startCol, startRow,
 						startCol);
 
 			/**
@@ -222,7 +222,7 @@ public class LexAn {
 							LanguageManager.localize("lexan_error_string_not_closed"));
 				}
 
-				return new Symbol(TokenEnum.STR_CONST, word.toString(), startRow,
+				return new Symbol(TokenType.STR_CONST, word.toString(), startRow,
 						startCol, startRow, startCol + word.length());
 			}
 
@@ -245,7 +245,7 @@ public class LexAn {
 				}
 				dontRead = true;
 
-				TokenEnum t = didParseDouble ? TokenEnum.DOUBLE_CONST : TokenEnum.INT_CONST;
+				TokenType t = didParseDouble ? TokenType.DOUBLE_CONST : TokenType.INT_CONST;
 				return new Symbol(t, word.toString(), startRow, startCol,
 						startRow, startCol + word.length());
 			}
@@ -255,7 +255,7 @@ public class LexAn {
 			 */
 			if (nxtCh == '\'') {
 				nxtCh = file.read();
-				Symbol s = new Symbol(TokenEnum.CHAR_CONST, "" + (char) nxtCh,
+				Symbol s = new Symbol(TokenType.CHAR_CONST, "" + (char) nxtCh,
 						startRow, startCol, startRow, startCol + 2);
 				nxtCh = file.read();
 				if (nxtCh != '\'')
@@ -284,17 +284,17 @@ public class LexAn {
 					if (isOperator(nxtCh) != null || isWhiteSpace(nxtCh)
 							|| nxtCh == -1 || nxtCh == '\'') {
 						dontRead = true;
-						TokenEnum tokenEnum = TokenEnum.IDENTIFIER;
+						TokenType tokenType = TokenType.IDENTIFIER;
 
 						// Check if word is keyword
 						if (keywordsMap.containsKey(word.toString()))
-							tokenEnum = keywordsMap.get(word.toString());
+							tokenType = keywordsMap.get(word.toString());
 						// Check if word is log const
 						if (word.toString().equals("true")
 								|| word.toString().equals("false"))
-							tokenEnum = TokenEnum.LOG_CONST;
+							tokenType = TokenType.LOG_CONST;
 
-						return new Symbol(tokenEnum, word.toString(), startRow,
+						return new Symbol(tokenType, word.toString(), startRow,
 								startCol, startRow, startCol + word.length());
 					}
 					/**
@@ -315,7 +315,7 @@ public class LexAn {
 				/**
 				 * Handle newline
 				 */
-				if (op.token == TokenEnum.NEWLINE) {
+				if (op.token == TokenType.NEWLINE) {
 					// skip all whitespaces
 					do {
 						if (nxtCh == 10) {
@@ -346,7 +346,7 @@ public class LexAn {
 				nxtCh = tmpCh;
 				startCol++;
 
-				if (op.token == TokenEnum.NEWLINE) {
+				if (op.token == TokenType.NEWLINE) {
 					startRow++;
 					startCol = 1;
 				}
@@ -386,74 +386,74 @@ public class LexAn {
 	 */
 	private Symbol isOperator(int ch) {
 		if (ch == '+')
-			return new Symbol(TokenEnum.ADD, "+", startRow, startCol, startRow,
+			return new Symbol(TokenType.ADD, "+", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '-')
-			return new Symbol(TokenEnum.SUB, "-", startRow, startCol, startRow,
+			return new Symbol(TokenType.SUB, "-", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '*')
-			return new Symbol(TokenEnum.MUL, "*", startRow, startCol, startRow,
+			return new Symbol(TokenType.MUL, "*", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '/')
-			return new Symbol(TokenEnum.DIV, "/", startRow, startCol, startRow,
+			return new Symbol(TokenType.DIV, "/", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '%')
-			return new Symbol(TokenEnum.MOD, "%", startRow, startCol, startRow,
+			return new Symbol(TokenType.MOD, "%", startRow, startCol, startRow,
 					startCol + 1);
 
 		if (ch == '!')
-			return new Symbol(TokenEnum.NOT, "!", startRow, startCol, startRow,
+			return new Symbol(TokenType.NOT, "!", startRow, startCol, startRow,
 					startCol + 1);
 
 		if (ch == '(')
-			return new Symbol(TokenEnum.LPARENT, "(", startRow, startCol, startRow,
+			return new Symbol(TokenType.LPARENT, "(", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == ')')
-			return new Symbol(TokenEnum.RPARENT, ")", startRow, startCol, startRow,
+			return new Symbol(TokenType.RPARENT, ")", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '{')
-			return new Symbol(TokenEnum.LBRACE, "{", startRow, startCol, startRow,
+			return new Symbol(TokenType.LBRACE, "{", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '}')
-			return new Symbol(TokenEnum.RBRACE, "}", startRow, startCol, startRow,
+			return new Symbol(TokenType.RBRACE, "}", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '[')
-			return new Symbol(TokenEnum.LBRACKET, "[", startRow, startCol,
+			return new Symbol(TokenType.LBRACKET, "[", startRow, startCol,
 					startRow, startCol + 1);
 		if (ch == ']')
-			return new Symbol(TokenEnum.RBRACKET, "]", startRow, startCol,
+			return new Symbol(TokenType.RBRACKET, "]", startRow, startCol,
 					startRow, startCol + 1);
 
 		if (ch == '<')
-			return new Symbol(TokenEnum.LTH, "<", startRow, startCol, startRow,
+			return new Symbol(TokenType.LTH, "<", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '>')
-			return new Symbol(TokenEnum.GTH, ">", startRow, startCol, startRow,
+			return new Symbol(TokenType.GTH, ">", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '=')
-			return new Symbol(TokenEnum.ASSIGN, "=", startRow, startCol, startRow,
+			return new Symbol(TokenType.ASSIGN, "=", startRow, startCol, startRow,
 					startCol + 1);
 
 		if (ch == '.')
-			return new Symbol(TokenEnum.DOT, ".", startRow, startCol, startRow,
+			return new Symbol(TokenType.DOT, ".", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == ':')
-			return new Symbol(TokenEnum.COLON, ":", startRow, startCol, startRow,
+			return new Symbol(TokenType.COLON, ":", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == ';')
-			return new Symbol(TokenEnum.SEMIC, ";", startRow, startCol, startRow,
+			return new Symbol(TokenType.SEMIC, ";", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == ',')
-			return new Symbol(TokenEnum.COMMA, ",", startRow, startCol, startRow,
+			return new Symbol(TokenType.COMMA, ",", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '|')
-			return new Symbol(TokenEnum.IOR, "|", startRow, startCol, startRow,
+			return new Symbol(TokenType.IOR, "|", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '&')
-			return new Symbol(TokenEnum.AND, "&", startRow, startCol, startRow,
+			return new Symbol(TokenType.AND, "&", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch == '\n')
-			return new Symbol(TokenEnum.NEWLINE, "\\n", startRow, startCol,
+			return new Symbol(TokenType.NEWLINE, "\\n", startRow, startCol,
 					startRow, startCol + 1);
 
 		return null;
@@ -468,25 +468,25 @@ public class LexAn {
 	 */
 	private Symbol isOperator2(int ch1, int ch2) {
 		if (ch1 == '=' && ch2 == '=')
-			return new Symbol(TokenEnum.EQU, "==", startRow, startCol, startRow,
+			return new Symbol(TokenType.EQU, "==", startRow, startCol, startRow,
 					startCol + 2);
 		if (ch1 == '!' && ch2 == '=')
-			return new Symbol(TokenEnum.NEQ, "!=", startRow, startCol, startRow,
+			return new Symbol(TokenType.NEQ, "!=", startRow, startCol, startRow,
 					startCol + 2);
 		if (ch1 == '>' && ch2 == '=')
-			return new Symbol(TokenEnum.GEQ, ">=", startRow, startCol, startRow,
+			return new Symbol(TokenType.GEQ, ">=", startRow, startCol, startRow,
 					startCol + 2);
 		if (ch1 == '<' && ch2 == '=')
-			return new Symbol(TokenEnum.LEQ, "<=", startRow, startCol, startRow,
+			return new Symbol(TokenType.LEQ, "<=", startRow, startCol, startRow,
 					startCol + 2);
 		if (ch1 == '&' && ch1 == ch2)
-			return new Symbol(TokenEnum.AND, "&", startRow, startCol, startRow,
+			return new Symbol(TokenType.AND, "&", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch1 == '|' && ch1 == ch2)
-			return new Symbol(TokenEnum.IOR, "|", startRow, startCol, startRow,
+			return new Symbol(TokenType.IOR, "|", startRow, startCol, startRow,
 					startCol + 1);
 		if (ch1 == '-' && ch2 == '>')
-			return new Symbol(TokenEnum.ARROW, "->", startRow, startCol, startRow,
+			return new Symbol(TokenType.ARROW, "->", startRow, startCol, startRow,
 					startCol + 1);
 		return null;
 	}
@@ -531,7 +531,7 @@ public class LexAn {
 			return;
 		if (Report.dumpFile() == null)
 			return;
-		if (symb.token == TokenEnum.EOF)
+		if (symb.token == TokenType.EOF)
 			Report.dumpFile().println(symb.toString());
 		else
 			Report.dumpFile().println(

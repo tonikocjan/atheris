@@ -6,8 +6,8 @@ import compiler.seman.type.ClassType;
 public class FrmMemberAccess extends FrmAccess {
 
 	public final AbsVarDef memberDef;
-	// FIXME
-	public AbsVarDef parentDef;
+
+	// TODO: is this attribure necessary?
 	public final ClassType parentType;
 	
 	public FrmMemberAccess(AbsVarDef memberDef, ClassType parentType) {

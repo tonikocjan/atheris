@@ -10,7 +10,7 @@ import compiler.*;
 public class Symbol {
 	
 	/** Vrsta simbola. */
-	public final TokenEnum token;
+	public final TokenType token;
 
 	/** Znakovna predstavitev simbola. */
 	public final String lexeme;
@@ -21,7 +21,7 @@ public class Symbol {
 	/**
 	 * Ustvari nov leksikalni simbol.
 	 * 
-	 * @param tokenEnum
+	 * @param tokenType
 	 *            Vrsta simbola.
 	 * @param lexeme
 	 *            Znakovna predstavitev simbola.
@@ -34,8 +34,8 @@ public class Symbol {
 	 * @param endColumn
 	 *            Stolpec konca simbola v izvorni datoteki.
 	 */
-	public Symbol(TokenEnum tokenEnum, String lexeme, int begLine, int begColumn, int endLine, int endColumn) {
-		this.token = tokenEnum;
+	public Symbol(TokenType tokenType, String lexeme, int begLine, int begColumn, int endLine, int endColumn) {
+		this.token = tokenType;
 		this.lexeme = lexeme;
 		this.position = new Position(begLine, begColumn, endLine, endColumn);
 	}
@@ -43,15 +43,15 @@ public class Symbol {
 	/**
 	 * Ustvari nov leksikalni simbol.
 	 * 
-	 * @param tokenEnum
+	 * @param tokenType
 	 *            Vrsta simbola.
 	 * @param lexeme
 	 *            Znakovna predstavitev simbola.
 	 * @param position
 	 *            Polozaj simbola v izvorni datoteki.
 	 */
-	public Symbol(TokenEnum tokenEnum, String lexeme, Position position) {
-		this.token = tokenEnum;
+	public Symbol(TokenType tokenType, String lexeme, Position position) {
+		this.token = tokenType;
 		this.lexeme = lexeme;
 		this.position = position;
 	}
@@ -103,7 +103,7 @@ public class Symbol {
 		
 		case KW_STRUCT : tokenName = "STRUCT"    ; break;
 		case KW_CLASS  : tokenName = "CLASS"     ; break;
-		case KW_SELF   : tokenName = "SELF"      ; break;
+//		case KW_SELF   : tokenName = "SELF"      ; break;
 		case KW_NIL    : tokenName = "NIL"       ; break;
 		
 		case ASSIGN    : tokenName = "ASSIGN"    ; break;

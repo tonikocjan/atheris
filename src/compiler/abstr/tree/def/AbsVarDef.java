@@ -2,7 +2,7 @@ package compiler.abstr.tree.def;
 
 import compiler.*;
 import compiler.abstr.*;
-import compiler.abstr.tree.VisibilityEnum;
+import compiler.abstr.tree.VisibilityKind;
 import compiler.abstr.tree.type.AbsType;
 
 /**
@@ -22,7 +22,7 @@ public class AbsVarDef extends AbsDef {
 	public final boolean isConstant;
 	
 	/** Is variable public / private (used for class members) */
-	public final VisibilityEnum visibilityEnum;
+	public final VisibilityKind visibilityKind;
 
 	/**
 	 * Ustvari novo definicijo spremenljivke.
@@ -39,7 +39,7 @@ public class AbsVarDef extends AbsDef {
 		this.name = name;
 		this.type = type;
 		this.isConstant = false;
-		this.visibilityEnum = VisibilityEnum.Public;
+		this.visibilityKind = VisibilityKind.Public;
 	}
 	
 	/**
@@ -57,7 +57,7 @@ public class AbsVarDef extends AbsDef {
 		this.name = name;
 		this.type = type;
 		this.isConstant = constant;
-		this.visibilityEnum = VisibilityEnum.Public;
+		this.visibilityKind = VisibilityKind.Public;
 	}
 	
 	/**
@@ -70,12 +70,12 @@ public class AbsVarDef extends AbsDef {
 	 * @param type
 	 *            Opis tipa spremenljivke.
 	 */
-	public AbsVarDef(Position pos, String name, AbsType type, boolean constant, VisibilityEnum visibilityEnum) {
+	public AbsVarDef(Position pos, String name, AbsType type, boolean constant, VisibilityKind visibilityKind) {
 		super(pos);
 		this.name = name;
 		this.type = type;
 		this.isConstant = constant;
-		this.visibilityEnum = visibilityEnum;
+		this.visibilityKind = visibilityKind;
 	}
 
 

@@ -5,7 +5,7 @@ package compiler.lexan;
  * 
  * @author toni kocjan
  */
-public enum TokenEnum {
+public enum TokenType {
 
 	/** Token type: konec datoteke. */							EOF,
 	
@@ -66,7 +66,7 @@ public enum TokenEnum {
 	/** Token type: keyword import.  */ 						KW_IMPORT,
 	/** Token type: keyword let.  */ 							KW_LET,
 	/** Token type: keyword nil.  */ 							KW_NIL,
-	/** Token type: keyword self.  */ 							KW_SELF,
+//	/** Token type: keyword self.  */ 							KW_SELF,
 	/** Token type: keyword class.  */ 							KW_CLASS,
 	/** Token type: keyword in.  */ 							KW_IN,
 	/** Token type: keyword return.  */ 						KW_RETURN,

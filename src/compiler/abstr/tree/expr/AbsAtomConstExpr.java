@@ -2,7 +2,7 @@ package compiler.abstr.tree.expr;
 
 import compiler.*;
 import compiler.abstr.*;
-import compiler.abstr.tree.AtomTypeEnum;
+import compiler.abstr.tree.AtomTypeKind;
 
 /**
  * Opis konstante atomarnega tipa.
@@ -12,7 +12,7 @@ import compiler.abstr.tree.AtomTypeEnum;
 public class AbsAtomConstExpr extends AbsExpr {
 	
 	/** Tip. */
-	public final AtomTypeEnum type;
+	public final AtomTypeKind type;
 	
 	/** Vrednost. */
 	public final String value;
@@ -27,7 +27,7 @@ public class AbsAtomConstExpr extends AbsExpr {
 	 * @param value
 	 *            Vrednost.
 	 */
-	public AbsAtomConstExpr(Position pos, AtomTypeEnum type, String value) {
+	public AbsAtomConstExpr(Position pos, AtomTypeKind type, String value) {
 		super(pos);
 		this.type = type;
 		this.value = value;

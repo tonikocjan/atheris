@@ -52,6 +52,10 @@ public class AbsFunDef extends AbsDef {
 		return pars;
 	}
 	
+	public AbsParDef getParameterForIndex(int index) {
+		return pars.get(index);
+	}
+	
 	public void addParamater(AbsParDef newPar) {
 		pars.addFirst(newPar);
 	}

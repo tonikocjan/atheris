@@ -2,13 +2,13 @@ package compiler.abstr.tree.stmt;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
-import compiler.abstr.tree.ControlTransfer;
+import compiler.abstr.tree.ControlTransferKind;
 
 public class AbsControlTransferStmt extends AbsConditionalStmt {
 	
-	public final ControlTransfer control;
+	public final ControlTransferKind control;
 
-	public AbsControlTransferStmt(Position pos, ControlTransfer control) {
+	public AbsControlTransferStmt(Position pos, ControlTransferKind control) {
 		super(pos);
 		this.control = control;
 	}

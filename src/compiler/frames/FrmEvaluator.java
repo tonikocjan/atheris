@@ -46,7 +46,7 @@ public class FrmEvaluator implements ASTVisitor {
 	
 	public FrmEvaluator() {
 		AbsFunDef _main = new AbsFunDef(null, ENTRY_POINT, new LinkedList<>(), 
-				new AbsAtomType(null, AtomTypeEnum.VOID), new AbsStmts(null, 
+				new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(null, 
 						new LinkedList<>()));
 
 		entryPoint = new FrmFrame(_main, 0);
@@ -95,17 +95,6 @@ public class FrmEvaluator implements ASTVisitor {
 					SymbDesc.getType(acceptor.expr2) instanceof FunctionType) {
 				FrmDesc.setFrame(SymbDesc.getNameDef(acceptor.expr1), 
 						FrmDesc.getFrame(SymbDesc.getNameDef(acceptor.expr2)));	
-			}
-		}
-		else if (acceptor.oper == AbsBinExpr.DOT) {
-			// FIXME
-			if (acceptor.expr1 instanceof AbsVarNameExpr &&
-					acceptor.expr2 instanceof AbsVarNameExpr) {
-				AbsVarDef parentDef = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr1);
-				AbsVarDef memberDef = (AbsVarDef) SymbDesc.getNameDef(acceptor.expr2);
-				FrmMemberAccess memberAccess = (FrmMemberAccess) FrmDesc.getAccess(memberDef);
-				
-				memberAccess.parentDef = parentDef;
 			}
 		}
 	}

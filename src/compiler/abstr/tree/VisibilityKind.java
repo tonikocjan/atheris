@@ -1,6 +1,6 @@
 package compiler.abstr.tree;
 
-public enum VisibilityEnum {
+public enum VisibilityKind {
 	Public,
 	Private
 }

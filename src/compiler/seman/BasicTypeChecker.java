@@ -55,6 +55,8 @@ public class BasicTypeChecker implements ASTVisitor {
 		ArrayList<Type> types = new ArrayList<>();
 		ArrayList<String> names = new ArrayList<>();
 		
+		// TODO: handle implicit self parameter
+		
 		for (AbsDef def : acceptor.definitions.definitions)
 			def.accept(this);
 
@@ -78,6 +80,15 @@ public class BasicTypeChecker implements ASTVisitor {
 		
 		for (AbsFunDef c : acceptor.contrustors)
 			SymbDesc.setType(c, new FunctionType(new Vector<>(), classType, c));
+		
+		// add implicit self: classType parameter to instance methods
+		for (AbsDef def : acceptor.definitions.definitions) {
+			if (def instanceof AbsFunDef) {
+				AbsFunDef funDef = (AbsFunDef) def;
+				SymbDesc.setType(funDef.getParameterForIndex(0), classType);
+				def.accept(this);
+			}
+		}
 	}
 
 	@Override
@@ -100,9 +111,9 @@ public class BasicTypeChecker implements ASTVisitor {
 		Type t1 = SymbDesc.getType(acceptor.expr1);
 		Type t2 = SymbDesc.getType(acceptor.expr2);
 
-		Type integer = new AtomType(AtomTypeEnum.INT);
-		Type logical = new AtomType(AtomTypeEnum.LOG);
-		Type double_ = new AtomType(AtomTypeEnum.DOB);
+		Type integer = new AtomType(AtomTypeKind.INT);
+		Type logical = new AtomType(AtomTypeKind.LOG);
+		Type double_ = new AtomType(AtomTypeKind.DOB);
 
 		int oper = acceptor.oper;
 
@@ -156,7 +167,7 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor.expr2, t2);
 				success = true;
 			}
-			else if (t2 instanceof AtomType && ((AtomType) t2).type == AtomTypeEnum.NIL
+			else if (t2 instanceof AtomType && ((AtomType) t2).type == AtomTypeKind.NIL
 					&& t1 instanceof PointerType) {
 				SymbDesc.setType(acceptor.expr2, t1);
 				SymbDesc.setType(acceptor, t1);
@@ -217,7 +228,7 @@ public class BasicTypeChecker implements ASTVisitor {
 								"Value of type '" + classType.getName() + "' has no member '" + name + "'");
 					}
 					if (definition instanceof AbsVarDef && 
-							((AbsVarDef) definition).visibilityEnum == VisibilityEnum.Private)
+							((AbsVarDef) definition).visibilityKind == VisibilityKind.Private)
 						Report.error(acceptor.expr2.position,
 								"Member '" + name + "' is private");
 					
@@ -351,7 +362,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsExprs acceptor) {
 		if (acceptor.numExprs() == 0)
-			SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.VOID));
+			SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.VOID));
 		else {
 			for (int expr = 0; expr < acceptor.numExprs(); expr++)
 				acceptor.expr(expr).accept(this);
@@ -367,7 +378,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		Type type = ((ArrayType)SymbDesc.getType(acceptor.collection)).type;
 
 		SymbDesc.setType(SymbDesc.getNameDef(acceptor.iterator), type);
-		SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.VOID));
+		SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.VOID));
 		
 		acceptor.iterator.accept(this);
 		acceptor.body.accept(this);
@@ -455,8 +466,8 @@ public class BasicTypeChecker implements ASTVisitor {
 			c.body.accept(this);
 			
 			if (SymbDesc.getType(c.cond).sameStructureAs(
-					new AtomType(AtomTypeEnum.LOG)))
-				SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.VOID));
+					new AtomType(AtomTypeKind.LOG)))
+				SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.VOID));
 			else
 				Report.error(c.cond.position,
 						"Condition must be of type Bool");
@@ -480,6 +491,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsTypeName acceptor) {
 		AbsDef definition = SymbDesc.getNameDef(acceptor);
+		
 		if (!(definition instanceof AbsTypeDef))
 			Report.error(acceptor.position, "Expected type definition");
 
@@ -498,15 +510,15 @@ public class BasicTypeChecker implements ASTVisitor {
 		Type type = SymbDesc.getType(acceptor.expr);
 
 		if (acceptor.oper == AbsUnExpr.NOT) {
-			if (type.sameStructureAs(new AtomType(AtomTypeEnum.LOG)))
-				SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.LOG));
+			if (type.sameStructureAs(new AtomType(AtomTypeKind.LOG)))
+				SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.LOG));
 			else
 				Report.error(acceptor.position,
 						"Operator \"!\" is not defined for type " + type);
 		} else if (acceptor.oper == AbsUnExpr.ADD
 				|| acceptor.oper == AbsUnExpr.SUB) {
-			if (type.sameStructureAs(new AtomType(AtomTypeEnum.INT)))
-				SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.INT));
+			if (type.sameStructureAs(new AtomType(AtomTypeKind.INT)))
+				SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.INT));
 			else
 				Report.error(acceptor.position,
 						"Operators \"+\" and \"-\" are not defined for type "
@@ -538,8 +550,8 @@ public class BasicTypeChecker implements ASTVisitor {
 		acceptor.body.accept(this);
 
 		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new AtomType(AtomTypeEnum.LOG)))
-			SymbDesc.setType(acceptor, new AtomType(AtomTypeEnum.VOID));
+				new AtomType(AtomTypeKind.LOG)))
+			SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.VOID));
 		else
 			Report.error(acceptor.cond.position,
 					"Condition must be typed as Boolean");
@@ -569,7 +581,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			returnExpr.expr.accept(this);
 			SymbDesc.setType(returnExpr, SymbDesc.getType(returnExpr.expr));
 		} else
-			SymbDesc.setType(returnExpr, new AtomType(AtomTypeEnum.VOID));
+			SymbDesc.setType(returnExpr, new AtomType(AtomTypeKind.VOID));
 	}
 
 	@Override
@@ -626,7 +638,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		if (switchStmt.defaultBody != null)
 			switchStmt.defaultBody.accept(this);
 		
-		SymbDesc.setType(switchStmt, new AtomType(AtomTypeEnum.VOID));
+		SymbDesc.setType(switchStmt, new AtomType(AtomTypeKind.VOID));
 	}
 
 	@Override
@@ -672,15 +684,15 @@ public class BasicTypeChecker implements ASTVisitor {
 					previousValue = enumMemberDef.value.value;
 				}
 				else if (enumRawValueType != null) {
-					if (enumRawValueType.type != AtomTypeEnum.STR &&
-							enumRawValueType.type != AtomTypeEnum.INT)
+					if (enumRawValueType.type != AtomTypeKind.STR &&
+							enumRawValueType.type != AtomTypeKind.INT)
 						Report.error(enumMemberDef.position, "Enum members require explicit raw values when the raw type is not integer or string literal");
 					
 					String value = null;
 					
-					if (enumRawValueType.type == AtomTypeEnum.STR)
+					if (enumRawValueType.type == AtomTypeKind.STR)
 						value = enumMemberDef.name.name;
-					else if (enumRawValueType.type == AtomTypeEnum.INT) {
+					else if (enumRawValueType.type == AtomTypeKind.INT) {
 						if (previousValue == null)
 							value = "" + iterator;
 						else
