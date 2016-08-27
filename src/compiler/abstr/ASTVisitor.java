@@ -12,8 +12,10 @@ import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
 import compiler.abstr.tree.stmt.AbsCaseStmt;
@@ -59,4 +61,6 @@ public interface ASTVisitor {
 	public void visit(AbsEnumDef acceptor);
 	public void visit(AbsEnumMemberDef acceptor);
 	public void visit(AbsTupleDef acceptor);
+	public void visit(AbsLabeledExpr acceptor);
+	public void visit(AbsTupleExpr acceptor);
 }

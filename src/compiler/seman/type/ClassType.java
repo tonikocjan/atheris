@@ -17,7 +17,7 @@ public class ClassType extends PointerType {
 	public final AbsClassDef classDefinition;
 
 	/**
-	 * Map containing members types.
+	 * Class member types.
 	 */
 	private final LinkedHashMap<String, Type> members = new LinkedHashMap<>();
 	

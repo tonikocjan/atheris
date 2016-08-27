@@ -19,8 +19,10 @@ import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
 import compiler.abstr.tree.stmt.AbsCaseStmt;
@@ -298,10 +300,6 @@ public class SynAn {
 		case KW_CASE:
 			dump("definition -> enum_member_definition");
 			definition = parseEnumCaseDefinition();
-			break;
-		case LPARENT:
-			dump("definition -> tuple_definition");
-			definition = parseTupleDefinition();
 			break;
 		default:
 			if (symbol.token != TokenType.EOF)
@@ -595,62 +593,6 @@ public class SynAn {
 		}
 		return new AbsEnumMemberDef(name.position, name, null);
 	}
-	
-	private AbsTupleDef parseTupleDefinition() {
-		Position start = symbol.position;
-		skip();
-		
-		// TODO: empty tuple
-		
-		LinkedList[] data = parseTupleExpressions();
-		
-		if (symbol.token != TokenType.RPARENT)
-			Report.error(symbol.position, "Expected ')'");
-		
-		Position tuplePos = new Position(start, symbol.position);
-		skip();
-		
-		return new AbsTupleDef(tuplePos, data[0], data[1]);
-	}
-	
-	private LinkedList[] parseTupleExpressions() {
-		int index = 0;
-		LinkedList<AbsExpr> expressions = new LinkedList<>(); 
-		LinkedList<String> names = new LinkedList<>();
-		
-		while (true) {
-			AbsExpr e1 = parseExpression();
-			
-			if (symbol.token == TokenType.COLON) {
-				if (!(e1 instanceof AbsVarNameExpr))
-					Report.error(e1.position, "Expected identifier for tuple member name");
-				String memberName = ((AbsVarNameExpr) e1).name;
-				
-				if (names.contains(memberName))
-					Report.error(e1.position, "This tuple already contains member named \"" + memberName + "\"");
-				names.add(memberName);
-				
-				skip();
-				expressions.add(parseExpression());
-			}
-			else {
-				names.add(String.valueOf(index));
-				expressions.add(e1);
-			}
-			
-			if (symbol.token == TokenType.RPARENT)
-				break;
-			if (symbol.token != TokenType.COMMA)
-				Report.error(symbol.position, "Insert ',' separator");
-			skip();
-			if (symbol.token == TokenType.NEWLINE)
-				skip();
-			
-			index++;
-		}
-		
-		return new LinkedList[] { expressions, names };
-	}
 
 	private AbsType parseType() {
 		Symbol s = symbol;
@@ -708,13 +650,14 @@ public class SynAn {
 			skip();
 			
 			Vector<AbsType> parameters = new Vector<>();
-			if (symbol.token != TokenType.RPARENT)
+			if (symbol.token != TokenType.RPARENT) {
 				while (true) {
 					parameters.add(parseType());
 					if (symbol.token != TokenType.COMMA)
 						break;
 					skip();
 				}
+			}
 			if (symbol.token != TokenType.RPARENT)
 				Report.error(symbol.position,
 						"Syntax error, insert \")\" to complete function declaration");
@@ -859,6 +802,7 @@ public class SynAn {
 		case DOUBLE_CONST:
 		case KW_NIL:
 		case LBRACKET:
+		case LPARENT:
 		case KW_IF:
 		case KW_WHILE:
 		case KW_FOR:
@@ -1499,6 +1443,7 @@ public class SynAn {
 		case KW_RETURN:
 			Position pos = symbol.position;
 			skip();
+			// FIXME
 			if (symbol.token == TokenType.SEMIC) {
 				dump("atom_expression -> return");
 				return new AbsReturnExpr(pos, null);
@@ -1506,6 +1451,8 @@ public class SynAn {
 			dump("atom_expression -> return expression");
 			AbsExpr e = parseExpression();
 			return new AbsReturnExpr(new Position(pos, e.position), e);
+		case LPARENT:
+			return parseTupleExpression();
 		default:
 			Report.error("Syntax error on token \"" + symbol.lexeme + "\", delete this token");
 		}
@@ -1789,6 +1736,64 @@ public class SynAn {
 		}
 		
 		return null;
+	}
+	
+	
+	private AbsTupleExpr parseTupleExpression() {
+		Position start = symbol.position;
+		skip();
+		
+		// TODO: empty tuple
+		
+		LinkedList<AbsExpr> expressions = parseTupleExpressions();
+		
+		if (symbol.token != TokenType.RPARENT)
+			Report.error(symbol.position, "Expected ')'");
+		
+		Position tuplePos = new Position(start, symbol.position);
+		skip();
+		
+		return new AbsTupleExpr(tuplePos, expressions);
+	}
+	
+	private LinkedList<AbsExpr> parseTupleExpressions() {
+		int index = 0;
+		LinkedList<AbsExpr> expressions = new LinkedList<>(); 
+		
+		while (true) {
+			AbsExpr e1 = parseExpression();
+			
+			if (symbol.token == TokenType.COLON) {
+				if (!(e1 instanceof AbsVarNameExpr))
+					Report.error(e1.position, "Expected identifier for tuple member name");
+				String memberName = ((AbsVarNameExpr) e1).name;
+				
+				// TODO
+//				if (names.contains(memberName))
+//					Report.error(e1.position, "This tuple already contains member named \"" + memberName + "\"");
+				
+				skip();
+				AbsExpr e2 = parseExpression();
+				Position pos = new Position(e1.position, e2.position);
+				expressions.add(new AbsLabeledExpr(pos, e2, memberName));
+			}
+			else {
+				String memberName = String.valueOf(index);
+				expressions.add(new AbsLabeledExpr(e1.position, e1, memberName));
+			}
+			
+			if (symbol.token == TokenType.RPARENT)
+				break;
+			if (symbol.token != TokenType.COMMA)
+				Report.error(symbol.position, "Insert ',' separator");
+			skip();
+			if (symbol.token == TokenType.NEWLINE)
+				skip();
+			
+			index++;
+		}
+		
+		return expressions;
 	}
 
 	/**
