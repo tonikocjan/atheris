@@ -206,8 +206,10 @@ public class BasicTypeChecker implements ASTVisitor {
 			String memberName;
 			if (acceptor.expr2 instanceof AbsVarNameExpr)
 				memberName = ((AbsVarNameExpr) acceptor.expr2).name;
-			else
+			else if (acceptor.expr2 instanceof AbsFunCall)
 				memberName = ((AbsFunCall) acceptor.expr2).name;
+			else
+				memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
 
 			if (!t1.containsMember(memberName))
 				Report.error("Value of type \"" + t1.toString() + 

@@ -11,13 +11,16 @@ import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsTupleDef;
 import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
 import compiler.abstr.tree.stmt.AbsCaseStmt;
@@ -34,12 +37,13 @@ import compiler.seman.SymbDesc;
 import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
 import compiler.seman.type.FunctionType;
+import compiler.seman.type.Type;
 
 public class FrmEvaluator implements ASTVisitor {
 
 	private int currentLevel = 1;
 	private FrmFrame currentFrame = null;
-	private ClassType classType = null;
+	private Type parentType = null;
 	public FrmFrame entryPoint = null;
 	
 	public static final String ENTRY_POINT = "_main";
@@ -64,15 +68,15 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-		ClassType tmp = classType;
-		classType = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
+		Type tmp = parentType;
+		parentType = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
 		
 		acceptor.definitions.accept(this);
 		for (AbsFunDef c : acceptor.contrustors) {
 			c.accept(this);
 		}
 		
-		classType = tmp;
+		parentType = tmp;
 	}
 
 	@Override
@@ -107,8 +111,8 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsExprs acceptor) {
-		for (int i = 0; i < acceptor.numExprs(); i++)
-			acceptor.expr(i).accept(this);
+		for (AbsExpr e : acceptor.expressions)
+			e.accept(this);
 	}
 
 	@Override
@@ -176,9 +180,9 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		if (classType != null)
+		if (parentType != null)
 			// member access
-			FrmDesc.setAccess(acceptor, new FrmMemberAccess(acceptor, classType));
+			FrmDesc.setAccess(acceptor, new FrmMemberAccess(acceptor, parentType));
 		else if (currentFrame.label.name().equals("_" + ENTRY_POINT))
 			// var access
 			FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
@@ -259,5 +263,20 @@ public class FrmEvaluator implements ASTVisitor {
 	@Override
 	public void visit(AbsEnumMemberDef acceptor) {
 		///
+	}
+
+	@Override
+	public void visit(AbsTupleDef acceptor) {
+		acceptor.definitions.accept(this);
+	}
+
+	@Override
+	public void visit(AbsLabeledExpr acceptor) {
+		acceptor.expr.accept(this);
+	}
+
+	@Override
+	public void visit(AbsTupleExpr acceptor) {
+		acceptor.expressions.accept(this);
 	}
 }

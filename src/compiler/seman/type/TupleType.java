@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsTupleDef;
 
 public class TupleType extends PointerType {
@@ -59,8 +58,29 @@ public class TupleType extends PointerType {
 		this.size = size;
 	}
 
+	/**
+	 * Get type for given name.
+	 * @param name
+	 * @return
+	 */
 	public Type typeForName(String name) {
 		return members.get(name);
+	}
+	
+	/**
+	 * Calculate offset for member.
+	 * @param name member name
+	 * @return offset of that member
+	 */
+	public int offsetOf(String name) {
+		int offset = 0;
+		
+		for (Map.Entry<String, Type> entry : members.entrySet()) {
+			if (name.equals(entry.getKey())) break;
+			offset += entry.getValue().size();
+		}
+		
+		return offset;
 	}
 
 	@Override

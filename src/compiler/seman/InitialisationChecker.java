@@ -15,13 +15,16 @@ import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsTupleDef;
 import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
 import compiler.abstr.tree.stmt.AbsCaseStmt;
@@ -38,7 +41,7 @@ import compiler.seman.type.FunctionType;
 
 /**
  * Initialization checking phase of the compiler.
- * @author toni
+ * @author toni kocjan
  *
  */
 public class InitialisationChecker implements ASTVisitor {
@@ -108,7 +111,7 @@ public class InitialisationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsExprs acceptor) {
-		for (AbsExpr e : acceptor.exprs) {
+		for (AbsExpr e : acceptor.expressions) {
 			e.accept(this);
 		}
 	}
@@ -270,6 +273,24 @@ public class InitialisationChecker implements ASTVisitor {
 //		
 //		if (type.definition.statements.numStmts() > 0)
 //			InitTable.initialize((AbsVarDef) type.definition.statements.stmt(0));
+	}
+
+	@Override
+	public void visit(AbsTupleDef acceptor) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(AbsLabeledExpr acceptor) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(AbsTupleExpr acceptor) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -12,13 +12,16 @@ import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
+import compiler.abstr.tree.def.AbsTupleDef;
 import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
+import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
+import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
 import compiler.abstr.tree.expr.AbsVarNameExpr;
 import compiler.abstr.tree.stmt.AbsCaseStmt;
@@ -47,6 +50,7 @@ import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
 import compiler.seman.type.EnumType;
 import compiler.seman.type.PointerType;
+import compiler.seman.type.TupleType;
 import compiler.seman.type.Type;
 
 public class ImcCodeGen implements ASTVisitor {
@@ -208,7 +212,18 @@ public class ImcCodeGen implements ASTVisitor {
 		} 
 		else if (acceptor.oper == AbsBinExpr.DOT) {
 			Type t = SymbDesc.getType(acceptor.expr1);
+			
+			String memberName;
+			if (acceptor.expr2 instanceof AbsVarNameExpr)
+				memberName = ((AbsVarNameExpr) acceptor.expr2).name;
+			else if (acceptor.expr2 instanceof AbsFunCall)
+				memberName = ((AbsFunCall) acceptor.expr2).name;
+			else
+				memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
 
+			/**
+			 * Handle enumerations.
+			 */
 			if (t instanceof EnumType) {
 				EnumType enumType = (EnumType) t;
 				if (c2 == null)
@@ -216,6 +231,9 @@ public class ImcCodeGen implements ASTVisitor {
 				else
 					code = c2;
 			}
+			/**
+			 * Handle classes.
+			 */
 			else if (t instanceof ClassType) {
 				code = c2;
 				
@@ -223,14 +241,30 @@ public class ImcCodeGen implements ASTVisitor {
 				if (!(acceptor.expr2 instanceof AbsFunCall))
 					code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, e2));
 			} 
+			/**
+			 * Handle array.length.
+			 */
 			else if (t instanceof ArrayType) {
 				code = new ImcCONST(((ArrayType) t).count);
 			}
+			/**
+			 * Handle canonical types.
+			 */
 			else if (t instanceof CanType) {
 				EnumType enumType = (EnumType) ((CanType) t).childType;
-				AbsVarNameExpr memberName = (AbsVarNameExpr) acceptor.expr2;
-				
-				code = new ImcCONST(enumType.offsetForDefinitionName(memberName.name));
+				code = new ImcCONST(enumType.offsetForDefinitionName(memberName));
+			}
+			/**
+			 * Handle tuples.
+			 */
+			else if (t instanceof TupleType) {
+				TupleType tupleType = (TupleType) t;
+
+				// member acces code
+				if (!(acceptor.expr2 instanceof AbsFunCall)) {
+					int offset = tupleType.offsetOf(memberName);
+					code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcCONST(offset)));
+				}
 			}
 		}
 
@@ -245,17 +279,17 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsExprs acceptor) {
-		if (acceptor.numExprs() == 0) {
+		if (acceptor.expressions.size() == 0) {
 			ImcDesc.setImcCode(acceptor, new ImcCONST(0));
 			return;
 		}
 
 		ImcSEQ statements = new ImcSEQ();
 
-		for (int i = 0; i < acceptor.numExprs(); i++) {
-			acceptor.expr(i).accept(this);
+		for (AbsExpr e : acceptor.expressions) {
+			e.accept(this);
 
-			ImcCode code = ImcDesc.getImcCode(acceptor.expr(i));
+			ImcCode code = ImcDesc.getImcCode(e);
 			if (code instanceof ImcStmt)
 				statements.stmts.add((ImcStmt) code);
 			else
@@ -417,14 +451,15 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		FrmAccess x = FrmDesc.getAccess(acceptor);
-		Type y = SymbDesc.getType(acceptor);
-		int size = y.size();
-		if (y instanceof PointerType)
+		FrmAccess access = FrmDesc.getAccess(acceptor);
+		Type varType = SymbDesc.getType(acceptor);
+		
+		int size = varType.size();
+		if (varType instanceof PointerType)
 			size = 4;
 
-		if (x instanceof FrmVarAccess)
-			chunks.add(new ImcDataChunk(((FrmVarAccess) x).label, size));
+		if (access instanceof FrmVarAccess)
+			chunks.add(new ImcDataChunk(((FrmVarAccess) access).label, size));
 	}
 
 	@Override
@@ -447,11 +482,7 @@ public class ImcCodeGen implements ASTVisitor {
 		} 
 		else if (access instanceof FrmMemberAccess) {
 			FrmMemberAccess member = (FrmMemberAccess) access;
-			
-//			ImcExpr address = (ImcExpr) ImcDesc.getImcCode(member.memberDef.getParemtDefinition());
-			ImcExpr offset = new ImcCONST(member.offsetForMember());
-//			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, address, offset));
-			expr = offset;
+			expr = new ImcCONST(member.offsetForMember());
 		}
 		else if (access instanceof FrmParAccess) {
 			FrmParAccess loc = (FrmParAccess) access;
@@ -693,6 +724,40 @@ public class ImcCodeGen implements ASTVisitor {
 			acceptor.value.accept(this);
 			ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(acceptor.value));
 		}
+	}
+
+	@Override
+	public void visit(AbsTupleDef acceptor) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void visit(AbsLabeledExpr acceptor) {
+		acceptor.expr.accept(this);
+		ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(acceptor.expr));
+	}
+
+	@Override
+	public void visit(AbsTupleExpr acceptor) {
+		TupleType tupleType = (TupleType) SymbDesc.getType(acceptor);
+		int size = tupleType.size();
+
+		ImcSEQ seq = new ImcSEQ();
+		ImcTEMP location = new ImcTEMP(new FrmTemp());
+		seq.stmts.add(new ImcMOVE(location, new ImcMALLOC(size)));
+		
+		for (AbsExpr e : acceptor.expressions.expressions) {
+			e.accept(this);
+			
+			int memberOffset = tupleType.offsetOf(((AbsLabeledExpr) e).name);
+			ImcExpr exprCode = (ImcExpr) ImcDesc.getImcCode(e);
+			ImcExpr dst = new ImcMEM(
+					new ImcBINOP(ImcBINOP.ADD, location, new ImcCONST(memberOffset)));
+			ImcMOVE move = new ImcMOVE(dst, exprCode);
+			seq.stmts.add(move);
+		}
+		
+		ImcDesc.setImcCode(acceptor, new ImcESEQ(seq, location));
 	}
 
 }
