@@ -95,8 +95,8 @@ public class FrmEvaluator implements ASTVisitor {
 		acceptor.expr2.accept(this);
 		
 		if (acceptor.oper == AbsBinExpr.ASSIGN) {
-			if (SymbDesc.getType(acceptor.expr1) instanceof FunctionType &&
-					SymbDesc.getType(acceptor.expr2) instanceof FunctionType) {
+			if (SymbDesc.getType(acceptor.expr1).isFunctionType() &&
+					SymbDesc.getType(acceptor.expr2).isFunctionType()) {
 				FrmDesc.setFrame(SymbDesc.getNameDef(acceptor.expr1), 
 						FrmDesc.getFrame(SymbDesc.getNameDef(acceptor.expr2)));	
 			}

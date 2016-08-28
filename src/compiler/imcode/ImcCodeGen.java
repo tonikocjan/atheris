@@ -186,31 +186,27 @@ public class ImcCodeGen implements ASTVisitor {
 		ImcExpr e1 = null;
 		ImcExpr e2 = null;
 
-		if (c1 instanceof ImcEXP)
-			e1 = ((ImcEXP) c1).expr;
-		else
-			e1 = (ImcExpr) c1;
+		if (c1 instanceof ImcEXP) e1 = ((ImcEXP) c1).expr;
+		else e1 = (ImcExpr) c1;
 
-		if (c2 instanceof ImcESEQ)
-			e2 = (ImcESEQ) c2;
-		else if (c2 instanceof ImcEXP)
-			e2 = ((ImcEXP) c2).expr;
-		else
-			e2 = (ImcExpr) c2;
+		if (c2 instanceof ImcESEQ) e2 = (ImcESEQ) c2;
+		else if (c2 instanceof ImcEXP) e2 = ((ImcEXP) c2).expr;
+		else e2 = (ImcExpr) c2;
 
 		ImcCode code = null;
 
 		if (acceptor.oper >= 0 && acceptor.oper <= 11)
 			code = new ImcBINOP(acceptor.oper, e1, e2);
-		else if (acceptor.oper == AbsBinExpr.ASSIGN) {
+		else if (acceptor.oper == AbsBinExpr.ASSIGN)
 			code = new ImcMOVE(e1, e2);
-		} else if (acceptor.oper == AbsBinExpr.ARR) {
+		else if (acceptor.oper == AbsBinExpr.ARR) {
 			ArrayType type = (ArrayType) SymbDesc.getType(acceptor.expr1);
 			int size = type.type.size();
 			
 			code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcBINOP(
 					ImcBINOP.MUL, e2, new ImcCONST(size))));
-		} else if (acceptor.oper == ImcBINOP.MOD) {
+		} 
+		else if (acceptor.oper == ImcBINOP.MOD) {
 			ImcBINOP div = new ImcBINOP(ImcBINOP.DIV, e1, e2);
 			ImcBINOP mul = new ImcBINOP(ImcBINOP.MUL, div, e2);
 			ImcBINOP sub = new ImcBINOP(ImcBINOP.SUB, e1, mul);
@@ -271,6 +267,8 @@ public class ImcCodeGen implements ASTVisitor {
 					int offset = tupleType.offsetOf(memberName);
 					code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcCONST(offset)));
 				}
+				else
+					code = c2;
 			}
 		}
 

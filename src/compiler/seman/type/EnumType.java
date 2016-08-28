@@ -10,6 +10,11 @@ import compiler.abstr.tree.def.AbsEnumDef;
 import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsVarDef;
 
+/**
+ * Enumeration type.
+ * @author toni kocjan
+ *
+ */
 public class EnumType extends ClassType {
 
 	/**
@@ -18,7 +23,7 @@ public class EnumType extends ClassType {
 	public final AbsEnumDef enumDefinition;
 
 	/**
-	 * 
+	 * Selected member definition from enumeration.
 	 */
 	private AbsEnumMemberDef thisDefinition;
 
@@ -56,10 +61,20 @@ public class EnumType extends ClassType {
 		return types;
 	}
 	
+	/**
+	 * Set definition for this type.
+	 * 
+	 * @param name Name of the definition.
+	 */
 	public void setDefinitionForThisType(String name) {
 		thisDefinition = (AbsEnumMemberDef) findMemberForName(name);
 	}
 	
+	/**
+	 * Get definition for this type.
+	 * 
+	 * @return Selected definition.
+	 */
 	public AbsEnumMemberDef getDefinitionForThisType() {
 		return thisDefinition;
 	}
@@ -75,6 +90,11 @@ public class EnumType extends ClassType {
 		return super.findMemberForName(name);
 	}
 	
+	/**
+	 * Calculate offset for definition with given name.
+	 * @param name Name of the definition.
+	 * @return Offset.
+	 */
 	public int offsetForDefinitionName(String name) {
 		int offset = 0;
 		for (AbsDef def : enumDefinition.definitions) {

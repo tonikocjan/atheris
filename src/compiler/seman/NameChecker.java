@@ -430,11 +430,11 @@ public class NameChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsImportDef acceptor) {
 		String tmp = Report.fileName;
-		Report.fileName = acceptor.fileName;
+		Report.fileName = acceptor.getName();
 
 		// parse the file
 		// TODO hardcodano notr test/
-		SynAn synAn = new SynAn(new LexAn("test/" + acceptor.fileName + ".ar",
+		SynAn synAn = new SynAn(new LexAn("test/" + acceptor.getName() + ".ar",
 				false), false);
 		AbsStmts source = (AbsStmts) synAn.parse();
 

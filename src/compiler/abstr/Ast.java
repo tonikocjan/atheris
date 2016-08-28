@@ -357,7 +357,7 @@ public class Ast implements ASTVisitor {
 	@Override
 	public void visit(AbsImportDef imp) {
 		Report.dump(indent, "AbsImportDef " + imp.position.toString() + ":");
-		Report.dump(indent + 2, "Filename: " + imp.fileName);
+		Report.dump(indent + 2, "Filename: " + imp.getName());
 	}
 
 	@Override

@@ -5,16 +5,20 @@ import java.util.*;
 import compiler.abstr.tree.def.AbsFunDef;
 
 /**
- * Opis funkcijskega tipa.
+ * Function type.
  * 
- * @author sliva
+ * @author toni kocjan
  */
 public class FunctionType extends PointerType {
 
-	/** Tipi parametrov. */
+	/** 
+	 * Parameter types. 
+	 */
 	public final Vector<Type> parameterTypes;
 
-	/** Tipa rezultata. */
+	/** 
+	 * Result type. 
+	 */
 	public final Type resultType;
 
 	/**
@@ -23,12 +27,14 @@ public class FunctionType extends PointerType {
 	public final AbsFunDef functionDefinition;
 
 	/**
-	 * Ustvari nov opis funkcijskega tipa.
+	 * Create new function type.
 	 * 
 	 * @param parTypes
-	 *            Tipi parametrov.
+	 *            Parameter types.
 	 * @param resultType
-	 *            Tip rezultata.
+	 *            Result type.
+	 * @param definition
+	 * 			  Function definition.
 	 */
 	public FunctionType(Vector<Type> parTypes, Type resultType, AbsFunDef definition) {
 		this.parameterTypes = parTypes;
@@ -37,20 +43,21 @@ public class FunctionType extends PointerType {
 	}
 
 	/**
-	 * Vrne stevilo parametrov.
+	 * Get parameter count.
 	 * 
-	 * @return Stevilo parametrov.
+	 * @return Parameter count.
 	 */
 	public int getNumPars() {
 		return parameterTypes.size();
 	}
 
 	/**
-	 * Vrne tip zahtevanega parametra.
+	 * Get parameter type at given index.
 	 * 
 	 * @param index
-	 *            Indeks zahtevanega parametra.
-	 * @return Tip zahtevanega parametra.
+	 *            Indeks of parameter.
+	 * @return 
+	 * 			  Parameter type.
 	 */
 	public Type getParType(int index) {
 		return parameterTypes.elementAt(index);
@@ -85,11 +92,11 @@ public class FunctionType extends PointerType {
 
 	@Override
 	public int size() {
-		int input = 4;
+		int size = 4;
 		for (Type t : parameterTypes)
-			input += t.size();
+			size += t.size();
 		
-		return Math.max(resultType.size(), input);
+		return Math.max(resultType.size(), size);
 	}
 
 	@Override

@@ -562,7 +562,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsImportDef importDef) {
 		String tmp = Report.fileName;
-		Report.fileName = importDef.fileName;
+		Report.fileName = importDef.getName();
 
 		for (AbsDef def : importDef.imports.definitions)
 			def.accept(this);

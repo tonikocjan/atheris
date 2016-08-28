@@ -2,7 +2,6 @@ package compiler.frames;
 
 import compiler.abstr.tree.def.AbsVarDef;
 import compiler.seman.type.ClassType;
-import compiler.seman.type.TupleType;
 import compiler.seman.type.Type;
 
 public class FrmMemberAccess extends FrmAccess {
@@ -23,7 +22,7 @@ public class FrmMemberAccess extends FrmAccess {
 	}
 	
 	public int offsetForMember() {
-		if (parentType instanceof ClassType)
+		if (parentType.isClassType())
 			return ((ClassType) parentType).offsetOf(memberDef.getName());
 		return -1;
 	}
