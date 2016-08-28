@@ -13,7 +13,6 @@ import compiler.abstr.tree.def.AbsEnumMemberDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsImportDef;
 import compiler.abstr.tree.def.AbsParDef;
-import compiler.abstr.tree.def.AbsTupleDef;
 import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
@@ -492,12 +491,6 @@ public class SynAn {
 				break;
 			case KW_FUN:
 				AbsFunDef funDef = (AbsFunDef) parseDefinition();
-				
-				Position parPos = funDef.position;
-				// add implicit "self" parameter to definition
-//				funDef.addParamater(new AbsParDef(parPos, "self", 
-//						new AbsTypeName(parPos, className)));
-				
 				definitions.add(funDef);
 				break;
 			case RBRACE:

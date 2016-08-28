@@ -78,18 +78,7 @@ public class EnumType extends ClassType {
 	public AbsEnumMemberDef getDefinitionForThisType() {
 		return thisDefinition;
 	}
-	
-	@Override
-	public AbsDef findMemberForName(String name) {
-		for (AbsDef def : enumDefinition.definitions) {
-			String definitionsName = def.getName();
-			
-			if (definitionsName.equals(name))
-				return def;
-		}
-		return super.findMemberForName(name);
-	}
-	
+
 	/**
 	 * Calculate offset for definition with given name.
 	 * @param name Name of the definition.
@@ -102,6 +91,28 @@ public class EnumType extends ClassType {
 			offset++;
 		}
 		return -1;
+	}
+	
+	public AbsDef findEnumMemberForName(String name) {
+		return super.findMemberForName(name);
+	}
+	
+	@Override
+	public AbsDef findMemberForName(String name) {
+		for (AbsDef def : enumDefinition.definitions) {
+			String definitionsName = def.getName();
+			
+			if (definitionsName.equals(name))
+				return def;
+		}
+		return null;
+	}
+	
+	@Override
+	public boolean containsMember(String name) {
+		if (thisDefinition == null)
+			return findMemberForName(name) == null ? false : true;
+		return super.containsMember(name);
 	}
 
 	@Override

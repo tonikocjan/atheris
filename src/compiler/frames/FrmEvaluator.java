@@ -36,7 +36,6 @@ import compiler.abstr.tree.type.AbsTypeName;
 import compiler.seman.SymbDesc;
 import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
-import compiler.seman.type.FunctionType;
 import compiler.seman.type.Type;
 
 public class FrmEvaluator implements ASTVisitor {
@@ -125,9 +124,10 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
+		
 		int parSize = 4;
-		for (int i = 0; i < acceptor.numArgs(); i++)
-			parSize += SymbDesc.getType(acceptor.arg(i)).size();
+		for (AbsExpr arg: acceptor.args)
+			parSize += SymbDesc.getType(arg).size();
 
 		currentFrame.sizeArgs = Math.max(currentFrame.sizeArgs, parSize);
 	}

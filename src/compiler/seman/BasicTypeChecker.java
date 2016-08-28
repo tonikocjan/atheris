@@ -209,69 +209,52 @@ public class BasicTypeChecker implements ASTVisitor {
 				memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
 
 			if (!t1.containsMember(memberName))
-				Report.error("Value of type \"" + t1.toString() + 
+				Report.error(acceptor.expr2.position, 
+						"Value of type \"" + t1.toString() + 
 						"\" has no member \"" + memberName + "\"");
 			
-			// TODO: different type checking for enums
 			if (t1.isClassType()) {
 				ClassType classType = (ClassType) t1;
-				String name;
-				
-				if (acceptor.expr2 instanceof AbsVarNameExpr)
-					name = ((AbsVarNameExpr) acceptor.expr2).name;
-				else
-					name = ((AbsFunCall) acceptor.expr2).name;
 	
-				if (!(SymbDesc.getNameDef(acceptor.expr1) instanceof AbsParDef)) {
-					AbsDef definition = classType.findMemberForName(name);
-					
-					if (definition instanceof AbsVarDef && 
-							((AbsVarDef) definition).visibilityKind == VisibilityKind.Private)
-						Report.error(acceptor.expr2.position,
-								"Member '" + name + "' is private");
-					
-					SymbDesc.setNameDef(acceptor.expr2, definition);
-					SymbDesc.setNameDef(acceptor, definition);
-				}
+				AbsDef definition = classType.findMemberForName(memberName);
+				
+				if (definition instanceof AbsVarDef && 
+						((AbsVarDef) definition).visibilityKind == VisibilityKind.Private)
+					Report.error(acceptor.expr2.position,
+							"Member '" + memberName + "' is private");
+				
+				SymbDesc.setNameDef(acceptor.expr2, definition);
+				SymbDesc.setNameDef(acceptor, definition);
 	
 				Type type;
-				if (t1.isEnumType() && acceptor.expr2 instanceof AbsFunCall) {
+				if (acceptor.expr2 instanceof AbsFunCall) {
 					acceptor.expr2.accept(this);
 					type = SymbDesc.getType(acceptor.expr2);
 				}
-				else
-					type = classType.getMembers().get(name);
+				else {
+					type = classType.getMembers().get(memberName);
+					SymbDesc.setType(acceptor.expr2, type);
+				}
 	
-				SymbDesc.setType(acceptor.expr2, type);
 				SymbDesc.setType(acceptor, type);
 				return;
 			}
 			
 			if (t1.isCanType()) {
 				EnumType enumType = (EnumType) ((CanType) t1).childType;
-				
-				if (!(acceptor.expr2 instanceof AbsVarNameExpr)) {
-					if (acceptor.expr2 instanceof AbsFunCall)
-						Report.error(acceptor.expr2.position, "Invalid use of '()' to call a value of non-function type");
-					Report.error(acceptor.expr2.position, "todo");
-				}
 
-				String enumName = enumType.getName();
+				AbsDef definition = enumType.findMemberForName(memberName);
+				SymbDesc.setNameDef(acceptor.expr2, definition);
 				
-				AbsDef definition = ((EnumType) enumType).findMemberForName(memberName);
-				
-				t2 = SymbDesc.getType(definition);				
-				if (!enumType.sameStructureAs(t2))
-					Report.error(acceptor.expr2.position, "Type \"" + enumName + "\" has no member \"" + t2.toString() + "\"");
+				if (acceptor.expr2 instanceof AbsFunCall)
+					acceptor.expr2.accept(this);
 				
 				EnumType newEnumType = new EnumType(enumType.enumDefinition);
 				newEnumType.setDefinitionForThisType(memberName);
 				
-				enumType.setDefinitionForThisType(memberName);
 				SymbDesc.setType(acceptor.expr2, enumType);
 				SymbDesc.setType(acceptor, newEnumType);
 
-				SymbDesc.setNameDef(acceptor.expr2, definition);
 				return;
 			}
 			if (t1.isTupleType()) {
@@ -389,33 +372,41 @@ public class BasicTypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsFunCall acceptor) {
 		Vector<Type> parameters = new Vector<>();
-		for (int arg = 0; arg < acceptor.numArgs(); arg++) {
-			acceptor.arg(arg).accept(this);
-			Type parType = SymbDesc.getType(acceptor.arg(arg));
+		for (AbsExpr arg: acceptor.args) {
+			arg.accept(this);
+			
+			Type parType = SymbDesc.getType(arg);
 			parameters.add(parType);
 		}
 
 		AbsDef def = SymbDesc.getNameDef(acceptor);
 		
-		if (def instanceof AbsVarDef || def instanceof AbsParDef) {
+		if (def instanceof AbsVarDef || def instanceof AbsParDef || 
+				def instanceof AbsEnumMemberDef) {
 			Type type = SymbDesc.getType(def);
-			if (!(type instanceof FunctionType))
+			
+			if (!type.isFunctionType())
 				Report.error(acceptor.position, "Cannot call value of non-function type \'"
 								+ type.toString() + "\'");
+			
 			FunctionType t = new FunctionType(parameters, 
 					((FunctionType)type).resultType, ((FunctionType) type).functionDefinition);
+			
 			if (!type.sameStructureAs(t)) 
 				Report.error("Error todo");
+			
 			SymbDesc.setNameDef(acceptor, def);
 			SymbDesc.setType(acceptor, ((FunctionType) SymbDesc.getType(def)).resultType);
 		}
 		else {
-			AbsDef definition = SymbTable.fndFunc(acceptor.name, parameters);
+			AbsFunDef definition = (AbsFunDef) SymbTable.fndFunc(acceptor.name, parameters);
+			
 			if (definition == null) {
 				Report.error(acceptor.position, "Method " + acceptor.name
 						+ new FunctionType(parameters, null, null).toString()
 						+ " is undefined");
 			}
+			
 			SymbDesc.setNameDef(acceptor, definition);
 			SymbDesc.setType(acceptor,
 					((FunctionType) SymbDesc.getType(definition)).resultType);

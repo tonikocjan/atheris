@@ -130,7 +130,9 @@ public class InitialisationChecker implements ASTVisitor {
 			e.accept(this);
 		
 		FunctionType funType = (FunctionType) SymbDesc.getType(SymbDesc.getNameDef(acceptor));
-		funType.functionDefinition.func.accept(this);
+		
+		if (funType.functionDefinition != null)
+			funType.functionDefinition.func.accept(this);
 	}
 
 	@Override
@@ -278,19 +280,16 @@ public class InitialisationChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsTupleDef acceptor) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void visit(AbsLabeledExpr acceptor) {
-		// TODO Auto-generated method stub
-		
+		acceptor.expr.accept(this);
 	}
 
 	@Override
 	public void visit(AbsTupleExpr acceptor) {
-		// TODO Auto-generated method stub
-		
+		acceptor.expressions.accept(this);
 	}
 
 }
