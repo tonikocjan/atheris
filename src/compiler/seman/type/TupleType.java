@@ -103,7 +103,21 @@ public class TupleType extends PointerType {
 
 	@Override
 	public boolean sameStructureAs(Type type) {
-		return false;
+		if (!type.isTupleType()) return false;
+		
+		TupleType t2 = (TupleType) type;
+		if (t2.members.size() != members.size()) return false;
+		
+		// FIXME: - This should be improved
+		Object[] thisKeySet = members.keySet().toArray();
+		Object[] otherKeySet = t2.members.keySet().toArray();
+		
+		for (int i = 0; i < thisKeySet.length; i++) {
+			if (!members.get(thisKeySet[i]).sameStructureAs(t2.members.get(otherKeySet[i])))
+				return false;
+		}
+
+		return true;
 	}
 
 	@Override
