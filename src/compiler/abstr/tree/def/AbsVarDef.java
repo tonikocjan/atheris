@@ -34,9 +34,6 @@ public class AbsVarDef extends AbsDef {
 	
 	/** Is this variable a constant. */
 	public final boolean isConstant;
-	
-	/** Is variable public / private (used for class members) */
-	public final VisibilityKind visibilityKind;
 
 	/**
 	 * Create new variable definition.
@@ -49,7 +46,7 @@ public class AbsVarDef extends AbsDef {
 	 *            Type.
 	 */
 	public AbsVarDef(Position pos, String name, AbsType type) {
-		this(pos, name, type, false);
+		this(pos, name, type, false, VisibilityKind.Public);
 	}
 	
 	/**
@@ -84,11 +81,10 @@ public class AbsVarDef extends AbsDef {
 	 */
 	public AbsVarDef(Position pos, String name, 
 			AbsType type, boolean constant, VisibilityKind visibilityKind) {
-		super(pos, name);
+		super(pos, name, visibilityKind);
 		
 		this.type = type;
 		this.isConstant = constant;
-		this.visibilityKind = visibilityKind;
 	}
 
 

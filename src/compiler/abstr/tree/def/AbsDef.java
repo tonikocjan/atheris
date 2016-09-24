@@ -19,6 +19,7 @@ package compiler.abstr.tree.def;
 
 import compiler.*;
 import compiler.abstr.tree.AbsStmt;
+import compiler.abstr.tree.VisibilityKind;
 
 /**
  * Definicija.
@@ -37,6 +38,9 @@ public abstract class AbsDef extends AbsStmt {
 	 */
 	private AbsDef parentDef;
 
+	/** Is this definition public / private (used for class members) */
+	public final VisibilityKind visibilityKind;
+	
 	/**
 	 * Create new definition.
 	 *
@@ -48,6 +52,21 @@ public abstract class AbsDef extends AbsStmt {
 		
 		this.parentDef = null;
 		this.name = name;
+		this.visibilityKind = VisibilityKind.Public;
+	}
+	
+	/**
+	 * Create new definition.
+	 *
+	 * @param pos
+	 *            Position.
+	 */
+	public AbsDef(Position pos, String name, VisibilityKind visibility) {
+		super(pos);
+		
+		this.parentDef = null;
+		this.name = name;
+		this.visibilityKind = visibility;
 	}
 	
 	/**
@@ -62,6 +81,7 @@ public abstract class AbsDef extends AbsStmt {
 		this(pos, name);
 		
 		this.parentDef = parent;
+		this.visibilityKind = VisibilityKind.Public;
 	}
 
 	/**
