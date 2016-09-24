@@ -110,10 +110,6 @@ public class EnumType extends ClassType {
 		return -1;
 	}
 	
-	public AbsDef findEnumMemberForName(String name) {
-		return super.findMemberForName(name);
-	}
-	
 	@Override
 	public AbsDef findMemberForName(String name) {
 		for (AbsDef def : enumDefinition.definitions) {

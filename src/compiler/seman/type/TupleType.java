@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsTupleDef;
 
 public class TupleType extends PointerType {
@@ -138,6 +139,11 @@ public class TupleType extends PointerType {
 	@Override
 	public String friendlyName() {
 		return toString();
+	}
+
+	@Override
+	public AbsDef findMemberForName(String name) {
+		return null;
 	}
 
 }

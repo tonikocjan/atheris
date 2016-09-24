@@ -17,6 +17,8 @@
 
 package compiler.seman.type;
 
+import compiler.abstr.tree.def.AbsDef;
+
 /**
  * This type is used for representing class definition, enum definition, ... nodes.
  * @author toni
@@ -68,6 +70,11 @@ public class CanType extends Type {
 	@Override
 	public String friendlyName() {
 		return toString();
+	}
+
+	@Override
+	public AbsDef findMemberForName(String name) {
+		return childType.findMemberForName(name);
 	}
 
 }

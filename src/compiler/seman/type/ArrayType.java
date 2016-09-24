@@ -17,6 +17,8 @@
 
 package compiler.seman.type;
 
+import compiler.abstr.tree.def.AbsDef;
+
 /**
  * Opis tabelaricnega tipa.
  * 
@@ -75,5 +77,10 @@ public class ArrayType extends PointerType {
 	@Override
 	public String friendlyName() {
 		return type.toString();
+	}
+
+	@Override
+	public AbsDef findMemberForName(String name) {
+		return null;
 	}
 }

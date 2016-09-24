@@ -18,6 +18,7 @@
 package compiler.seman.type;
 
 import compiler.abstr.tree.AtomTypeKind;
+import compiler.abstr.tree.def.AbsDef;
 
 /**
  * Data type description.
@@ -57,6 +58,13 @@ public abstract class Type {
 	 * @return True if type contains name, otherwise false
 	 */
 	public abstract boolean containsMember(String name);
+	
+	/**
+	 * Find and return member for given name.
+	 * @param name Member name
+	 * @return Member definition or Null
+	 */
+	public abstract AbsDef findMemberForName(String name);
 	
 	/**
 	 * Check if this type is array type.

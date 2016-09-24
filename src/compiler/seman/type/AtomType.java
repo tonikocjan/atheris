@@ -19,6 +19,7 @@ package compiler.seman.type;
 
 import compiler.*;
 import compiler.abstr.tree.AtomTypeKind;
+import compiler.abstr.tree.def.AbsDef;
 
 /**
  * Opis atomarnih podatkovnih tipov.
@@ -98,5 +99,10 @@ public class AtomType extends Type {
 	@Override
 	public String friendlyName() {
 		return "";
+	}
+
+	@Override
+	public AbsDef findMemberForName(String name) {
+		return null;
 	}
 }
