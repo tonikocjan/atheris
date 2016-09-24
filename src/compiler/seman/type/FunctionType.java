@@ -19,7 +19,6 @@ package compiler.seman.type;
 
 import java.util.*;
 
-import sun.text.normalizer.CharTrie.FriendAgent;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;
 

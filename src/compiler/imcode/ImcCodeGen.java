@@ -243,7 +243,7 @@ public class ImcCodeGen implements ASTVisitor {
 			/**
 			 * Handle enumerations.
 			 */
-			if (t instanceof EnumType) {
+			if (t.isEnumType()) {
 				EnumType enumType = (EnumType) t;
 				if (c2 == null)
 					code = ImcDesc.getImcCode(enumType.getDefinitionForThisType());
@@ -711,33 +711,10 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumDef acceptor) {
-		ImcSEQ enumCode = new ImcSEQ();
-		
 		if (acceptor.type != null) {
-			int typeSize = SymbDesc.getType(acceptor.type).size();
-			int offset = 0;
-			
-			ImcTEMP location = new ImcTEMP(new FrmTemp());
-			enumCode.stmts.add(new ImcMOVE(location, new ImcMALLOC(typeSize * acceptor.definitions.size())));
-			
-			for (AbsDef d : acceptor.definitions) {
+			for (AbsDef d : acceptor.definitions)
 				d.accept(this);
-				
-				if (d instanceof AbsEnumMemberDef) {
-					ImcExpr value = (ImcExpr) ImcDesc.getImcCode(d);
-					ImcExpr dst = new ImcBINOP(ImcBINOP.ADD, location, new ImcCONST(offset));
-					ImcMOVE move = new ImcMOVE(new ImcMEM(dst), value);
-					enumCode.stmts.add(move);
-					
-					offset += typeSize;
-				}
-				else if (d instanceof AbsFunDef) {
-
-				}
-			}
 		}
-		
-		ImcDesc.setImcCode(acceptor, enumCode);
 	}
 
 	@Override
