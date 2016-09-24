@@ -1,9 +1,0 @@
-func test(x: Int) {
-	let a = { (x: Int) in
-		print(x)
-	}
-	
-	a()
-}
-
-test(20)
