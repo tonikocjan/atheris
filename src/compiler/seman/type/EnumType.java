@@ -120,6 +120,11 @@ public class EnumType extends ClassType {
 		}
 		return null;
 	}
+
+	// FIXME: This is awkard, should somehow reimplement enumerations to avoid this
+	public AbsDef findEnumMemberForName(String name) {
+		return super.findMemberForName(name);
+	}
 	
 	@Override
 	public boolean containsMember(String name) {

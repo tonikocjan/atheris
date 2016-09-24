@@ -221,9 +221,14 @@ public class BasicTypeChecker implements ASTVisitor {
 						"\' has no member \'" + memberName + "\'");
 			
 			if (t1.isClassType()) {
-				ClassType classType = (ClassType) t1;
-	
-				AbsDef definition = classType.findMemberForName(memberName);
+				AbsDef definition = null;
+				
+				if (t1.isEnumType()) {
+					definition = ((EnumType) t1).findEnumMemberForName(memberName);
+				}
+				else {
+					definition = t1.findMemberForName(memberName);
+				}
 				
 				if (definition.getVisibility() == VisibilityKind.Private)
 					Report.error(acceptor.expr2.position,
@@ -238,7 +243,7 @@ public class BasicTypeChecker implements ASTVisitor {
 					type = SymbDesc.getType(acceptor.expr2);
 				}
 				else {
-					type = classType.getMembers().get(memberName);
+					type = ((ClassType) t1).getMembers().get(memberName);
 					SymbDesc.setType(acceptor.expr2, type);
 				}
 	
@@ -257,9 +262,12 @@ public class BasicTypeChecker implements ASTVisitor {
 				
 				EnumType newEnumType = new EnumType(enumType.enumDefinition);
 				newEnumType.setDefinitionForThisType(memberName);
+				enumType.setDefinitionForThisType(memberName);
 				
 				SymbDesc.setType(acceptor.expr2, enumType);
 				SymbDesc.setType(acceptor, newEnumType);
+				
+				SymbDesc.setNameDef(acceptor.expr2, definition);
 
 				return;
 			}
@@ -690,7 +698,7 @@ public class BasicTypeChecker implements ASTVisitor {
 					String value = null;
 					
 					if (enumRawValueType.type == AtomTypeKind.STR)
-						value = enumMemberDef.name.name;
+						value = "\"" + enumMemberDef.name.name + "\"";
 					else if (enumRawValueType.type == AtomTypeKind.INT) {
 						if (previousValue == null)
 							value = "" + iterator;
