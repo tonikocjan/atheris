@@ -233,7 +233,7 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setNameDef(acceptor, definition);
 	
 				Type type;
-				if (acceptor.expr2 instanceof AbsFunCall) {
+				if (t1.isEnumType() && acceptor.expr2 instanceof AbsFunCall) {
 					acceptor.expr2.accept(this);
 					type = SymbDesc.getType(acceptor.expr2);
 				}
