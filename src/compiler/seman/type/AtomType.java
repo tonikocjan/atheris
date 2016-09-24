@@ -94,4 +94,9 @@ public class AtomType extends Type {
 	public boolean containsMember(String name) {
 		return false;
 	}
+
+	@Override
+	public String friendlyName() {
+		return "";
+	}
 }

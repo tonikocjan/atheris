@@ -217,8 +217,8 @@ public class BasicTypeChecker implements ASTVisitor {
 
 			if (!t1.containsMember(memberName))
 				Report.error(acceptor.expr2.position, 
-						"Value of type \"" + t1.toString() + 
-						"\" has no member \"" + memberName + "\"");
+						"Value of type \'" + t1.friendlyName() + 
+						"\' has no member \'" + memberName + "\'");
 			
 			if (t1.isClassType()) {
 				ClassType classType = (ClassType) t1;

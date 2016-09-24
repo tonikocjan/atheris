@@ -140,4 +140,9 @@ public class ClassType extends PointerType {
 		return false;
 	}
 
+	@Override
+	public String friendlyName() {
+		return classDefinition.name;
+	}
+
 }

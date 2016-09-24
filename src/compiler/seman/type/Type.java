@@ -181,5 +181,10 @@ public abstract class Type {
 	 * String representation.
 	 */
 	public abstract String toString();
-
+	
+	/**
+	 * Friendly name.
+	 */
+	public abstract String friendlyName();
+	
 }

@@ -65,4 +65,9 @@ public class CanType extends Type {
 		return childType.containsMember(name);
 	}
 
+	@Override
+	public String friendlyName() {
+		return toString();
+	}
+
 }

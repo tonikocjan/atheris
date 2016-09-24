@@ -71,4 +71,9 @@ public class ArrayType extends PointerType {
 	public boolean containsMember(String name) {
 		return false;
 	}
+
+	@Override
+	public String friendlyName() {
+		return type.toString();
+	}
 }

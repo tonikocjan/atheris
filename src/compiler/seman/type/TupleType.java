@@ -116,6 +116,11 @@ public class TupleType extends PointerType {
 	}
 
 	@Override
+	public boolean containsMember(String name) {
+		return members.containsKey(name);
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		int i = 0;
@@ -129,10 +134,10 @@ public class TupleType extends PointerType {
 		sb.append(")");
 		return sb.toString();
 	}
-
+	
 	@Override
-	public boolean containsMember(String name) {
-		return members.containsKey(name);
+	public String friendlyName() {
+		return toString();
 	}
 
 }

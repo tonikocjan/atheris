@@ -19,6 +19,7 @@ package compiler.seman.type;
 
 import java.util.*;
 
+import sun.text.normalizer.CharTrie.FriendAgent;
 import compiler.abstr.tree.def.AbsFunDef;
 
 /**
@@ -105,6 +106,11 @@ public class FunctionType extends PointerType {
 		String res = resultType == null ? "?" : resultType.toString();
 		str += ") -> " + res;
 		return str;
+	}
+	
+	@Override
+	public String friendlyName() {
+		return toString();
 	}
 
 	@Override
