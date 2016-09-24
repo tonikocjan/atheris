@@ -131,17 +131,13 @@ public class BasicTypeChecker implements ASTVisitor {
 		Type t1 = SymbDesc.getType(acceptor.expr1);
 		Type t2 = SymbDesc.getType(acceptor.expr2);
 
-		Type integer = new AtomType(AtomTypeKind.INT);
-		Type logical = new AtomType(AtomTypeKind.LOG);
-		Type double_ = new AtomType(AtomTypeKind.DOB);
-
 		int oper = acceptor.oper;
 
 		/**
 		 * expr1[expr2]
 		 */
 		if (oper == AbsBinExpr.ARR) {
-			if (!t2.sameStructureAs(integer))
+			if (!t2.isBuiltinIntType())
 				Report.error(acceptor.expr2.position,
 						"Expected Int type for array index");
 			/**
@@ -213,7 +209,7 @@ public class BasicTypeChecker implements ASTVisitor {
 					Report.error("Lists have no attribute named \"" + name
 							+ "\"");
 
-				SymbDesc.setType(acceptor, integer);
+				SymbDesc.setType(acceptor, Type.intType);
 				return;
 			}
 			
@@ -287,10 +283,10 @@ public class BasicTypeChecker implements ASTVisitor {
 		/**
 		 * expr1 and expr2 are of type Bool
 		 */
-		if (t1.sameStructureAs(logical) && t1.sameStructureAs(t2)) {
+		if (t1.isBuiltinBoolType() && t2.isBuiltinBoolType()) {
 			// ==, !=, <=, >=, <, >, &, |
 			if (oper >= 0 && oper <= 7)
-				SymbDesc.setType(acceptor, logical);
+				SymbDesc.setType(acceptor, Type.boolType);
 			else
 				Report.error(
 						acceptor.position,
@@ -302,10 +298,10 @@ public class BasicTypeChecker implements ASTVisitor {
 		else if (t1.isBuiltinIntType() && t2.isBuiltinIntType()) {
 			// +, -, *, /, %
 			if (oper >= 8 && oper <= 12)
-				SymbDesc.setType(acceptor, integer);
+				SymbDesc.setType(acceptor, Type.intType);
 			// ==, !=, <=, >=, <, >
 			else if (oper >= 2 && oper <= 7)
-				SymbDesc.setType(acceptor, logical);
+				SymbDesc.setType(acceptor, Type.boolType);
 			else
 				Report.error(acceptor.position,
 						"Logical operations \"&\" and \"|\" are undefined for type Int");
@@ -316,10 +312,10 @@ public class BasicTypeChecker implements ASTVisitor {
 		else if (t1.isBuiltinDoubleType() && t2.isBuiltinDoubleType()) {
 			// +, -, *, /, %
 			if (oper >= 8 && oper <= 12)
-				SymbDesc.setType(acceptor, double_);
+				SymbDesc.setType(acceptor, Type.doubleType);
 			// ==, !=, <=, >=, <, >
 			else if (oper >= 2 && oper <= 7)
-				SymbDesc.setType(acceptor, logical);
+				SymbDesc.setType(acceptor, Type.boolType);
 			else
 				Report.error(acceptor.position,
 						"Logical operations \"&\" and \"|\" are undefined for type Double");
@@ -332,10 +328,10 @@ public class BasicTypeChecker implements ASTVisitor {
 				|| t1.isBuiltinType() && t2.isBuiltinDoubleType()) {
 			// +, -, *, /, %
 			if (oper >= 8 && oper <= 12)
-				SymbDesc.setType(acceptor, double_);
+				SymbDesc.setType(acceptor, Type.doubleType);
 			// ==, !=, <=, >=, <, >
 			else if (oper >= 2 && oper <= 7)
-				SymbDesc.setType(acceptor, logical);
+				SymbDesc.setType(acceptor, Type.boolType);
 			else
 				Report.error(acceptor.position,
 						"Logical operations \"&\" and \"|\" are undefined for type Double");
@@ -346,7 +342,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		 */
 		else if (t1.isEnumType() && t1.sameStructureAs(t2)) {
 			if (oper == AbsBinExpr.EQU)
-				SymbDesc.setType(acceptor, logical);
+				SymbDesc.setType(acceptor, Type.boolType);
 			else
 				Report.error(acceptor.position,
 						"Operator cannot be applied to operands of type \"" +
