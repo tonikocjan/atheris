@@ -171,12 +171,6 @@ public class BasicTypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor, t2);
 				success = true;
 			}
-			else if (t1.isArrayType() && t2.isArrayType() && t1.sameStructureAs(t2)) {
-				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
-				SymbDesc.setType(acceptor.expr1, t2);
-				SymbDesc.setType(acceptor, t2);
-				success = true;
-			}
 			else if (t2.canCastTo(t1)) {
 				SymbDesc.setType(acceptor, t1);
 				SymbDesc.setType(acceptor.expr2, t2);
