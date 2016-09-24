@@ -61,7 +61,7 @@ import compiler.seman.type.*;
  * @author sliva
  * @implementation Toni Kocjan
  */
-public class BasicTypeChecker implements ASTVisitor {
+public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsListType acceptor) {
@@ -165,17 +165,20 @@ public class BasicTypeChecker implements ASTVisitor {
 				return;
 			}
 			
+			// t1 and t2 are of same structure
 			if (t1.sameStructureAs(t2)) {
 				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
 				SymbDesc.setType(acceptor.expr1, t2);
 				SymbDesc.setType(acceptor, t2);
 				success = true;
 			}
+			// t2 can be casted to t1
 			else if (t2.canCastTo(t1)) {
 				SymbDesc.setType(acceptor, t1);
 				SymbDesc.setType(acceptor.expr2, t2);
 				success = true;
 			}
+			// nil can be assigned to any pointer type
 			else if (t2.isBuiltinNilType() && t1.isPointerType()) {
 				SymbDesc.setType(acceptor.expr2, t1);
 				SymbDesc.setType(acceptor, t1);
@@ -183,7 +186,7 @@ public class BasicTypeChecker implements ASTVisitor {
 			}
 			
 			if (!success)
-				Report.error(acceptor.position, "Cannot convert valueof type " + t2
+				Report.error(acceptor.position, "Cannot convert value of type " + t2
 						+ " to type " + t1);
 			
 			return;
@@ -500,7 +503,7 @@ public class BasicTypeChecker implements ASTVisitor {
 		AbsDef definition = SymbDesc.getNameDef(acceptor);
 		
 		if (!(definition instanceof AbsTypeDef))
-			Report.error(acceptor.position, "Expected type definition");
+			Report.error(acceptor.position, "Use of undeclared type \'" + definition.name + "\'");
 
 		Type type = SymbDesc.getType(definition);
 
