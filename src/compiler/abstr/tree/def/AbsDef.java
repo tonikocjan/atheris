@@ -39,7 +39,7 @@ public abstract class AbsDef extends AbsStmt {
 	private AbsDef parentDef;
 
 	/** Is this definition public / private (used for class members) */
-	public final VisibilityKind visibilityKind;
+	private VisibilityKind visibilityKind;
 	
 	/**
 	 * Create new definition.
@@ -106,5 +106,21 @@ public abstract class AbsDef extends AbsStmt {
 	 */
 	public String getName() {
 		return name;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public VisibilityKind getVisibility() {
+		return visibilityKind;
+	}
+	
+	/**
+	 * 
+	 * @param kind
+	 */
+	public void setVisibilityKind(VisibilityKind kind) {
+		this.visibilityKind = kind;
 	}
 }

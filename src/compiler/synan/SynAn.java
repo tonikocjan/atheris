@@ -289,6 +289,15 @@ public class SynAn {
 
 	private AbsDef parseDefinition() {
 		AbsDef definition = null;
+		VisibilityKind visibility = VisibilityKind.Public;
+
+		if (symbol.token == TokenType.KW_PUBLIC)
+			skip();
+		else if (symbol.token == TokenType.KW_PRIVATE) {
+			visibility = VisibilityKind.Private;
+			skip();
+		}
+		
 		switch (symbol.token) {
 		case KW_FUN:
 			dump("definition -> function_definition");
@@ -299,7 +308,7 @@ public class SynAn {
 		case KW_PUBLIC:
 		case KW_PRIVATE:
 			dump("definition -> variable_definition");
-			definition = parseVarDefinition();
+			definition = parseVarDefinition(); 
 			break;
 		case KW_IMPORT:
 			dump("definition -> import_definition");
@@ -326,6 +335,7 @@ public class SynAn {
 						+ previous.lexeme + "\", delete this token");
 		}
 
+		definition.setVisibilityKind(visibility);
 		return definition;
 	}
 
@@ -379,16 +389,8 @@ public class SynAn {
 
 	private AbsDef parseVarDefinition() {
 		Position startPos = symbol.position;
-		VisibilityKind v = VisibilityKind.Public;
 		boolean isConstant = false;
 		Symbol id = null;
-		
-		if (symbol.token == TokenType.KW_PUBLIC)
-			skip();
-		else if (symbol.token == TokenType.KW_PRIVATE) {
-			v = VisibilityKind.Private;
-			skip();
-		}
 		
 		if (symbol.token == TokenType.KW_VAR)
 			id = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
@@ -414,8 +416,8 @@ public class SynAn {
 		dump("var_definition -> var identifier : type");
 
 		type = parseType();
-		return new AbsVarDef(new Position(startPos, type.position),
-				id.lexeme, type, isConstant, v);
+		return new AbsVarDef(new Position(startPos, type.position), 
+				id.lexeme, type, isConstant);
 	}
 
 	private AbsImportDef parseImportDefinition() {

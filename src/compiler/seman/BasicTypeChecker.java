@@ -225,7 +225,7 @@ public class BasicTypeChecker implements ASTVisitor {
 	
 				AbsDef definition = classType.findMemberForName(memberName);
 				
-				if (definition.visibilityKind == VisibilityKind.Private)
+				if (definition.getVisibility() == VisibilityKind.Private)
 					Report.error(acceptor.expr2.position,
 							"Member '" + memberName + "' is private");
 				
