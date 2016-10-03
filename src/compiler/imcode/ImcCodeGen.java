@@ -487,6 +487,8 @@ public class ImcCodeGen implements ASTVisitor {
 	@Override
 	public void visit(AbsVarNameExpr acceptor) {
 		FrmAccess access = FrmDesc.getAccess(SymbDesc.getNameDef(acceptor));
+		if (access == null) return;
+		
 		ImcExpr expr = null;
 
 		if (access instanceof FrmVarAccess)

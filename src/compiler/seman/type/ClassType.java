@@ -64,8 +64,12 @@ public class ClassType extends PointerType {
 		this.classDefinition = definition;
 	}
 	
-	public LinkedHashMap<String, Type> getMembers() {
-		return members;
+//	public LinkedHashMap<String, Type> getMembers() {
+//		return members;
+//	}
+	
+	public Type getMemberTypeForName(String name) {
+		return members.get(name);
 	}
 	
 	public boolean containsMember(String name) {

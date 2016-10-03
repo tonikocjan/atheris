@@ -105,4 +105,5 @@ public class AtomType extends Type {
 	public AbsDef findMemberForName(String name) {
 		return null;
 	}
+	
 }
