@@ -65,6 +65,9 @@ public enum TokenType {
 	/** Token type: puščica ->.  */ 							ARROW,
 	
 	/** Token type: prirejanje. */								ASSIGN,
+
+	/** Token type: question mark.  */ 							QMARK,
+	/** Token type: esclamation mark.  */ 						EMARK,
 	
 	/** Token type: tip integer.  */							INTEGER,
 	/** Token type: tip string.  */								STRING,

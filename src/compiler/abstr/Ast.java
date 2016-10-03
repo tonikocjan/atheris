@@ -47,6 +47,7 @@ import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsTypeName;
 
 /**
@@ -76,7 +77,7 @@ public class Ast implements ASTVisitor {
 	private int indent;
 
 	public void visit(AbsListType arrType) {
-		Report.dump(indent, "AbsArrType " + arrType.position.toString() + ":");
+		Report.dump(indent, "AbsListType " + arrType.position.toString() + ":");
 		Report.dump(indent + 2, "[" + arrType.count + "]");
 		indent += 2;
 		arrType.type.accept(this);
@@ -500,6 +501,14 @@ public class Ast implements ASTVisitor {
 		Report.dump(indent, "AbsTupleExpr " + tupleExpr.position.toString());
 		indent += 2;
 		tupleExpr.expressions.accept(this);
+		indent -= 2;
+	}
+
+	@Override
+	public void visit(AbsOptionalType optionalType) {
+		Report.dump(indent, "AbsOptionalType " + optionalType.position.toString() + ":");
+		indent += 2;
+		optionalType.childType.accept(this);
 		indent -= 2;
 	}
 }

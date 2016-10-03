@@ -51,6 +51,7 @@ import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsType;
 import compiler.abstr.tree.type.AbsTypeName;
 import compiler.lexan.*;
@@ -605,8 +606,21 @@ public class SynAn {
 		}
 		return new AbsEnumMemberDef(name.position, name, null);
 	}
-
+	
 	private AbsType parseType() {
+		AbsType type = parseChildType();
+		
+		if (symbol.token == TokenType.QMARK) {
+			Position pos = new Position(type.position, symbol.position);
+			skip();
+			
+			return new AbsOptionalType(pos, type);
+		}
+		
+		return type;
+	}
+
+	private AbsType parseChildType() {
 		Symbol s = symbol;
 
 		switch (symbol.token) {

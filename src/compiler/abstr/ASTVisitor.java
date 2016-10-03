@@ -44,6 +44,7 @@ import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsTypeName;
 
 /**
@@ -80,4 +81,5 @@ public interface ASTVisitor {
 	public void visit(AbsTupleDef acceptor);
 	public void visit(AbsLabeledExpr acceptor);
 	public void visit(AbsTupleExpr acceptor);
+	public void visit(AbsOptionalType acceptor);
 }

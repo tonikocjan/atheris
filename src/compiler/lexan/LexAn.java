@@ -473,6 +473,13 @@ public class LexAn {
 			return new Symbol(TokenType.NEWLINE, "\\n", startRow, startCol,
 					startRow, startCol + 1);
 
+		if (ch == '?')
+			return new Symbol(TokenType.QMARK, "?", startRow, startCol, startRow,
+					startCol + 1);
+		if (ch == '!')
+			return new Symbol(TokenType.EMARK, "?", startRow, startCol, startRow,
+					startCol + 1);
+		
 		return null;
 	}
 
