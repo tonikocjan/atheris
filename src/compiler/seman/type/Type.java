@@ -123,6 +123,14 @@ public abstract class Type {
 	}
 
 	/**
+	 * Check if this type is optional type.
+	 * @return True if it is, otherwise false.
+	 */
+	public boolean isOptionalType() {
+		return this instanceof OptionalType;
+	}
+
+	/**
 	 * Check if this type is tuple type.
 	 * @return True if it is, otherwise false.
 	 */
