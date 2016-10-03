@@ -34,9 +34,11 @@ import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsForceValueExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
 import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsOptionalEvaluationExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
@@ -1343,6 +1345,8 @@ public class SynAn {
 		case LPARENT:
 		case IDENTIFIER:
 		case KW_RETURN:
+		case QMARK:
+		case EMARK:
 			dump("postfix_expression -> atom_expression postfix_expression'");
 
 			return parsePostfixExpression_(parseAtomExpression());
@@ -1355,6 +1359,8 @@ public class SynAn {
 	}
 
 	private AbsExpr parsePostfixExpression_(AbsExpr e) {
+		Position symbolPos = symbol.position;
+		
 		switch (symbol.token) {
 		case AND:
 		case IOR:
@@ -1395,6 +1401,16 @@ public class SynAn {
 			skip();
 			return parsePostfixExpression_(new AbsBinExpr(new Position(
 					e.position, expr.position), AbsBinExpr.ARR, e, expr));
+		case QMARK:
+			dump("postfix_expression' -> optional evaluation expression");
+			skip();
+			return new AbsOptionalEvaluationExpr(
+					new Position(e.position, symbolPos), e);
+		case NOT:
+			dump("postfix_expression' -> force value expression");
+			skip();
+			return new AbsForceValueExpr(
+					new Position(e.position, symbolPos), e);
 		default:
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", delete this token");

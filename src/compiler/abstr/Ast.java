@@ -31,9 +31,11 @@ import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsForceValueExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
 import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsOptionalEvaluationExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
@@ -509,6 +511,22 @@ public class Ast implements ASTVisitor {
 		Report.dump(indent, "AbsOptionalType " + optionalType.position.toString() + ":");
 		indent += 2;
 		optionalType.childType.accept(this);
+		indent -= 2;
+	}
+
+	@Override
+	public void visit(AbsOptionalEvaluationExpr optionalExpr) {
+		Report.dump(indent, "AbsOptionalEvaluationExpr " + optionalExpr.position.toString() + ":");
+		indent += 2;
+		optionalExpr.subExpr.accept(this);
+		indent -= 2;
+	}
+
+	@Override
+	public void visit(AbsForceValueExpr forceValueExpr) {
+		Report.dump(indent, "AbsForceValueExpr " + forceValueExpr.position.toString() + ":");
+		indent += 2;
+		forceValueExpr.subExpr.accept(this);
 		indent -= 2;
 	}
 }
