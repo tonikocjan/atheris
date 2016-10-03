@@ -32,9 +32,11 @@ import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsForceValueExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
 import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsOptionalEvaluationExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
@@ -48,6 +50,7 @@ import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsTypeName;
 import compiler.seman.type.*;
 
@@ -137,6 +140,9 @@ public class SemAn implements ASTVisitor {
 			break;
 		case VOID:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": VOID(" + atomConst.value + ")");
+			break;
+		case NIL:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + " (NIL)");
 			break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Seman.visit(AbsAtomConst)");
@@ -593,6 +599,45 @@ public class SemAn implements ASTVisitor {
 		Report.dump(indent, "AbsTupleExpr " + tupleExpr.position.toString());
 		indent += 2;
 		tupleExpr.expressions.accept(this);
+		indent -= 2;
+	}
+	
+	@Override
+	public void visit(AbsOptionalType acceptor) {
+		Report.dump(indent, "AbsOptionalType " + acceptor.position.toString());
+		{
+			Type typ = SymbDesc.getType(acceptor);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		indent += 2;
+		acceptor.childType.accept(this);
+		indent -= 2;
+	}
+
+	@Override
+	public void visit(AbsOptionalEvaluationExpr acceptor) {
+		Report.dump(indent, "AbsOptionalEvaluationExpr " + acceptor.position.toString());
+		{
+			Type typ = SymbDesc.getType(acceptor);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		indent += 2;
+		acceptor.subExpr.accept(this);
+		indent -= 2;
+	}
+
+	@Override
+	public void visit(AbsForceValueExpr acceptor) {
+		Report.dump(indent, "AbsForceValueExpr " + acceptor.position.toString());
+		{
+			Type typ = SymbDesc.getType(acceptor);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		indent += 2;
+		acceptor.subExpr.accept(this);
 		indent -= 2;
 	}
 }

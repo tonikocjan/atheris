@@ -40,9 +40,11 @@ import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsForceValueExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
 import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsOptionalEvaluationExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
@@ -56,6 +58,7 @@ import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsType;
 import compiler.abstr.tree.type.AbsTypeName;
 import compiler.frames.FrmDesc;
@@ -579,5 +582,20 @@ public class NameChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsTupleExpr acceptor) {
 		acceptor.expressions.accept(this);
+	}
+
+	@Override
+	public void visit(AbsOptionalType acceptor) {
+		acceptor.childType.accept(this);
+	}
+
+	@Override
+	public void visit(AbsOptionalEvaluationExpr acceptor) {
+		acceptor.subExpr.accept(this);
+	}
+
+	@Override
+	public void visit(AbsForceValueExpr acceptor) {
+		acceptor.subExpr.accept(this);
 	}
 }

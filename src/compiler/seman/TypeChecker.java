@@ -35,9 +35,11 @@ import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsForceValueExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
 import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsOptionalEvaluationExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
@@ -51,6 +53,7 @@ import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsType;
 import compiler.abstr.tree.type.AbsTypeName;
 import compiler.seman.type.*;
@@ -184,6 +187,11 @@ public class TypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor, t1);
 				success = true;
 			}
+			// optionals
+			else if (t1.isOptionalType() && ((OptionalType) t1).childType.sameStructureAs(t2)) {
+				SymbDesc.setType(acceptor, t1);
+				success = true;
+			}
 			
 			if (!success)
 				Report.error(acceptor.position, "Cannot convert value of type " + t2
@@ -223,15 +231,8 @@ public class TypeChecker implements ASTVisitor {
 						"Value of type \'" + t1.friendlyName() + 
 						"\' has no member \'" + memberName + "\'");
 			
-			if (t1.isClassType()) {
-				AbsDef definition = null;
-				
-				if (t1.isEnumType()) {
-					definition = ((EnumType) t1).findEnumMemberForName(memberName);
-				}
-				else {
-					definition = t1.findMemberForName(memberName);
-				}
+			if (t1.isClassType() || t1.isEnumType()) {
+				AbsDef definition = t1.findMemberForName(memberName);;
 				
 				if (definition.getVisibility() == VisibilityKind.Private)
 					Report.error(acceptor.expr2.position,
@@ -241,39 +242,39 @@ public class TypeChecker implements ASTVisitor {
 				SymbDesc.setNameDef(acceptor, definition);
 	
 				Type type;
-				if (t1.isEnumType() && acceptor.expr2 instanceof AbsFunCall) {
-					acceptor.expr2.accept(this);
-					type = SymbDesc.getType(acceptor.expr2);
+				if (t1.isClassType()) {
+					type = ((ClassType) t1).getMemberTypeForName(memberName);
 				}
 				else {
-					type = ((ClassType) t1).getMembers().get(memberName);
-					SymbDesc.setType(acceptor.expr2, type);
+					type = ((EnumType) t1).getMemberTypeForName(memberName);
 				}
-	
+				
+				SymbDesc.setType(acceptor.expr2, type);
 				SymbDesc.setType(acceptor, type);
+				
 				return;
 			}
 			
-			if (t1.isCanType()) {
-				EnumType enumType = (EnumType) ((CanType) t1).childType;
-
-				AbsDef definition = enumType.findMemberForName(memberName);
-				SymbDesc.setNameDef(acceptor.expr2, definition);
-				
-				if (acceptor.expr2 instanceof AbsFunCall)
-					acceptor.expr2.accept(this);
-				
-				EnumType newEnumType = new EnumType(enumType.enumDefinition);
-				newEnumType.setDefinitionForThisType(memberName);
-				enumType.setDefinitionForThisType(memberName);
-				
-				SymbDesc.setType(acceptor.expr2, enumType);
-				SymbDesc.setType(acceptor, newEnumType);
-				
-				SymbDesc.setNameDef(acceptor.expr2, definition);
-
-				return;
-			}
+//			if (t1.isCanType()) {
+//				EnumType enumType = (EnumType) ((CanType) t1).childType;
+//
+//				AbsDef definition = enumType.findMemberForName(memberName);
+//				SymbDesc.setNameDef(acceptor.expr2, definition);
+//				
+//				if (acceptor.expr2 instanceof AbsFunCall)
+//					acceptor.expr2.accept(this);
+//				
+//				EnumType newEnumType = new EnumType(enumType.enumDefinition);
+//				newEnumType.setDefinitionForThisType(memberName);
+//				enumType.setDefinitionForThisType(memberName);
+//				
+//				SymbDesc.setType(acceptor.expr2, enumType);
+//				SymbDesc.setType(acceptor, newEnumType);
+//				
+//				SymbDesc.setNameDef(acceptor.expr2, definition);
+//
+//				return;
+//			}
 			if (t1.isTupleType()) {
 				TupleType tupleType = (TupleType) t1;
 				
@@ -662,7 +663,6 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumDef acceptor) {
-		EnumType enumType = new EnumType(acceptor);
 		AtomType enumRawValueType = null;
 		
 		if (acceptor.type != null) {
@@ -673,30 +673,39 @@ public class TypeChecker implements ASTVisitor {
 		String previousValue = null;
 		int iterator = 0;
 		
+		ArrayList<String> names = new ArrayList<>(acceptor.definitions.size());
+		ArrayList<Type> types = new ArrayList<>(acceptor.definitions.size());
+		
 		for (AbsDef def : acceptor.definitions) {
 			def.accept(this);
 
 			if (def instanceof AbsEnumMemberDef) {
+				ClassType defType = (ClassType) SymbDesc.getType(def);
 				AbsEnumMemberDef enumMemberDef = (AbsEnumMemberDef) def;
-				SymbDesc.setType(enumMemberDef, enumType);
 				
-				if (enumMemberDef.value != null) {
+				if (defType.containsMember("rawValue")) {
+					Type rawValueType = defType.getMemberTypeForName("rawValue");
+					
 					if (enumRawValueType == null)
-						Report.error(enumMemberDef.value.position, "Enum member cannot have a raw value "
+						Report.error(enumMemberDef.value.position, 
+								"Enum member cannot have a raw value "
 								+ "if the enum doesn't have a raw type");
 					
-					Type rawValueType = SymbDesc.getType(enumMemberDef.value);
+					
 					if (!rawValueType.sameStructureAs(enumRawValueType))
-						Report.error(enumMemberDef.value.position, "Cannot convert value of type \"" + 
-								rawValueType.toString() + "\" to type \"" + enumRawValueType.toString() + "\"");
+						Report.error(enumMemberDef.value.position, 
+								"Cannot convert value of type \"" + 
+								rawValueType.toString() + "\" to type \"" + 
+								enumRawValueType.toString() + "\"");
 
-					SymbDesc.setType(enumMemberDef, enumType);
 					previousValue = enumMemberDef.value.value;
 				}
 				else if (enumRawValueType != null) {
-					if (enumRawValueType.type != AtomTypeKind.STR &&
-							enumRawValueType.type != AtomTypeKind.INT)
-						Report.error(enumMemberDef.position, "Enum members require explicit raw values when the raw type is not integer or string literal");
+					if (!enumRawValueType.isBuiltinStringType() && 
+							!enumRawValueType.isBuiltinIntType())
+						Report.error(enumMemberDef.position, 
+								"Enum members require explicit raw values when "
+								+ "the raw type is not integer or string literal");
 					
 					String value = null;
 					
@@ -717,25 +726,43 @@ public class TypeChecker implements ASTVisitor {
 			}
 			else if (def instanceof AbsFunDef) {
 				FunctionType fnType = (FunctionType) SymbDesc.getType(def);
-				Vector<Type> parTypes = fnType.parameterTypes;
-				parTypes.add(0, enumType);
-				
-				FunctionType newFnType = new FunctionType(parTypes, 
-						fnType.resultType, (AbsFunDef) def);
-				SymbDesc.setType(def, newFnType);
+//				Vector<Type> parTypes = fnType.parameterTypes;
+//				parTypes.add(0, enumType);
+//				
+//				FunctionType newFnType = new FunctionType(parTypes, 
+//						fnType.resultType, (AbsFunDef) def);
+//				
+//				SymbDesc.setType(def, newFnType);
 			}
+			
+			types.add(SymbDesc.getType(def));
+			names.add(def.getName());
 		}
 		
-		SymbDesc.setType(acceptor, new CanType(enumType));
+		SymbDesc.setType(acceptor, new EnumType(acceptor, names, types));
 	}
 
 	@Override
 	public void visit(AbsEnumMemberDef acceptor) {
+		ArrayList<String> names = new ArrayList<>(1);
+		ArrayList<Type> types = new ArrayList<>(1);
+		LinkedList<AbsDef> definitions = new LinkedList<>();
+		
 		acceptor.name.accept(this);
 		
 		if (acceptor.value != null) {
 			acceptor.value.accept(this);
+			
+			names.add("rawValue");
+			types.add(SymbDesc.getType(acceptor.value));
+			definitions.add(new AbsVarDef(acceptor.position, "rawValue", 
+					new AbsAtomType(null, null)));
 		}
+		
+		AbsClassDef classDef = new AbsClassDef(acceptor.getName(), acceptor.position, 
+				 definitions, new LinkedList<>());
+		ClassType type = new ClassType(classDef, names, types);
+		SymbDesc.setType(acceptor, type);
 	}
 
 	@Override
@@ -777,5 +804,34 @@ public class TypeChecker implements ASTVisitor {
 		
 		TupleType tupleType = new TupleType(types, names);
 		SymbDesc.setType(acceptor, tupleType);
+	}
+
+	@Override
+	public void visit(AbsOptionalType acceptor) {
+		acceptor.childType.accept(this);
+		
+		Type childType = SymbDesc.getType(acceptor.childType);
+		SymbDesc.setType(acceptor, new OptionalType(childType));
+	}
+
+	@Override
+	public void visit(AbsOptionalEvaluationExpr acceptor) {
+		acceptor.subExpr.accept(this);
+
+		Type childType = SymbDesc.getType(acceptor.subExpr);
+		SymbDesc.setType(acceptor, new OptionalType(childType));
+	}
+
+	@Override
+	public void visit(AbsForceValueExpr acceptor) {
+		acceptor.subExpr.accept(this);
+
+		Type type = SymbDesc.getType(acceptor.subExpr);
+		
+		if (type.isOptionalType())
+			SymbDesc.setType(acceptor, ((OptionalType) type).childType);
+		else
+			Report.error(acceptor.position, 
+					"Cannot unwrap value of non-optional type '" + type.toString() + "'");
 	}
 }
