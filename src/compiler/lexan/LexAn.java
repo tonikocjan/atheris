@@ -166,8 +166,14 @@ public class LexAn {
 			if (nxtCh == '#') {
 				while (nxtCh != -1 && nxtCh != 10)
 					nxtCh = file.read();
+				
+				// skip all whitespaces
+				skipWhitespaces();
+				dontRead = true;
+				
 				continue;
 			}
+			
 			/**
 			 * Handle multi-line comments.
 			 */
@@ -193,6 +199,12 @@ public class LexAn {
 						startCol = 1;
 					}
 				} while (true);
+				
+				// skip all whitespaces
+				skipWhitespaces();
+				dontRead = true;
+				
+				continue;
 			}
 
 			/**
@@ -334,16 +346,7 @@ public class LexAn {
 				 */
 				if (op.token == TokenType.NEWLINE) {
 					// skip all whitespaces
-					do {
-						if (nxtCh == 10) {
-							startCol = 1;
-							startRow++;
-						}
-						else
-							startCol += nxtCh == 9 ? 4 : 1;
-						nxtCh = file.read();
-					}
-					while (isWhiteSpace(nxtCh));
+					skipWhitespaces();
 					
 					dontRead = true;
 					return op;
@@ -542,6 +545,20 @@ public class LexAn {
 		return isNumeric(nxtCh) || nxtCh == '_'
 				|| (nxtCh >= 'a' && nxtCh <= 'z')
 				|| (nxtCh >= 'A' && nxtCh <= 'Z');
+	}
+	
+	private void skipWhitespaces() throws IOException {
+		// skip all whitespaces
+		do {
+			if (nxtCh == 10) {
+				startCol = 1;
+				startRow++;
+			}
+			else
+				startCol += nxtCh == 9 ? 4 : 1;
+			nxtCh = file.read();
+		}
+		while (isWhiteSpace(nxtCh));
 	}
 
 	/**

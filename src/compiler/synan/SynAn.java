@@ -175,9 +175,7 @@ public class SynAn {
 			
 			return absStmts;
 		default:
-			Report.error(symbol.position, "Syntax error on token \""
-					+ previous.lexeme
-					+ "\", expected \";\" or \"NEWLINE\" after this token");
+			Report.error(symbol.position, "Consecutive statements must be separated by separator");
 		}
 		return null;
 	}
