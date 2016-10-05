@@ -41,9 +41,11 @@ import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
+import compiler.abstr.tree.expr.AbsForceValueExpr;
 import compiler.abstr.tree.expr.AbsFunCall;
 import compiler.abstr.tree.expr.AbsLabeledExpr;
 import compiler.abstr.tree.expr.AbsListExpr;
+import compiler.abstr.tree.expr.AbsOptionalEvaluationExpr;
 import compiler.abstr.tree.expr.AbsReturnExpr;
 import compiler.abstr.tree.expr.AbsTupleExpr;
 import compiler.abstr.tree.expr.AbsUnExpr;
@@ -57,6 +59,7 @@ import compiler.abstr.tree.stmt.AbsWhileStmt;
 import compiler.abstr.tree.type.AbsAtomType;
 import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
+import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsTypeName;
 import compiler.frames.FrmAccess;
 import compiler.frames.FrmDesc;
@@ -647,7 +650,7 @@ public class ImcCodeGen implements ASTVisitor {
 		}
 		else {
 			if (!endLabelStack.isEmpty())
-				// Jump to break label (end of the loop)
+				// Jump to break label
 				ImcDesc.setImcCode(acceptor, new ImcJUMP(endLabelStack.peek()));
 		}
 	}
@@ -693,14 +696,12 @@ public class ImcCodeGen implements ASTVisitor {
 			else
 				caseCondition = new ImcBINOP(ImcBINOP.OR, caseCondition, cond);
 		}
-		
-		acceptor.body.accept(this);
-		
-		ImcStmt body = (ImcStmt) ImcDesc.getImcCode(acceptor.body);
-		
-		
+
 		FrmLabel startLabel = FrmLabel.newLabel();
 		FrmLabel endLabel = FrmLabel.newLabel();
+		
+		acceptor.body.accept(this);
+		ImcStmt body = (ImcStmt) ImcDesc.getImcCode(acceptor.body);
 		
 		ImcSEQ caseCode = new ImcSEQ();
 		caseCode.stmts.add(new ImcCJUMP(caseCondition, startLabel, endLabel));
@@ -761,4 +762,23 @@ public class ImcCodeGen implements ASTVisitor {
 		ImcDesc.setImcCode(acceptor, new ImcESEQ(seq, location));
 	}
 
+	@Override
+	public void visit(AbsOptionalType acceptor) {
+		acceptor.childType.accept(this);
+	}
+
+	@Override
+	public void visit(AbsOptionalEvaluationExpr acceptor) {
+		acceptor.subExpr.accept(this);
+		
+		ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(acceptor.subExpr));
+	}
+
+	@Override
+	public void visit(AbsForceValueExpr acceptor) {
+		acceptor.subExpr.accept(this);acceptor.subExpr.accept(this);
+		
+		ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(acceptor.subExpr));
+	}
+	
 }
