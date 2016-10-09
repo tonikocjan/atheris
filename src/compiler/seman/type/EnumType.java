@@ -18,90 +18,73 @@
 package compiler.seman.type;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import compiler.abstr.tree.AbsStmt;
-import compiler.abstr.tree.def.AbsClassDef;
+import compiler.Report;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsEnumDef;
 import compiler.abstr.tree.def.AbsEnumMemberDef;
-import compiler.abstr.tree.def.AbsVarDef;
 
 /**
  * Enumeration type.
  * @author toni kocjan
  *
  */
-public class EnumType extends ClassType {
+public class EnumType extends PointerType {
 
 	/**
 	 * Enumeration definition.
 	 */
 	public final AbsEnumDef enumDefinition;
-
+	
 	/**
-	 * Selected member definition from enumeration.
+	 * Enum members.
 	 */
-	private AbsEnumMemberDef thisDefinition;
+	private final LinkedHashMap<String, ClassType> members = new LinkedHashMap<>();
+	
+	/**
+	 * Number of members.
+	 */
+	public final int membersCount;
+	
+	/**
+	 * Selected member (i.e.: EnumName.Member.rawValue -> selected value is Member).
+	 */
+	public String selectedMember;
 
 	/**
 	 * Create new enumeration.
 	 */
-	public EnumType(AbsEnumDef definition) {
-		super(classDefinitionForEnumeration(definition), 
-				namesForEnumeration(definition), typesForEnumeration(definition));
+	public EnumType(AbsEnumDef definition, 
+			ArrayList<String> names, ArrayList<ClassType> types) {
+		if (names.size() != types.size())
+			Report.error("Internal error :: compiler.seman.type.EnumType: "
+					+ "names count not equal types count");
+		
 		this.enumDefinition = definition;
+		this.membersCount = names.size();
+		this.selectedMember = null;
+
+		for (int i = 0; i < names.size(); i++)
+			members.put(names.get(i), types.get(i));
 	}
 	
-	private static AbsClassDef classDefinitionForEnumeration(AbsEnumDef definition) {
-		LinkedList<AbsDef> definitions = new LinkedList<>();
-		LinkedList<AbsStmt> constructor = new LinkedList<>();
+	public EnumType(EnumType copyType, String selectedMember) {
+		this.enumDefinition = copyType.enumDefinition;
+		this.membersCount = copyType.membersCount;
+		this.selectedMember = selectedMember;
 		
-		if (definition.type != null)
-			definitions.add(new AbsVarDef(definition.position, "rawValue", definition.type));
-		
-		return new AbsClassDef(definition.name, 
-				definition.position, definitions, constructor);
-	}
-	
-	private static ArrayList<String> namesForEnumeration(AbsEnumDef definition) {
-		ArrayList<String> names = new ArrayList<>();
-		if (definition.type != null)
-			names.add("rawValue");
-		return names;
-	}
-	
-	private static ArrayList<Type> typesForEnumeration(AbsEnumDef definition) {
-		ArrayList<Type> types = new ArrayList<>();
-		if (definition.type != null)
-			types.add(new AtomType(definition.type.type));
-		return types;
-	}
-	
-	/**
-	 * Set definition for this type.
-	 * 
-	 * @param name Name of the definition.
-	 */
-	public void setDefinitionForThisType(String name) {
-		thisDefinition = (AbsEnumMemberDef) findMemberForName(name);
-	}
-	
-	/**
-	 * Get definition for this type.
-	 * 
-	 * @return Selected definition.
-	 */
-	public AbsEnumMemberDef getDefinitionForThisType() {
-		return thisDefinition;
+		for (Map.Entry<String, ClassType> entry : copyType.members.entrySet()) {
+			members.put(entry.getKey(), entry.getValue());
+		}
 	}
 
-	/**
-	 * Calculate offset for definition with given name.
-	 * @param name Name of the definition.
-	 * @return Offset.
-	 */
-	public int offsetForDefinitionName(String name) {
+	public ClassType getMemberTypeForName(String name) {
+		return members.get(name);
+	}
+	
+	public int memberOffsetForName(String name) {
 		int offset = 0;
 		for (AbsDef def : enumDefinition.definitions) {
 			if (def.getName().equals(name)) return offset;
@@ -120,20 +103,12 @@ public class EnumType extends ClassType {
 		}
 		return null;
 	}
-
-	// FIXME: This is awkard, should somehow reimplement enumerations to avoid this
-	public AbsDef findEnumMemberForName(String name) {
-		return super.findMemberForName(name);
-	}
 	
 	@Override
 	public boolean containsMember(String name) {
-		if (thisDefinition == null)
-			return findMemberForName(name) == null ? false : true;
-		return super.containsMember(name);
+		return members.containsKey(name);
 	}
 
-	@Override
 	public String getName() {
 		return enumDefinition.name;
 	}
@@ -174,6 +149,11 @@ public class EnumType extends ClassType {
 	@Override
 	public boolean canCastTo(Type t) {
 		return false;
+	}
+
+	@Override
+	public String friendlyName() {
+		return getName();
 	}
 
 }

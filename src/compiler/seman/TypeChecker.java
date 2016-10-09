@@ -61,8 +61,7 @@ import compiler.seman.type.*;
 /**
  * Preverjanje tipov.
  * 
- * @author sliva
- * @implementation Toni Kocjan
+ * @author toni
  */
 public class TypeChecker implements ASTVisitor {
 
@@ -225,13 +224,13 @@ public class TypeChecker implements ASTVisitor {
 				memberName = ((AbsFunCall) acceptor.expr2).name;
 			else
 				memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
-
-			if (!t1.containsMember(memberName))
-				Report.error(acceptor.expr2.position, 
-						"Value of type \'" + t1.friendlyName() + 
-						"\' has no member \'" + memberName + "\'");
 			
-			if (t1.isClassType() || t1.isEnumType()) {
+			if (t1.isClassType()) {
+				if (!t1.containsMember(memberName))
+					Report.error(acceptor.expr2.position, 
+							"Value of type \'" + t1.friendlyName() + 
+							"\' has no member named \'" + memberName + "\'");
+				
 				AbsDef definition = t1.findMemberForName(memberName);;
 				
 				if (definition.getVisibility() == VisibilityKind.Private)
@@ -241,40 +240,49 @@ public class TypeChecker implements ASTVisitor {
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				SymbDesc.setNameDef(acceptor, definition);
 	
-				Type type;
-				if (t1.isClassType()) {
-					type = ((ClassType) t1).getMemberTypeForName(memberName);
-				}
-				else {
-					type = ((EnumType) t1).getMemberTypeForName(memberName);
-				}
+				Type memberType = ((ClassType) t1).getMemberTypeForName(memberName);
 				
-				SymbDesc.setType(acceptor.expr2, type);
-				SymbDesc.setType(acceptor, type);
+				SymbDesc.setType(acceptor.expr2, memberType);
+				SymbDesc.setType(acceptor, memberType);
 				
 				return;
 			}
 			
-//			if (t1.isCanType()) {
-//				EnumType enumType = (EnumType) ((CanType) t1).childType;
-//
-//				AbsDef definition = enumType.findMemberForName(memberName);
-//				SymbDesc.setNameDef(acceptor.expr2, definition);
-//				
-//				if (acceptor.expr2 instanceof AbsFunCall)
-//					acceptor.expr2.accept(this);
-//				
-//				EnumType newEnumType = new EnumType(enumType.enumDefinition);
-//				newEnumType.setDefinitionForThisType(memberName);
-//				enumType.setDefinitionForThisType(memberName);
-//				
-//				SymbDesc.setType(acceptor.expr2, enumType);
-//				SymbDesc.setType(acceptor, newEnumType);
-//				
-//				SymbDesc.setNameDef(acceptor.expr2, definition);
-//
-//				return;
-//			}
+			if (t1.isEnumType()) {
+				EnumType enumType = (EnumType) t1;
+				
+				if (enumType.selectedMember == null) {
+					AbsDef definition = enumType.findMemberForName(memberName);
+					
+					if (definition.getVisibility() == VisibilityKind.Private)
+						Report.error(acceptor.expr2.position,
+								"Member '" + memberName + "' is private");
+					
+					SymbDesc.setNameDef(acceptor.expr2, definition);
+					SymbDesc.setNameDef(acceptor, definition);
+		
+					EnumType memberType = new EnumType(enumType, memberName);
+					
+					SymbDesc.setType(acceptor.expr2, memberType);
+					SymbDesc.setType(acceptor, memberType);
+				}
+				else {
+					ClassType memberType = enumType.getMemberTypeForName(enumType.selectedMember);
+					
+					if (!memberType.containsMember(memberName))
+						Report.error(acceptor.expr2.position, 
+								"Value of type \'" + memberType.friendlyName() + 
+								"\' has no member named \'" + memberName + "\'");
+					
+					Type memberRawValueType = memberType.getMemberTypeForName(memberName);
+
+					SymbDesc.setType(acceptor.expr2, memberRawValueType);
+					SymbDesc.setType(acceptor, memberRawValueType);
+				}
+				
+				return;
+			}
+			
 			if (t1.isTupleType()) {
 				TupleType tupleType = (TupleType) t1;
 				
@@ -674,14 +682,38 @@ public class TypeChecker implements ASTVisitor {
 		int iterator = 0;
 		
 		ArrayList<String> names = new ArrayList<>(acceptor.definitions.size());
-		ArrayList<Type> types = new ArrayList<>(acceptor.definitions.size());
+		ArrayList<ClassType> types = new ArrayList<>(acceptor.definitions.size());
 		
 		for (AbsDef def : acceptor.definitions) {
-			def.accept(this);
-
 			if (def instanceof AbsEnumMemberDef) {
-				ClassType defType = (ClassType) SymbDesc.getType(def);
 				AbsEnumMemberDef enumMemberDef = (AbsEnumMemberDef) def;
+				
+				if (enumRawValueType != null && enumMemberDef.value == null) {
+					if (!enumRawValueType.isBuiltinStringType() && 
+							!enumRawValueType.isBuiltinIntType())
+						Report.error(enumMemberDef.position, 
+								"Enum members require explicit raw values when "
+								+ "the raw type is not Int or String literal");
+					
+					String value = null;
+					
+					if (enumRawValueType.type == AtomTypeKind.STR)
+						value = "\"" + enumMemberDef.name.name + "\"";
+					else if (enumRawValueType.type == AtomTypeKind.INT) {
+						if (previousValue == null)
+							value = "" + iterator;
+						else
+							value = "" + (Integer.parseInt(previousValue) + 1);
+					}
+					
+					enumMemberDef.value = new AbsAtomConstExpr(enumMemberDef.position, enumRawValueType.type, value);
+	
+					previousValue = value;
+					iterator++;
+				}
+
+				def.accept(this);
+				ClassType defType = (ClassType) SymbDesc.getType(def);
 				
 				if (defType.containsMember("rawValue")) {
 					Type rawValueType = defType.getMemberTypeForName("rawValue");
@@ -700,32 +732,9 @@ public class TypeChecker implements ASTVisitor {
 
 					previousValue = enumMemberDef.value.value;
 				}
-				else if (enumRawValueType != null) {
-					if (!enumRawValueType.isBuiltinStringType() && 
-							!enumRawValueType.isBuiltinIntType())
-						Report.error(enumMemberDef.position, 
-								"Enum members require explicit raw values when "
-								+ "the raw type is not integer or string literal");
-					
-					String value = null;
-					
-					if (enumRawValueType.type == AtomTypeKind.STR)
-						value = "\"" + enumMemberDef.name.name + "\"";
-					else if (enumRawValueType.type == AtomTypeKind.INT) {
-						if (previousValue == null)
-							value = "" + iterator;
-						else
-							value = "" + (Integer.parseInt(previousValue) + 1);
-					}
-					
-					enumMemberDef.value = new AbsAtomConstExpr(enumMemberDef.position, enumRawValueType.type, value);
-	
-					previousValue = value;
-					iterator++;
-				}
 			}
 			else if (def instanceof AbsFunDef) {
-				FunctionType fnType = (FunctionType) SymbDesc.getType(def);
+//				FunctionType fnType = (FunctionType) SymbDesc.getType(def);
 //				Vector<Type> parTypes = fnType.parameterTypes;
 //				parTypes.add(0, enumType);
 //				
@@ -735,7 +744,7 @@ public class TypeChecker implements ASTVisitor {
 //				SymbDesc.setType(def, newFnType);
 			}
 			
-			types.add(SymbDesc.getType(def));
+			types.add((ClassType) SymbDesc.getType(def));
 			names.add(def.getName());
 		}
 		
