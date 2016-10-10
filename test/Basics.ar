@@ -1,0 +1,41 @@
+# Deklaracija spremenljivk in konstant
+
+# Spremenljivka tipa Int
+var x: Int
+ # Konstanta tipa Int
+let y: Int
+
+# Podpičja na koncu niso obvezna, lahko pa jih vseeno pišemo (Java / C++ kompatibilnost :))
+y = 10;
+
+# Če tip ni definiran, se spremenljivki priredi tip na desni strani
+let x2 = 10
+let x3 = x2
+print(x2)
+
+# Compile time error (pretvorba Double -> Int ni mogoča)
+# x2 = 10.5
+
+# sprememnljivke lahko spreminjamo
+x = 20
+# konstante pa ne (compile time error)
+# y = 20
+
+
+
+# Seznami
+
+let array: [Int] = [1, 2, 3, 4, 5]
+let array2 = [[0.1, 0.2, 0.3], [0.3, 0.2, 1.6]]
+print(array2[1][2])
+
+
+
+# Komentarji
+
+# enovrstični komentar
+
+/* To je 
+več vrstični 
+komentar
+*/

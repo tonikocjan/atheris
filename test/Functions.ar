@@ -1,0 +1,59 @@
+# Deklaracija funkcij
+
+func test() {
+	print("ta funkcija nima nic argumentov in vraca Void")
+}
+
+# Funkcija z enim argumentom tipa Bool, ki vrača Double
+func foo(x: Bool) Double {
+	if x {
+		return 10.0
+	}
+	else {
+		return 50.0
+	}
+}
+
+test()
+print(foo(true))
+
+
+# Funkcija kot tip (closures)
+
+# spremenljivka, katere tip je funkcija z dvema Int argumentoma in vrača Char
+let x: (Int, Int) -> Char
+
+func fn(x: Int, y: Int) Char {
+	return 'A'
+}
+
+func fn2(x: Int, y: Int) Char {
+	return 'B'
+}
+
+x = fn
+print(x(10, 20))
+
+
+# Metode z istim imenom
+
+func metoda() {
+	print("metodaA")
+}
+
+func metoda(x: Int) {
+	print("metodaB")
+}
+
+func metoda(x: Double) {
+	print("metodaC")
+}
+
+func metoda(x: Int, y: Bool) {
+	print("metodaD")
+}
+
+metoda()
+metoda(10)
+metoda(1.5)
+metoda(0, false)

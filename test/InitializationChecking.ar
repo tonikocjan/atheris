@@ -1,0 +1,30 @@
+# Preverjanje inicializacije
+
+var x: Int
+x = 10
+
+# OK - x je inicializiran
+print(x)
+
+var y: Bool
+
+# ERROR - uporaba neinicializirane spremenljivke
+# print(y)
+
+let z = true
+print(z)
+
+# ERROR, konstante niso mutabilne
+# z = false
+
+
+var test: Int
+
+if true {
+	test = 10
+	# OK
+	print(test)
+}
+
+# ERROR
+# print(test)

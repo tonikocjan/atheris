@@ -1,0 +1,21 @@
+# Terke
+
+# terka sestavljena iz Int in Double
+let x = (10, 5.5)
+print(x.0)
+print(x.1)
+
+
+# Poimenovani memberji
+let y = (x: "Lorem", "Ipsum")
+
+# error
+# print(y.0)
+print(y.x)
+print(y.1)
+
+let z = (a: 1, b: 2, c: 3)
+
+print(z.a)
+print(z.b)
+print(z.c)

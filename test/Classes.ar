@@ -1,0 +1,19 @@
+# Razredi
+
+class Test {
+	let a = 10
+	let b = 20
+	var c = "String"
+	
+	func memberFn() {
+		print("Member fn call")
+	}
+}
+
+# objekt se kreira s privzetim konstruktorjem
+let object = Test()
+
+print(object.a)
+print(object.c)
+
+object.memberFn()
