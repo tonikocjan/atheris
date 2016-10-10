@@ -19,6 +19,7 @@ package compiler.seman;
 
 import java.util.*;
 
+import managers.LanguageManager;
 import compiler.*;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
@@ -141,7 +142,7 @@ public class TypeChecker implements ASTVisitor {
 		if (oper == AbsBinExpr.ARR) {
 			if (!t2.isBuiltinIntType())
 				Report.error(acceptor.expr2.position,
-						"Expected Int type for array index");
+						LanguageManager.localize("type_error_expected_int_for_subscript"));
 			/**
 			 * expr1 is of type ARR(n, t)
 			 */
@@ -149,7 +150,8 @@ public class TypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor, ((ArrayType) t1).type);
 			} else
 				Report.error(acceptor.expr1.position,
-						"Type \'" + t1 + "\' has no subscript members");
+						LanguageManager.localize("type_error_type_has_no_subscripts", 
+								t1.toString()));
 			return;
 		}
 
@@ -193,8 +195,9 @@ public class TypeChecker implements ASTVisitor {
 			}
 			
 			if (!success)
-				Report.error(acceptor.position, "Cannot convert value of type " + t2
-						+ " to type " + t1);
+				Report.error(acceptor.position, 
+						LanguageManager.localize("type_error_cannot_convert_type",
+								t1.toString(), t2.toString()));
 			
 			return;
 		}
@@ -228,8 +231,9 @@ public class TypeChecker implements ASTVisitor {
 			if (t1.isClassType()) {
 				if (!t1.containsMember(memberName))
 					Report.error(acceptor.expr2.position, 
-							"Value of type \'" + t1.friendlyName() + 
-							"\' has no member named \'" + memberName + "\'");
+							LanguageManager.localize("type_error_member_not_found", 
+									t1.toString(), 
+									memberName));
 				
 				AbsDef definition = t1.findMemberForName(memberName);;
 				
@@ -252,6 +256,12 @@ public class TypeChecker implements ASTVisitor {
 				EnumType enumType = (EnumType) t1;
 				
 				if (enumType.selectedMember == null) {
+					if (!enumType.containsMember(memberName))
+						Report.error(acceptor.expr2.position, 
+								LanguageManager.localize("type_error_member_not_found", 
+										enumType.friendlyName(), 
+										memberName));
+					
 					AbsDef definition = enumType.findMemberForName(memberName);
 					
 					if (definition.getVisibility() == VisibilityKind.Private)
@@ -271,8 +281,9 @@ public class TypeChecker implements ASTVisitor {
 					
 					if (!memberType.containsMember(memberName))
 						Report.error(acceptor.expr2.position, 
-								"Value of type \'" + memberType.friendlyName() + 
-								"\' has no member named \'" + memberName + "\'");
+								LanguageManager.localize("type_error_member_not_found", 
+										t1.toString(), 
+										memberName));
 					
 					Type memberRawValueType = memberType.getMemberTypeForName(memberName);
 

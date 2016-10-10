@@ -19,3 +19,9 @@
 "lexan_error_char_literal_not_closed"          = "Char literal not properly closed";
 "lexan_error_invalid_token"                    = "Invalid token '%c' in identifier";
 "lexan_error_unknown_token"                    = "Unknown token '%c'";
+
+/* Type checker */
+"type_error_expected_int_for_subscript"        = "Expected Int type for array index";
+"type_error_type_has_no_subscripts"            = "Type \'\" + %s + \"\' has no subscript members";
+"type_error_cannot_convert_type"               = "Cannot convert value of type '%s' to type '%s'";
+"type_error_member_not_found"                  = "Value of type '%s' has no member named '%s'";
