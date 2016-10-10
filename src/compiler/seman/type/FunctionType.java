@@ -83,8 +83,8 @@ public class FunctionType extends PointerType {
 
 	@Override
 	public boolean sameStructureAs(Type type) {
-		if (type.actualType() instanceof FunctionType) {
-			FunctionType funType = (FunctionType) (type.actualType());
+		if (type.isFunctionType()) {
+			FunctionType funType = (FunctionType) type;
 			if (this.getParamaterCount() != funType.getParamaterCount())
 				return false;
 			for (int par = 0; par < getParamaterCount(); par++)

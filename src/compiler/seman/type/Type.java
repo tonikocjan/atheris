@@ -25,11 +25,6 @@ import compiler.abstr.tree.def.AbsDef;
  */
 public abstract class Type {
 
-	/** Vrne konkretno predstavitev tega tipa. */
-	public Type actualType() {
-		return this;
-	}
-
 	/**
 	 * Check if types structurarily match.
 	 * 

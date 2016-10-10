@@ -471,9 +471,10 @@ public class TypeChecker implements ASTVisitor {
 				if (!t.sameStructureAs(funType.resultType))
 					Report.error(stmt.position,
 							"Return type doesn't match, expected \""
-									+ funType.resultType.actualType()
-											.toString() + "\", got \""
-									+ t.actualType().toString() + "\" instead");
+									+ funType.resultType.toString() 
+									+ "\", got \""
+									+ t.toString() 
+									+ "\" instead");
 			}
 		}
 	}

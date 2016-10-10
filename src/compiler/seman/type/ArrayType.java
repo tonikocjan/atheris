@@ -48,8 +48,8 @@ public class ArrayType extends PointerType {
 
 	@Override
 	public boolean sameStructureAs(Type type) {
-		if (type.actualType().isArrayType()) {
-			ArrayType listType = (ArrayType) (type.actualType());
+		if (type.isArrayType()) {
+			ArrayType listType = (ArrayType) type;
 			return (listType.type.sameStructureAs(this.type));
 		}
 		return false;

@@ -43,11 +43,13 @@ public class AtomType extends Type {
 
 	@Override
 	public boolean sameStructureAs(Type type) {
-		if (type.actualType() instanceof AtomType) {
-			AtomType atomType = (AtomType) (type.actualType());
+		if (type.isBuiltinType()) {
+			AtomType atomType = (AtomType) type;
 			return this.type == atomType.type;
-		} else
+		} 
+		else {
 			return false;
+		}
 	}
 
 	@Override
