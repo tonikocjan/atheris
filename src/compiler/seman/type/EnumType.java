@@ -49,7 +49,7 @@ public class EnumType extends PointerType {
 	public final int membersCount;
 	
 	/**
-	 * Selected member (i.e.: EnumName.Member.rawValue -> selected value is Member).
+	 * Selected member (i.e.: Languages.Java.rawValue -> selected member is Java).
 	 */
 	public String selectedMember;
 
@@ -70,6 +70,11 @@ public class EnumType extends PointerType {
 			members.put(names.get(i), types.get(i));
 	}
 	
+	/**
+	 * Copy another Enum Type
+	 * @param copyType Type to copy.
+	 * @param selectedMember Selected member for this type.
+	 */
 	public EnumType(EnumType copyType, String selectedMember) {
 		this.enumDefinition = copyType.enumDefinition;
 		this.membersCount = copyType.membersCount;
@@ -80,10 +85,20 @@ public class EnumType extends PointerType {
 		}
 	}
 
+	/**
+	 * Get type for member.
+	 * @param name Name of member.
+	 * @return Type of found member (null if member with such name doesn't exist).
+	 */
 	public ClassType getMemberTypeForName(String name) {
 		return members.get(name);
 	}
 	
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public int memberOffsetForName(String name) {
 		int offset = 0;
 		for (AbsDef def : enumDefinition.definitions) {

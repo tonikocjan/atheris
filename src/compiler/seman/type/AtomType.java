@@ -22,20 +22,20 @@ import compiler.abstr.tree.AtomTypeKind;
 import compiler.abstr.tree.def.AbsDef;
 
 /**
- * Opis atomarnih podatkovnih tipov.
+ * Built-in types.
  * 
- * @author sliva
+ * @author toni
  */
 public class AtomType extends Type {
 
-	/* Tip. */
+	/**
+	 * Type kind.
+	 */
 	public final AtomTypeKind type;
 
 	/**
-	 * Ustvari nov opis atomarnega tipa.
-	 * 
-	 * @param type
-	 *            Atomarni tip.
+	 * Create new Atom type.
+	 * @param type Type kind.
 	 */
 	public AtomType(AtomTypeKind type) {
 		this.type = type;
@@ -86,9 +86,10 @@ public class AtomType extends Type {
 
 	@Override
 	public boolean canCastTo(Type t) {
-		if (!(t instanceof AtomType)) return false;
+		if (!t.isBuiltinType()) return false;
+		
 		// int can be casted to double
-		return ((AtomType) t).type == AtomTypeKind.DOB && type == AtomTypeKind.INT;
+		return t.isBuiltinDoubleType() && isBuiltinIntType(); 
 	}
 
 	@Override

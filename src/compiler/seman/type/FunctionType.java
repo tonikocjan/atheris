@@ -25,7 +25,7 @@ import compiler.abstr.tree.def.AbsFunDef;
 /**
  * Function type.
  * 
- * @author toni kocjan
+ * @author toni
  */
 public class FunctionType extends PointerType {
 
@@ -40,7 +40,7 @@ public class FunctionType extends PointerType {
 	public final Type resultType;
 
 	/**
-	 * Definition.
+	 * Function definition.
 	 */
 	public final AbsFunDef functionDefinition;
 
@@ -65,7 +65,7 @@ public class FunctionType extends PointerType {
 	 * 
 	 * @return Parameter count.
 	 */
-	public int getNumPars() {
+	public int getParamaterCount() {
 		return parameterTypes.size();
 	}
 
@@ -85,9 +85,9 @@ public class FunctionType extends PointerType {
 	public boolean sameStructureAs(Type type) {
 		if (type.actualType() instanceof FunctionType) {
 			FunctionType funType = (FunctionType) (type.actualType());
-			if (this.getNumPars() != funType.getNumPars())
+			if (this.getParamaterCount() != funType.getParamaterCount())
 				return false;
-			for (int par = 0; par < getNumPars(); par++)
+			for (int par = 0; par < getParamaterCount(); par++)
 				if (!this.getParType(par).sameStructureAs(funType.getParType(par)))
 					return false;
 			if (!this.resultType.sameStructureAs(funType.resultType))

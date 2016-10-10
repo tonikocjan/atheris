@@ -26,10 +26,14 @@ import compiler.Report;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 
+/**
+ * Class type. 
+ * @author toni
+ */
 public class ClassType extends PointerType {
 	
 	/**
-	 * Definition.
+	 * Class definition.
 	 */
 	public final AbsClassDef classDefinition;
 
@@ -45,9 +49,9 @@ public class ClassType extends PointerType {
 
 	/**
 	 * Create new class type.
-	 * @param definition
-	 * @param names
-	 * @param types
+	 * @param definition Class definition.
+	 * @param names Name for each member.
+	 * @param types Type for each member.
 	 */
 	public ClassType(AbsClassDef definition, 
 			ArrayList<String> names, ArrayList<Type> types) {
@@ -64,12 +68,13 @@ public class ClassType extends PointerType {
 		this.classDefinition = definition;
 	}
 	
+	/**
+	 * Get type for member.
+	 * @param name Name of the member.
+	 * @return Type of the member (or null if member with such name doesn't exist).
+	 */
 	public Type getMemberTypeForName(String name) {
 		return members.get(name);
-	}
-	
-	public boolean containsMember(String name) {
-		return members.containsKey(name);
 	}
 	
 	/**
@@ -87,9 +92,18 @@ public class ClassType extends PointerType {
 		
 		return offset;
 	}
-	
+
+	/**
+	 * Get name of this type.
+	 * @return Class name.
+	 */
 	public String getName() {
 		return classDefinition.name;
+	}
+
+	@Override
+	public boolean containsMember(String name) {
+		return members.containsKey(name);
 	}
 
 	@Override

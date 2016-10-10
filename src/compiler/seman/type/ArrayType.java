@@ -20,25 +20,26 @@ package compiler.seman.type;
 import compiler.abstr.tree.def.AbsDef;
 
 /**
- * Opis tabelaricnega tipa.
+ * Array type.
  * 
- * @author sliva
+ * @author toni
  */
 public class ArrayType extends PointerType {
 
-	/** Tip elementa. */
+	/**
+	 * Type of array member.
+	 */
 	public final Type type;
 
-	/** Velikost tabele. */
+	/**
+	 * Size (number of elements) in array.
+	 */
 	public final int count;
 
 	/**
-	 * Ustvari nov opis tabelaricnega tipa.
-	 * 
-	 * @param type
-	 *            Tip elementa tabele.
-	 * @param count
-	 *            Velikost tabele.
+	 * Create new Array Type.
+	 * @param type Type for each member.
+	 * @param count Number of elements.
 	 */
 	public ArrayType(Type type, int count) {
 		this.type = type;
