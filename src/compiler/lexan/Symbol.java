@@ -22,7 +22,7 @@ import compiler.*;
 /**
  * Leksikalni simbol.
  * 
- * @author sliva
+ * @author Toni Kocjan
  */
 public class Symbol {
 	

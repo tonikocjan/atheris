@@ -47,7 +47,7 @@ public class FrmLocAccess extends FrmAccess {
 		this.var = var;
 		this.frame = frame;
 		
-		Type type = SymbDesc.getType(this.var).actualType();
+		Type type = SymbDesc.getType(this.var);
 		this.offset = 0 - frame.sizeLocs - type.size();
 		frame.sizeLocs = frame.sizeLocs + type.size();
 	}

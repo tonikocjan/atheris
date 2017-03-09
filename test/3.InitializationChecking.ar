@@ -20,11 +20,19 @@ print(z)
 
 var test: Int
 
-if true {
-	test = 10
+if z {
+	test = 50
 	# OK
 	print(test)
 }
+print("")
 
 # ERROR
-# print(test)
+ print(test)
+
+while true {
+	test = 10
+	break
+}
+
+print(test)

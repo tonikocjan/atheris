@@ -15,7 +15,12 @@ print(y.x)
 print(y.1)
 
 let z = (a: 1, b: 2, c: 3)
+let zz = (aa: (1, 2), b: "123")
 
 print(z.a)
 print(z.b)
 print(z.c)
+
+print(zz.aa.1)
+
+var avc: (Int, Double)

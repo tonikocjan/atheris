@@ -197,7 +197,7 @@ public class TypeChecker implements ASTVisitor {
 			if (!success)
 				Report.error(acceptor.position, 
 						LanguageManager.localize("type_error_cannot_convert_type",
-								t1.toString(), t2.toString()));
+								t2.toString(), t1.toString()));
 			
 			return;
 		}
