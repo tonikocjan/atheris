@@ -467,27 +467,22 @@ public class NameChecker implements ASTVisitor {
 		AbsStmts source = (AbsStmts) synAn.parse();
 
 		LinkedList<AbsDef> definitions = new LinkedList<>();
+		
 		for (AbsStmt s : source.statements) {
 			// skip statements which are not definitions
 			if (!(s instanceof AbsDef))
 				continue;
 
-			AbsDef d = (AbsDef) s;
+			AbsDef definition = (AbsDef) s;
 
 			if (acceptor.definitions.size() > 0) {
-				String name = null;
-
-				if (d instanceof AbsVarDef)
-					name = ((AbsVarDef) d).name;
-				if (d instanceof AbsFunDef)
-					name = ((AbsFunDef) d).name;
-				if (d instanceof AbsClassDef)
-					name = ((AbsClassDef) d).getName();
+				String name = definition.getName();
 
 				if (!acceptor.definitions.contains(name))
 					continue;
 			}
-			definitions.add(d);
+			
+			definitions.add(definition);
 		}
 
 		acceptor.imports = new AbsDefs(source.position, definitions);
