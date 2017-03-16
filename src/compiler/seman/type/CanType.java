@@ -76,5 +76,4 @@ public class CanType extends Type {
 	public AbsDef findMemberForName(String name) {
 		return childType.findMemberForName(name);
 	}
-
 }

@@ -29,7 +29,7 @@ import compiler.abstr.tree.type.AbsType;
 public class AbsParDef extends AbsDef {
 
 	/** Parameter type. */
-	public final AbsType type;
+	public AbsType type;
 
 	/**
 	 * Create new parameter definition..

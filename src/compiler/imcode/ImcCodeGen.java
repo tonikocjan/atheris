@@ -261,7 +261,7 @@ public class ImcCodeGen implements ASTVisitor {
 			else if (t.isClassType()) {
 				code = c2;
 				
-				// member acces code
+				// member access code
 				if (!(acceptor.expr2 instanceof AbsFunCall))
 					code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, e2));
 			} 

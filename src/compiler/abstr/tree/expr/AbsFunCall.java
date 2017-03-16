@@ -21,11 +21,12 @@ import java.util.*;
 
 import compiler.*;
 import compiler.abstr.*;
+import compiler.abstr.tree.def.AbsParDef;
 
 /**
  * Klic funkcije.
  * 
- * @author sliva
+ * @author toni kocjan
  */
 public class AbsFunCall extends AbsExpr {
 	
@@ -33,7 +34,7 @@ public class AbsFunCall extends AbsExpr {
 	public final String name;
 	
 	/** Argumenti funkcije. */
-	public final AbsExpr args[];
+	public final Vector<AbsExpr> args;
 
 	/**
 	 * Ustvari nov opis klica funkcije.
@@ -47,10 +48,9 @@ public class AbsFunCall extends AbsExpr {
 	 */
 	public AbsFunCall(Position pos, String name, Vector<AbsExpr> args) {
 		super(pos);
+		
 		this.name = name;
-		this.args = new AbsExpr[args.size()];
-		for (int arg = 0; arg < args.size(); arg++)
-			this.args[arg] = args.elementAt(arg);
+		this.args = args;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class AbsFunCall extends AbsExpr {
 	 * @return Argument na izbranem mestu.
 	 */
 	public AbsExpr arg(int index) {
-		return args[index];
+		return args.get(index);
 	}
 
 	/**
@@ -70,7 +70,15 @@ public class AbsFunCall extends AbsExpr {
 	 * @return Stevilo argumentov.
 	 */
 	public int numArgs() {
-		return args.length;
+		return args.size();
+	}
+
+	/**
+	 * Add new argument to this function call.
+	 * @param arg Argument to be added.
+	 */
+	public void addArgument(AbsExpr arg) {
+		args.insertElementAt(arg, 0);;
 	}
 
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }

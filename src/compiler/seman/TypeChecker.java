@@ -17,12 +17,19 @@
 
 package compiler.seman;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Vector;
 
-import managers.LanguageManager;
-import compiler.*;
-import compiler.abstr.*;
-import compiler.abstr.tree.*;
+import compiler.Report;
+import compiler.abstr.ASTVisitor;
+import compiler.abstr.tree.AbsDefs;
+import compiler.abstr.tree.AbsExprs;
+import compiler.abstr.tree.AbsStmt;
+import compiler.abstr.tree.AbsStmts;
+import compiler.abstr.tree.AtomTypeKind;
+import compiler.abstr.tree.Condition;
+import compiler.abstr.tree.VisibilityKind;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsEnumDef;
@@ -57,7 +64,16 @@ import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsType;
 import compiler.abstr.tree.type.AbsTypeName;
-import compiler.seman.type.*;
+import compiler.seman.type.ArrayType;
+import compiler.seman.type.AtomType;
+import compiler.seman.type.CanType;
+import compiler.seman.type.ClassType;
+import compiler.seman.type.EnumType;
+import compiler.seman.type.FunctionType;
+import compiler.seman.type.OptionalType;
+import compiler.seman.type.TupleType;
+import compiler.seman.type.Type;
+import managers.LanguageManager;
 
 /**
  * Preverjanje tipov.
@@ -66,6 +82,17 @@ import compiler.seman.type.*;
  */
 public class TypeChecker implements ASTVisitor {
 
+	enum TraversalState {
+		normal, definitions
+	}
+
+	/**
+	 * Current state of traversal
+	 */
+	private TraversalState traversalState = TraversalState.normal;
+
+
+	// MARK: - Methods
 	@Override
 	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
@@ -77,25 +104,20 @@ public class TypeChecker implements ASTVisitor {
 	public void visit(AbsClassDef acceptor) {
 		ArrayList<Type> types = new ArrayList<>();
 		ArrayList<String> names = new ArrayList<>();
-		
-		// TODO: handle implicit self parameter
-		
+
+		traversalState = TraversalState.definitions;
+
 		for (AbsDef def : acceptor.definitions.definitions)
 			def.accept(this);
-
+		
+		traversalState = TraversalState.normal;
+		
 		for (AbsFunDef c : acceptor.contrustors)
 			c.accept(this);
 
 		for (AbsDef def : acceptor.definitions.definitions) {
-			Type memberType = SymbDesc.getType(def);
-			types.add(memberType);
-			
-			if (def instanceof AbsVarDef)
-				names.add(((AbsVarDef) def).name);
-			else if (def instanceof AbsFunDef)
-				names.add(((AbsFunDef) def).name);
-			else
-				Report.error("Semantic error @ AbsClassDef-typeChecker");
+			types.add(SymbDesc.getType(def));
+			names.add(def.name);
 		}
 		
 		ClassType classType = new ClassType(acceptor, names, types);
@@ -105,12 +127,18 @@ public class TypeChecker implements ASTVisitor {
 			SymbDesc.setType(c, new FunctionType(new Vector<>(), classType, c));
 		
 		// add implicit self: classType parameter to instance methods
+		// TODO: handle implicit self parameter
 		for (AbsDef def : acceptor.definitions.definitions) {
 			if (def instanceof AbsFunDef) {
 				AbsFunDef funDef = (AbsFunDef) def;
-				SymbDesc.setType(funDef.getParameterForIndex(0), classType);
-				def.accept(this);
+				AbsParDef selfParDef = funDef.getParameterForIndex(0);
+				selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
+				
+				SymbDesc.setNameDef(selfParDef.type, acceptor);
+				SymbDesc.setType(selfParDef, classType);
 			}
+			
+			def.accept(this);
 		}
 	}
 
@@ -452,40 +480,47 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
-		Vector<Type> parameters = new Vector<>();
-		
-		for (AbsParDef par : acceptor.getParamaters()) {
-			par.accept(this);
-			parameters.add(SymbDesc.getType(par));
+		if (traversalState == TraversalState.normal || traversalState == TraversalState.definitions) {
+			Vector<Type> parameters = new Vector<>();
+
+			for (AbsParDef par : acceptor.getParamaters()) {
+				par.accept(this);
+				parameters.add(SymbDesc.getType(par));
+			}
+
+			acceptor.type.accept(this);
+			Type returnType = SymbDesc.getType(acceptor.type);
+
+			FunctionType funType = new FunctionType(parameters, returnType, acceptor);
+			SymbDesc.setType(acceptor, funType);
+
+			// insert function into symbol table
+			try {
+				SymbTable.insFunc(acceptor.name, parameters, acceptor);
+			} catch (SemIllegalInsertException e) {
+				Report.error(acceptor.position, "Duplicate method \""
+						+ acceptor.name + "\"");
+			}
 		}
 
-		acceptor.type.accept(this);
-		Type returnType = SymbDesc.getType(acceptor.type);
+		if (traversalState != TraversalState.definitions) {
+			FunctionType funType = (FunctionType) SymbDesc.getType(acceptor);
 
-		FunctionType funType = new FunctionType(parameters, returnType, acceptor);
-		SymbDesc.setType(acceptor, funType);
+			acceptor.func.accept(this);
 
-		// insert function into symbol table
-		try {
-			SymbTable.insFunc(acceptor.name, parameters, acceptor);
-		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Duplicate method \""
-					+ acceptor.name + "\"");
-		}
-		
-		acceptor.func.accept(this);
+			// check if return type matches
+			for (AbsStmt stmt : acceptor.func.statements) {
+				if (stmt instanceof AbsReturnExpr) {
+					Type t = SymbDesc.getType(stmt);
 
-		// check if return type matches
-		for (AbsStmt stmt : acceptor.func.statements) {
-			if (stmt instanceof AbsReturnExpr) {
-				Type t = SymbDesc.getType(stmt);
-				if (!t.sameStructureAs(funType.resultType))
-					Report.error(stmt.position,
-							"Return type doesn't match, expected \""
-									+ funType.resultType.toString() 
-									+ "\", got \""
-									+ t.toString() 
-									+ "\" instead");
+					if (!t.sameStructureAs(funType.resultType))
+						Report.error(stmt.position,
+								"Return type doesn't match, expected \""
+										+ funType.resultType.toString()
+										+ "\", got \""
+										+ t.toString()
+										+ "\" instead");
+				}
 			}
 		}
 	}
@@ -512,6 +547,7 @@ public class TypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsParDef acceptor) {
 		acceptor.type.accept(this);
+		
 		Type type = SymbDesc.getType(acceptor.type);
 		if (type.isCanType())
 			type = ((CanType) type).childType;

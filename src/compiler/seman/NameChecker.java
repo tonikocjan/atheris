@@ -306,6 +306,14 @@ public class NameChecker implements ASTVisitor {
 		if (acceptor.oper != AbsBinExpr.DOT) {
 			acceptor.expr2.accept(this);
 		}
+		else {
+			// handle implicit "self" argument for function calls
+			// TODO: - handle static methods (when they are added)
+			if (acceptor.expr2 instanceof AbsFunCall) {
+				AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
+				funCall.addArgument(acceptor.expr1);
+			}
+		}
 	}
 
 	@Override
