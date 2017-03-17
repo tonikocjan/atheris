@@ -15,25 +15,7 @@ func foo(x: Bool) Double {
 }
 
 test()
-print(foo(true))
-
-
-# Funkcija kot tip (closures)
-
-# spremenljivka, katere tip je funkcija z dvema Int argumentoma in vrača Char
-let x: (Int, Int) -> Char
-
-func fn(x: Int, y: Int) Char {
-	return 'A'
-}
-
-func fn2(x: Int, y: Int) Char {
-	return 'B'
-}
-
-x = fn
-print(x(10, 20))
-
+print(foo(x: true))
 
 # Metode z istim imenom
 
@@ -45,7 +27,7 @@ func metoda(x: Int) {
 	print("metodaB")
 }
 
-func metoda(x: Double) {
+func metoda(double: Double) {
 	print("metodaC")
 }
 
@@ -54,6 +36,6 @@ func metoda(x: Int, y: Bool) {
 }
 
 metoda()
-metoda(10)
-metoda(1.5)
-metoda(0, false)
+metoda(x: 10)
+metoda(double: 1.5)
+metoda(x: 0, y: false)

@@ -85,14 +85,13 @@ public class NameChecker implements ASTVisitor {
 				Vector<Type> parTypes = new Vector<>();
 				
 				parTypes.add(new AtomType(AtomTypeKind.INT));
-				pars.add(new AbsParDef(null, "x", new AbsAtomType(null,
+				pars.add(new AbsParDef(null, "0", new AbsAtomType(null,
 						AtomTypeKind.INT)));
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(
 								null, new LinkedList<>()));
-				SymbTable.insFunc(name, parTypes, print);
-				SymbTable.ins("print", print);
+				SymbTable.ins(print.getStringRepresentation(), print);
 				SymbDesc.setType(print, new FunctionType(parTypes,
 						new AtomType(AtomTypeKind.VOID), print));
 
@@ -114,7 +113,7 @@ public class NameChecker implements ASTVisitor {
 				AbsFunDef print = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(
 								null, new LinkedList<>()));
-				SymbTable.insFunc(name, parTypes, print);
+				SymbTable.ins(print.getStringRepresentation(), print);
 				SymbDesc.setType(print, new FunctionType(parTypes,
 						new AtomType(AtomTypeKind.VOID), print));
 
@@ -136,7 +135,7 @@ public class NameChecker implements ASTVisitor {
 				AbsFunDef print = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(
 								null, new LinkedList<>()));
-				SymbTable.insFunc(name, parTypes, print);
+				SymbTable.ins(print.getStringRepresentation(), print);
 				SymbDesc.setType(print, new FunctionType(parTypes,
 						new AtomType(AtomTypeKind.VOID), print));
 
@@ -158,7 +157,7 @@ public class NameChecker implements ASTVisitor {
 				AbsFunDef print = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(
 								null, new LinkedList<>()));
-				SymbTable.insFunc(name, parTypes, print);
+				SymbTable.ins(print.getStringRepresentation(), print);
 				SymbDesc.setType(print, new FunctionType(parTypes,
 						new AtomType(AtomTypeKind.VOID), print));
 
@@ -180,7 +179,7 @@ public class NameChecker implements ASTVisitor {
 				AbsFunDef print = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(
 								null, new LinkedList<>()));
-				SymbTable.insFunc(name, parTypes, print);
+				SymbTable.ins(print.getStringRepresentation(), print);
 				SymbDesc.setType(print, new FunctionType(parTypes,
 						new AtomType(AtomTypeKind.VOID), print));
 
@@ -197,7 +196,7 @@ public class NameChecker implements ASTVisitor {
 				AbsFunDef time = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeKind.INT), new AbsStmts(
 								null, new LinkedList<>()));
-				SymbTable.insFunc(name, parTypes, time);
+				SymbTable.ins(time.getStringRepresentation(), time);
 				SymbTable.ins("time", time);
 				SymbDesc.setType(time, new FunctionType(parTypes,
 						new AtomType(AtomTypeKind.INT), time));
@@ -215,7 +214,7 @@ public class NameChecker implements ASTVisitor {
 				AbsFunDef rand = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeKind.INT), new AbsStmts(
 								null, new LinkedList<>()));
-				SymbTable.insFunc(name, parTypes, rand);
+				SymbTable.ins(rand.getStringRepresentation(), rand);
 				SymbTable.ins("rand", rand);
 				SymbDesc.setType(rand, new FunctionType(parTypes,
 						new AtomType(AtomTypeKind.INT), rand));
@@ -237,7 +236,7 @@ public class NameChecker implements ASTVisitor {
 				AbsFunDef rand = new AbsFunDef(null, name, pars,
 						new AbsAtomType(null, AtomTypeKind.INT), new AbsStmts(
 								null, new LinkedList<>()));
-				SymbTable.insFunc(name, parTypes, rand);
+				SymbTable.ins(rand.getStringRepresentation(), rand);
 				SymbDesc.setType(rand, new FunctionType(parTypes,
 						new AtomType(AtomTypeKind.INT), rand));
 
@@ -265,22 +264,33 @@ public class NameChecker implements ASTVisitor {
 					+ "\'");
 		}
 		
-		for (AbsStmt s : acceptor.contrustors.getFirst().func.statements) {
-			AbsBinExpr assign = (AbsBinExpr) s;
-			String name = ((AbsVarNameExpr) assign.expr1).name;
+		for (AbsFunDef constructor: acceptor.contrustors) {
+			// insert constructor into symbol table
+			try {
+				SymbTable.ins(constructor.getStringRepresentation(), constructor);
+			} catch (SemIllegalInsertException e) {
+				Report.error(acceptor.position, "Duplicate method \""
+						+ acceptor.name + "\"");
+			}
 			
-			SymbDesc.setNameDef(assign.expr1, 
-					acceptor.definitions.findDefinitionForName(name));
+			for (AbsStmt s : constructor.func.statements) {
+				AbsBinExpr assignExpr = (AbsBinExpr) s;
+				String name = ((AbsVarNameExpr) assignExpr.expr1).name;
+				
+				SymbDesc.setNameDef(assignExpr.expr1, 
+						acceptor.definitions.findDefinitionForName(name));
+			}
 		}
 		
 		SymbTable.newScope();		
-		// add implicit self: classType parameter to instance methods
 		for (AbsDef def : acceptor.definitions.definitions) {
 			if (def instanceof AbsFunDef) {
+				// add implicit self: classType parameter to instance methods
 				AbsFunDef funDef = (AbsFunDef) def;
-				// FIXME: Position
+				
+				// FIXME: - Position
 				AbsParDef parDef = new AbsParDef(funDef.position, "self", 
-								new AbsAtomType(funDef.position, AtomTypeKind.INT));
+						new AbsAtomType(funDef.position, AtomTypeKind.INT));
 				funDef.addParamater(parDef);
 				
 				def.accept(this);
@@ -303,16 +313,19 @@ public class NameChecker implements ASTVisitor {
 	public void visit(AbsBinExpr acceptor) {
 		acceptor.expr1.accept(this);
 
-		if (acceptor.oper != AbsBinExpr.DOT) {
-			acceptor.expr2.accept(this);
-		}
-		else {
+		if (acceptor.oper == AbsBinExpr.DOT) {
 			// handle implicit "self" argument for function calls
 			// TODO: - handle static methods (when they are added)
 			if (acceptor.expr2 instanceof AbsFunCall) {
 				AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
-				funCall.addArgument(acceptor.expr1);
+				
+				// TODO: - Fix position
+				AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.expr2.position, new AbsVarNameExpr(acceptor.expr2.position, "self"), "self");
+				funCall.addArgument(selfArg);
 			}
+		}
+		else {
+			acceptor.expr2.accept(this);
 		}
 	}
 
@@ -349,10 +362,9 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-		AbsDef definition = SymbTable.fnd(acceptor.name);
+		AbsDef definition = SymbTable.fnd(acceptor.getStringRepresentation());
 		if (definition == null)
-			Report.error(acceptor.position, "Method " + acceptor.name
-					+ " is undefined");
+			Report.error(acceptor.position, "Method " + acceptor.getStringRepresentation() + " is undefined");
 		
 		SymbDesc.setNameDef(acceptor, definition);
 		
@@ -363,9 +375,9 @@ public class NameChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsFunDef acceptor) {
 		try {
-			SymbTable.ins(acceptor.name, acceptor);
+			SymbTable.ins(acceptor.getStringRepresentation(), acceptor);
 		} catch (SemIllegalInsertException e) {
-			
+			Report.error(acceptor.position, "Invalid redeclaration of \"" + acceptor.getStringRepresentation() + "\"");
 		}
 		
 		SymbTable.newScope();

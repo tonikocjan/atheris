@@ -127,7 +127,6 @@ public class TypeChecker implements ASTVisitor {
 			SymbDesc.setType(c, new FunctionType(new Vector<>(), classType, c));
 		
 		// add implicit self: classType parameter to instance methods
-		// TODO: handle implicit self parameter
 		for (AbsDef def : acceptor.definitions.definitions) {
 			if (def instanceof AbsFunDef) {
 				AbsFunDef funDef = (AbsFunDef) def;
@@ -262,6 +261,17 @@ public class TypeChecker implements ASTVisitor {
 							LanguageManager.localize("type_error_member_not_found", 
 									t1.toString(), 
 									memberName));
+				
+				if (acceptor.expr2 instanceof AbsFunCall) {
+					AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
+					AbsFunDef funDef = (AbsFunDef) ((ClassType) t1).findMemberForName(funCall.name);
+					AbsParDef selfParDef = funDef.getParameterForIndex(0);
+					AbsExpr selfArgExpr = ((AbsLabeledExpr) funCall.arg(0)).expr;
+					
+					SymbDesc.setType(funCall.arg(0), t1);
+					SymbDesc.setType(selfArgExpr, t1);
+					SymbDesc.setNameDef(selfArgExpr, selfParDef);
+				}
 				
 				AbsDef definition = t1.findMemberForName(memberName);;
 				
@@ -446,8 +456,7 @@ public class TypeChecker implements ASTVisitor {
 
 		AbsDef def = SymbDesc.getNameDef(acceptor);
 		
-		if (def instanceof AbsVarDef || def instanceof AbsParDef || 
-				def instanceof AbsEnumMemberDef) {
+		if (def instanceof AbsVarDef || def instanceof AbsParDef || def instanceof AbsEnumMemberDef) {
 			Type type = SymbDesc.getType(def);
 			
 			if (!type.isFunctionType())
@@ -455,7 +464,7 @@ public class TypeChecker implements ASTVisitor {
 								+ type.toString() + "\'");
 			
 			FunctionType t = new FunctionType(parameters, 
-					((FunctionType)type).resultType, ((FunctionType) type).functionDefinition);
+					((FunctionType) type).resultType, ((FunctionType) type).functionDefinition);
 			
 			if (!type.sameStructureAs(t)) 
 				Report.error("Error todo");
@@ -464,7 +473,7 @@ public class TypeChecker implements ASTVisitor {
 			SymbDesc.setType(acceptor, ((FunctionType) SymbDesc.getType(def)).resultType);
 		}
 		else {
-			AbsFunDef definition = (AbsFunDef) SymbTable.fndFunc(acceptor.name, parameters);
+			AbsFunDef definition = (AbsFunDef) SymbTable.fnd(acceptor.getStringRepresentation());
 			
 			if (definition == null) {
 				Report.error(acceptor.position, "Method " + acceptor.name
@@ -493,14 +502,6 @@ public class TypeChecker implements ASTVisitor {
 
 			FunctionType funType = new FunctionType(parameters, returnType, acceptor);
 			SymbDesc.setType(acceptor, funType);
-
-			// insert function into symbol table
-			try {
-				SymbTable.insFunc(acceptor.name, parameters, acceptor);
-			} catch (SemIllegalInsertException e) {
-				Report.error(acceptor.position, "Duplicate method \""
-						+ acceptor.name + "\"");
-			}
 		}
 
 		if (traversalState != TraversalState.definitions) {

@@ -57,6 +57,7 @@ public class AbsFunDef extends AbsDef {
 	public AbsFunDef(Position pos, String name, 
 			LinkedList<AbsParDef> pars, AbsType type, AbsStmts stmts) {
 		super(pos, name);
+		
 		this.pars = pars;
 		this.type = type;
 		this.func = stmts;
@@ -93,6 +94,21 @@ public class AbsFunDef extends AbsDef {
 	 */
 	public int numPars() {
 		return pars.size();
+	}
+	
+	/**
+	 * Get string representation of this function definition
+	 * @return String representation, i.e.: func (x: Int, y: Double) Int = (x:y:)
+	 */
+	public String getStringRepresentation() {
+		StringBuilder sb = new StringBuilder(name);
+		sb.append('(');
+		for (AbsParDef par : pars) {
+			sb.append(par.name);
+			sb.append(':');
+		}
+		sb.append(')');
+		return sb.toString();
 	}
 
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }

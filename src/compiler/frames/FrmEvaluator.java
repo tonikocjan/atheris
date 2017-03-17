@@ -144,7 +144,6 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-		
 		int parSize = 4;
 		for (AbsExpr arg: acceptor.args)
 			parSize += SymbDesc.getType(arg).size();

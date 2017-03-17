@@ -1470,10 +1470,18 @@ public class SynAn {
 
 				dump("atom_expression -> identifier ( expressions )");
 
-				Vector<AbsExpr> absExprs = parseExpressions();
-				return new AbsFunCall(new Position(current.position,
-						absExprs.lastElement().position), current.lexeme,
-						absExprs);
+				// TODO: - Optimize this
+				LinkedList<AbsExpr> arguments = parseTupleExpressions();
+
+				Vector<AbsLabeledExpr> absExprs = new Vector<>();
+				for (AbsExpr e : arguments)
+					absExprs.add((AbsLabeledExpr) e);
+
+				if (symbol.token != TokenType.RPARENT)
+					Report.error(symbol.position, "Expected ')'");
+				skip();
+				
+				return new AbsFunCall(new Position(current.position, absExprs.lastElement().position), current.lexeme, absExprs);
 			} else {
 				dump("atom_expression -> identifier");
 				return new AbsVarNameExpr(current.position, current.lexeme);
@@ -1806,6 +1814,7 @@ public class SynAn {
 			if (symbol.token == TokenType.COLON) {
 				if (!(e1 instanceof AbsVarNameExpr))
 					Report.error(e1.position, "Expected identifier for tuple member name");
+				
 				String memberName = ((AbsVarNameExpr) e1).name;
 				
 				// TODO

@@ -371,8 +371,8 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-		for (int arg = 0; arg < acceptor.numArgs(); arg++)
-			acceptor.arg(arg).accept(this);
+		for (AbsLabeledExpr arg: acceptor.args)
+			arg.accept(this);
 
 		FrmFrame frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
 		ImcCALL fnCall = new ImcCALL(frame.label);
@@ -491,7 +491,9 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarNameExpr acceptor) {
-		FrmAccess access = FrmDesc.getAccess(SymbDesc.getNameDef(acceptor));
+		AbsDef nameDefinition = SymbDesc.getNameDef(acceptor);
+		
+		FrmAccess access = FrmDesc.getAccess(nameDefinition);
 		if (access == null) return;
 		
 		ImcExpr expr = null;

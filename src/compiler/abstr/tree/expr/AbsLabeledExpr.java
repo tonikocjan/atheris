@@ -23,7 +23,7 @@ import compiler.abstr.ASTVisitor;
 public class AbsLabeledExpr extends AbsExpr {
 	
 	/**
-	 * Name of expression.
+	 * Expression's name.
 	 */
 	public final String name;
 	

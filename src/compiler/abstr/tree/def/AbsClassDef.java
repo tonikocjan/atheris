@@ -71,6 +71,10 @@ public class AbsClassDef extends AbsTypeDef {
 		contrustors.add(contructor);
 	}
 	
+	public AbsDef findDefinitionForName(String name) {
+		return definitions.findDefinitionForName(name);
+	}
+	
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

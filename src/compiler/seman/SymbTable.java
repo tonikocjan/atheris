@@ -21,24 +21,21 @@ import java.util.*;
 
 import compiler.*;
 import compiler.abstr.tree.def.AbsDef;
-import compiler.seman.type.Type;
 
 public class SymbTable {
-
-	/** Simbolna tabela. */
-	private static HashMap<String, LinkedList<AbsDef>> mapping = new HashMap<>();
-	private static HashMap<String, HashMap<String, AbsDef>> functions = new HashMap<>();
 	
+	/** Simbolna tabela. */
+	private static HashMap<String, LinkedList<AbsDef>> mapping = new HashMap<String, LinkedList<AbsDef>>();
 	/** Trenutna globina nivoja gnezdenja. */
 	private static int scope = 0;
-
+	
 	/**
 	 * Preide na naslednji nivo gnezdenja.
 	 */
 	public static void newScope() {
 		scope++;
 	}
-
+	
 	/**
 	 * Odstrani vse definicije na trenutnem nivoju gnezdenja in preide na
 	 * predhodni nivo gnezdenja.
@@ -54,7 +51,7 @@ public class SymbTable {
 		}
 		scope--;
 	}
-
+	
 	/**
 	 * Vstavi novo definicijo imena na trenutni nivo gnezdenja.
 	 * 
@@ -88,33 +85,6 @@ public class SymbTable {
 	}
 	
 	/**
-	 * Vstavi novo definicijo funkcije na trenutni nivo gnezdenja.
-	 * 
-	 * @param name
-	 *            Ime.
-	 * @param type
-	 * 			  Tip funkcije
-	 * @param newDef
-	 *            Nova definicija.
-	 * @throws SemIllegalInsertException
-	 *             Ce definicija imena na trenutnem nivoju gnezdenja ze obstaja.
-	 */
-	public static void insFunc(String name, Vector<Type> parameters, AbsDef newDef)
-			throws SemIllegalInsertException {
-		HashMap<String, AbsDef> hashmap = functions.get(name);
-		
-		// if method with such parameters already exists
-		if (hashmap != null && hashmap.get(parameters) != null)
-			throw new SemIllegalInsertException();
-		
-		if (hashmap == null) hashmap = new HashMap<>();
-		hashmap.put(parameters.toString(), newDef);
-		functions.put(name, hashmap);
-		
-		SymbDesc.setScope(newDef, scope);
-	}
-
-	/**
 	 * Odstrani definicijo imena s trenutnega nivoja gnezdenja.
 	 * 
 	 * @param name
@@ -138,7 +108,7 @@ public class SymbTable {
 		if (allNameDefs.size() == 0)
 			mapping.remove(name);
 	}
-
+	
 	/**
 	 * Vrne definicijo imena.
 	 * 
@@ -155,22 +125,8 @@ public class SymbTable {
 		return allNameDefs.getFirst();
 	}
 	
-	/**
-	 * Vrne definicijo funkcije.
-	 * @param name ime funkcije
-	 * @param parameters tipi parametrov klica funkcije
-	 * @return
-	 */
-	public static AbsDef fndFunc(String name, Vector<Type> parameters) {
-		if (functions.get(name) != null)
-			return functions.get(name).get(parameters.toString());
-		return null;
-	}
-
 	public static void clean() {
 		mapping.clear();
 		mapping = null;
-		functions.clear();
-		functions = null;
 	}
 }

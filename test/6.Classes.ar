@@ -7,13 +7,17 @@ class Test {
 	
 	func memberFn() {
 		print(self.a)
-		print(self.c)
-		self.c = "joze"
-		print(c)
 	}
 }
 
 # objekt se kreira s privzetim konstruktorjem
 let object = Test()
 
+print(object.a)
+
+func fn(x: Test) {
+	print(x.a)
+}
+
+fn(x: object)
 object.memberFn()

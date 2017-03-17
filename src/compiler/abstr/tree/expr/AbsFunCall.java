@@ -21,7 +21,6 @@ import java.util.*;
 
 import compiler.*;
 import compiler.abstr.*;
-import compiler.abstr.tree.def.AbsParDef;
 
 /**
  * Klic funkcije.
@@ -34,7 +33,7 @@ public class AbsFunCall extends AbsExpr {
 	public final String name;
 	
 	/** Argumenti funkcije. */
-	public final Vector<AbsExpr> args;
+	public final Vector<AbsLabeledExpr> args;
 
 	/**
 	 * Ustvari nov opis klica funkcije.
@@ -46,7 +45,7 @@ public class AbsFunCall extends AbsExpr {
 	 * @param args
 	 *            Argumenti funkcije.
 	 */
-	public AbsFunCall(Position pos, String name, Vector<AbsExpr> args) {
+	public AbsFunCall(Position pos, String name, Vector<AbsLabeledExpr> args) {
 		super(pos);
 		
 		this.name = name;
@@ -77,10 +76,25 @@ public class AbsFunCall extends AbsExpr {
 	 * Add new argument to this function call.
 	 * @param arg Argument to be added.
 	 */
-	public void addArgument(AbsExpr arg) {
-		args.insertElementAt(arg, 0);;
+	public void addArgument(AbsLabeledExpr arg) {
+		args.insertElementAt(arg, 0);
 	}
-
+	
+	/**
+	 * Get string representation of this function call
+	 * @return String representation, i.e.: func (x: Int, y: Double) Int = (x:y:)
+	 */
+	public String getStringRepresentation() {
+		StringBuilder sb = new StringBuilder(name);
+		sb.append('(');
+		for (AbsLabeledExpr arg: args) {
+			sb.append(arg.name);
+			sb.append(':');
+		}
+		sb.append(')');
+		return sb.toString();
+	}
+	
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }
