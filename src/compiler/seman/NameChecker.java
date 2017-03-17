@@ -320,7 +320,7 @@ public class NameChecker implements ASTVisitor {
 				AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
 				
 				// TODO: - Fix position
-				AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.expr2.position, new AbsVarNameExpr(acceptor.expr2.position, "self"), "self");
+				AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.expr2.position, acceptor.expr1, "self");
 				funCall.addArgument(selfArg);
 			}
 		}

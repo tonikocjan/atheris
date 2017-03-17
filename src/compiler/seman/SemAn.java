@@ -582,7 +582,12 @@ public class SemAn implements ASTVisitor {
 
 	@Override
 	public void visit(AbsLabeledExpr labeledExpr) {
-		Report.dump(indent, "AbsLabeledExpr " + labeledExpr.position.toString());
+		Report.dump(indent, "AbsLabeledExpr " + labeledExpr.position.toString());		
+		{
+			Type typ = SymbDesc.getType(labeledExpr);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}	
 		indent += 2;
 		Report.dump(indent, "Label: " + labeledExpr.name);
 		labeledExpr.expr.accept(this);

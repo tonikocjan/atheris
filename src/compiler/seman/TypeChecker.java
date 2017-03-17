@@ -264,13 +264,8 @@ public class TypeChecker implements ASTVisitor {
 				
 				if (acceptor.expr2 instanceof AbsFunCall) {
 					AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
-					AbsFunDef funDef = (AbsFunDef) ((ClassType) t1).findMemberForName(funCall.name);
-					AbsParDef selfParDef = funDef.getParameterForIndex(0);
-					AbsExpr selfArgExpr = ((AbsLabeledExpr) funCall.arg(0)).expr;
-					
-					SymbDesc.setType(funCall.arg(0), t1);
-					SymbDesc.setType(selfArgExpr, t1);
-					SymbDesc.setNameDef(selfArgExpr, selfParDef);
+					for (AbsExpr arg: funCall.args)
+						arg.accept(this);
 				}
 				
 				AbsDef definition = t1.findMemberForName(memberName);;
@@ -843,7 +838,8 @@ public class TypeChecker implements ASTVisitor {
 	public void visit(AbsLabeledExpr acceptor) {
 		acceptor.expr.accept(this);
 		
-		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.expr));
+		Type exprType = SymbDesc.getType(acceptor.expr);
+		SymbDesc.setType(acceptor, exprType);
 	}
 
 	@Override
