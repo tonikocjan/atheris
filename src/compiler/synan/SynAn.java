@@ -207,7 +207,7 @@ public class SynAn {
 		case KW_BREAK:
 			dump("expression -> break");
 			skip();
-			return new AbsControlTransferStmt(symbol.position, 
+			return new AbsControlTransferStmt(symbol.position,
 					ControlTransferKind.Break);
 		
 		/**
@@ -1471,7 +1471,8 @@ public class SynAn {
 				dump("atom_expression -> identifier ( expressions )");
 
 				// TODO: - Optimize this
-				LinkedList<AbsExpr> arguments = parseTupleExpressions();
+				// FIXME: - Function arguments should be parsed with their own method
+				LinkedList<AbsExpr> arguments = parseTupleExpressions(true);
 
 				Vector<AbsLabeledExpr> absExprs = new Vector<>();
 				for (AbsExpr e : arguments)
@@ -1492,7 +1493,7 @@ public class SynAn {
 			Position pos = symbol.position;
 			skip();
 			// FIXME
-			if (symbol.token == TokenType.SEMIC) {
+			if (symbol.token == TokenType.SEMIC || symbol.token == TokenType.NEWLINE) {
 				dump("atom_expression -> return");
 				return new AbsReturnExpr(pos, null);
 			}
@@ -1500,7 +1501,7 @@ public class SynAn {
 			AbsExpr e = parseExpression();
 			return new AbsReturnExpr(new Position(pos, e.position), e);
 		case LPARENT:
-			return parseTupleExpression();
+			return parseTupleExpression(false);
 		default:
 			Report.error("Syntax error on token \"" + symbol.lexeme + "\", delete this token");
 		}
@@ -1787,13 +1788,11 @@ public class SynAn {
 	}
 	
 	
-	private AbsTupleExpr parseTupleExpression() {
+	private AbsTupleExpr parseTupleExpression(boolean argumentTuple) {
 		Position start = symbol.position;
 		skip();
-		
-		// TODO: empty tuple
-		
-		LinkedList<AbsExpr> expressions = parseTupleExpressions();
+
+		LinkedList<AbsExpr> expressions = parseTupleExpressions(argumentTuple);
 		
 		if (symbol.token != TokenType.RPARENT)
 			Report.error(symbol.position, "Expected ')'");
@@ -1804,7 +1803,7 @@ public class SynAn {
 		return new AbsTupleExpr(tuplePos, expressions);
 	}
 	
-	private LinkedList<AbsExpr> parseTupleExpressions() {
+	private LinkedList<AbsExpr> parseTupleExpressions(boolean argumentTuple) {
 		int index = 0;
 		LinkedList<AbsExpr> expressions = new LinkedList<>(); 
 		
@@ -1827,7 +1826,13 @@ public class SynAn {
 				expressions.add(new AbsLabeledExpr(pos, e2, memberName));
 			}
 			else {
-				String memberName = String.valueOf(index);
+				String memberName;
+
+				if (argumentTuple)
+					memberName = "_";
+				else
+					memberName = String.valueOf(index);
+
 				expressions.add(new AbsLabeledExpr(e1.position, e1, memberName));
 			}
 			

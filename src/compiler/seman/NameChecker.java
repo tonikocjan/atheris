@@ -85,7 +85,7 @@ public class NameChecker implements ASTVisitor {
 				Vector<Type> parTypes = new Vector<>();
 				
 				parTypes.add(new AtomType(AtomTypeKind.INT));
-				pars.add(new AbsParDef(null, "0", new AbsAtomType(null,
+				pars.add(new AbsParDef(null, "_", new AbsAtomType(null,
 						AtomTypeKind.INT)));
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
@@ -107,7 +107,7 @@ public class NameChecker implements ASTVisitor {
 				Vector<Type> parTypes = new Vector<>();
 				parTypes.add(new AtomType(AtomTypeKind.DOB));
 
-				pars.add(new AbsParDef(null, "x", new AbsAtomType(null,
+				pars.add(new AbsParDef(null, "_", new AbsAtomType(null,
 						AtomTypeKind.DOB)));
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
@@ -129,7 +129,7 @@ public class NameChecker implements ASTVisitor {
 				Vector<Type> parTypes = new Vector<>();
 				parTypes.add(new AtomType(AtomTypeKind.STR));
 
-				pars.add(new AbsParDef(null, "x", new AbsAtomType(null,
+				pars.add(new AbsParDef(null, "_", new AbsAtomType(null,
 						AtomTypeKind.INT)));
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
@@ -151,7 +151,7 @@ public class NameChecker implements ASTVisitor {
 				Vector<Type> parTypes = new Vector<>();
 				parTypes.add(new AtomType(AtomTypeKind.CHR));
 
-				pars.add(new AbsParDef(null, "x", new AbsAtomType(null,
+				pars.add(new AbsParDef(null, "_", new AbsAtomType(null,
 						AtomTypeKind.CHR)));
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
@@ -173,7 +173,7 @@ public class NameChecker implements ASTVisitor {
 				Vector<Type> parTypes = new Vector<>();
 				parTypes.add(new AtomType(AtomTypeKind.LOG));
 
-				pars.add(new AbsParDef(null, "x", new AbsAtomType(null,
+				pars.add(new AbsParDef(null, "_", new AbsAtomType(null,
 						AtomTypeKind.LOG)));
 
 				AbsFunDef print = new AbsFunDef(null, name, pars,
