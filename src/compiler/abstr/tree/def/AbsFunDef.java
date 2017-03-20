@@ -109,7 +109,7 @@ public class AbsFunDef extends AbsDef {
 		StringBuilder sb = new StringBuilder(name);
 		sb.append('(');
 		for (AbsParDef par : pars) {
-			sb.append(par.name);
+			sb.append(par.argumentLabel);
 			sb.append(':');
 		}
 		sb.append(')');

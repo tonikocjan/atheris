@@ -343,7 +343,7 @@ public class SynAn {
 	private AbsFunDef parseFunDefinition() {
 		Position startPos = symbol.position;
 		if (symbol.token == TokenType.KW_FUN) {
-			Symbol id = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
+			Symbol functionName = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
 
 			skip(new Symbol(TokenType.LPARENT, "(", null));
 			skip();
@@ -351,7 +351,7 @@ public class SynAn {
 
 			LinkedList<AbsParDef> params = parseParameters();
 
-			return parseFunDefinition_(startPos, id, params);
+			return parseFunDefinition_(startPos, functionName, params);
 		}
 		Report.error(previous.position, "Syntax error on token \""
 				+ previous.lexeme + "\", expected keyword \"fun\"");
@@ -359,7 +359,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsFunDef parseFunDefinition_(Position startPos, Symbol id,
+	private AbsFunDef parseFunDefinition_(Position startPos, Symbol functionName,
 			LinkedList<AbsParDef> params) {
 		AbsType type = null;
 
@@ -384,7 +384,7 @@ public class SynAn {
 					+ previous.lexeme + "\", expected \"}\" after this token");
 		skip();
 
-		return new AbsFunDef(new Position(startPos, expr.position), id.lexeme,
+		return new AbsFunDef(new Position(startPos, expr.position), functionName.lexeme,
 				params, type, expr);
 	}
 
@@ -739,17 +739,27 @@ public class SynAn {
 
 	private AbsParDef parseParameter() {
 		if (symbol.token == TokenType.IDENTIFIER) {
-			Symbol id = symbol;
+			Symbol argumentLabel = symbol;
+			String parameterName = null;
 
-			skip(new Symbol(TokenType.COLON, ":", null));
+			skip();
+
+			if (symbol.token == TokenType.IDENTIFIER) {
+                parameterName = symbol.lexeme;
+                skip();
+            }
+			else if (symbol.token != TokenType.COLON)
+                Report.error(symbol.position,
+                        "Syntax error, expected paramater definition");
 			skip();
 
 			dump("parameter -> identifier : type");
 
 			AbsType type = parseType();
-			return new AbsParDef(new Position(id.position, type.position),
-					id.lexeme, type);
+			return new AbsParDef(new Position(argumentLabel.position, type.position),
+					parameterName, argumentLabel.lexeme, type);
 		}
+
 		Report.error(symbol.position,
 				"Syntax error, expected paramater definition");
 

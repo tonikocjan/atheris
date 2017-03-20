@@ -22,7 +22,7 @@ import compiler.abstr.*;
 import compiler.abstr.tree.type.AbsType;
 
 /**
- * Parameter definition..
+ * Parameter definition.
  * @author toni kocjan
  *
  */
@@ -32,19 +32,37 @@ public class AbsParDef extends AbsDef {
 	public AbsType type;
 
 	/**
+	 * Each function parameter has both an argument label and a parameter name.
+	 * The argument label is used when calling the function; each argument is written in
+	 * the function call with its argument label before it.
+	 * The parameter name is used in the implementation of the function.
+	 * By default, parameters use their parameter name as their argument label.
+	 */
+	public final String argumentLabel;
+
+	/**
 	 * Create new parameter definition..
 	 * 
 	 * @param pos
 	 *            Position.
 	 * @param name
-	 *            Name.
+	 *            Parameter Name.
+	 * @param argumentLabel
+	 * 			  Argument label.
 	 * @param type
 	 *            Type.
 	 */
+	public AbsParDef(Position pos, String name, String argumentLabel, AbsType type) {
+		super(pos, name == null ? argumentLabel : name);
+		this.type = type;
+		this.argumentLabel = argumentLabel;
+	}
+
 	public AbsParDef(Position pos, String name, AbsType type) {
 		super(pos, name);
 		this.type = type;
+		this.argumentLabel = name;
 	}
-	
+
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 }
