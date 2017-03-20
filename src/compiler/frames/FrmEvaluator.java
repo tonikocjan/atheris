@@ -184,7 +184,13 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsParDef acceptor) {
-		FrmDesc.setAccess(acceptor, new FrmParAccess(acceptor, currentFrame));
+		FrmDesc.setAccess(acceptor, new FrmParAccess(acceptor, currentFrame, currentFrame.sizePars));
+		
+		Type type = SymbDesc.getType(acceptor);
+		int size = type.isPointerType() ? 4 : type.size(); // FIXME: -
+		
+		currentFrame.sizePars += size;
+		currentFrame.numPars++;
 	}
 
 	@Override
@@ -206,7 +212,7 @@ public class FrmEvaluator implements ASTVisitor {
 			// var access
 			FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
 		else
-			// local function acces
+			// local function access
 			FrmDesc.setAccess(acceptor, new FrmLocAccess(acceptor, currentFrame));
 	}
 

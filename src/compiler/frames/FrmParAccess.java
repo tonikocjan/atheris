@@ -18,8 +18,6 @@
 package compiler.frames;
 
 import compiler.abstr.tree.def.AbsParDef;
-import compiler.seman.*;
-import compiler.seman.type.*;
 
 /**
  * Dostop do argumenta funkcije.
@@ -37,19 +35,17 @@ public class FrmParAccess extends FrmAccess {
 	/** Odmik od FPja.  */
 	public int offset;
 
-	/** Ustvari nov dostop do parametra.
-	 * 
-	 * @param par Parameter.
-	 * @param frame Klicni zapis.
+
+	/**
+	 * Create new paramater access.
+	 * @param par Parameter definition
+	 * @param frame Frame
+	 * @param offset Offset from FP
 	 */
-	public FrmParAccess(AbsParDef par, FrmFrame frame) {
+	public FrmParAccess(AbsParDef par, FrmFrame frame, int offset) {
 		this.par = par;
 		this.frame = frame;
-		
-		Type type = SymbDesc.getType(this.par);
-		this.offset = 0 + frame.sizePars;
-		frame.sizePars = frame.sizePars + type.size();
-		frame.numPars++;
+		this.offset = offset;
 	}
 
 	@Override

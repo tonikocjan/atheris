@@ -107,18 +107,21 @@ public class TypeChecker implements ASTVisitor {
 
 		traversalState = TraversalState.definitions;
 
-		for (AbsDef def : acceptor.definitions.definitions)
+		for (AbsDef def : acceptor.definitions.definitions) {
+			if (names.contains(def.getName()))
+				Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+			names.add(def.getName());
+			
 			def.accept(this);
+		}
 		
 		traversalState = TraversalState.normal;
 		
 		for (AbsFunDef c : acceptor.contrustors)
 			c.accept(this);
 
-		for (AbsDef def : acceptor.definitions.definitions) {
+		for (AbsDef def : acceptor.definitions.definitions)
 			types.add(SymbDesc.getType(def));
-			names.add(def.name);
-		}
 		
 		ClassType classType = new ClassType(acceptor, names, types);
 		SymbDesc.setType(acceptor, new CanType(classType));
@@ -251,7 +254,7 @@ public class TypeChecker implements ASTVisitor {
 			if (acceptor.expr2 instanceof AbsVarNameExpr)
 				memberName = ((AbsVarNameExpr) acceptor.expr2).name;
 			else if (acceptor.expr2 instanceof AbsFunCall)
-				memberName = ((AbsFunCall) acceptor.expr2).name;
+				memberName = ((AbsFunCall) acceptor.expr2).getStringRepresentation();
 			else
 				memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
 			
@@ -259,7 +262,7 @@ public class TypeChecker implements ASTVisitor {
 				if (!t1.containsMember(memberName))
 					Report.error(acceptor.expr2.position, 
 							LanguageManager.localize("type_error_member_not_found", 
-									t1.toString(), 
+									t1.friendlyName(), 
 									memberName));
 				
 				if (acceptor.expr2 instanceof AbsFunCall) {
@@ -268,7 +271,7 @@ public class TypeChecker implements ASTVisitor {
 						arg.accept(this);
 				}
 				
-				AbsDef definition = t1.findMemberForName(memberName);;
+				AbsDef definition = t1.findMemberForName(memberName);
 				
 				if (definition.getVisibility() == VisibilityKind.Private)
 					Report.error(acceptor.expr2.position,

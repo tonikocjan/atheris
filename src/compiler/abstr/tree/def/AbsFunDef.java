@@ -62,6 +62,11 @@ public class AbsFunDef extends AbsDef {
 		this.type = type;
 		this.func = stmts;
 	}
+	
+	@Override
+	public String getName() {
+		return getStringRepresentation();
+	}
 
 	/**
 	 * Get parameters.

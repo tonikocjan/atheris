@@ -181,13 +181,6 @@ public abstract class Type {
 		return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.NIL;
 	}
 	
-	/// Static members
-	public final static Type intType = new AtomType(AtomTypeKind.INT);
-	public final static Type charType = new AtomType(AtomTypeKind.CHR);
-	public final static Type doubleType = new AtomType(AtomTypeKind.DOB);
-	public final static Type stringType = new AtomType(AtomTypeKind.STR);
-	public final static Type boolType = new AtomType(AtomTypeKind.LOG);
-	
 	/**
 	 * String representation.
 	 */
@@ -197,5 +190,11 @@ public abstract class Type {
 	 * Friendly name.
 	 */
 	public abstract String friendlyName();
-	
+
+	/// Static members
+	public final static Type intType = new AtomType(AtomTypeKind.INT);
+	public final static Type charType = new AtomType(AtomTypeKind.CHR);
+	public final static Type doubleType = new AtomType(AtomTypeKind.DOB);
+	public final static Type stringType = new AtomType(AtomTypeKind.STR);
+	public final static Type boolType = new AtomType(AtomTypeKind.LOG);
 }

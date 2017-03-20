@@ -18,8 +18,8 @@
 package compiler.seman.type;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import compiler.Report;
@@ -28,7 +28,7 @@ import compiler.abstr.tree.def.AbsDef;
 
 /**
  * Class type. 
- * @author toni
+ * @author toni kocjan
  */
 public class ClassType extends PointerType {
 	
@@ -41,6 +41,11 @@ public class ClassType extends PointerType {
 	 * Class member types.
 	 */
 	private final LinkedHashMap<String, Type> members = new LinkedHashMap<>();
+	
+	/**
+	 * Mapping for definitions.
+	 */
+	private final HashMap<String, AbsDef> definitions = new HashMap<>();
 	
 	/**
 	 * Sum of sizes of all members.
@@ -62,8 +67,10 @@ public class ClassType extends PointerType {
 		int size = 0;
 		for (int i = 0; i < names.size(); i++) {
 			members.put(names.get(i), types.get(i));
+			definitions.put(names.get(i), definition.definitions.definitions.get(i));
 			size += types.get(i).size();
 		}
+		
 		this.size = size;
 		this.classDefinition = definition;
 	}
@@ -108,27 +115,12 @@ public class ClassType extends PointerType {
 
 	@Override
 	public boolean sameStructureAs(Type type) {
-		if (!(type instanceof ClassType))
-			return false;
-		
-		ClassType type_ = (ClassType) type;
-		
-		if (members.size() != type_.members.size())
-			return false;
-		
-		List<Type> this_ = new ArrayList<>(members.values());
-		List<Type> o_ = new ArrayList<>(type_.members.values());
-		
-		for (int i = 0; i < this_.size(); i++) {
-			if (!this_.get(i).sameStructureAs(o_.get(i)))
-				return false;
-		}
-		return true;
+		return false;
 	}
 	
 	@Override
 	public AbsDef findMemberForName(String name) {
-		return classDefinition.definitions.findDefinitionForName(name);
+		return definitions.get(name);
 	}
 
 	@Override
