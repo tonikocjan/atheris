@@ -32,7 +32,7 @@ import compiler.abstr.tree.type.AbsType;
 public class AbsFunDef extends AbsDef {
 	
 	/** Parameters. */
-	private final LinkedList<AbsParDef> pars;
+	public final LinkedList<AbsParDef> pars;
 
 	/** Return type. */
 	public final AbsType type;

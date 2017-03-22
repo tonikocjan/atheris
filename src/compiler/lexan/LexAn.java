@@ -99,7 +99,7 @@ public class LexAn {
 			Path current = Paths.get("");
 			System.out.println("Working dir: "
 					+ current.toAbsolutePath().toString());
-			System.out.println("  Opening file: " + sourceFileName);
+			System.out.println("    Opening file: " + sourceFileName);
 			this.file = new FileInputStream(sourceFileName);
 			word = new StringBuilder();
 

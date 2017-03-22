@@ -110,6 +110,7 @@ public class TypeChecker implements ASTVisitor {
 		for (AbsDef def : acceptor.definitions.definitions) {
 			if (names.contains(def.getName()))
 				Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+
 			names.add(def.getName());
 			
 			def.accept(this);
@@ -120,8 +121,10 @@ public class TypeChecker implements ASTVisitor {
 		for (AbsFunDef c : acceptor.contrustors)
 			c.accept(this);
 
-		for (AbsDef def : acceptor.definitions.definitions)
-			types.add(SymbDesc.getType(def));
+		for (AbsDef def : acceptor.definitions.definitions) {
+		    Type defType = SymbDesc.getType(def);
+            types.add(defType);
+		}
 		
 		ClassType classType = new ClassType(acceptor, names, types);
 		SymbDesc.setType(acceptor, new CanType(classType));
@@ -283,9 +286,10 @@ public class TypeChecker implements ASTVisitor {
 				SymbDesc.setNameDef(acceptor, definition);
 	
 				Type memberType = ((ClassType) t1).getMemberTypeForName(memberName);
-				
-				SymbDesc.setType(acceptor.expr2, memberType);
-				SymbDesc.setType(acceptor, memberType);
+				Type acceptorType = memberType.isFunctionType() ? ((FunctionType) memberType).resultType : memberType;
+
+                SymbDesc.setType(acceptor.expr2, memberType);
+				SymbDesc.setType(acceptor, acceptorType);
 				
 				return;
 			}
@@ -304,7 +308,7 @@ public class TypeChecker implements ASTVisitor {
 					
 					if (definition.getVisibility() == VisibilityKind.Private)
 						Report.error(acceptor.expr2.position,
-								"Member '" + memberName + "' is private");
+                                "Member '" + memberName + "' is inaccessible due to it's private protection level");
 					
 					SymbDesc.setNameDef(acceptor.expr2, definition);
 					SymbDesc.setNameDef(acceptor, definition);

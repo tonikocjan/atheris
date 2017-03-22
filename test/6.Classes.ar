@@ -1,23 +1,16 @@
 # Razredi
 
+import stdlib
+
 class Test {
-	let a = 10
-	let b = 20
-	var c = "String"
-	
-	func memberFn() {
-		print(self.a)
-	}
+    let data = [10, 20, 30]
+
+    func get(indexOf element: Int) Int {
+        return -1
+    }
 }
 
 # objekt se kreira s privzetim konstruktorjem
 let object = Test()
 
-print(object.a)
-
-func fn(x: Test) {
-	print(x.a)
-}
-
-fn(x: object)
-object.memberFn()
+let fun = object.get
