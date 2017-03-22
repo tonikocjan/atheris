@@ -237,9 +237,9 @@ public class TypeChecker implements ASTVisitor {
 		 */
 		if (oper == AbsBinExpr.DOT) {
 			/**
-			 * Handle list.length
+			 * Handle list.count
 			 */
-			// FIXME:
+			// FIXME: - remove this
 			if (t1.isArrayType()) {
 				String name = ((AbsVarNameExpr) acceptor.expr2).name;
 				if (!name.equals("count"))
@@ -250,13 +250,15 @@ public class TypeChecker implements ASTVisitor {
 				return;
 			}
 			
-			String memberName;
+			String memberName = null;
 			if (acceptor.expr2 instanceof AbsVarNameExpr)
 				memberName = ((AbsVarNameExpr) acceptor.expr2).name;
 			else if (acceptor.expr2 instanceof AbsFunCall)
 				memberName = ((AbsFunCall) acceptor.expr2).getStringRepresentation();
-			else
+			else if (acceptor.expr2 instanceof  AbsAtomConstExpr)
 				memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
+			else
+			    Report.error(acceptor.position, "Not yet supported");
 			
 			if (t1.isClassType()) {
 				if (!t1.containsMember(memberName))
@@ -275,7 +277,7 @@ public class TypeChecker implements ASTVisitor {
 				
 				if (definition.getVisibility() == VisibilityKind.Private)
 					Report.error(acceptor.expr2.position,
-							"Member '" + memberName + "' is private");
+							"Member '" + memberName + "' is inaccessible due to it's private protection level");
 				
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				SymbDesc.setNameDef(acceptor, definition);
@@ -444,44 +446,41 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-		Vector<Type> parameters = new Vector<>();
-		for (AbsExpr arg: acceptor.args) {
+		AbsFunDef definition = (AbsFunDef) SymbTable.fnd(acceptor.getStringRepresentation());
+		FunctionType funType = (FunctionType) SymbDesc.getType(definition);
+
+		SymbDesc.setType(acceptor, funType.resultType);
+
+		for (int i = 0; i < acceptor.numArgs(); i++) {
+			AbsExpr arg = acceptor.arg(i);
 			arg.accept(this);
-			
-			Type parType = SymbDesc.getType(arg);
-			parameters.add(parType);
+
+			Type argType = SymbDesc.getType(arg);
+			if (!(funType.getParType(i).sameStructureAs(argType))) {
+				Report.error(arg.position, "Cannot convert value of type \"" + argType.friendlyName() + "\" to type \"" + funType.getParType(i) + "\"");
+			}
 		}
 
 		AbsDef def = SymbDesc.getNameDef(acceptor);
 		
 		if (def instanceof AbsVarDef || def instanceof AbsParDef || def instanceof AbsEnumMemberDef) {
-			Type type = SymbDesc.getType(def);
-			
-			if (!type.isFunctionType())
-				Report.error(acceptor.position, "Cannot call value of non-function type \'"
-								+ type.toString() + "\'");
-			
-			FunctionType t = new FunctionType(parameters, 
-					((FunctionType) type).resultType, ((FunctionType) type).functionDefinition);
-			
-			if (!type.sameStructureAs(t)) 
-				Report.error("Error todo");
-			
-			SymbDesc.setNameDef(acceptor, def);
-			SymbDesc.setType(acceptor, ((FunctionType) SymbDesc.getType(def)).resultType);
+//			Type type = SymbDesc.getType(def);
+//
+//			if (!type.isFunctionType())
+//				Report.error(acceptor.position, "Cannot call value of non-function type \'"
+//								+ type.toString() + "\'");
+//
+//			FunctionType t = new FunctionType(parameters,
+//					((FunctionType) type).resultType, ((FunctionType) type).functionDefinition);
+//
+//			if (!type.sameStructureAs(t))
+//				Report.error("Error todo");
+//
+//			SymbDesc.setNameDef(acceptor, def);
+//			SymbDesc.setType(acceptor, ((FunctionType) SymbDesc.getType(def)).resultType);
+			Report.error(null, "kle");
 		}
 		else {
-			AbsFunDef definition = (AbsFunDef) SymbTable.fnd(acceptor.getStringRepresentation());
-			
-			if (definition == null) {
-				Report.error(acceptor.position, "Method " + acceptor.name
-						+ new FunctionType(parameters, null, null).toString()
-						+ " is undefined");
-			}
-			
-			SymbDesc.setNameDef(acceptor, definition);
-			SymbDesc.setType(acceptor,
-					((FunctionType) SymbDesc.getType(definition)).resultType);
 		}
 	}
 

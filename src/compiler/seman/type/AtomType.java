@@ -101,7 +101,7 @@ public class AtomType extends Type {
 
 	@Override
 	public String friendlyName() {
-		return "";
+		return toString();
 	}
 
 	@Override
