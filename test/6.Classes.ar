@@ -2,15 +2,45 @@
 
 import stdlib
 
-class Test {
-    let data = [10, 20, 30]
+class Point {
+	var x: Double = 0.0
+	var y: Double = 0.0
 
-    func get(indexOf element: Int) Int {
-        return -1
-    }
+	func foo(x: Double, y: Double) {
+		self.x = x;
+		self.y = y;
+	}
+
+	func init2(x: Double, y: Double) {
+		self.x = x;
+		self.y = y;
+	} 
 }
 
-# objekt se kreira s privzetim konstruktorjem
-let object = Test()
+/*class Size {
+	var width: Double
+	var height: Double
 
-let fun = object.get
+	func init(width: Double, height: Double) {
+		self.width = width;
+		self.height = height;
+	} 
+}
+
+class Rect {
+    var origin: Point
+    var size: Size
+
+    func init(origin: Point, size: Size) {
+    	self.origin = origin
+    	self.size = size
+    }
+}*/
+
+var point = Point()
+point.foo(x: 10.2, y: 20.2)
+
+/*let origin = Point(x: 10.5, y: 25.5)
+let size = Size(width: 800, height: 600)
+
+let rect = Rect(origin: origin, size: size)*/
