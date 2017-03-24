@@ -165,7 +165,7 @@ public class Main {
 			ImcDesc.clean();
 
 			System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
-			
+
 			// Izvajanje linearizirane vmesne kode
 			Interpreter.stM(Interpreter.getFP() + 4, 0);
 			if (mainFrame != null)

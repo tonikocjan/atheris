@@ -68,18 +68,19 @@ public class ImcBINOP extends ImcExpr {
 	public void dump(int indent) {
 		String op = null;
 		switch (this.op) {
-		case ADD: op = "+" ; break;
-		case SUB: op = "-" ; break;
-		case MUL: op = "*" ; break;
-		case DIV: op = "/" ; break;
-		case EQU: op = "=="; break;
-		case NEQ: op = "!="; break;
-		case LTH: op = "<" ; break;
-		case GTH: op = ">" ; break;
-		case LEQ: op = "<="; break;
-		case GEQ: op = ">="; break;
-		case AND: op = "&" ; break;
-		case OR : op = "|" ; break;
+            case ADD: op = "+" ; break;
+            case SUB: op = "-" ; break;
+            case MUL: op = "*" ; break;
+            case DIV: op = "/" ; break;
+            case EQU: op = "=="; break;
+            case NEQ: op = "!="; break;
+            case LTH: op = "<" ; break;
+            case GTH: op = ">" ; break;
+            case LEQ: op = "<="; break;
+            case GEQ: op = ">="; break;
+            case AND: op = "&" ; break;
+            case OR : op = "|" ; break;
+            case ASSIGN : op = "="; break;
 		}
 		Report.dump(indent, "BINOP op=" + op);
 		limc.dump(indent + 2);

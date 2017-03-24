@@ -469,19 +469,22 @@ public class SynAn {
 		
 		LinkedList[] data = parseClassMemberDefinitions(className);
 		LinkedList<AbsDef> definitions = data[0];
-		
+        LinkedList<AbsStmt> initExpressions = data[1];
+        LinkedList<AbsFunDef> constructors = data[2];
+
 		if (symbol.token != TokenType.RBRACE)
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", expected \"}\"");
 		Position end = symbol.position;
 		skip();
 		
-		return new AbsClassDef(className, new Position(start, end), definitions, data[1]);
+		return new AbsClassDef(className, new Position(start, end), definitions, initExpressions, constructors);
 	}
 	
 	@SuppressWarnings("rawtypes")
 	private LinkedList[] parseClassMemberDefinitions(String className) {
 		LinkedList<AbsDef> definitions = new LinkedList<>();
+        LinkedList<AbsFunDef> constructors = new LinkedList<>();
 		LinkedList<AbsStmt> defaultConstructor = new LinkedList<>();
 		
 		while (true) {
@@ -493,28 +496,35 @@ public class SynAn {
 			case KW_VAR:
 			case KW_LET:
 				definition = parseDefinition();
-				definitions.add(0, definition);
+				definitions.add(definition);
 				
 				if (symbol.token == TokenType.ASSIGN) {
 					skip();
 					dump("var_definition -> = expression");
 					
-					AbsVarNameExpr varName = new AbsVarNameExpr(definition.position, 
-							((AbsVarDef)definition).name);
-					AbsExpr e = parseExpression();
+					AbsVarNameExpr varNameExpr = new AbsVarNameExpr(definition.position, ((AbsVarDef)definition).name);
+					AbsExpr valueExpr = parseExpression();
+                    AbsBinExpr dotExpr = new AbsBinExpr(
+                            new Position(definition.position, valueExpr.position), AbsBinExpr.DOT, new AbsVarNameExpr(definition.position, "self"), varNameExpr);
+					AbsBinExpr assignExpr = new AbsBinExpr(definition.position, AbsBinExpr.ASSIGN, dotExpr, valueExpr);
 
-					defaultConstructor.add(new AbsBinExpr(
-							new Position(definition.position, e.position),
-							AbsBinExpr.ASSIGN, varName, e)
-					);
+					defaultConstructor.add(assignExpr);
 				}
 				break;
 			case KW_FUN:
 				AbsFunDef funDef = (AbsFunDef) parseDefinition();
-				definitions.add(funDef);
+
+				if (funDef.name.equals("init")) { // FIXME: - magic numbers
+                    funDef.isConstructor = true;
+                    constructors.add(funDef);
+                }
+				else {
+                    definitions.add(funDef);
+                }
+
 				break;
 			case RBRACE:
-				return new LinkedList[] {definitions, defaultConstructor};
+				return new LinkedList[] {definitions, defaultConstructor, constructors};
 			default:
 				Report.error(symbol.position, "Syntax error todooooo");
 			}

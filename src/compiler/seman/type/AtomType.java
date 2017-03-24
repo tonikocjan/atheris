@@ -91,7 +91,7 @@ public class AtomType extends Type {
 		if (!t.isBuiltinType()) return false;
 		
 		// int can be casted to double
-		return t.isBuiltinDoubleType() && isBuiltinIntType(); 
+		return t.isBuiltinDoubleType() && isBuiltinIntType();
 	}
 
 	@Override

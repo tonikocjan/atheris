@@ -38,36 +38,44 @@ public class AbsClassDef extends AbsTypeDef {
 	public final AbsDefs definitions;
 	
 	/** Constructors (initializers) */
-	public final LinkedList<AbsFunDef> contrustors = new LinkedList<>();
-	
-	/**
-	 * Create new class definition.
-	 * @param name
-	 * @param pos
-	 * @param statements
-	 */
+	public final LinkedList<AbsFunDef> contrustors;
+
+    /**
+     * * Create new class definition.
+     * @param name Definition's name
+     * @param pos Position in file
+     * @param definitions Member definitions
+     * @param initExpressions Initializing expressions for default constructor
+     * @param constructors Other constructors
+     */
 	public AbsClassDef(String name, Position pos, LinkedList<AbsDef> definitions, 
-			LinkedList<AbsStmt> initExpressions) {
+			LinkedList<AbsStmt> initExpressions, LinkedList<AbsFunDef> constructors) {
 		super(pos, name);
-		
+
+		Position position;
 		if (definitions.size() > 0) {
 			Position start = definitions.getFirst().position;
 			Position end = definitions.getLast().position;
-			this.definitions = new AbsDefs(new Position(start, end), definitions);
+			position = new Position(start, end);
 		}
-		else
-			this.definitions = new AbsDefs(pos, definitions);
-		
+		else {
+            position = pos;
+        }
+
+        this.contrustors = constructors;
+        this.definitions = new AbsDefs(position, definitions);
+
 		// set this definition as parent for all member definitions
 		for (AbsDef def : this.definitions.definitions)
 			def.setParentDefinition(this);
 		
 		// add default constructor
 		AbsFunDef contructor = new AbsFunDef(pos, 
-				name,
+				"init",
 				new LinkedList<>(), 
 				new AbsAtomType(pos, AtomTypeKind.VOID), 
-				new AbsStmts(pos, initExpressions));
+				new AbsStmts(pos, initExpressions),
+                true);
 		contrustors.add(contructor);
 	}
 	

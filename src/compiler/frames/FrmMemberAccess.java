@@ -40,7 +40,7 @@ public class FrmMemberAccess extends FrmAccess {
 	
 	public int offsetForMember() {
 		if (parentType.isClassType())
-			return ((ClassType) parentType).offsetOf(memberDef.getName());
+			return ((ClassType) parentType).offsetForMember(memberDef.getName());
 		return -1;
 	}
 

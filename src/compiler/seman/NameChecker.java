@@ -90,39 +90,41 @@ public class NameChecker implements ASTVisitor {
 			Report.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName()
 					+ "\'");
 		}
-		
+
 		for (AbsFunDef constructor: acceptor.contrustors) {
-			// insert constructor into symbol table
-			try {
-				SymbTable.ins(constructor.getStringRepresentation(), constructor);
-			} catch (SemIllegalInsertException e) {
-				Report.error(acceptor.position, "Duplicate method \""
-						+ acceptor.name + "\"");
-			}
-			
-			for (AbsStmt s : constructor.func.statements) {
-				AbsBinExpr assignExpr = (AbsBinExpr) s;
-				String name = ((AbsVarNameExpr) assignExpr.expr1).name;
-				
-				SymbDesc.setNameDef(assignExpr.expr1, 
-						acceptor.definitions.findDefinitionForName(name));
-			}
-		}
-		
-		SymbTable.newScope();		
+            // add implicit self: classType parameter to constructors
+            // FIXME: - Position
+            AbsParDef parDef = new AbsParDef(constructor.position, "self",
+                    new AbsAtomType(constructor.position, AtomTypeKind.NIL));
+            constructor.addParamater(parDef);
+
+            // insert constructor into symbol table
+            try {
+                SymbTable.ins(constructor.getStringRepresentation(acceptor.name), constructor);
+            } catch (SemIllegalInsertException e) {
+                Report.error(acceptor.position, "Duplicate method \""
+                        + acceptor.name + "\"");
+            }
+
+            constructor.accept(this);
+        }
+
+		SymbTable.newScope();
+
 		for (AbsDef def : acceptor.definitions.definitions) {
 			if (def instanceof AbsFunDef) {
-				// add implicit self: classType parameter to instance methods
-				AbsFunDef funDef = (AbsFunDef) def;
-				
-				// FIXME: - Position
-				AbsParDef parDef = new AbsParDef(funDef.position, "self", 
-						new AbsAtomType(funDef.position, AtomTypeKind.INT));
-				funDef.addParamater(parDef);
-				
-				def.accept(this);
-			}
+                // add implicit self: classType parameter to instance methods
+                AbsFunDef funDef = (AbsFunDef) def;
+
+                // FIXME: - Position
+                AbsParDef parDef = new AbsParDef(funDef.position, "self",
+                        new AbsAtomType(funDef.position, AtomTypeKind.NIL));
+                funDef.addParamater(parDef);
+            }
+
+            def.accept(this);
 		}
+
 		SymbTable.oldScope();
 	}
 
@@ -145,7 +147,7 @@ public class NameChecker implements ASTVisitor {
 			// TODO: - handle static methods (when they are supported)
 			if (acceptor.expr2 instanceof AbsFunCall) {
 				AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
-				
+
 				// TODO: - Fix position
 				AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.expr2.position, acceptor.expr1, "self");
 				funCall.addArgument(selfArg);
@@ -189,14 +191,33 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-		AbsDef definition = SymbTable.fnd(acceptor.getStringRepresentation());
-		if (definition == null)
-			Report.error(acceptor.position, "Method " + acceptor.getStringRepresentation() + " is undefined");
+        AbsFunDef definition = (AbsFunDef) SymbTable.fnd(acceptor.getStringRepresentation());
+        boolean isConstructor = false;
+
+        // handle implicit "self" argument for constructors
+        if (definition == null) {
+            AbsVarNameExpr selfArgExpr = new AbsVarNameExpr(acceptor.position, "self");
+            AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.position, selfArgExpr, "self");
+
+            acceptor.addArgument(selfArg);
+
+            definition = (AbsFunDef) SymbTable.fnd(acceptor.getStringRepresentation());
+            isConstructor = definition.isConstructor;
+        }
+
+        if (definition == null) {
+            Report.error(acceptor.position, "Method " + acceptor.getStringRepresentation() + " is undefined");
+        }
 		
 		SymbDesc.setNameDef(acceptor, definition);
-		
-		for (int arg = 0; arg < acceptor.numArgs(); arg++)
-			acceptor.arg(arg).accept(this);
+
+		for (AbsExpr argExpr : acceptor.args) {
+		    // skip first ("self") argument if function is constructor
+            if (isConstructor && argExpr == acceptor.args.firstElement())
+                continue;
+
+            argExpr.accept(this);
+        }
 	}
 
 	@Override
@@ -300,7 +321,7 @@ public class NameChecker implements ASTVisitor {
 		Report.fileName = acceptor.getName();
 
 		// parse the file
-		// TODO hardcodano notr test/
+		// FIXME: - Hardcoded location
 		SynAn synAn = new SynAn(new LexAn("test/" + acceptor.getName() + ".ar",
 				false), false);
 		AbsStmts source = (AbsStmts) synAn.parse();

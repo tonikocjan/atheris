@@ -192,7 +192,8 @@ public class Interpreter {
 		if (instruction instanceof ImcCALL) {
 			ImcCALL instr = (ImcCALL) instruction;
 			int offset = 0;
-			stM(stackPointer + offset, execute(instr.args.getFirst()));
+
+			stM(stackPointer, execute(instr.args.getFirst()));
 			
 			offset += 4;
 			
@@ -200,6 +201,7 @@ public class Interpreter {
 				stM(stackPointer + offset, execute(instr.args.get(i)));
 				offset += 4;
 			}
+
 			if (instr.label.name().equals("_print")) {
 				System.out.println(ldM(stackPointer + 4));
 				return null;
@@ -261,24 +263,26 @@ public class Interpreter {
 		}
 		
 		if (instruction instanceof ImcMOVE) {
-			ImcMOVE instr = (ImcMOVE) instruction;
-			if (instr.dst instanceof ImcTEMP) {
-				FrmTemp temp = ((ImcTEMP) instr.dst).temp;
-				Object srcValue = execute(instr.src);
-				stT(temp, srcValue);
-				
-				return srcValue;
-			}
-			if (instr.dst instanceof ImcMEM) {
-				Object dstValue = execute(((ImcMEM) instr.dst).expr);
-				Object srcValue = execute(instr.src);;
-				stM((Integer) dstValue, srcValue);
-				return srcValue;
-			}
-		}
+            ImcMOVE instr = (ImcMOVE) instruction;
+
+            if (instr.dst instanceof ImcTEMP) {
+                FrmTemp temp = ((ImcTEMP) instr.dst).temp;
+                Object srcValue = execute(instr.src);
+                stT(temp, srcValue);
+
+                return srcValue;
+            }
+            if (instr.dst instanceof ImcMEM) {
+                Object dstValue = execute(((ImcMEM) instr.dst).expr);
+                Object srcValue = execute(instr.src);
+                stM((Integer) dstValue, srcValue);
+                return srcValue;
+            }
+        }
 		
 		if (instruction instanceof ImcNAME) {
 			ImcNAME instr = (ImcNAME) instruction;
+
 			if (instr.label.name().equals("FP")) return framePointer;
 			if (instr.label.name().equals("SP")) return stackPointer;
 

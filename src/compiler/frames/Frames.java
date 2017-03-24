@@ -120,7 +120,7 @@ public class Frames implements ASTVisitor {
 		indent += 2;
 		Report.dump(indent, "Member definitions:");
 		indent += 2; classDef.definitions.accept(this); indent -= 2;
-		Report.dump(indent, "Default constructor:");
+		Report.dump(indent, "Constructors:");
 		indent += 2;
 		for (AbsFunDef c : classDef.contrustors) {
 			c.accept(this);

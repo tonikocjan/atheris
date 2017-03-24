@@ -112,14 +112,6 @@ public class FrmEvaluator implements ASTVisitor {
 	public void visit(AbsBinExpr acceptor) {
 		acceptor.expr1.accept(this);
 		acceptor.expr2.accept(this);
-		
-		if (acceptor.oper == AbsBinExpr.ASSIGN) {
-			if (SymbDesc.getType(acceptor.expr1).isFunctionType() &&
-					SymbDesc.getType(acceptor.expr2).isFunctionType()) {
-				FrmDesc.setFrame(SymbDesc.getNameDef(acceptor.expr1), 
-						FrmDesc.getFrame(SymbDesc.getNameDef(acceptor.expr2)));	
-			}
-		}
 	}
 
 	@Override
@@ -145,8 +137,13 @@ public class FrmEvaluator implements ASTVisitor {
 	@Override
 	public void visit(AbsFunCall acceptor) {
 		int parSize = 4;
-		for (AbsExpr arg: acceptor.args)
-			parSize += SymbDesc.getType(arg).size();
+
+		for (AbsExpr arg: acceptor.args) {
+            Type argType = SymbDesc.getType(arg);
+            int size = argType.isPointerType() ? 4 : argType.size(); // FIXME: -
+
+            parSize += size;
+        }
 
 		currentFrame.sizeArgs = Math.max(currentFrame.sizeArgs, parSize);
 	}
@@ -154,14 +151,16 @@ public class FrmEvaluator implements ASTVisitor {
 	@Override
 	public void visit(AbsFunDef acceptor) {
 		FrmFrame frame = new FrmFrame(acceptor, currentLevel);
+
 		FrmDesc.setFrame(acceptor, frame);
 		FrmDesc.setAccess(acceptor, new FrmFunAccess(acceptor));
 
 		FrmFrame tmp = currentFrame;
 		currentFrame = frame;
 
-		for (AbsParDef par : acceptor.getParamaters())
-			par.accept(this);
+		for (AbsParDef par : acceptor.pars) {
+            par.accept(this);
+        }
 
 		currentLevel++;
 
@@ -178,8 +177,9 @@ public class FrmEvaluator implements ASTVisitor {
 			c.body.accept(this);
 		}
 
-		if (acceptor.elseBody != null)
-			acceptor.elseBody.accept(this);
+		if (acceptor.elseBody != null) {
+            acceptor.elseBody.accept(this);
+        }
 	}
 
 	@Override

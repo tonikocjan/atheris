@@ -20,7 +20,7 @@ package compiler.abstr.tree;
 import compiler.abstr.tree.expr.AbsExpr;
 
 /**
- * Simple structure holding condition and body which is executed when condition is positive.
+ * Structure holding condition and body which is executed when condition is positive.
  */
 public class Condition {
 	

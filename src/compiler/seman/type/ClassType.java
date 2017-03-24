@@ -89,7 +89,7 @@ public class ClassType extends PointerType {
 	 * @param name member name
 	 * @return offset of that member
 	 */
-	public int offsetOf(String name) {
+	public int offsetForMember(String name) {
 		int offset = 0;
 		
 		for (Map.Entry<String, Type> entry : members.entrySet()) {

@@ -30,10 +30,10 @@ import compiler.frames.*;
 public class ImcCALL extends ImcExpr {
 
 	/** Labela funkcije.  */
-	public FrmLabel label;
+	public final FrmLabel label;
 
 	/** Argumenti funkcijskega klica (vkljucno s FP).  */
-	public LinkedList<ImcExpr> args;
+	public final LinkedList<ImcExpr> args;
 
 	/**
 	 * Ustvari nov klic funkcije.

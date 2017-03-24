@@ -20,6 +20,7 @@ package compiler.seman;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Vector;
+import java.util.function.Function;
 
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
@@ -112,25 +113,22 @@ public class TypeChecker implements ASTVisitor {
 				Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
 
 			names.add(def.getName());
-			
 			def.accept(this);
 		}
-		
-		traversalState = TraversalState.normal;
-		
-		for (AbsFunDef c : acceptor.contrustors)
-			c.accept(this);
 
-		for (AbsDef def : acceptor.definitions.definitions) {
+		for (AbsFunDef c : acceptor.contrustors) {
+            c.accept(this);
+        }
+
+        traversalState = TraversalState.normal;
+
+        for (AbsDef def : acceptor.definitions.definitions) {
 		    Type defType = SymbDesc.getType(def);
             types.add(defType);
 		}
 		
 		ClassType classType = new ClassType(acceptor, names, types);
 		SymbDesc.setType(acceptor, new CanType(classType));
-		
-		for (AbsFunDef c : acceptor.contrustors)
-			SymbDesc.setType(c, new FunctionType(new Vector<>(), classType, c));
 		
 		// add implicit self: classType parameter to instance methods
 		for (AbsDef def : acceptor.definitions.definitions) {
@@ -145,6 +143,22 @@ public class TypeChecker implements ASTVisitor {
 			
 			def.accept(this);
 		}
+
+        // add implicit self: classType parameter to constructors
+        for (AbsFunDef constructor : acceptor.contrustors) {
+            AbsParDef selfParDef = constructor.getParameterForIndex(0);
+            selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);;
+
+            SymbDesc.setNameDef(selfParDef.type, acceptor);
+            SymbDesc.setType(selfParDef, classType);
+
+            constructor.accept(this);
+
+            FunctionType funType = (FunctionType) SymbDesc.getType(constructor);
+            funType.resultType = classType;
+
+            SymbDesc.setType(constructor, funType);
+        }
 	}
 
 	@Override
@@ -242,7 +256,7 @@ public class TypeChecker implements ASTVisitor {
 			/**
 			 * Handle list.count
 			 */
-			// FIXME: - remove this
+			// FIXME: - remove this in the future
 			if (t1.isArrayType()) {
 				String name = ((AbsVarNameExpr) acceptor.expr2).name;
 				if (!name.equals("count"))
@@ -455,13 +469,24 @@ public class TypeChecker implements ASTVisitor {
 
 		SymbDesc.setType(acceptor, funType.resultType);
 
+		boolean isConstructor = definition.isConstructor;
+
 		for (int i = 0; i < acceptor.numArgs(); i++) {
 			AbsExpr arg = acceptor.arg(i);
+
+            // skip first ("self") argument if function is constructor
+            if (isConstructor && i == 0) {
+                SymbDesc.setType(arg, funType.resultType);
+                continue;
+            }
+
 			arg.accept(this);
 
 			Type argType = SymbDesc.getType(arg);
+
 			if (!(funType.getParType(i).sameStructureAs(argType))) {
-				Report.error(arg.position, "Cannot convert value of type \"" + argType.friendlyName() + "\" to type \"" + funType.getParType(i) + "\"");
+				Report.error(arg.position, "Cannot convert value of type \"" +
+                        argType.friendlyName() + "\" to type \"" + funType.getParType(i).friendlyName() + "\"");
 			}
 		}
 
@@ -484,12 +509,11 @@ public class TypeChecker implements ASTVisitor {
 //			SymbDesc.setType(acceptor, ((FunctionType) SymbDesc.getType(def)).resultType);
 			Report.error(null, "kle");
 		}
-		else {
-		}
 	}
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
+	    // TODO: - ??
 		if (traversalState == TraversalState.normal || traversalState == TraversalState.definitions) {
 			Vector<Type> parameters = new Vector<>();
 
@@ -505,7 +529,7 @@ public class TypeChecker implements ASTVisitor {
 			SymbDesc.setType(acceptor, funType);
 		}
 
-		if (traversalState != TraversalState.definitions) {
+		if (traversalState == TraversalState.normal) {
 			FunctionType funType = (FunctionType) SymbDesc.getType(acceptor);
 
 			acceptor.func.accept(this);
@@ -579,15 +603,15 @@ public class TypeChecker implements ASTVisitor {
 		Type type = SymbDesc.getType(acceptor.expr);
 
 		if (acceptor.oper == AbsUnExpr.NOT) {
-			if (type.sameStructureAs(new AtomType(AtomTypeKind.LOG)))
-				SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.LOG));
+			if (type.sameStructureAs(Type.boolType))
+				SymbDesc.setType(acceptor, Type.boolType);
 			else
 				Report.error(acceptor.position,
 						"Operator \"!\" is not defined for type " + type);
 		} else if (acceptor.oper == AbsUnExpr.ADD
 				|| acceptor.oper == AbsUnExpr.SUB) {
-			if (type.sameStructureAs(new AtomType(AtomTypeKind.INT)))
-				SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.INT));
+			if (type.isBuiltinIntType() || type.canCastTo(Type.intType))
+				SymbDesc.setType(acceptor, type);
 			else
 				Report.error(acceptor.position,
 						"Operators \"+\" and \"-\" are not defined for type "
@@ -819,7 +843,7 @@ public class TypeChecker implements ASTVisitor {
 		}
 		
 		AbsClassDef classDef = new AbsClassDef(acceptor.getName(), acceptor.position, 
-				 definitions, new LinkedList<>());
+				 definitions, new LinkedList<>(), new LinkedList<>());
 		ClassType type = new ClassType(classDef, names, types);
 		SymbDesc.setType(acceptor, type);
 	}

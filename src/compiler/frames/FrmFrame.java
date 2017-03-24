@@ -89,6 +89,7 @@ public class FrmFrame {
 		this.sizeTmps = 0;
 		this.sizeRegs = 0;
 		this.sizeArgs = 0;
+
 		FP = new FrmTemp();
 		RV = new FrmTemp();
 	}

@@ -37,7 +37,7 @@ public class FunctionType extends PointerType {
 	/** 
 	 * Result type. 
 	 */
-	public final Type resultType;
+	public Type resultType;
 
 	/**
 	 * Function definition.

@@ -40,28 +40,58 @@ public class AbsFunDef extends AbsDef {
 	/** Function code. */
 	public final AbsStmts func;
 
+	/** Is this function a constructor. */
+	public boolean isConstructor;
+
 	/**
 	 * Create new function definition.
 	 * 
 	 * @param pos
-	 *            Position.
+	 *            Position
 	 * @param name
-	 *            Function name.
-	 * @param pars
-	 *            Parameter list.
-	 * @param type
-	 *            Return type.
-	 * @param stmts
-	 *            Function code.
+	 *            Function name
+	 * @param parameters
+	 *            Parameter list
+	 * @param returnType
+	 *            Return type
+	 * @param bodyStatements
+	 *            Function code
 	 */
 	public AbsFunDef(Position pos, String name, 
-			LinkedList<AbsParDef> pars, AbsType type, AbsStmts stmts) {
+			LinkedList<AbsParDef> parameters, AbsType returnType, AbsStmts bodyStatements) {
 		super(pos, name);
 		
-		this.pars = pars;
-		this.type = type;
-		this.func = stmts;
+		this.pars = parameters;
+		this.type = returnType;
+		this.func = bodyStatements;
+		this.isConstructor = false;
 	}
+
+    /**
+     * Create new function definition.
+     *
+     * @param pos
+     *            Position
+     * @param name
+     *            Function name
+     * @param parameters
+     *            Parameter list
+     * @param returnType
+     *            Return type
+     * @param bodyStatements
+     *            Function code
+     * @param isConstructor
+     *            Is this function a constructor
+     */
+    public AbsFunDef(Position pos, String name,
+                     LinkedList<AbsParDef> parameters, AbsType returnType, AbsStmts bodyStatements, boolean isConstructor) {
+        super(pos, name);
+
+        this.pars = parameters;
+        this.type = returnType;
+        this.func = bodyStatements;
+        this.isConstructor = isConstructor;
+    }
 	
 	@Override
 	public String getName() {
@@ -103,18 +133,36 @@ public class AbsFunDef extends AbsDef {
 	
 	/**
 	 * Get string representation of this function definition
-	 * @return String representation, i.e.: func (x: Int, y: Double) Int = (x:y:)
+	 * @return
 	 */
 	public String getStringRepresentation() {
-		StringBuilder sb = new StringBuilder(name);
-		sb.append('(');
-		for (AbsParDef par : pars) {
-			sb.append(par.argumentLabel);
-			sb.append(':');
-		}
-		sb.append(')');
-		return sb.toString();
+        return stringRepresentation(this.name);
 	}
+
+    /**
+     * Get
+     * @param otherName
+     * @return
+     */
+    public String getStringRepresentation(String otherName) {
+        return stringRepresentation(otherName);
+    }
+
+    /**
+     * Get string representation of this function definition.
+     * @param name Name of the function
+     * @return String representation, i.e.: func name(x: Int, y: Double) Int ==> name(x:y:)
+     */
+    private String stringRepresentation(String name) {
+        StringBuilder sb = new StringBuilder(name);
+        sb.append('(');
+        for (AbsParDef par : pars) {
+            sb.append(par.argumentLabel);
+            sb.append(':');
+        }
+        sb.append(')');
+        return sb.toString();
+    }
 
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 	
