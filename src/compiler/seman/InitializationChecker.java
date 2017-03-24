@@ -18,6 +18,7 @@
 package compiler.seman;
 
 
+import com.sun.org.apache.xml.internal.security.Init;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsDefs;
@@ -64,7 +65,7 @@ import compiler.seman.type.FunctionType;
  * @author toni kocjan
  *
  */
-public class InitialisationChecker implements ASTVisitor {
+public class InitializationChecker implements ASTVisitor {
 	
 	private boolean shouldCheckIfInitialized = true;
 	
@@ -77,18 +78,21 @@ public class InitialisationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-		for (AbsFunDef c : acceptor.contrustors)
-			c.accept(this);
+		acceptor.definitions.accept(this);
+
+		for (AbsFunDef constructor : acceptor.contrustors) {
+            constructor.accept(this);
+        }
 	}
 
 	@Override
 	public void visit(AbsAtomConstExpr acceptor) {
-		
+		///
 	}
 
 	@Override
 	public void visit(AbsAtomType acceptor) {
-		
+        ///
 	}
 
 	@Override
@@ -126,7 +130,9 @@ public class InitialisationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsDefs acceptor) {
-		
+        for (AbsDef definition : acceptor.definitions) {
+            definition.accept(this);
+        }
 	}
 
 	@Override
@@ -146,18 +152,19 @@ public class InitialisationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-		for (AbsExpr e: acceptor.args)
-			e.accept(this);
-		
-		FunctionType funType = (FunctionType) SymbDesc.getType(SymbDesc.getNameDef(acceptor));
-		
-		if (funType.functionDefinition != null)
-			funType.functionDefinition.func.accept(this);
+		///
 	}
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
-		///
+	    InitTable.newScope();
+
+	    for (AbsParDef parDef : acceptor.pars) {
+	        InitTable.initialize(parDef);
+        }
+
+        acceptor.func.accept(this);
+        InitTable.oldScope();
 	}
 
 	@Override
@@ -177,12 +184,12 @@ public class InitialisationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsParDef acceptor) {
-		
+        ///
 	}
 
 	@Override
 	public void visit(AbsTypeName acceptor) {
-		
+        ///
 	}
 
 	@Override
@@ -192,32 +199,23 @@ public class InitialisationChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		
+        ///
 	}
 
 	@Override
 	public void visit(AbsVarNameExpr acceptor) {
-		if (SymbDesc.getNameDef(acceptor) instanceof AbsParDef || 
-				SymbDesc.getNameDef(acceptor) instanceof AbsFunDef ||
-				SymbDesc.getNameDef(acceptor) instanceof AbsEnumDef ||
-				SymbDesc.getNameDef(acceptor) instanceof AbsClassDef ||
-				SymbDesc.getNameDef(acceptor) instanceof AbsEnumMemberDef ||
-				/*FIXME*/ acceptor.name.equals("rawValue"))
-			return;
-		
-		AbsVarDef def = (AbsVarDef) SymbDesc.getNameDef(acceptor);
-		if (def == null) return;
+	    AbsDef definition = SymbDesc.getNameDef(acceptor);
 
 		if (shouldCheckIfInitialized) {
-			if (!InitTable.isInitialized(def)) {
-				String errorMsg = def.isConstant ? "Constant '" : "Variable '";
-				Report.error(acceptor.position, errorMsg + def.name + "' used before being initialized");
+			if (!InitTable.isInitialized(definition)) {
+				String errorMsg = definition.isMutable ? "Variable '" : "Constant '";
+				Report.error(acceptor.position, errorMsg + definition.name + "' used before being initialized");
 			}
 		}
 		else {
-			if (InitTable.isInitialized(def) && def.isConstant) 
-				Report.error(acceptor.position, "Cannot assign value to a constant '" + def.name + "'");
-			InitTable.initialize(def);
+			if (InitTable.isInitialized(definition) && !definition.isMutable)
+				Report.error(acceptor.position, "Cannot assign value to a constant '" + definition.name + "'");
+			InitTable.initialize(definition);
 		}
 	}
 

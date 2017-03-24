@@ -383,7 +383,7 @@ public class SemAn implements ASTVisitor {
 	
 	public void visit(AbsVarDef varDef) {
 		Report.dump(indent, "AbsVarDef " + varDef.position.toString() + ": " + varDef.name);
-		if (varDef.isConstant)
+		if (!varDef.isMutable)
 			Report.dump(indent + 2, "#CONSTANT");
 		{
 			Type typ = SymbDesc.getType(varDef);

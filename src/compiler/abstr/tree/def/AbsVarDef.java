@@ -31,9 +31,6 @@ public class AbsVarDef extends AbsDef {
 
 	/** Variable type. */
 	public final AbsType type;
-	
-	/** Is this variable a constant. */
-	public final boolean isConstant;
 
 	/**
 	 * Create new variable definition.
@@ -46,7 +43,7 @@ public class AbsVarDef extends AbsDef {
 	 *            Type.
 	 */
 	public AbsVarDef(Position pos, String name, AbsType type) {
-		this(pos, name, type, false, VisibilityKind.Public);
+		this(pos, name, type, true, VisibilityKind.Public);
 	}
 	
 	/**
@@ -74,17 +71,16 @@ public class AbsVarDef extends AbsDef {
 	 *            Name.
 	 * @param type
 	 *            Type.
-	 * @param constant
-	 * 			  Is this variable a constant.
+	 * @param isMutable
+	 * 			  Is this variable mutable.
 	 * @param visibilityKind
 	 * 			  Visibility.
 	 */
 	public AbsVarDef(Position pos, String name, 
-			AbsType type, boolean constant, VisibilityKind visibilityKind) {
-		super(pos, name, visibilityKind);
+			AbsType type, boolean isMutable, VisibilityKind visibilityKind) {
+		super(pos, name, isMutable, visibilityKind);
 		
 		this.type = type;
-		this.isConstant = constant;
 	}
 
 

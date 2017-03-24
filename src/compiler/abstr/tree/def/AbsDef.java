@@ -40,6 +40,10 @@ public abstract class AbsDef extends AbsStmt {
 
 	/** Is this definition public / private (used for class members) */
 	private VisibilityKind visibilityKind;
+
+	/** Is this definition mutable */
+	public final boolean isMutable;
+
 	
 	/**
 	 * Create new definition.
@@ -53,6 +57,7 @@ public abstract class AbsDef extends AbsStmt {
 		this.parentDef = null;
 		this.name = name;
 		this.visibilityKind = VisibilityKind.Public;
+		this.isMutable = false;
 	}
 	
 	/**
@@ -67,7 +72,23 @@ public abstract class AbsDef extends AbsStmt {
 		this.parentDef = null;
 		this.name = name;
 		this.visibilityKind = visibility;
+        this.isMutable = false;
 	}
+
+    /**
+     * Create new definition.
+     *
+     * @param pos
+     *            Position.
+     */
+    public AbsDef(Position pos, String name, boolean isMutable, VisibilityKind visibility) {
+        super(pos);
+
+        this.parentDef = null;
+        this.name = name;
+        this.visibilityKind = visibility;
+        this.isMutable = isMutable;
+    }
 	
 	/**
 	 * Crate new definition.

@@ -3,13 +3,8 @@
 import stdlib
 
 class Point {
-	var x: Int = 5
+	let x: Int = 5
 	var y: Int = 10
-
-	func foo(x: Int, y: Int) {
-		self.x = x
-		self.y = y
-	}
 
 	func init(x: Int, y: Int) {
 		self.x = x
@@ -17,30 +12,8 @@ class Point {
 	}
 }
 
-func foo(x: Int, y: Int) {
-	
+func test() {
+	let x = 10
+	x = 20
+	print(integer: x)
 }
-
-var point = Point()
-
-point.x = 5
-point.y = 6
-
-print(integer: point.x)
-print(integer: point.y)
-
-var point2 = Point()
-
-point2.x = 10
-point2.y = 20
-
-print(integer: point2.x)
-print(integer: point2.y)
-
-
-var point3 = Point(x: 55, y: 110)
-print(integer: point3.x)
-print(integer: point3.y)
-point3.foo(x: -100, y: -200)
-print(integer: point3.x)
-print(integer: point3.y)
