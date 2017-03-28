@@ -27,4 +27,14 @@ class Rect {
 	}
 }
 
+class ArrayList {
+	var data: [Int]
+
+	init() {
+		self.data = [1, 2, 3, 4, 5]
+	}
+}
+
 let rect = Rect(origin: Point(x: 20, y: 30), size: Point(x: 800, y: 600))
+let array = ArrayList()
+print(integer: array.data[2])
