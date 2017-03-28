@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Vector;
 
+import Utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsDefs;
@@ -289,10 +290,14 @@ public class TypeChecker implements ASTVisitor {
 				}
 				
 				AbsDef definition = t1.findMemberForName(memberName);
-				
-				if (definition.getAccessControl() == AccessControl.Private)
-					Report.error(acceptor.expr2.position,
-							"Member '" + memberName + "' is inaccessible due to it's private protection level");
+				AbsDef objectDefinition = SymbDesc.getNameDef(acceptor.expr1);
+
+				// check for access control (if object name is not "self")
+                if (!objectDefinition.name.equals(Constants.selfParameterIdentifier)) {
+                    if (definition.getAccessControl() == AccessControl.Private)
+                        Report.error(acceptor.expr2.position,
+                                "Member '" + memberName + "' is inaccessible due to it's private protection level");
+                }
 				
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				SymbDesc.setNameDef(acceptor, definition);

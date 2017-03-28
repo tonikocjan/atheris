@@ -2,10 +2,8 @@
 
 import stdlib
 
-let test = "123"
-
 class Point {
-	private var x: Int = 0
+	var x: Int = 0
 	var y: Int = 0
 
 	init(x: Int, y: Int) {
@@ -30,5 +28,3 @@ class Rect {
 }
 
 let rect = Rect(origin: Point(x: 20, y: 30), size: Point(x: 800, y: 600))
-print(integer: rect.origin.y)
-print(integer: rect.size.x)
