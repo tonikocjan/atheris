@@ -51,6 +51,12 @@ public class AbsClassDef extends AbsTypeDef {
 	public AbsClassDef(String name, Position pos, LinkedList<AbsDef> definitions, 
 			LinkedList<AbsStmt> initExpressions, LinkedList<AbsFunDef> constructors) {
 		super(pos, name);
+        this.contrustors = constructors;
+        this.definitions = new AbsDefs(position, definitions);
+
+        // set this definition as parent for all member definitions
+        for (AbsDef def : this.definitions.definitions)
+            def.setParentDefinition(this);
 
 		Position position;
 		if (definitions.size() > 0) {
@@ -62,21 +68,34 @@ public class AbsClassDef extends AbsTypeDef {
             position = pos;
         }
 
-        this.contrustors = constructors;
-        this.definitions = new AbsDefs(position, definitions);
+		String constructorName = name;
+		String defaultConstructorName = name + "()";
 
-		// set this definition as parent for all member definitions
-		for (AbsDef def : this.definitions.definitions)
-			def.setParentDefinition(this);
-		
 		// add default constructor
-		AbsFunDef contructor = new AbsFunDef(pos, 
-				"init",
-				new LinkedList<>(), 
-				new AbsAtomType(pos, AtomTypeKind.VOID), 
+		AbsFunDef defaultConstructor = new AbsFunDef(pos,
+                constructorName,
+				new LinkedList<>(),
+				new AbsAtomType(pos, AtomTypeKind.VOID),
 				new AbsStmts(pos, initExpressions),
                 true);
-		contrustors.add(contructor);
+		defaultConstructor.setParentDefinition(this);
+
+        // if set to true, don't add defaultConstructor again into constructors array
+		boolean hasDefaultConstructor = false;
+
+		// default constructor code is added to every constructor
+        for (AbsFunDef constructor : constructors) {
+            constructor.setParentDefinition(this);
+            constructor.func.statements.addAll(0, defaultConstructor.func.statements);
+
+            if (constructor.getStringRepresentation(name).equals(defaultConstructorName)) {
+                hasDefaultConstructor = true;
+            }
+        }
+
+        if (!hasDefaultConstructor ) {
+            contrustors.add(defaultConstructor);
+        }
 	}
 	
 	public AbsDef findDefinitionForName(String name) {

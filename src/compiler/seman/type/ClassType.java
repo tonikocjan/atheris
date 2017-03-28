@@ -115,8 +115,11 @@ public class ClassType extends PointerType {
 
 	@Override
 	public boolean sameStructureAs(Type type) {
-		return false;
-	}
+        if (!type.isClassType())
+            return false;
+
+        return type.friendlyName().equals(friendlyName());
+    }
 	
 	@Override
 	public AbsDef findMemberForName(String name) {

@@ -18,8 +18,7 @@
 package compiler.seman;
 
 import java.util.LinkedList;
-import java.util.Vector;
-
+import Utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsDefs;
@@ -84,32 +83,7 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-		try {
-			SymbTable.ins(acceptor.getName(), acceptor);
-		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName()
-					+ "\'");
-		}
-
-		for (AbsFunDef constructor: acceptor.contrustors) {
-            // add implicit self: classType parameter to constructors
-            // FIXME: - Position
-            AbsParDef parDef = new AbsParDef(constructor.position, "self",
-                    new AbsAtomType(constructor.position, AtomTypeKind.NIL));
-            constructor.addParamater(parDef);
-
-            // insert constructor into symbol table
-            try {
-                SymbTable.ins(constructor.getStringRepresentation(acceptor.name), constructor);
-            } catch (SemIllegalInsertException e) {
-                Report.error(acceptor.position, "Duplicate method \""
-                        + acceptor.name + "\"");
-            }
-
-            constructor.accept(this);
-        }
-
-		SymbTable.newScope();
+        SymbTable.newScope();
 
 		for (AbsDef def : acceptor.definitions.definitions) {
 			if (def instanceof AbsFunDef) {
@@ -126,7 +100,25 @@ public class NameChecker implements ASTVisitor {
 		}
 
 		SymbTable.oldScope();
-	}
+
+        try {
+            SymbTable.ins(acceptor.getName(), acceptor);
+        } catch (SemIllegalInsertException e) {
+            Report.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName()
+                    + "\'");
+        }
+
+        for (AbsFunDef constructor: acceptor.contrustors) {
+            // add implicit self: classType parameter to constructors
+            // FIXME: - Position
+            AbsParDef parDef = new AbsParDef(constructor.position, "self",
+                    new AbsAtomType(constructor.position, AtomTypeKind.NIL));
+
+            constructor.addParamater(parDef);
+            constructor.accept(this);
+        }
+
+    }
 
 	@Override
 	public void visit(AbsAtomConstExpr acceptor) {
@@ -149,7 +141,7 @@ public class NameChecker implements ASTVisitor {
 				AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
 
 				// TODO: - Fix position
-				AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.expr2.position, acceptor.expr1, "self");
+				AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.expr2.position, acceptor.expr1, Constants.selfParameterIdentifier);
 				funCall.addArgument(selfArg);
 			}
 		}
@@ -192,23 +184,22 @@ public class NameChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsFunCall acceptor) {
         AbsFunDef definition = (AbsFunDef) SymbTable.fnd(acceptor.getStringRepresentation());
-        boolean isConstructor = false;
 
         // handle implicit "self" argument for constructors
         if (definition == null) {
-            AbsVarNameExpr selfArgExpr = new AbsVarNameExpr(acceptor.position, "self");
-            AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.position, selfArgExpr, "self");
+            AbsVarNameExpr selfArgExpr = new AbsVarNameExpr(acceptor.position, Constants.selfParameterIdentifier);
+            AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.position, selfArgExpr, Constants.selfParameterIdentifier);
 
             acceptor.addArgument(selfArg);
 
             definition = (AbsFunDef) SymbTable.fnd(acceptor.getStringRepresentation());
-            isConstructor = definition.isConstructor;
         }
 
         if (definition == null) {
             Report.error(acceptor.position, "Method " + acceptor.getStringRepresentation() + " is undefined");
         }
-		
+
+        boolean isConstructor = definition.isConstructor;
 		SymbDesc.setNameDef(acceptor, definition);
 
 		for (AbsExpr argExpr : acceptor.args) {

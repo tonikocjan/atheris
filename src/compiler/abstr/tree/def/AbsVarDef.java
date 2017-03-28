@@ -19,7 +19,7 @@ package compiler.abstr.tree.def;
 
 import compiler.*;
 import compiler.abstr.*;
-import compiler.abstr.tree.VisibilityKind;
+import compiler.abstr.tree.AccessControl;
 import compiler.abstr.tree.type.AbsType;
 
 /**
@@ -31,9 +31,6 @@ public class AbsVarDef extends AbsDef {
 
 	/** Variable type. */
 	public final AbsType type;
-	
-	/** Is this variable a constant. */
-	public final boolean isConstant;
 
 	/**
 	 * Create new variable definition.
@@ -46,7 +43,7 @@ public class AbsVarDef extends AbsDef {
 	 *            Type.
 	 */
 	public AbsVarDef(Position pos, String name, AbsType type) {
-		this(pos, name, type, false, VisibilityKind.Public);
+		this(pos, name, type, true, AccessControl.Public);
 	}
 	
 	/**
@@ -58,11 +55,11 @@ public class AbsVarDef extends AbsDef {
 	 *            Name.
 	 * @param type
 	 *            Type.
-	 * @param constant
-	 * 			  Is this variable a constant.
+	 * @param isMutable
+	 * 			  Is this variable mutable.
 	 */
-	public AbsVarDef(Position pos, String name, AbsType type, boolean constant) {
-		this(pos, name, type, constant, VisibilityKind.Public);
+	public AbsVarDef(Position pos, String name, AbsType type, boolean isMutable) {
+		this(pos, name, type, isMutable, AccessControl.Public);
 	}
 	
 	/**
@@ -74,17 +71,16 @@ public class AbsVarDef extends AbsDef {
 	 *            Name.
 	 * @param type
 	 *            Type.
-	 * @param constant
-	 * 			  Is this variable a constant.
-	 * @param visibilityKind
+	 * @param isMutable
+	 * 			  Is this variable mutable.
+	 * @param accessControl
 	 * 			  Visibility.
 	 */
 	public AbsVarDef(Position pos, String name, 
-			AbsType type, boolean constant, VisibilityKind visibilityKind) {
-		super(pos, name, visibilityKind);
+			AbsType type, boolean isMutable, AccessControl accessControl) {
+		super(pos, name, isMutable, accessControl);
 		
 		this.type = type;
-		this.isConstant = constant;
 	}
 
 

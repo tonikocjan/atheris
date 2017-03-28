@@ -290,19 +290,23 @@ public class SynAn {
 
 	private AbsDef parseDefinition() {
 		AbsDef definition = null;
-		VisibilityKind visibility = VisibilityKind.Public;
+		AccessControl visibility = AccessControl.Public;
 
 		if (symbol.token == TokenType.KW_PUBLIC)
 			skip();
 		else if (symbol.token == TokenType.KW_PRIVATE) {
-			visibility = VisibilityKind.Private;
+			visibility = AccessControl.Private;
 			skip();
 		}
 		
 		switch (symbol.token) {
 		case KW_FUN:
-			dump("definition -> function_definition");
-			definition = parseFunDefinition();
+            dump("definition -> function_definition");
+            definition = parseFunDefinition();
+            break;
+        case KW_INIT:
+            dump("definition -> constructor_definition");
+            definition = parseConstructorDefinition();
 			break;
 		case KW_VAR:
 		case KW_LET:
@@ -336,7 +340,7 @@ public class SynAn {
 						+ previous.lexeme + "\", delete this token");
 		}
 
-		definition.setVisibilityKind(visibility);
+		definition.setAccessControl(visibility);
 		return definition;
 	}
 
@@ -358,6 +362,25 @@ public class SynAn {
 
 		return null;
 	}
+
+    private AbsFunDef parseConstructorDefinition() {
+        Position startPos = symbol.position;
+        if (symbol.token == TokenType.KW_INIT) {
+            Symbol functionName = symbol;
+
+            skip(new Symbol(TokenType.LPARENT, "(", null));
+            skip();
+            dump("constructor_definition -> init ( parameters ) function_definition'");
+
+            LinkedList<AbsParDef> params = parseParameters();
+
+            return parseFunDefinition_(startPos, functionName, params);
+        }
+        Report.error(previous.position, "Syntax error on token \""
+                + previous.lexeme + "\", expected keyword \"init\"");
+
+        return null;
+    }
 
 	private AbsFunDef parseFunDefinition_(Position startPos, Symbol functionName,
 			LinkedList<AbsParDef> params) {
@@ -390,14 +413,18 @@ public class SynAn {
 
 	private AbsDef parseVarDefinition() {
 		Position startPos = symbol.position;
-		boolean isConstant = false;
+		boolean isMutable = true;
 		Symbol id = null;
 		
-		if (symbol.token == TokenType.KW_VAR)
+		if (symbol.token == TokenType.KW_VAR) {
+            id = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
+
+            isMutable = true;
+        }
+		else {
 			id = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
-		else if (symbol.token == TokenType.KW_LET) {
-			isConstant = true;
-			id = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
+
+            isMutable = false;
 		}
 		
 		skip();
@@ -406,11 +433,12 @@ public class SynAn {
 		
 		if (symbol.token == TokenType.ASSIGN) {
 			dump("var_definition -> var identifier = expr");
-			return new AbsVarDef(startPos, id.lexeme, type, isConstant);
+			return new AbsVarDef(startPos, id.lexeme, type, isMutable);
 		}
-		else if (symbol.token != TokenType.COLON) 
-			Report.error(previous.position, "Syntax error on token \""
-					+ previous.lexeme + "\", expected \":\"");
+		else if (symbol.token != TokenType.COLON) {
+            Report.error(previous.position, "Syntax error on token \""
+                    + previous.lexeme + "\", expected \":\"");
+        }
 		
 		skip();
 
@@ -418,7 +446,7 @@ public class SynAn {
 
 		type = parseType();
 		return new AbsVarDef(new Position(startPos, type.position), 
-				id.lexeme, type, isConstant);
+				id.lexeme, type, isMutable);
 	}
 
 	private AbsImportDef parseImportDefinition() {
@@ -505,7 +533,8 @@ public class SynAn {
 					AbsVarNameExpr varNameExpr = new AbsVarNameExpr(definition.position, ((AbsVarDef)definition).name);
 					AbsExpr valueExpr = parseExpression();
                     AbsBinExpr dotExpr = new AbsBinExpr(
-                            new Position(definition.position, valueExpr.position), AbsBinExpr.DOT, new AbsVarNameExpr(definition.position, "self"), varNameExpr);
+                            new Position(definition.position, valueExpr.position), AbsBinExpr.DOT,
+                            new AbsVarNameExpr(definition.position, "self"), varNameExpr);
 					AbsBinExpr assignExpr = new AbsBinExpr(definition.position, AbsBinExpr.ASSIGN, dotExpr, valueExpr);
 
 					defaultConstructor.add(assignExpr);
@@ -513,16 +542,14 @@ public class SynAn {
 				break;
 			case KW_FUN:
 				AbsFunDef funDef = (AbsFunDef) parseDefinition();
-
-				if (funDef.name.equals("init")) { // FIXME: - magic numbers
-                    funDef.isConstructor = true;
-                    constructors.add(funDef);
-                }
-				else {
-                    definitions.add(funDef);
-                }
-
+                definitions.add(funDef);
 				break;
+            case KW_INIT:
+                funDef = (AbsFunDef) parseDefinition();
+                funDef.isConstructor = true;
+
+                constructors.add(funDef);
+                break;
 			case RBRACE:
 				return new LinkedList[] {definitions, defaultConstructor, constructors};
 			default:

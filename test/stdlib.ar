@@ -1,10 +1,10 @@
 func print(integer: Int) {
 }
 func print(double: Double) {
-        }
+}
 func print(string: String) {
-        }
+}
 func print(char: Char) {
-        }
+}
 func print(bool: Bool) {
-        }
+}

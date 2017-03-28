@@ -20,8 +20,8 @@ package compiler.seman;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Vector;
-import java.util.function.Function;
 
+import Utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsDefs;
@@ -30,7 +30,7 @@ import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.AbsStmts;
 import compiler.abstr.tree.AtomTypeKind;
 import compiler.abstr.tree.Condition;
-import compiler.abstr.tree.VisibilityKind;
+import compiler.abstr.tree.AccessControl;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsEnumDef;
@@ -136,11 +136,10 @@ public class TypeChecker implements ASTVisitor {
 				AbsFunDef funDef = (AbsFunDef) def;
 				AbsParDef selfParDef = funDef.getParameterForIndex(0);
 				selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
-				
+
 				SymbDesc.setNameDef(selfParDef.type, acceptor);
-				SymbDesc.setType(selfParDef, classType);
 			}
-			
+
 			def.accept(this);
 		}
 
@@ -244,7 +243,7 @@ public class TypeChecker implements ASTVisitor {
 			if (!success)
 				Report.error(acceptor.position, 
 						LanguageManager.localize("type_error_cannot_convert_type",
-								t2.toString(), t1.toString()));
+                                t2.friendlyName(), t1.friendlyName()));
 			
 			return;
 		}
@@ -291,10 +290,14 @@ public class TypeChecker implements ASTVisitor {
 				}
 				
 				AbsDef definition = t1.findMemberForName(memberName);
-				
-				if (definition.getVisibility() == VisibilityKind.Private)
-					Report.error(acceptor.expr2.position,
-							"Member '" + memberName + "' is inaccessible due to it's private protection level");
+				AbsDef objectDefinition = SymbDesc.getNameDef(acceptor.expr1);
+
+				// check for access control (if object name is not "self")
+                if (!objectDefinition.name.equals(Constants.selfParameterIdentifier)) {
+                    if (definition.getAccessControl() == AccessControl.Private)
+                        Report.error(acceptor.expr2.position,
+                                "Member '" + memberName + "' is inaccessible due to it's private protection level");
+                }
 				
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				SymbDesc.setNameDef(acceptor, definition);
@@ -320,7 +323,7 @@ public class TypeChecker implements ASTVisitor {
 					
 					AbsDef definition = enumType.findMemberForName(memberName);
 					
-					if (definition.getVisibility() == VisibilityKind.Private)
+					if (definition.getAccessControl() == AccessControl.Private)
 						Report.error(acceptor.expr2.position,
                                 "Member '" + memberName + "' is inaccessible due to it's private protection level");
 					
@@ -489,26 +492,6 @@ public class TypeChecker implements ASTVisitor {
                         argType.friendlyName() + "\" to type \"" + funType.getParType(i).friendlyName() + "\"");
 			}
 		}
-
-		AbsDef def = SymbDesc.getNameDef(acceptor);
-		
-		if (def instanceof AbsVarDef || def instanceof AbsParDef || def instanceof AbsEnumMemberDef) {
-//			Type type = SymbDesc.getType(def);
-//
-//			if (!type.isFunctionType())
-//				Report.error(acceptor.position, "Cannot call value of non-function type \'"
-//								+ type.toString() + "\'");
-//
-//			FunctionType t = new FunctionType(parameters,
-//					((FunctionType) type).resultType, ((FunctionType) type).functionDefinition);
-//
-//			if (!type.sameStructureAs(t))
-//				Report.error("Error todo");
-//
-//			SymbDesc.setNameDef(acceptor, def);
-//			SymbDesc.setType(acceptor, ((FunctionType) SymbDesc.getType(def)).resultType);
-			Report.error(null, "kle");
-		}
 	}
 
 	@Override
@@ -542,9 +525,9 @@ public class TypeChecker implements ASTVisitor {
 					if (!t.sameStructureAs(funType.resultType))
 						Report.error(stmt.position,
 								"Return type doesn't match, expected \""
-										+ funType.resultType.toString()
+										+ funType.resultType.friendlyName()
 										+ "\", got \""
-										+ t.toString()
+										+ t.friendlyName()
 										+ "\" instead");
 				}
 			}

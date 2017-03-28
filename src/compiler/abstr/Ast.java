@@ -350,7 +350,7 @@ public class Ast implements ASTVisitor {
 		Report.dump(indent, "AbsVarDef " + varDef.position.toString() + ": "
 				+ varDef.name);
 		indent += 2;
-		if (varDef.isConstant)
+		if (!varDef.isMutable)
 			Report.dump(indent, "#CONSTANT");
 		if (varDef.type == null)
 			Report.dump(indent, "?");

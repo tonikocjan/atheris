@@ -3,44 +3,28 @@
 import stdlib
 
 class Point {
-	var x: Int = 5
-	var y: Int = 10
+	var x: Int = 0
+	var y: Int = 0
 
-	func foo(x: Int, y: Int) {
-		self.x = x
-		self.y = y
-	}
-
-	func init(x: Int, y: Int) {
+	init(x: Int, y: Int) {
 		self.x = x
 		self.y = y
 	}
 }
 
-func foo(x: Int, y: Int) {
-	
+class Rect {
+	var origin: Point
+	var size: Point
+
+	init() {
+		self.size = Point()
+		self.origin = Point()
+	}
+
+	init(origin: Point, size: Point) {
+		self.origin = origin
+		self.size = size
+	}
 }
 
-var point = Point()
-
-point.x = 5
-point.y = 6
-
-print(integer: point.x)
-print(integer: point.y)
-
-var point2 = Point()
-
-point2.x = 10
-point2.y = 20
-
-print(integer: point2.x)
-print(integer: point2.y)
-
-
-var point3 = Point(x: 55, y: 110)
-print(integer: point3.x)
-print(integer: point3.y)
-point3.foo(x: -100, y: -200)
-print(integer: point3.x)
-print(integer: point3.y)
+let rect = Rect(origin: Point(x: 20, y: 30), size: Point(x: 800, y: 600))

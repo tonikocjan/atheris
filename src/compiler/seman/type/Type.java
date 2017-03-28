@@ -38,7 +38,7 @@ public abstract class Type {
 	 * @param type Given type
 	 * @return True if this type can be casted to type t
 	 */
-	public abstract boolean canCastTo(Type t);
+	public abstract boolean canCastTo(Type type);
 	
 	/**
 	 * Get size in bytes.

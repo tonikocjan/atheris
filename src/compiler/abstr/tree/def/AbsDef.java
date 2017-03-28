@@ -19,7 +19,7 @@ package compiler.abstr.tree.def;
 
 import compiler.*;
 import compiler.abstr.tree.AbsStmt;
-import compiler.abstr.tree.VisibilityKind;
+import compiler.abstr.tree.AccessControl;
 
 /**
  * Definicija.
@@ -36,10 +36,14 @@ public abstract class AbsDef extends AbsStmt {
 	/**
 	 * Parent definition.
 	 */
-	private AbsDef parentDef;
+	protected AbsDef parentDef;
 
 	/** Is this definition public / private (used for class members) */
-	private VisibilityKind visibilityKind;
+	protected AccessControl accessControl;
+
+	/** Is this definition mutable */
+	public final boolean isMutable;
+
 	
 	/**
 	 * Create new definition.
@@ -52,7 +56,8 @@ public abstract class AbsDef extends AbsStmt {
 		
 		this.parentDef = null;
 		this.name = name;
-		this.visibilityKind = VisibilityKind.Public;
+		this.accessControl = AccessControl.Public;
+		this.isMutable = false;
 	}
 	
 	/**
@@ -61,13 +66,29 @@ public abstract class AbsDef extends AbsStmt {
 	 * @param pos
 	 *            Position.
 	 */
-	public AbsDef(Position pos, String name, VisibilityKind visibility) {
+	public AbsDef(Position pos, String name, AccessControl visibility) {
 		super(pos);
 		
 		this.parentDef = null;
 		this.name = name;
-		this.visibilityKind = visibility;
+		this.accessControl = visibility;
+        this.isMutable = false;
 	}
+
+    /**
+     * Create new definition.
+     *
+     * @param pos
+     *            Position.
+     */
+    public AbsDef(Position pos, String name, boolean isMutable, AccessControl visibility) {
+        super(pos);
+
+        this.parentDef = null;
+        this.name = name;
+        this.accessControl = visibility;
+        this.isMutable = isMutable;
+    }
 	
 	/**
 	 * Crate new definition.
@@ -81,7 +102,7 @@ public abstract class AbsDef extends AbsStmt {
 		this(pos, name);
 		
 		this.parentDef = parent;
-		this.visibilityKind = VisibilityKind.Public;
+		this.accessControl = AccessControl.Public;
 	}
 
 	/**
@@ -112,15 +133,15 @@ public abstract class AbsDef extends AbsStmt {
 	 * 
 	 * @return
 	 */
-	public VisibilityKind getVisibility() {
-		return visibilityKind;
+	public AccessControl getAccessControl() {
+		return accessControl;
 	}
 	
 	/**
 	 * 
-	 * @param kind
+	 * @param accessControl
 	 */
-	public void setVisibilityKind(VisibilityKind kind) {
-		this.visibilityKind = kind;
+	public void setAccessControl(AccessControl accessControl) {
+		this.accessControl = accessControl;
 	}
 }

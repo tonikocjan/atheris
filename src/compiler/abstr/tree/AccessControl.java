@@ -18,11 +18,11 @@
 package compiler.abstr.tree;
 
 /**
- * Visibility enumeration for member definitions.
+ * Access Control enumeration for member definitions.
  * @author toni kocjan
  *
  */
-public enum VisibilityKind {
+public enum AccessControl {
 	Public,
 	Private
 }
