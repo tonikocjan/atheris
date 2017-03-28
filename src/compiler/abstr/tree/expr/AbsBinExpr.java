@@ -45,13 +45,13 @@ public class AbsBinExpr extends AbsExpr {
 	public static final int ASSIGN = 15;
 
 	/** Operator. */
-	public final int oper;
+	public int oper;
 
 	/** Prvi podizraz. */
-	public final AbsExpr expr1;
+	public AbsExpr expr1;
 
 	/** Drugi podizraz. */
-	public final AbsExpr expr2;
+	public AbsExpr expr2;
 
 	/**
 	 * Ustvari nov binarni izraz.

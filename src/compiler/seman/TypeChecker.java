@@ -267,14 +267,18 @@ public class TypeChecker implements ASTVisitor {
 			}
 			
 			String memberName = null;
-			if (acceptor.expr2 instanceof AbsVarNameExpr)
-				memberName = ((AbsVarNameExpr) acceptor.expr2).name;
-			else if (acceptor.expr2 instanceof AbsFunCall)
-				memberName = ((AbsFunCall) acceptor.expr2).getStringRepresentation();
-			else if (acceptor.expr2 instanceof  AbsAtomConstExpr)
-				memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
-			else
-			    Report.error(acceptor.position, "Not yet supported");
+			if (acceptor.expr2 instanceof AbsVarNameExpr) {
+                memberName = ((AbsVarNameExpr) acceptor.expr2).name;
+            }
+			else if (acceptor.expr2 instanceof AbsFunCall) {
+                memberName = ((AbsFunCall) acceptor.expr2).getStringRepresentation();
+            }
+			else if (acceptor.expr2 instanceof AbsAtomConstExpr) {
+                memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
+            }
+			else if (acceptor.expr2 instanceof AbsBinExpr) {
+                Report.error(acceptor.position, "Not yet supported");
+            }
 			
 			if (t1.isClassType()) {
 				if (!t1.containsMember(memberName))

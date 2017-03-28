@@ -119,7 +119,8 @@ public class SynAn {
 			return new AbsStmts(symbol.position, absStmts);
 		
 		AbsStmt statement = parseStatement();
-		absStmts.add(statement);
+
+        absStmts.add(statement);
 		absStmts.addAll(parseStatements_(statement));
 		
 		return new AbsStmts(new Position(absStmts.getFirst().position,
@@ -1010,14 +1011,52 @@ public class SynAn {
 
 	private AbsExpr parseAndExpression_(AbsExpr e) {
 		switch (symbol.token) {
-		case AND:
+            case LOG_CONST:
+                break;
+            case INT_CONST:
+                break;
+            case STR_CONST:
+                break;
+            case DOUBLE_CONST:
+                break;
+            case CHAR_CONST:
+                break;
+            case AND:
 			dump("logical_and_expression' -> & logical_and_expression");
 			skip();
 
 			AbsExpr expr = parseCmpExpression();
 			return parseAndExpression_(new AbsBinExpr(new Position(e.position,
 					expr.position), AbsBinExpr.AND, e, expr));
-		case IOR:
+            case NOT:
+                break;
+            case EQU:
+                break;
+            case NEQ:
+                break;
+            case LTH:
+                break;
+            case GTH:
+                break;
+            case LEQ:
+                break;
+            case GEQ:
+                break;
+            case MUL:
+                break;
+            case DIV:
+                break;
+            case MOD:
+                break;
+            case ADD:
+                break;
+            case SUB:
+                break;
+            case LPARENT:
+                break;
+            case LBRACKET:
+                break;
+            case IOR:
 		case SEMIC:
 		case NEWLINE:
 		case COLON:
@@ -1033,7 +1072,67 @@ public class SynAn {
 		case EOF:
 			dump("logical_and_expression' -> e");
 			return e;
-		default:
+            case DOT:
+                break;
+            case ARROW:
+                break;
+            case QMARK:
+                break;
+            case EMARK:
+                break;
+            case INTEGER:
+                break;
+            case STRING:
+                break;
+            case DOUBLE:
+                break;
+            case BOOL:
+                break;
+            case CHAR:
+                break;
+            case VOID:
+                break;
+            case KW_FUN:
+                break;
+            case KW_IF:
+                break;
+            case KW_VAR:
+                break;
+            case KW_WHILE:
+                break;
+            case KW_STRUCT:
+                break;
+            case KW_IMPORT:
+                break;
+            case KW_LET:
+                break;
+            case KW_NIL:
+                break;
+            case KW_CLASS:
+                break;
+            case KW_IN:
+                break;
+            case KW_RETURN:
+                break;
+            case KW_PUBLIC:
+                break;
+            case KW_PRIVATE:
+                break;
+            case KW_CONTINUE:
+                break;
+            case KW_BREAK:
+                break;
+            case KW_SWITCH:
+                break;
+            case KW_CASE:
+                break;
+            case KW_DEFAULT:
+                break;
+            case KW_ENUM:
+                break;
+            case KW_INIT:
+                break;
+            default:
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", delete this token");
 		}
@@ -1302,14 +1401,32 @@ public class SynAn {
 			dump("multiplicative_expression' -> prefix_expression multiplicative_expression'");
 			skip();
 			expr = parsePrefixExpression();
+
 			break;
 		default:
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", delete this token");
 		}
 
-		return parseMulExpression_(new AbsBinExpr(new Position(e.position,
-				expr.position), oper, e, expr));
+		expr = new AbsBinExpr(new Position(e.position, expr.position), oper, e, expr);
+
+        if (expr instanceof AbsBinExpr) {
+            AbsBinExpr binExpr = (AbsBinExpr) expr;
+
+            // TODO: - Fix this (object.data[index] is not parsed in the right way at the moment
+            // so this is a temporary solution
+            if (binExpr.oper == AbsBinExpr.DOT && binExpr.expr2 instanceof AbsBinExpr) {
+                AbsBinExpr binExpr2 = (AbsBinExpr) binExpr.expr2;
+
+                if (binExpr2.oper == AbsBinExpr.ARR) {
+                    expr = new AbsBinExpr(binExpr.position, AbsBinExpr.ARR,
+                            new AbsBinExpr(binExpr.expr1.position, AbsBinExpr.DOT, binExpr.expr1, binExpr2.expr1), binExpr2.expr2);
+                }
+            }
+        }
+
+
+        return parseMulExpression_(expr);
 	}
 
 	private AbsExpr parsePrefixExpression() {
@@ -1444,6 +1561,7 @@ public class SynAn {
 				Report.error(previous.position,
 						"Syntax error, insert \"]\" to complete expression");
 			skip();
+
 			return parsePostfixExpression_(new AbsBinExpr(new Position(
 					e.position, expr.position), AbsBinExpr.ARR, e, expr));
 		case QMARK:
