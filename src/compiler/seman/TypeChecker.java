@@ -487,26 +487,6 @@ public class TypeChecker implements ASTVisitor {
                         argType.friendlyName() + "\" to type \"" + funType.getParType(i).friendlyName() + "\"");
 			}
 		}
-
-		AbsDef def = SymbDesc.getNameDef(acceptor);
-		
-		if (def instanceof AbsVarDef || def instanceof AbsParDef || def instanceof AbsEnumMemberDef) {
-//			Type type = SymbDesc.getType(def);
-//
-//			if (!type.isFunctionType())
-//				Report.error(acceptor.position, "Cannot call value of non-function type \'"
-//								+ type.toString() + "\'");
-//
-//			FunctionType t = new FunctionType(parameters,
-//					((FunctionType) type).resultType, ((FunctionType) type).functionDefinition);
-//
-//			if (!type.sameStructureAs(t))
-//				Report.error("Error todo");
-//
-//			SymbDesc.setNameDef(acceptor, def);
-//			SymbDesc.setType(acceptor, ((FunctionType) SymbDesc.getType(def)).resultType);
-			Report.error(null, "kle");
-		}
 	}
 
 	@Override

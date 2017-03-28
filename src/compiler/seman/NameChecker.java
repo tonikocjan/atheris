@@ -18,8 +18,7 @@
 package compiler.seman;
 
 import java.util.LinkedList;
-import java.util.Vector;
-
+import Utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsDefs;
@@ -142,7 +141,7 @@ public class NameChecker implements ASTVisitor {
 				AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
 
 				// TODO: - Fix position
-				AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.expr2.position, acceptor.expr1, "self");
+				AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.expr2.position, acceptor.expr1, Constants.selfParameterIdentifier);
 				funCall.addArgument(selfArg);
 			}
 		}
@@ -188,8 +187,8 @@ public class NameChecker implements ASTVisitor {
 
         // handle implicit "self" argument for constructors
         if (definition == null) {
-            AbsVarNameExpr selfArgExpr = new AbsVarNameExpr(acceptor.position, "self");
-            AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.position, selfArgExpr, "self");
+            AbsVarNameExpr selfArgExpr = new AbsVarNameExpr(acceptor.position, Constants.selfParameterIdentifier);
+            AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.position, selfArgExpr, Constants.selfParameterIdentifier);
 
             acceptor.addArgument(selfArg);
 
