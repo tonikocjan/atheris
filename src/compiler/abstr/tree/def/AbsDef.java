@@ -36,10 +36,10 @@ public abstract class AbsDef extends AbsStmt {
 	/**
 	 * Parent definition.
 	 */
-	private AbsDef parentDef;
+	protected AbsDef parentDef;
 
 	/** Is this definition public / private (used for class members) */
-	private VisibilityKind visibilityKind;
+	protected VisibilityKind visibilityKind;
 
 	/** Is this definition mutable */
 	public final boolean isMutable;

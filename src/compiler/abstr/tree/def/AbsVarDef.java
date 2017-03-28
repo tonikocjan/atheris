@@ -55,11 +55,11 @@ public class AbsVarDef extends AbsDef {
 	 *            Name.
 	 * @param type
 	 *            Type.
-	 * @param constant
-	 * 			  Is this variable a constant.
+	 * @param isMutable
+	 * 			  Is this variable mutable.
 	 */
-	public AbsVarDef(Position pos, String name, AbsType type, boolean constant) {
-		this(pos, name, type, constant, VisibilityKind.Public);
+	public AbsVarDef(Position pos, String name, AbsType type, boolean isMutable) {
+		this(pos, name, type, isMutable, VisibilityKind.Public);
 	}
 	
 	/**

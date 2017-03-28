@@ -206,6 +206,11 @@ public class InitializationChecker implements ASTVisitor {
 	public void visit(AbsVarNameExpr acceptor) {
 	    AbsDef definition = SymbDesc.getNameDef(acceptor);
 
+	    if (definition instanceof AbsParDef) {
+	        // TODO: - Parameters should't be handled separately
+	        return;
+        }
+
 		if (shouldCheckIfInitialized) {
 			if (!InitTable.isInitialized(definition)) {
 				String errorMsg = definition.isMutable ? "Variable '" : "Constant '";

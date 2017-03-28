@@ -174,6 +174,9 @@ public class SemAn implements ASTVisitor {
 		case VOID:
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": VOID");
 			break;
+        case NIL:
+            Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": NIL");
+            break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Seman.visit(AbsAtomType)");
 		}

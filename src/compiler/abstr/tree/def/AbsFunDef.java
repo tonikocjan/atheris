@@ -136,7 +136,9 @@ public class AbsFunDef extends AbsDef {
 	 * @return
 	 */
 	public String getStringRepresentation() {
-        return stringRepresentation(this.name);
+	    if (isConstructor)
+	        return stringRepresentation(parentDef.name);
+        return stringRepresentation(name);
 	}
 
     /**

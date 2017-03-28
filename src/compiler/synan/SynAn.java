@@ -390,14 +390,18 @@ public class SynAn {
 
 	private AbsDef parseVarDefinition() {
 		Position startPos = symbol.position;
-		boolean isConstant = false;
+		boolean isMutable = true;
 		Symbol id = null;
 		
-		if (symbol.token == TokenType.KW_VAR)
+		if (symbol.token == TokenType.KW_VAR) {
+            id = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
+
+            isMutable = true;
+        }
+		else {
 			id = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
-		else if (symbol.token == TokenType.KW_LET) {
-			isConstant = true;
-			id = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
+
+            isMutable = false;
 		}
 		
 		skip();
@@ -406,11 +410,12 @@ public class SynAn {
 		
 		if (symbol.token == TokenType.ASSIGN) {
 			dump("var_definition -> var identifier = expr");
-			return new AbsVarDef(startPos, id.lexeme, type, isConstant);
+			return new AbsVarDef(startPos, id.lexeme, type, isMutable);
 		}
-		else if (symbol.token != TokenType.COLON) 
-			Report.error(previous.position, "Syntax error on token \""
-					+ previous.lexeme + "\", expected \":\"");
+		else if (symbol.token != TokenType.COLON) {
+            Report.error(previous.position, "Syntax error on token \""
+                    + previous.lexeme + "\", expected \":\"");
+        }
 		
 		skip();
 
@@ -418,7 +423,7 @@ public class SynAn {
 
 		type = parseType();
 		return new AbsVarDef(new Position(startPos, type.position), 
-				id.lexeme, type, isConstant);
+				id.lexeme, type, isMutable);
 	}
 
 	private AbsImportDef parseImportDefinition() {
@@ -505,7 +510,8 @@ public class SynAn {
 					AbsVarNameExpr varNameExpr = new AbsVarNameExpr(definition.position, ((AbsVarDef)definition).name);
 					AbsExpr valueExpr = parseExpression();
                     AbsBinExpr dotExpr = new AbsBinExpr(
-                            new Position(definition.position, valueExpr.position), AbsBinExpr.DOT, new AbsVarNameExpr(definition.position, "self"), varNameExpr);
+                            new Position(definition.position, valueExpr.position), AbsBinExpr.DOT,
+                            new AbsVarNameExpr(definition.position, "self"), varNameExpr);
 					AbsBinExpr assignExpr = new AbsBinExpr(definition.position, AbsBinExpr.ASSIGN, dotExpr, valueExpr);
 
 					defaultConstructor.add(assignExpr);

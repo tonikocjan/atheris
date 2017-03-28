@@ -136,11 +136,10 @@ public class TypeChecker implements ASTVisitor {
 				AbsFunDef funDef = (AbsFunDef) def;
 				AbsParDef selfParDef = funDef.getParameterForIndex(0);
 				selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
-				
+
 				SymbDesc.setNameDef(selfParDef.type, acceptor);
-				SymbDesc.setType(selfParDef, classType);
 			}
-			
+
 			def.accept(this);
 		}
 
@@ -244,7 +243,7 @@ public class TypeChecker implements ASTVisitor {
 			if (!success)
 				Report.error(acceptor.position, 
 						LanguageManager.localize("type_error_cannot_convert_type",
-								t2.toString(), t1.toString()));
+                                t2.friendlyName(), t1.friendlyName()));
 			
 			return;
 		}
@@ -542,9 +541,9 @@ public class TypeChecker implements ASTVisitor {
 					if (!t.sameStructureAs(funType.resultType))
 						Report.error(stmt.position,
 								"Return type doesn't match, expected \""
-										+ funType.resultType.toString()
+										+ funType.resultType.friendlyName()
 										+ "\", got \""
-										+ t.toString()
+										+ t.friendlyName()
 										+ "\" instead");
 				}
 			}
