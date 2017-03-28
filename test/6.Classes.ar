@@ -5,24 +5,30 @@ import stdlib
 let test = "123"
 
 class Point {
-	var x: Int = 5
-	var y: Int = 10
+	private var x: Int = 0
+	var y: Int = 0
 
-	func init(x: Int, y: Int) {
+	init(x: Int, y: Int) {
 		self.x = x
 		self.y = y
 	}
 }
 
 class Rect {
-	var size: Point
 	var origin: Point
+	var size: Point
 
-	func init() {
-		self.size = Point(x: 0, y: 0)
-		self.origin = Point(x: 0, y: 0)
+	init() {
+		self.size = Point()
+		self.origin = Point()
+	}
+
+	init(origin: Point, size: Point) {
+		self.origin = origin
+		self.size = size
 	}
 }
 
-let rect = Rect()
-Point(x: 0, y: 0)
+let rect = Rect(origin: Point(x: 20, y: 30), size: Point(x: 800, y: 600))
+print(integer: rect.origin.y)
+print(integer: rect.size.x)

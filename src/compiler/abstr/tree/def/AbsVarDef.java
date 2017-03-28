@@ -19,7 +19,7 @@ package compiler.abstr.tree.def;
 
 import compiler.*;
 import compiler.abstr.*;
-import compiler.abstr.tree.VisibilityKind;
+import compiler.abstr.tree.AccessControl;
 import compiler.abstr.tree.type.AbsType;
 
 /**
@@ -43,7 +43,7 @@ public class AbsVarDef extends AbsDef {
 	 *            Type.
 	 */
 	public AbsVarDef(Position pos, String name, AbsType type) {
-		this(pos, name, type, true, VisibilityKind.Public);
+		this(pos, name, type, true, AccessControl.Public);
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public class AbsVarDef extends AbsDef {
 	 * 			  Is this variable mutable.
 	 */
 	public AbsVarDef(Position pos, String name, AbsType type, boolean isMutable) {
-		this(pos, name, type, isMutable, VisibilityKind.Public);
+		this(pos, name, type, isMutable, AccessControl.Public);
 	}
 	
 	/**
@@ -73,12 +73,12 @@ public class AbsVarDef extends AbsDef {
 	 *            Type.
 	 * @param isMutable
 	 * 			  Is this variable mutable.
-	 * @param visibilityKind
+	 * @param accessControl
 	 * 			  Visibility.
 	 */
 	public AbsVarDef(Position pos, String name, 
-			AbsType type, boolean isMutable, VisibilityKind visibilityKind) {
-		super(pos, name, isMutable, visibilityKind);
+			AbsType type, boolean isMutable, AccessControl accessControl) {
+		super(pos, name, isMutable, accessControl);
 		
 		this.type = type;
 	}

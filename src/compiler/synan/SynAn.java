@@ -290,19 +290,23 @@ public class SynAn {
 
 	private AbsDef parseDefinition() {
 		AbsDef definition = null;
-		VisibilityKind visibility = VisibilityKind.Public;
+		AccessControl visibility = AccessControl.Public;
 
 		if (symbol.token == TokenType.KW_PUBLIC)
 			skip();
 		else if (symbol.token == TokenType.KW_PRIVATE) {
-			visibility = VisibilityKind.Private;
+			visibility = AccessControl.Private;
 			skip();
 		}
 		
 		switch (symbol.token) {
 		case KW_FUN:
-			dump("definition -> function_definition");
-			definition = parseFunDefinition();
+            dump("definition -> function_definition");
+            definition = parseFunDefinition();
+            break;
+        case KW_INIT:
+            dump("definition -> constructor_definition");
+            definition = parseConstructorDefinition();
 			break;
 		case KW_VAR:
 		case KW_LET:
@@ -336,7 +340,7 @@ public class SynAn {
 						+ previous.lexeme + "\", delete this token");
 		}
 
-		definition.setVisibilityKind(visibility);
+		definition.setAccessControl(visibility);
 		return definition;
 	}
 
@@ -358,6 +362,25 @@ public class SynAn {
 
 		return null;
 	}
+
+    private AbsFunDef parseConstructorDefinition() {
+        Position startPos = symbol.position;
+        if (symbol.token == TokenType.KW_INIT) {
+            Symbol functionName = symbol;
+
+            skip(new Symbol(TokenType.LPARENT, "(", null));
+            skip();
+            dump("constructor_definition -> init ( parameters ) function_definition'");
+
+            LinkedList<AbsParDef> params = parseParameters();
+
+            return parseFunDefinition_(startPos, functionName, params);
+        }
+        Report.error(previous.position, "Syntax error on token \""
+                + previous.lexeme + "\", expected keyword \"init\"");
+
+        return null;
+    }
 
 	private AbsFunDef parseFunDefinition_(Position startPos, Symbol functionName,
 			LinkedList<AbsParDef> params) {
@@ -519,16 +542,14 @@ public class SynAn {
 				break;
 			case KW_FUN:
 				AbsFunDef funDef = (AbsFunDef) parseDefinition();
-
-				if (funDef.name.equals("init")) { // FIXME: - magic numbers
-                    funDef.isConstructor = true;
-                    constructors.add(funDef);
-                }
-				else {
-                    definitions.add(funDef);
-                }
-
+                definitions.add(funDef);
 				break;
+            case KW_INIT:
+                funDef = (AbsFunDef) parseDefinition();
+                funDef.isConstructor = true;
+
+                constructors.add(funDef);
+                break;
 			case RBRACE:
 				return new LinkedList[] {definitions, defaultConstructor, constructors};
 			default:

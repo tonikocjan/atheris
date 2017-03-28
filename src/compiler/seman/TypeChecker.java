@@ -20,7 +20,6 @@ package compiler.seman;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Vector;
-import java.util.function.Function;
 
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
@@ -30,7 +29,7 @@ import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.AbsStmts;
 import compiler.abstr.tree.AtomTypeKind;
 import compiler.abstr.tree.Condition;
-import compiler.abstr.tree.VisibilityKind;
+import compiler.abstr.tree.AccessControl;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsEnumDef;
@@ -291,7 +290,7 @@ public class TypeChecker implements ASTVisitor {
 				
 				AbsDef definition = t1.findMemberForName(memberName);
 				
-				if (definition.getVisibility() == VisibilityKind.Private)
+				if (definition.getVisibility() == AccessControl.Private)
 					Report.error(acceptor.expr2.position,
 							"Member '" + memberName + "' is inaccessible due to it's private protection level");
 				
@@ -319,7 +318,7 @@ public class TypeChecker implements ASTVisitor {
 					
 					AbsDef definition = enumType.findMemberForName(memberName);
 					
-					if (definition.getVisibility() == VisibilityKind.Private)
+					if (definition.getVisibility() == AccessControl.Private)
 						Report.error(acceptor.expr2.position,
                                 "Member '" + memberName + "' is inaccessible due to it's private protection level");
 					
