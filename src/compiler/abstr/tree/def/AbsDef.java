@@ -133,15 +133,15 @@ public abstract class AbsDef extends AbsStmt {
 	 * 
 	 * @return
 	 */
-	public AccessControl getVisibility() {
+	public AccessControl getAccessControl() {
 		return accessControl;
 	}
 	
 	/**
 	 * 
-	 * @param kind
+	 * @param accessControl
 	 */
-	public void setAccessControl(AccessControl kind) {
-		this.accessControl = kind;
+	public void setAccessControl(AccessControl accessControl) {
+		this.accessControl = accessControl;
 	}
 }

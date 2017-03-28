@@ -290,7 +290,7 @@ public class TypeChecker implements ASTVisitor {
 				
 				AbsDef definition = t1.findMemberForName(memberName);
 				
-				if (definition.getVisibility() == AccessControl.Private)
+				if (definition.getAccessControl() == AccessControl.Private)
 					Report.error(acceptor.expr2.position,
 							"Member '" + memberName + "' is inaccessible due to it's private protection level");
 				
@@ -318,7 +318,7 @@ public class TypeChecker implements ASTVisitor {
 					
 					AbsDef definition = enumType.findMemberForName(memberName);
 					
-					if (definition.getVisibility() == AccessControl.Private)
+					if (definition.getAccessControl() == AccessControl.Private)
 						Report.error(acceptor.expr2.position,
                                 "Member '" + memberName + "' is inaccessible due to it's private protection level");
 					
