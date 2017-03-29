@@ -37,8 +37,7 @@ public class AbsTupleExpr extends AbsExpr {
 	 */
 	public AbsTupleExpr(Position pos, LinkedList<AbsExpr> expressions) {
 		super(pos);
-		
-		// TODO: position
+
 		this.expressions = new AbsExprs(position, expressions);
 	}
 

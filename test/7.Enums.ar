@@ -1,3 +1,5 @@
+import stdlib
+
 # Enumeracije
 
 # deklaracija enumeracije
@@ -9,16 +11,16 @@ enum Languages {
 
 let x: Languages = Languages.Cpp
 if x == Languages.Java {
-	print("Java")
+	print(string: "Java")
 }
 else {
-	print("Some other language")
+	print(string: "Some other language")
 }
 
 
-# Vrednosti enumeracije
+# Surove vrednosti enumeracije
 
-# memberji enumeracije Languages nimajo v vrednosti
+# enumeracija Languages nima surovih vrednosti
 
 # error:
 # print(x.rawValue)
@@ -29,11 +31,11 @@ enum Days: Int {
 	case Wednesday, Thursday = 10, Friday
 }
 
-print(Days.Monday.rawValue)
-print(Days.Tuesday.rawValue)
-print(Days.Wednesday.rawValue)
-print(Days.Thursday.rawValue)
-print(Days.Friday.rawValue)
+print(integer: Days.Monday.rawValue)
+print(integer: Days.Tuesday.rawValue)
+print(integer: Days.Wednesday.rawValue)
+print(integer: Days.Thursday.rawValue)
+print(integer: Days.Friday.rawValue)
 
 
 # če je tip String, je privzeta vrednost ime memberja
@@ -42,6 +44,6 @@ enum CarBrands: String {
 	case None="Izbrali niste nobene znamke"
 }
 
-print(CarBrands.Audi.rawValue)
-print(CarBrands.VW.rawValue)
-print(CarBrands.None.rawValue)
+print(string: CarBrands.Audi.rawValue)
+print(string: CarBrands.VW.rawValue)
+print(string: CarBrands.None.rawValue)

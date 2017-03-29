@@ -1,18 +1,20 @@
+import stdlib
+
 # Preverjanje inicializacije
 
 var x: Int
 x = 10
 
 # OK - x je inicializiran
-print(x)
+print(integer: x)
 
 var y: Bool
 
 # ERROR - uporaba neinicializirane spremenljivke
-# print(y)
+# print(bool: y)
 
 let z = true
-print(z)
+print(bool: z)
 
 # ERROR, konstante niso mutabilne
 # z = false
@@ -23,16 +25,15 @@ var test: Int
 if z {
 	test = 50
 	# OK
-	print(test)
+	print(integer: test)
 }
-print("")
 
 # ERROR
- print(test)
+ print(integer: test)
 
 while true {
 	test = 10
 	break
 }
 
-print(test)
+print(integer: test)

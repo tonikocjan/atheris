@@ -36,13 +36,11 @@ public class AbsTupleDef extends AbsTypeDef {
 	/**
 	 * Create new tuple type definition
 	 * @param pos position
-	 * @param expressions member expressions
-	 * @param names name of each member
+	 * @param defs member definitions
 	 */
 	public AbsTupleDef(Position pos, LinkedList<AbsDef> defs) {
 		super(pos, "");
 
-		// TODO: position
 		this.definitions = new AbsDefs(pos, defs);
 	}
 

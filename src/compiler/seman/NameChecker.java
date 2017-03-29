@@ -183,7 +183,8 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-        AbsFunDef definition = (AbsFunDef) SymbTable.fnd(acceptor.getStringRepresentation());
+	    String funCallIdentifier = acceptor.getStringRepresentation();
+        AbsFunDef definition = (AbsFunDef) SymbTable.fnd(funCallIdentifier);
 
         // handle implicit "self" argument for constructors
         if (definition == null) {
@@ -196,7 +197,7 @@ public class NameChecker implements ASTVisitor {
         }
 
         if (definition == null) {
-            Report.error(acceptor.position, "Method " + acceptor.getStringRepresentation() + " is undefined");
+            Report.error(acceptor.position, "Method " + funCallIdentifier + " is undefined");
         }
 
         boolean isConstructor = definition.isConstructor;

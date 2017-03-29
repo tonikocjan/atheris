@@ -359,7 +359,7 @@ public class TypeChecker implements ASTVisitor {
 			
 			if (t1.isTupleType()) {
 				TupleType tupleType = (TupleType) t1;
-				
+
 				SymbDesc.setType(acceptor.expr2, tupleType.typeForName(memberName));
 				SymbDesc.setType(acceptor, tupleType.typeForName(memberName));
 			}

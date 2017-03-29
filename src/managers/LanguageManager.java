@@ -64,7 +64,7 @@ public class LanguageManager {
 		    }
 		    return true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Error opening localization file");
 			return false;
 		}
 	}
