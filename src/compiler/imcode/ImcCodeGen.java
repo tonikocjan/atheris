@@ -218,10 +218,12 @@ public class ImcCodeGen implements ASTVisitor {
 
 		ImcCode code = null;
 
-		if (acceptor.oper >= 0 && acceptor.oper <= 11)
-			code = new ImcBINOP(acceptor.oper, e1, e2);
-		else if (acceptor.oper == AbsBinExpr.ASSIGN)
-			code = new ImcMOVE(e1, e2);
+		if (acceptor.oper >= 0 && acceptor.oper <= 11) {
+            code = new ImcBINOP(acceptor.oper, e1, e2);
+        }
+		else if (acceptor.oper == AbsBinExpr.ASSIGN) {
+            code = new ImcMOVE(e1, e2);
+        }
 		else if (acceptor.oper == AbsBinExpr.ARR) {
 			ArrayType type = (ArrayType) SymbDesc.getType(acceptor.expr1);
 			int size = type.type.size();

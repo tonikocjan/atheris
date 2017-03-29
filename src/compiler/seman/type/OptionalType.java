@@ -4,23 +4,29 @@ import compiler.abstr.tree.def.AbsDef;
 
 public class OptionalType extends ReferenceType {
 	
-	/**
-	 * 
-	 */
+	/** Child type */
 	public final Type childType;
-	
-	/**
+
+    /** Is implicitly forced */
+    public final boolean isForced;
+
+    /**
 	 * 
 	 * @param childType
 	 */
-	public OptionalType(Type childType) {
+	public OptionalType(Type childType, boolean isForced) {
 		this.childType = childType;
+		this.isForced = isForced;
 	}
 
 	
 	@Override
 	public boolean sameStructureAs(Type type) {
-		return false;
+		if (type.isOptionalType()) {
+		    return ((OptionalType) type).childType.sameStructureAs(childType);
+        }
+
+        return false;
 	}
 
 	@Override
@@ -30,17 +36,17 @@ public class OptionalType extends ReferenceType {
 
 	@Override
 	public int size() {
-		return 4;
+		return childType.size();
 	}
 
 	@Override
 	public boolean containsMember(String name) {
-		return false;
+		return childType.containsMember(name);
 	}
 
 	@Override
 	public AbsDef findMemberForName(String name) {
-		return null;
+		return childType.findMemberForName(name);
 	}
 
 	@Override
@@ -50,7 +56,7 @@ public class OptionalType extends ReferenceType {
 
 	@Override
 	public String friendlyName() {
-		return toString();
+		return childType.friendlyName() + "?";
 	}
 
 }

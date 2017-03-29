@@ -447,10 +447,14 @@ public class NameChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsOptionalEvaluationExpr acceptor) {
 		acceptor.subExpr.accept(this);
+
+        SymbDesc.setNameDef(acceptor, SymbDesc.getNameDef(acceptor.subExpr));
 	}
 
 	@Override
 	public void visit(AbsForceValueExpr acceptor) {
 		acceptor.subExpr.accept(this);
+
+		SymbDesc.setNameDef(acceptor, SymbDesc.getNameDef(acceptor.subExpr));
 	}
 }

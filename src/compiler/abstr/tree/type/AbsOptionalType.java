@@ -5,20 +5,22 @@ import compiler.abstr.ASTVisitor;
 
 public class AbsOptionalType extends AbsType {
 	
-	/**
-	 * Child type for this optional.
-	 */
+	/** Child type */
 	public final AbsType childType;
+
+	/** Is this optional force, i.e. let x: Int! */
+	public final boolean isForced;
 
 	/**
 	 * 
 	 * @param pos
 	 * @param childType
 	 */
-	public AbsOptionalType(Position pos, AbsType childType) {
+	public AbsOptionalType(Position pos, AbsType childType, boolean isForced) {
 		super(pos);
 		
 		this.childType = childType;
+		this.isForced = isForced;
 	}
 
 	/**

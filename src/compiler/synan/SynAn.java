@@ -648,11 +648,13 @@ public class SynAn {
 	private AbsType parseType() {
 		AbsType type = parseChildType();
 		
-		if (symbol.token == TokenType.QMARK) {
+		if (symbol.token == TokenType.QMARK || symbol.token == TokenType.NOT) {
+		    boolean isForced = symbol.token == TokenType.NOT;
+
 			Position pos = new Position(type.position, symbol.position);
 			skip();
 			
-			return new AbsOptionalType(pos, type);
+			return new AbsOptionalType(pos, type, isForced);
 		}
 		
 		return type;
@@ -1567,8 +1569,7 @@ public class SynAn {
 		case QMARK:
 			dump("postfix_expression' -> optional evaluation expression");
 			skip();
-			return new AbsOptionalEvaluationExpr(
-					new Position(e.position, symbolPos), e);
+			return new AbsOptionalEvaluationExpr(new Position(e.position, symbolPos), e);
 		case NOT:
 			dump("postfix_expression' -> force value expression");
 			skip();

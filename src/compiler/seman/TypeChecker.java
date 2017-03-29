@@ -83,7 +83,7 @@ import managers.LanguageManager;
  */
 public class TypeChecker implements ASTVisitor {
 
-	enum TraversalState {
+	private enum TraversalState {
 		normal, definitions
 	}
 
@@ -91,6 +91,11 @@ public class TypeChecker implements ASTVisitor {
 	 * Current state of traversal
 	 */
 	private TraversalState traversalState = TraversalState.normal;
+
+	/**
+     * True if assigning to variable, otherwise false.
+	 */
+	private boolean assign = false;
 
 
 	// MARK: - Methods
@@ -172,10 +177,14 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsBinExpr acceptor) {
+	    assign = acceptor.oper == AbsBinExpr.ASSIGN;
+
 		acceptor.expr1.accept(this);
 		
 		if (acceptor.oper != AbsBinExpr.DOT)
 			acceptor.expr2.accept(this);
+
+        assign = false;
 
 		Type t1 = SymbDesc.getType(acceptor.expr1);
 		Type t2 = SymbDesc.getType(acceptor.expr2);
@@ -205,7 +214,7 @@ public class TypeChecker implements ASTVisitor {
 		 * expr1 = expr2
 		 */
 		if (oper == AbsBinExpr.ASSIGN) {
-			boolean success = false;
+		    boolean success = false;
 			
 			// if left variable doesn't have type, assign right type
 			if (t1 == null) {
@@ -244,7 +253,8 @@ public class TypeChecker implements ASTVisitor {
 				Report.error(acceptor.position, 
 						LanguageManager.localize("type_error_cannot_convert_type",
                                 t2.friendlyName(), t1.friendlyName()));
-			
+
+			assign = false;
 			return;
 		}
 
@@ -278,6 +288,10 @@ public class TypeChecker implements ASTVisitor {
             }
 			else if (acceptor.expr2 instanceof AbsBinExpr) {
                 Report.error(acceptor.position, "Not yet supported");
+            }
+
+            if (t1.isOptionalType()) {
+			    Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" not unwrapped");
             }
 			
 			if (t1.isClassType()) {
@@ -610,6 +624,7 @@ public class TypeChecker implements ASTVisitor {
 	public void visit(AbsVarDef acceptor) {
 		if (acceptor.type != null) {
 			acceptor.type.accept(this);
+
 			Type type = SymbDesc.getType(acceptor.type);
 			if (type.isCanType())
 				type = ((CanType) type).childType;
@@ -620,8 +635,18 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarNameExpr acceptor) {
-		SymbDesc.setType(acceptor,
-				SymbDesc.getType(SymbDesc.getNameDef(acceptor)));
+        Type type = SymbDesc.getType(SymbDesc.getNameDef(acceptor));
+
+        if (!assign && type.isOptionalType()) {
+            OptionalType optionalType = (OptionalType) type;
+
+            // implicitly force forced OptionalTyped
+            if (optionalType.isForced) {
+                type = optionalType.childType;
+            }
+        }
+
+		SymbDesc.setType(acceptor, type);
 	}
 
 	@Override
@@ -882,7 +907,11 @@ public class TypeChecker implements ASTVisitor {
 		acceptor.childType.accept(this);
 		
 		Type childType = SymbDesc.getType(acceptor.childType);
-		SymbDesc.setType(acceptor, new OptionalType(childType));
+		if (childType.isCanType()) {
+		    childType = ((CanType) childType).childType;
+        }
+
+		SymbDesc.setType(acceptor, new OptionalType(childType, acceptor.isForced));
 	}
 
 	@Override
@@ -890,7 +919,11 @@ public class TypeChecker implements ASTVisitor {
 		acceptor.subExpr.accept(this);
 
 		Type childType = SymbDesc.getType(acceptor.subExpr);
-		SymbDesc.setType(acceptor, new OptionalType(childType));
+        if (childType.isCanType()) {
+            childType = ((CanType) childType).childType;
+        }
+
+		SymbDesc.setType(acceptor, new OptionalType(childType, false));
 	}
 
 	@Override
@@ -899,10 +932,12 @@ public class TypeChecker implements ASTVisitor {
 
 		Type type = SymbDesc.getType(acceptor.subExpr);
 		
-		if (type.isOptionalType())
-			SymbDesc.setType(acceptor, ((OptionalType) type).childType);
-		else
-			Report.error(acceptor.position, 
-					"Cannot unwrap value of non-optional type '" + type.toString() + "'");
+		if (type.isOptionalType()) {
+            SymbDesc.setType(acceptor, ((OptionalType) type).childType);
+        }
+		else {
+            Report.error(acceptor.position,
+                    "Cannot unwrap value of non-optional type '" + type.toString() + "'");
+        }
 	}
 }
