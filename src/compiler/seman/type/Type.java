@@ -114,7 +114,7 @@ public abstract class Type {
 	 * @return True if it is, otherwise false.
 	 */
 	public boolean isPointerType() {
-		return this instanceof PointerType;
+		return this instanceof ReferenceType;
 	}
 
 	/**

@@ -30,7 +30,7 @@ import compiler.abstr.tree.def.AbsDef;
  * Class type. 
  * @author toni kocjan
  */
-public class ClassType extends PointerType {
+public class ClassType extends ReferenceType {
 	
 	/**
 	 * Class definition.

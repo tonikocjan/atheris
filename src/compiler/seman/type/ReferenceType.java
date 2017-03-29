@@ -17,6 +17,6 @@
 
 package compiler.seman.type;
 
-public abstract class PointerType extends Type {
+public abstract class ReferenceType extends Type {
 	
 }

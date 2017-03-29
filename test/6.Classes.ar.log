@@ -1,480 +1,516 @@
-CODE CHUNK: label=_print
-  FRAME(print: level=1,label=_print,sizeLocs=0,sizeArgs=0,size=8,FP=T2,RV=T3)
-  SEQ
-    LABEL label=L2
-CODE CHUNK: label=_print
-  FRAME(print: level=1,label=_print,sizeLocs=0,sizeArgs=0,size=8,FP=T4,RV=T5)
-  SEQ
-    LABEL label=L3
-CODE CHUNK: label=_print
-  FRAME(print: level=1,label=_print,sizeLocs=0,sizeArgs=0,size=8,FP=T6,RV=T7)
-  SEQ
-    LABEL label=L4
-CODE CHUNK: label=_print
-  FRAME(print: level=1,label=_print,sizeLocs=0,sizeArgs=0,size=8,FP=T8,RV=T9)
-  SEQ
-    LABEL label=L5
-CODE CHUNK: label=_print
-  FRAME(print: level=1,label=_print,sizeLocs=0,sizeArgs=0,size=8,FP=T10,RV=T11)
-  SEQ
-    LABEL label=L6
-CODE CHUNK: label=_init
-  FRAME(init: level=1,label=_init,sizeLocs=0,sizeArgs=0,size=8,FP=T12,RV=T13)
-  SEQ
-    MOVE
-      MEM
-        BINOP op=+
-          TEMP name=T12
-          CONST value=4
-      MALLOC size: 8 BYTES
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              TEMP name=T12
-              CONST value=4
-          CONST value=0
-      CONST value=0
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              TEMP name=T12
-              CONST value=4
-          CONST value=4
-      CONST value=0
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              TEMP name=T12
-              CONST value=4
-          CONST value=0
-      MEM
-        BINOP op=+
-          TEMP name=T12
-          CONST value=8
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              TEMP name=T12
-              CONST value=4
-          CONST value=4
-      MEM
-        BINOP op=+
-          TEMP name=T12
-          CONST value=12
-    MOVE
-      TEMP name=T13
-      MEM
-        BINOP op=+
-          TEMP name=T12
-          CONST value=4
-    LABEL label=L7
-CODE CHUNK: label=_Point
-  FRAME(Point: level=1,label=_Point,sizeLocs=0,sizeArgs=0,size=8,FP=T14,RV=T15)
-  SEQ
-    MOVE
-      MEM
-        BINOP op=+
-          TEMP name=T14
-          CONST value=4
-      MALLOC size: 8 BYTES
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              TEMP name=T14
-              CONST value=4
-          CONST value=0
-      CONST value=0
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              TEMP name=T14
-              CONST value=4
-          CONST value=4
-      CONST value=0
-    MOVE
-      TEMP name=T15
-      MEM
-        BINOP op=+
-          TEMP name=T14
-          CONST value=4
-    LABEL label=L8
-CODE CHUNK: label=_init
-  FRAME(init: level=1,label=_init,sizeLocs=0,sizeArgs=8,size=16,FP=T16,RV=T17)
-  SEQ
-    MOVE
-      MEM
-        BINOP op=+
-          TEMP name=T16
-          CONST value=4
-      MALLOC size: 16 BYTES
-    MOVE
-      TEMP name=T22
-      CONST value=16755455
-    MOVE
-      TEMP name=T23
-      CONST value=0
-    MOVE
-      TEMP name=T24
-      CALL label=_Point
-        TEMP name=T22
-        TEMP name=T23
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              TEMP name=T16
-              CONST value=4
-          CONST value=8
-      TEMP name=T24
-    MOVE
-      TEMP name=T25
-      CONST value=16755455
-    MOVE
-      TEMP name=T26
-      CONST value=0
-    MOVE
-      TEMP name=T27
-      CALL label=_Point
-        TEMP name=T25
-        TEMP name=T26
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              TEMP name=T16
-              CONST value=4
-          CONST value=0
-      TEMP name=T27
-    MOVE
-      TEMP name=T17
-      MEM
-        BINOP op=+
-          TEMP name=T16
-          CONST value=4
-    LABEL label=L9
-CODE CHUNK: label=_init
-  FRAME(init: level=1,label=_init,sizeLocs=0,sizeArgs=0,size=8,FP=T18,RV=T19)
-  SEQ
-    MOVE
-      MEM
-        BINOP op=+
-          TEMP name=T18
-          CONST value=4
-      MALLOC size: 16 BYTES
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              TEMP name=T18
-              CONST value=4
-          CONST value=0
-      MEM
-        BINOP op=+
-          TEMP name=T18
-          CONST value=8
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              TEMP name=T18
-              CONST value=4
-          CONST value=8
-      MEM
-        BINOP op=+
-          TEMP name=T18
-          CONST value=12
-    MOVE
-      TEMP name=T19
-      MEM
-        BINOP op=+
-          TEMP name=T18
-          CONST value=4
-    LABEL label=L10
-DATA CHUNK: label=L12 size=20
-CODE CHUNK: label=_init
-  FRAME(init: level=1,label=_init,sizeLocs=0,sizeArgs=0,size=8,FP=T20,RV=T21)
-  SEQ
-    MOVE
-      MEM
-        BINOP op=+
-          TEMP name=T20
-          CONST value=4
-      MALLOC size: 0 BYTES
-    MOVE
-      MEM
-        BINOP op=+
-          NAME label=L12
-          BINOP op=*
-            CONST value=0
-            CONST value=4
-      CONST value=1
-    MOVE
-      MEM
-        BINOP op=+
-          NAME label=L12
-          BINOP op=*
-            CONST value=1
-            CONST value=4
-      CONST value=2
-    MOVE
-      MEM
-        BINOP op=+
-          NAME label=L12
-          BINOP op=*
-            CONST value=2
-            CONST value=4
-      CONST value=3
-    MOVE
-      MEM
-        BINOP op=+
-          NAME label=L12
-          BINOP op=*
-            CONST value=3
-            CONST value=4
-      CONST value=4
-    MOVE
-      MEM
-        BINOP op=+
-          NAME label=L12
-          BINOP op=*
-            CONST value=4
-            CONST value=4
-      CONST value=5
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              TEMP name=T20
-              CONST value=4
-          CONST value=0
-      NAME label=L12
-    MOVE
-      TEMP name=T21
-      MEM
-        BINOP op=+
-          TEMP name=T20
-          CONST value=4
-    LABEL label=L11
-DATA CHUNK: label=_rect size=4
-DATA CHUNK: label=_array size=4
-DATA CHUNK: label=_p1 size=4
-DATA CHUNK: label=_p2 size=4
-CODE CHUNK: label=__main
-  FRAME(_main: level=0,label=__main,sizeLocs=0,sizeArgs=16,size=24,FP=T0,RV=T1)
-  SEQ
-    MOVE
-      TEMP name=T28
-      TEMP name=T0
-    MOVE
-      TEMP name=T29
-      CONST value=0
-    MOVE
-      TEMP name=T31
-      TEMP name=T0
-    MOVE
-      TEMP name=T32
-      CONST value=0
-    MOVE
-      TEMP name=T33
-      CONST value=20
-    MOVE
-      TEMP name=T34
-      CONST value=30
-    MOVE
-      TEMP name=T35
-      CALL label=_init
-        TEMP name=T31
-        TEMP name=T32
-        TEMP name=T33
-        TEMP name=T34
-    MOVE
-      TEMP name=T30
-      TEMP name=T35
-    MOVE
-      TEMP name=T37
-      TEMP name=T0
-    MOVE
-      TEMP name=T38
-      CONST value=0
-    MOVE
-      TEMP name=T39
-      CONST value=800
-    MOVE
-      TEMP name=T40
-      CONST value=600
-    MOVE
-      TEMP name=T41
-      CALL label=_init
-        TEMP name=T37
-        TEMP name=T38
-        TEMP name=T39
-        TEMP name=T40
-    MOVE
-      TEMP name=T36
-      TEMP name=T41
-    MOVE
-      TEMP name=T42
-      CALL label=_init
-        TEMP name=T28
-        TEMP name=T29
-        TEMP name=T30
-        TEMP name=T36
-    MOVE
-      MEM
-        NAME label=_rect
-      TEMP name=T42
-    MOVE
-      TEMP name=T43
-      TEMP name=T0
-    MOVE
-      TEMP name=T44
-      CONST value=0
-    MOVE
-      TEMP name=T45
-      CALL label=_init
-        TEMP name=T43
-        TEMP name=T44
-    MOVE
-      MEM
-        NAME label=_array
-      TEMP name=T45
-    MOVE
-      TEMP name=T46
-      TEMP name=T0
-    MOVE
-      TEMP name=T47
-      MEM
-        BINOP op=+
-          MEM
-            BINOP op=+
-              MEM
-                NAME label=_array
-              CONST value=0
-          BINOP op=*
-            CONST value=2
-            CONST value=4
-    MOVE
-      TEMP name=T48
-      CALL label=_print
-        TEMP name=T46
-        TEMP name=T47
-    EXP
-      TEMP name=T48
-    MOVE
-      TEMP name=T49
-      TEMP name=T0
-    MOVE
-      TEMP name=T50
-      CONST value=0
-    MOVE
-      TEMP name=T51
-      CALL label=_Point
-        TEMP name=T49
-        TEMP name=T50
-    MOVE
-      MEM
-        NAME label=_p1
-      TEMP name=T51
-    MOVE
-      MEM
-        BINOP op=+
-          MEM
-            NAME label=_p1
-          CONST value=0
-      CONST value=20
-    MOVE
-      MEM
-        NAME label=_p2
-      MEM
-        NAME label=_p1
-    MOVE
-      TEMP name=T52
-      TEMP name=T0
-    MOVE
-      TEMP name=T53
-      MEM
-        BINOP op=+
-          MEM
-            NAME label=_p2
-          CONST value=0
-    MOVE
-      TEMP name=T54
-      CALL label=_print
-        TEMP name=T52
-        TEMP name=T53
-    EXP
-      TEMP name=T54
-    MOVE
-      TEMP name=T55
-      TEMP name=T0
-    MOVE
-      TEMP name=T56
-      CONST value=0
-    MOVE
-      TEMP name=T57
-      CONST value=10
-    MOVE
-      TEMP name=T58
-      CONST value=30
-    MOVE
-      TEMP name=T59
-      CALL label=_init
-        TEMP name=T55
-        TEMP name=T56
-        TEMP name=T57
-        TEMP name=T58
-    MOVE
-      MEM
-        NAME label=_p2
-      TEMP name=T59
-    MOVE
-      TEMP name=T60
-      TEMP name=T0
-    MOVE
-      TEMP name=T61
-      MEM
-        BINOP op=+
-          MEM
-            NAME label=_p2
-          CONST value=4
-    MOVE
-      TEMP name=T62
-      CALL label=_print
-        TEMP name=T60
-        TEMP name=T61
-    EXP
-      TEMP name=T62
-    MOVE
-      TEMP name=T63
-      TEMP name=T0
-    MOVE
-      TEMP name=T64
-      MEM
-        BINOP op=+
-          MEM
-            NAME label=_p1
-          CONST value=0
-    MOVE
-      TEMP name=T65
-      CALL label=_print
-        TEMP name=T63
-        TEMP name=T64
-    EXP
-      TEMP name=T65
+AbsStmts 3:1-50:20:
+  AbsImportDef 3:1-3:7:
+    AbsDefs 1:1-10:2:
+      AbsFunDef 1:1-2:2: print
+        #typed as (Int) -> Void
+        AbsPar 1:12-1:24: integer
+          #typed as Int
+          AbsAtomType 1:21-1:24: INTEGER
+            #typed as Int
+        AbsAtomType 1:26-1:27: VOID
+          #typed as Void
+        AbsStmts 2:1-2:2:
+      AbsFunDef 3:1-4:2: print
+        #typed as (Double) -> Void
+        AbsPar 3:12-3:26: double
+          #typed as Double
+          AbsAtomType 3:20-3:26: DOUBLE
+            #typed as Double
+        AbsAtomType 3:28-3:29: VOID
+          #typed as Void
+        AbsStmts 4:1-4:2:
+      AbsFunDef 5:1-6:2: print
+        #typed as (String) -> Void
+        AbsPar 5:12-5:26: string
+          #typed as String
+          AbsAtomType 5:20-5:26: STRING
+            #typed as String
+        AbsAtomType 5:28-5:29: VOID
+          #typed as Void
+        AbsStmts 6:1-6:2:
+      AbsFunDef 7:1-8:2: print
+        #typed as (Char) -> Void
+        AbsPar 7:12-7:22: char
+          #typed as Char
+          AbsAtomType 7:18-7:22: CHAR
+            #typed as Char
+        AbsAtomType 7:24-7:25: VOID
+          #typed as Void
+        AbsStmts 8:1-8:2:
+      AbsFunDef 9:1-10:2: print
+        #typed as (Bool) -> Void
+        AbsPar 9:12-9:22: bool
+          #typed as Bool
+          AbsAtomType 9:18-9:22: LOGICAL
+            #typed as Bool
+        AbsAtomType 9:24-9:25: VOID
+          #typed as Void
+        AbsStmts 10:1-10:2:
+  AbsClassDef 5:1-13:2: Point
+    #typed as Point.Type
+    Member definitions:
+      AbsDefs 5:1-13:2:
+        AbsVarDef 6:5-6:15: x
+          #typed as Int
+          AbsAtomType 6:12-6:15: INTEGER
+            #typed as Int
+        AbsVarDef 7:5-7:15: y
+          #typed as Int
+          AbsAtomType 7:12-7:15: INTEGER
+            #typed as Int
+    Constructors:
+      AbsFunDef 9:5-11:19: init
+        #typed as (Class: Point(x:Int;y:Int),Int,Int) -> Class: Point(x:Int;y:Int)
+        AbsPar 9:5-11:19: self
+          #typed as Class: Point(x:Int;y:Int)
+          AbsTypeName 9:5-11:19: Point
+            #defined at 5:1-13:2
+            #typed as Point.Type
+        AbsPar 9:10-9:16: x
+          #typed as Int
+          AbsAtomType 9:13-9:16: INTEGER
+            #typed as Int
+        AbsPar 9:18-9:24: y
+          #typed as Int
+          AbsAtomType 9:21-9:24: INTEGER
+            #typed as Int
+        AbsAtomType 9:26-9:27: VOID
+          #typed as Void
+        AbsStmts 10:9-11:19:
+          AbsBinExpr 6:5-6:15: ASSIGN
+            #typed as Int
+            AbsBinExpr 6:5-6:19: DOT
+              #typed as Int
+              AbsVarName 6:5-6:15: self
+                #defined at 5:1-13:2
+                #typed as Class: Point(x:Int;y:Int)
+              AbsVarName 6:5-6:15: x
+                #defined at 6:5-6:15
+                #typed as Int
+            AbsAtomConst 6:18-6:19: INTEGER(0)
+              #typed as Int
+          AbsBinExpr 7:5-7:15: ASSIGN
+            #typed as Int
+            AbsBinExpr 7:5-7:19: DOT
+              #typed as Int
+              AbsVarName 7:5-7:15: self
+                #defined at 5:1-13:2
+                #typed as Class: Point(x:Int;y:Int)
+              AbsVarName 7:5-7:15: y
+                #defined at 7:5-7:15
+                #typed as Int
+            AbsAtomConst 7:18-7:19: INTEGER(0)
+              #typed as Int
+          AbsBinExpr 10:9-10:19: ASSIGN
+            #typed as Int
+            AbsBinExpr 10:9-10:15: DOT
+              #typed as Int
+              AbsVarName 10:9-10:13: self
+                #defined at 9:5-11:19
+                #typed as Class: Point(x:Int;y:Int)
+              AbsVarName 10:14-10:15: x
+                #defined at 6:5-6:15
+                #typed as Int
+            AbsVarName 10:18-10:19: x
+              #defined at 9:10-9:16
+              #typed as Int
+          AbsBinExpr 11:9-11:19: ASSIGN
+            #typed as Int
+            AbsBinExpr 11:9-11:15: DOT
+              #typed as Int
+              AbsVarName 11:9-11:13: self
+                #defined at 9:5-11:19
+                #typed as Class: Point(x:Int;y:Int)
+              AbsVarName 11:14-11:15: y
+                #defined at 7:5-7:15
+                #typed as Int
+            AbsVarName 11:18-11:19: y
+              #defined at 9:18-9:24
+              #typed as Int
+      AbsFunDef 5:1-13:2: Point
+        #typed as (Class: Point(x:Int;y:Int)) -> Class: Point(x:Int;y:Int)
+        AbsPar 5:1-13:2: self
+          #typed as Class: Point(x:Int;y:Int)
+          AbsTypeName 5:1-13:2: Point
+            #defined at 5:1-13:2
+            #typed as Point.Type
+        AbsAtomType 5:1-13:2: VOID
+          #typed as Void
+        AbsStmts 5:1-13:2:
+          AbsBinExpr 6:5-6:15: ASSIGN
+            #typed as Int
+            AbsBinExpr 6:5-6:19: DOT
+              #typed as Int
+              AbsVarName 6:5-6:15: self
+                #defined at 5:1-13:2
+                #typed as Class: Point(x:Int;y:Int)
+              AbsVarName 6:5-6:15: x
+                #defined at 6:5-6:15
+                #typed as Int
+            AbsAtomConst 6:18-6:19: INTEGER(0)
+              #typed as Int
+          AbsBinExpr 7:5-7:15: ASSIGN
+            #typed as Int
+            AbsBinExpr 7:5-7:19: DOT
+              #typed as Int
+              AbsVarName 7:5-7:15: self
+                #defined at 5:1-13:2
+                #typed as Class: Point(x:Int;y:Int)
+              AbsVarName 7:5-7:15: y
+                #defined at 7:5-7:15
+                #typed as Int
+            AbsAtomConst 7:18-7:19: INTEGER(0)
+              #typed as Int
+  AbsClassDef 15:1-28:2: Rect
+    #typed as Rect.Type
+    Member definitions:
+      AbsDefs 15:1-28:2:
+        AbsVarDef 16:5-16:22: origin
+          #typed as Class: Point(x:Int;y:Int)
+          AbsTypeName 16:17-16:22: Point
+            #defined at 5:1-13:2
+            #typed as Point.Type
+        AbsVarDef 17:5-17:20: size
+          #typed as Class: Point(x:Int;y:Int)
+          AbsTypeName 17:15-17:20: Point
+            #defined at 5:1-13:2
+            #typed as Point.Type
+    Constructors:
+      AbsFunDef 19:5-21:31: init
+        #typed as (Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))) -> Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+        AbsPar 19:5-21:31: self
+          #typed as Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+          AbsTypeName 19:5-21:31: Rect
+            #defined at 15:1-28:2
+            #typed as Rect.Type
+        AbsAtomType 19:12-19:13: VOID
+          #typed as Void
+        AbsStmts 20:9-21:31:
+          AbsBinExpr 20:9-20:29: ASSIGN
+            #typed as Class: Point(x:Int;y:Int)
+            AbsBinExpr 20:9-20:18: DOT
+              #typed as Class: Point(x:Int;y:Int)
+              AbsVarName 20:9-20:13: self
+                #defined at 19:5-21:31
+                #typed as Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+              AbsVarName 20:14-20:18: size
+                #defined at 17:5-17:20
+                #typed as Class: Point(x:Int;y:Int)
+            AbsFunCall 20:28-20:29: Point
+              #defined at 5:1-13:2
+              #typed as Class: Point(x:Int;y:Int)
+              AbsLabeledExpr 20:28-20:29
+                #typed as Class: Point(x:Int;y:Int)
+                Label: self
+                AbsVarName 20:28-20:29: self
+                  #typed as Class: Point(x:Int;y:Int)
+          AbsBinExpr 21:9-21:31: ASSIGN
+            #typed as Class: Point(x:Int;y:Int)
+            AbsBinExpr 21:9-21:20: DOT
+              #typed as Class: Point(x:Int;y:Int)
+              AbsVarName 21:9-21:13: self
+                #defined at 19:5-21:31
+                #typed as Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+              AbsVarName 21:14-21:20: origin
+                #defined at 16:5-16:22
+                #typed as Class: Point(x:Int;y:Int)
+            AbsFunCall 21:30-21:31: Point
+              #defined at 5:1-13:2
+              #typed as Class: Point(x:Int;y:Int)
+              AbsLabeledExpr 21:30-21:31
+                #typed as Class: Point(x:Int;y:Int)
+                Label: self
+                AbsVarName 21:30-21:31: self
+                  #typed as Class: Point(x:Int;y:Int)
+      AbsFunDef 24:5-26:25: init
+        #typed as (Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int)),Class: Point(x:Int;y:Int)Class: Point(x:Int;y:Int)) -> Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+        AbsPar 24:5-26:25: self
+          #typed as Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+          AbsTypeName 24:5-26:25: Rect
+            #defined at 15:1-28:2
+            #typed as Rect.Type
+        AbsPar 24:10-24:23: origin
+          #typed as Class: Point(x:Int;y:Int)
+          AbsTypeName 24:18-24:23: Point
+            #defined at 5:1-13:2
+            #typed as Point.Type
+        AbsPar 24:25-24:36: size
+          #typed as Class: Point(x:Int;y:Int)
+          AbsTypeName 24:31-24:36: Point
+            #defined at 5:1-13:2
+            #typed as Point.Type
+        AbsAtomType 24:38-24:39: VOID
+          #typed as Void
+        AbsStmts 25:9-26:25:
+          AbsBinExpr 25:9-25:29: ASSIGN
+            #typed as Class: Point(x:Int;y:Int)
+            AbsBinExpr 25:9-25:20: DOT
+              #typed as Class: Point(x:Int;y:Int)
+              AbsVarName 25:9-25:13: self
+                #defined at 24:5-26:25
+                #typed as Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+              AbsVarName 25:14-25:20: origin
+                #defined at 16:5-16:22
+                #typed as Class: Point(x:Int;y:Int)
+            AbsVarName 25:23-25:29: origin
+              #defined at 24:10-24:23
+              #typed as Class: Point(x:Int;y:Int)
+          AbsBinExpr 26:9-26:25: ASSIGN
+            #typed as Class: Point(x:Int;y:Int)
+            AbsBinExpr 26:9-26:18: DOT
+              #typed as Class: Point(x:Int;y:Int)
+              AbsVarName 26:9-26:13: self
+                #defined at 24:5-26:25
+                #typed as Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+              AbsVarName 26:14-26:18: size
+                #defined at 17:5-17:20
+                #typed as Class: Point(x:Int;y:Int)
+            AbsVarName 26:21-26:25: size
+              #defined at 24:25-24:36
+              #typed as Class: Point(x:Int;y:Int)
+  AbsClassDef 30:1-36:2: ArrayList
+    #typed as ArrayList.Type
+    Member definitions:
+      AbsDefs 30:1-36:2:
+        AbsVarDef 31:5-31:19: data
+          #typed as LIST(Int)
+          AbsListType 31:15-31:19: [0]
+            #typed as LIST(Int)
+            AbsAtomType 31:16-31:19: INTEGER
+              #typed as Int
+    Constructors:
+      AbsFunDef 33:5-34:35: init
+        #typed as (Class: ArrayList(data:LIST(Int))) -> Class: ArrayList(data:LIST(Int))
+        AbsPar 33:5-34:35: self
+          #typed as Class: ArrayList(data:LIST(Int))
+          AbsTypeName 33:5-34:35: ArrayList
+            #defined at 30:1-36:2
+            #typed as ArrayList.Type
+        AbsAtomType 33:12-33:13: VOID
+          #typed as Void
+        AbsStmts 34:9-34:35:
+          AbsBinExpr 34:9-34:35: ASSIGN
+            #typed as LIST(Int)
+            AbsBinExpr 34:9-34:18: DOT
+              #typed as LIST(Int)
+              AbsVarName 34:9-34:13: self
+                #defined at 33:5-34:35
+                #typed as Class: ArrayList(data:LIST(Int))
+              AbsVarName 34:14-34:18: data
+                #defined at 31:5-31:19
+                #typed as LIST(Int)
+            AbsListExpr 34:22-34:35
+              #typed as LIST(Int)
+              AbsAtomConst 34:22-34:23: INTEGER(1)
+                #typed as Int
+              AbsAtomConst 34:25-34:26: INTEGER(2)
+                #typed as Int
+              AbsAtomConst 34:28-34:29: INTEGER(3)
+                #typed as Int
+              AbsAtomConst 34:31-34:32: INTEGER(4)
+                #typed as Int
+              AbsAtomConst 34:34-34:35: INTEGER(5)
+                #typed as Int
+  AbsVarDef 38:1-38:4: rect
+    #CONSTANT
+    #typed as Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+  AbsBinExpr 38:1-38:72: ASSIGN
+    AbsVarName 38:1-38:4: rect
+      #defined at 38:1-38:4
+      #typed as Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+    AbsFunCall 38:12-38:72: Rect
+      #defined at 24:5-26:25
+      #typed as Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+      AbsLabeledExpr 38:12-38:72
+        #typed as Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+        Label: self
+        AbsVarName 38:12-38:72: self
+          #typed as Class: Rect(origin:Class: Point(x:Int;y:Int);size:Class: Point(x:Int;y:Int))
+      AbsLabeledExpr 38:17-38:43
+        #typed as Class: Point(x:Int;y:Int)
+        Label: origin
+        AbsFunCall 38:25-38:43: Point
+          #defined at 9:5-11:19
+          #typed as Class: Point(x:Int;y:Int)
+          AbsLabeledExpr 38:25-38:43
+            #typed as Class: Point(x:Int;y:Int)
+            Label: self
+            AbsVarName 38:25-38:43: self
+              #typed as Class: Point(x:Int;y:Int)
+          AbsLabeledExpr 38:31-38:36
+            #typed as Int
+            Label: x
+            AbsAtomConst 38:34-38:36: INTEGER(20)
+              #typed as Int
+              #typed as Int
+          AbsLabeledExpr 38:38-38:43
+            #typed as Int
+            Label: y
+            AbsAtomConst 38:41-38:43: INTEGER(30)
+              #typed as Int
+              #typed as Int
+          #typed as Class: Point(x:Int;y:Int)
+      AbsLabeledExpr 38:46-38:72
+        #typed as Class: Point(x:Int;y:Int)
+        Label: size
+        AbsFunCall 38:52-38:72: Point
+          #defined at 9:5-11:19
+          #typed as Class: Point(x:Int;y:Int)
+          AbsLabeledExpr 38:52-38:72
+            #typed as Class: Point(x:Int;y:Int)
+            Label: self
+            AbsVarName 38:52-38:72: self
+              #typed as Class: Point(x:Int;y:Int)
+          AbsLabeledExpr 38:58-38:64
+            #typed as Int
+            Label: x
+            AbsAtomConst 38:61-38:64: INTEGER(800)
+              #typed as Int
+              #typed as Int
+          AbsLabeledExpr 38:66-38:72
+            #typed as Int
+            Label: y
+            AbsAtomConst 38:69-38:72: INTEGER(600)
+              #typed as Int
+              #typed as Int
+          #typed as Class: Point(x:Int;y:Int)
+  AbsVarDef 39:1-39:4: array
+    #CONSTANT
+    #typed as Class: ArrayList(data:LIST(Int))
+  AbsBinExpr 39:1-39:25: ASSIGN
+    AbsVarName 39:1-39:4: array
+      #defined at 39:1-39:4
+      #typed as Class: ArrayList(data:LIST(Int))
+    AbsFunCall 39:24-39:25: ArrayList
+      #defined at 33:5-34:35
+      #typed as Class: ArrayList(data:LIST(Int))
+      AbsLabeledExpr 39:24-39:25
+        #typed as Class: ArrayList(data:LIST(Int))
+        Label: self
+        AbsVarName 39:24-39:25: self
+          #typed as Class: ArrayList(data:LIST(Int))
+  AbsFunCall 40:1-40:28: print
+    #defined at 1:1-2:2
+    #typed as Void
+    AbsLabeledExpr 40:7-40:28
+      #typed as Int
+      Label: integer
+      AbsBinExpr 40:16-40:28: ARR
+        #typed as Int
+        AbsBinExpr 40:16-40:21: DOT
+          #typed as LIST(Int)
+          AbsVarName 40:16-40:21: array
+            #defined at 39:1-39:4
+            #typed as Class: ArrayList(data:LIST(Int))
+          AbsVarName 40:22-40:26: data
+            #defined at 31:5-31:19
+            #typed as LIST(Int)
+        AbsAtomConst 40:27-40:28: INTEGER(2)
+          #typed as Int
+        #typed as Int
+  AbsVarDef 42:1-42:4: p1
+    #CONSTANT
+    #typed as Class: Point(x:Int;y:Int)
+  AbsBinExpr 42:1-42:18: ASSIGN
+    AbsVarName 42:1-42:4: p1
+      #defined at 42:1-42:4
+      #typed as Class: Point(x:Int;y:Int)
+    AbsFunCall 42:17-42:18: Point
+      #defined at 5:1-13:2
+      #typed as Class: Point(x:Int;y:Int)
+      AbsLabeledExpr 42:17-42:18
+        #typed as Class: Point(x:Int;y:Int)
+        Label: self
+        AbsVarName 42:17-42:18: self
+          #typed as Class: Point(x:Int;y:Int)
+  AbsBinExpr 43:1-43:10: ASSIGN
+    #typed as Int
+    AbsBinExpr 43:1-43:5: DOT
+      #typed as Int
+      AbsVarName 43:1-43:3: p1
+        #defined at 42:1-42:4
+        #typed as Class: Point(x:Int;y:Int)
+      AbsVarName 43:4-43:5: x
+        #defined at 6:5-6:15
+        #typed as Int
+    AbsAtomConst 43:8-43:10: INTEGER(20)
+      #typed as Int
+  AbsVarDef 45:1-45:4: p2
+    #typed as Class: Point(x:Int;y:Int)
+  AbsBinExpr 45:1-45:12: ASSIGN
+    AbsVarName 45:1-45:4: p2
+      #defined at 45:1-45:4
+      #typed as Class: Point(x:Int;y:Int)
+    AbsVarName 45:10-45:12: p1
+      #defined at 42:1-42:4
+      #typed as Class: Point(x:Int;y:Int)
+  AbsFunCall 46:1-46:20: print
+    #defined at 1:1-2:2
+    #typed as Void
+    AbsLabeledExpr 46:7-46:20
+      #typed as Int
+      Label: integer
+      AbsBinExpr 46:16-46:20: DOT
+        #typed as Int
+        AbsVarName 46:16-46:18: p2
+          #defined at 45:1-45:4
+          #typed as Class: Point(x:Int;y:Int)
+        AbsVarName 46:19-46:20: x
+          #defined at 6:5-6:15
+          #typed as Int
+        #typed as Int
+  AbsBinExpr 48:1-48:24: ASSIGN
+    #typed as Class: Point(x:Int;y:Int)
+    AbsVarName 48:1-48:3: p2
+      #defined at 45:1-45:4
+      #typed as Class: Point(x:Int;y:Int)
+    AbsFunCall 48:6-48:24: Point
+      #defined at 9:5-11:19
+      #typed as Class: Point(x:Int;y:Int)
+      AbsLabeledExpr 48:6-48:24
+        #typed as Class: Point(x:Int;y:Int)
+        Label: self
+        AbsVarName 48:6-48:24: self
+          #typed as Class: Point(x:Int;y:Int)
+      AbsLabeledExpr 48:12-48:17
+        #typed as Int
+        Label: x
+        AbsAtomConst 48:15-48:17: INTEGER(10)
+          #typed as Int
+          #typed as Int
+      AbsLabeledExpr 48:19-48:24
+        #typed as Int
+        Label: y
+        AbsAtomConst 48:22-48:24: INTEGER(30)
+          #typed as Int
+          #typed as Int
+  AbsFunCall 49:1-49:20: print
+    #defined at 1:1-2:2
+    #typed as Void
+    AbsLabeledExpr 49:7-49:20
+      #typed as Int
+      Label: integer
+      AbsBinExpr 49:16-49:20: DOT
+        #typed as Int
+        AbsVarName 49:16-49:18: p2
+          #defined at 45:1-45:4
+          #typed as Class: Point(x:Int;y:Int)
+        AbsVarName 49:19-49:20: y
+          #defined at 7:5-7:15
+          #typed as Int
+        #typed as Int
+  AbsFunCall 50:1-50:20: print
+    #defined at 1:1-2:2
+    #typed as Void
+    AbsLabeledExpr 50:7-50:20
+      #typed as Int
+      Label: integer
+      AbsBinExpr 50:16-50:20: DOT
+        #typed as Int
+        AbsVarName 50:16-50:18: p1
+          #defined at 42:1-42:4
+          #typed as Class: Point(x:Int;y:Int)
+        AbsVarName 50:19-50:20: x
+          #defined at 6:5-6:15
+          #typed as Int
+        #typed as Int

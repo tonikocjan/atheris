@@ -810,9 +810,8 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsForceValueExpr acceptor) {
-		acceptor.subExpr.accept(this);acceptor.subExpr.accept(this);
-		
+		acceptor.subExpr.accept(this);
+
 		ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(acceptor.subExpr));
 	}
-	
 }

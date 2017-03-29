@@ -1,0 +1,5 @@
+import stdlib
+
+let x: Int? = nil
+
+print(integer: x!)

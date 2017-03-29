@@ -2,7 +2,7 @@ package compiler.seman.type;
 
 import compiler.abstr.tree.def.AbsDef;
 
-public class OptionalType extends PointerType {
+public class OptionalType extends ReferenceType {
 	
 	/**
 	 * 
@@ -20,7 +20,6 @@ public class OptionalType extends PointerType {
 	
 	@Override
 	public boolean sameStructureAs(Type type) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -51,8 +50,7 @@ public class OptionalType extends PointerType {
 
 	@Override
 	public String friendlyName() {
-		// TODO Auto-generated method stub
-		return null;
+		return toString();
 	}
 
 }
