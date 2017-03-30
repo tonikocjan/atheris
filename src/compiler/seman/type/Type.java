@@ -214,4 +214,19 @@ public abstract class Type {
 	public final static Type doubleType = new AtomType(AtomTypeKind.DOB);
 	public final static Type stringType = new AtomType(AtomTypeKind.STR);
 	public final static Type boolType = new AtomType(AtomTypeKind.LOG);
+    public final static Type voidType = new AtomType(AtomTypeKind.VOID);
+    public final static Type nilType = new AtomType(AtomTypeKind.NIL);
+
+    public static Type atomType(AtomTypeKind kind) {
+        switch (kind) {
+            case CHR: return Type.charType;
+            case INT: return Type.intType;
+            case DOB: return Type.doubleType;
+            case LOG: return Type.boolType;
+            case STR: return Type.stringType;
+            case VOID: return Type.voidType;
+            case NIL: return Type.nilType;
+            default: return null;
+        }
+    }
 }

@@ -165,7 +165,7 @@ CODE CHUNK: label=_init
                 TEMP name=T16
                 CONST value=4
             CONST value=0
-      CONST value=50
+      CONST value=20
     MOVE
       BINOP op=+
         MEM
@@ -253,7 +253,7 @@ CODE CHUNK: label=_Point
                 TEMP name=T18
                 CONST value=4
             CONST value=0
-      CONST value=50
+      CONST value=20
     MOVE
       BINOP op=+
         MEM
@@ -363,7 +363,7 @@ CODE CHUNK: label=_init
                 TEMP name=T20
                 CONST value=4
             CONST value=0
-      CONST value=74
+      CONST value=26
     MOVE
       BINOP op=+
         MEM
@@ -457,7 +457,7 @@ CODE CHUNK: label=_init
                 TEMP name=T22
                 CONST value=4
             CONST value=0
-      CONST value=74
+      CONST value=26
     MOVE
       BINOP op=+
         MEM

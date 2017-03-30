@@ -46,10 +46,9 @@ public class AtomType extends Type {
 		if (type.isBuiltinType()) {
 			AtomType atomType = (AtomType) type;
 			return this.type == atomType.type;
-		} 
-		else {
-			return false;
 		}
+
+		return false;
 	}
 
 	@Override

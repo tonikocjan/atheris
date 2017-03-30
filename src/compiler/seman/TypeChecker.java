@@ -167,12 +167,12 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsAtomConstExpr acceptor) {
-		SymbDesc.setType(acceptor, new AtomType(acceptor.type));
+		SymbDesc.setType(acceptor, Type.atomType(acceptor.type));
 	}
 
 	@Override
 	public void visit(AbsAtomType acceptor) {
-		SymbDesc.setType(acceptor, new AtomType(acceptor.type));
+		SymbDesc.setType(acceptor, Type.atomType(acceptor.type));
 	}
 
 	@Override
@@ -464,7 +464,7 @@ public class TypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsExprs acceptor) {
 		if (acceptor.expressions.size() == 0)
-			SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.VOID));
+			SymbDesc.setType(acceptor, Type.voidType);
 		else {
 			for (AbsExpr e : acceptor.expressions)
 				e.accept(this);
@@ -477,7 +477,7 @@ public class TypeChecker implements ASTVisitor {
 		Type type = ((ArrayType)SymbDesc.getType(acceptor.collection)).type;
 
 		SymbDesc.setType(SymbDesc.getNameDef(acceptor.iterator), type);
-		SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.VOID));
+		SymbDesc.setType(acceptor, Type.voidType);
 		
 		acceptor.iterator.accept(this);
 		acceptor.body.accept(this);
@@ -558,9 +558,8 @@ public class TypeChecker implements ASTVisitor {
 			c.cond.accept(this);
 			c.body.accept(this);
 			
-			if (SymbDesc.getType(c.cond).sameStructureAs(
-					new AtomType(AtomTypeKind.LOG)))
-				SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.VOID));
+			if (SymbDesc.getType(c.cond).sameStructureAs(Type.boolType))
+				SymbDesc.setType(acceptor, Type.voidType);
 			else
 				Report.error(c.cond.position,
 						"Condition must be of type Bool");
@@ -654,12 +653,12 @@ public class TypeChecker implements ASTVisitor {
 		acceptor.cond.accept(this);
 		acceptor.body.accept(this);
 
-		if (SymbDesc.getType(acceptor.cond).sameStructureAs(
-				new AtomType(AtomTypeKind.LOG)))
-			SymbDesc.setType(acceptor, new AtomType(AtomTypeKind.VOID));
-		else
-			Report.error(acceptor.cond.position,
-					"Condition must be typed as Boolean");
+		if (SymbDesc.getType(acceptor.cond).sameStructureAs(Type.boolType)) {
+            SymbDesc.setType(acceptor, Type.voidType);
+        }
+		else {
+            Report.error(acceptor.cond.position, "Condition must be typed as Boolean");
+        }
 	}
 
 	@Override
@@ -684,9 +683,12 @@ public class TypeChecker implements ASTVisitor {
 	public void visit(AbsReturnExpr returnExpr) {
 		if (returnExpr.expr != null) {
 			returnExpr.expr.accept(this);
+
 			SymbDesc.setType(returnExpr, SymbDesc.getType(returnExpr.expr));
-		} else
-			SymbDesc.setType(returnExpr, new AtomType(AtomTypeKind.VOID));
+		}
+		else {
+            SymbDesc.setType(returnExpr, Type.voidType);
+        }
 	}
 
 	@Override
@@ -740,10 +742,11 @@ public class TypeChecker implements ASTVisitor {
 			}
 		}
 		
-		if (switchStmt.defaultBody != null)
-			switchStmt.defaultBody.accept(this);
+		if (switchStmt.defaultBody != null) {
+            switchStmt.defaultBody.accept(this);
+        }
 		
-		SymbDesc.setType(switchStmt, new AtomType(AtomTypeKind.VOID));
+		SymbDesc.setType(switchStmt, Type.voidType);
 	}
 
 	@Override
