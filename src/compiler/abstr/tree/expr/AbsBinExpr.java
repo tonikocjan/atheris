@@ -27,6 +27,7 @@ import compiler.abstr.*;
  */
 public class AbsBinExpr extends AbsExpr {
 
+    // TODO: - Enumerate this
 	public static final int IOR = 0;
 	public static final int AND = 1;
 	public static final int EQU = 2;
@@ -43,6 +44,7 @@ public class AbsBinExpr extends AbsExpr {
 	public static final int DOT = 13;
 	public static final int ARR = 14;
 	public static final int ASSIGN = 15;
+    public static final int IS = 16;
 
 	/** Operator. */
 	public int oper;

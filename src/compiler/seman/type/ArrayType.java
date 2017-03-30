@@ -44,6 +44,8 @@ public class ArrayType extends ReferenceType {
 	public ArrayType(Type type, int count) {
 		this.type = type;
 		this.count = count;
+
+        descriptorMapping.put(this, descriptor - 1);
 	}
 
 	@Override

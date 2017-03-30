@@ -41,6 +41,7 @@ public class ImcBINOP extends ImcExpr {
 	public static final int DOT = 13;
 	public static final int ARR = 14;
 	public static final int ASSIGN = 15;
+    public static final int IS = 16;
 
 	/** Operator.  */
 	public int op;

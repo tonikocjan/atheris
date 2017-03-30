@@ -31,6 +31,8 @@ public class CanType extends Type {
 	
 	public CanType(Type child) {
 		this.childType = child;
+
+        descriptorMapping.put(this, descriptor - 1);
 	}
 
 	@Override

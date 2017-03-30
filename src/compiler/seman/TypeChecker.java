@@ -381,6 +381,13 @@ public class TypeChecker implements ASTVisitor {
 			return;
 		}
 
+		if (oper == AbsBinExpr.IS) {
+		    if (!t1.isCanType() && t2.isCanType()) {
+		        SymbDesc.setType(acceptor, Type.boolType);
+		        return;
+            }
+        }
+
 		/**
 		 * expr1 and expr2 are of type Bool
 		 */
@@ -451,7 +458,7 @@ public class TypeChecker implements ASTVisitor {
 		}
 		else {
 			Report.error(acceptor.position, "No viable operation for types "
-					+ t1 + " and " + t2);
+					+ t1.friendlyName() + " and " + t2.friendlyName());
 		}
 	}
 

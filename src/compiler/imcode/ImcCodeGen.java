@@ -248,6 +248,12 @@ public class ImcCodeGen implements ASTVisitor {
 		else if (acceptor.oper == AbsBinExpr.ASSIGN) {
             code = new ImcMOVE(e1, e2);
         }
+        else if (acceptor.oper == AbsBinExpr.IS) {
+            Type dstType = SymbDesc.getType(acceptor.expr2);
+            int dstDescriptor = Type.getDescriptorForType(dstType);
+
+            code = new ImcBINOP(acceptor.oper, new ImcMEM(new ImcMEM(e1)), new ImcCONST(dstDescriptor));
+        }
 		else if (acceptor.oper == AbsBinExpr.ARR) {
 			ArrayType type = (ArrayType) SymbDesc.getType(acceptor.expr1);
 			int size = type.type.size();

@@ -61,3 +61,14 @@ print(string: p2.descriptor.name)
 let rect = Rect()
 print(integer: rect.descriptor.descriptor)
 print(string: rect.descriptor.name)
+
+if p is Point {
+	print(string: "p is Point")
+}
+else {
+	print(string: "p is not Point")	
+}
+
+if rect is Rect {
+	print(string: "rect is Rect")
+}

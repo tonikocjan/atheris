@@ -481,6 +481,9 @@ CODE CHUNK: label=_init
 DATA CHUNK: label=_p size=4
 DATA CHUNK: label=_p2 size=4
 DATA CHUNK: label=_rect size=4
+DATA CHUNK: label=L22 size=12 .BYTE: "p is Point"
+DATA CHUNK: label=L25 size=16 .BYTE: "p is not Point"
+DATA CHUNK: label=L27 size=14 .BYTE: "rect is Rect"
 CODE CHUNK: label=__main
   FRAME(_main: level=0,label=__main,sizeLocs=0,sizeArgs=16,size=24,FP=T0,RV=T1)
   SEQ
@@ -657,3 +660,71 @@ CODE CHUNK: label=__main
         TEMP name=T77
     EXP
       TEMP name=T78
+    CJUMP labels=L23,L30
+      BINOP op=null
+        MEM
+          MEM
+            MEM
+              NAME label=_p
+        CONST value=20
+    LABEL label=L30
+    JUMP label=L24
+    LABEL label=L23
+    MOVE
+      TEMP name=T79
+      TEMP name=T0
+    MOVE
+      TEMP name=T80
+      MEM
+        NAME label=L22
+    MOVE
+      TEMP name=T81
+      CALL label=_print
+        TEMP name=T79
+        TEMP name=T80
+    EXP
+      TEMP name=T81
+    JUMP label=L21
+    LABEL label=L24
+    MOVE
+      TEMP name=T82
+      TEMP name=T0
+    MOVE
+      TEMP name=T83
+      MEM
+        NAME label=L25
+    MOVE
+      TEMP name=T84
+      CALL label=_print
+        TEMP name=T82
+        TEMP name=T83
+    EXP
+      TEMP name=T84
+    LABEL label=L21
+    CJUMP labels=L28,L31
+      BINOP op=null
+        MEM
+          MEM
+            MEM
+              NAME label=_rect
+        CONST value=26
+    LABEL label=L31
+    JUMP label=L29
+    LABEL label=L28
+    MOVE
+      TEMP name=T85
+      TEMP name=T0
+    MOVE
+      TEMP name=T86
+      MEM
+        NAME label=L27
+    MOVE
+      TEMP name=T87
+      CALL label=_print
+        TEMP name=T85
+        TEMP name=T86
+    EXP
+      TEMP name=T87
+    JUMP label=L26
+    LABEL label=L29
+    LABEL label=L26

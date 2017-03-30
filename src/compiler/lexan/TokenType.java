@@ -99,4 +99,5 @@ public enum TokenType {
 	/** Token type: keyword default.  */ 						KW_DEFAULT,
 	/** Token type: keyword enum.  */ 							KW_ENUM,
     /** Token type: keyword init.  */ 							KW_INIT,
+    /** Token type: keyword is.  */ 							KW_IS,
 }

@@ -73,6 +73,8 @@ public class ClassType extends ReferenceType {
 		
 		this.size = size;
 		this.classDefinition = definition;
+
+        descriptorMapping.put(this, descriptor - 1);
 	}
 	
 	/**

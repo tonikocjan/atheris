@@ -1067,6 +1067,8 @@ public class SynAn {
                 break;
             case EQU:
                 break;
+            case KW_IS:
+                break;
             case NEQ:
                 break;
             case LTH:
@@ -1233,6 +1235,13 @@ public class SynAn {
 			expr = parseAddExpression();
 			oper = AbsBinExpr.EQU;
 			break;
+        case KW_IS:
+            dump("compare_expression' -> is compare_expression");
+            skip();
+
+            expr = parseAddExpression();
+            oper = AbsBinExpr.IS;
+            break;
 		case NEQ:
 			dump("compare_expression' -> != compare_expression");
 			skip();
@@ -1325,6 +1334,7 @@ public class SynAn {
 		case COMMA:
 		case EOF:
 		case EQU:
+        case KW_IS:
 		case NEQ:
 		case GTH:
 		case LTH:
@@ -1403,6 +1413,7 @@ public class SynAn {
 		case COMMA:
 		case EOF:
 		case EQU:
+        case KW_IS:
 		case NEQ:
 		case GTH:
 		case LTH:
@@ -1573,7 +1584,8 @@ public class SynAn {
 		case KW_ELSE:
 		case COMMA:
 		case EOF:
-		case EQU:
+        case EQU:
+        case KW_IS:
 		case NEQ:
 		case GTH:
 		case LTH:

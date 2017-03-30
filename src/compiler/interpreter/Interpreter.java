@@ -163,6 +163,7 @@ public class Interpreter {
 			case ImcBINOP.AND:
 				return ((((Integer) fstSubValue).intValue() != 0) && (((Integer) sndSubValue).intValue() != 0) ? 1 : 0);
 			case ImcBINOP.EQU:
+            case ImcBINOP.IS:
 				return (((Integer) fstSubValue).intValue() == ((Integer) sndSubValue).intValue() ? 1 : 0);
 			case ImcBINOP.NEQ:
 				return (((Integer) fstSubValue).intValue() != ((Integer) sndSubValue).intValue() ? 1 : 0);

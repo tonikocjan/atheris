@@ -68,6 +68,8 @@ public class EnumType extends ReferenceType {
 
 		for (int i = 0; i < names.size(); i++)
 			members.put(names.get(i), types.get(i));
+
+        descriptorMapping.put(this, descriptor - 1);
 	}
 	
 	/**

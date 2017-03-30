@@ -62,7 +62,7 @@ public class LexAn {
 			"for", "func", "if", "var", "while", "struct", "import", 
 			"let", "nil", "class", "in", "return", "public", 
 			"private", "continue", "break", "switch", "case", "default",
-			"enum", "init"
+			"enum", "init", "is"
 			};
 
 	/**

@@ -20,6 +20,8 @@ package compiler.seman.type;
 import compiler.abstr.tree.AtomTypeKind;
 import compiler.abstr.tree.def.AbsDef;
 
+import java.util.HashMap;
+
 /**
  * Data type description.
  */
@@ -28,6 +30,11 @@ public abstract class Type {
     // MARK: - Type descriptor
     // Current descriptor available.
     private static int TYPE_DESCRIPTOR = 0;
+    protected static HashMap<Type, Integer> descriptorMapping = new HashMap<>();
+
+    public static int getDescriptorForType(Type t) {
+        return descriptorMapping.get(t);
+    }
 
     /**
      * Get type descriptor.

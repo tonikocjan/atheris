@@ -39,6 +39,7 @@ public class AtomType extends Type {
 	 */
 	public AtomType(AtomTypeKind type) {
 		this.type = type;
+		descriptorMapping.put(this, descriptor - 1);
 	}
 
 	@Override
