@@ -53,6 +53,7 @@ public class AbsDefs extends AbsTree {
 	 * @param name Name of the definition
 	 * @return Definition if found, otherwise null
 	 */
+	// TODO: - O(n), should optimize??
 	public AbsDef findDefinitionForName(String name) {
 		for (AbsDef d : definitions) {
 			if (d instanceof AbsVarDef && ((AbsVarDef) d).name.equals(name))

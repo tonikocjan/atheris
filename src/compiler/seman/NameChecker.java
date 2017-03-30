@@ -314,24 +314,26 @@ public class NameChecker implements ASTVisitor {
 
 		// parse the file
 		// FIXME: - Hardcoded location
-		SynAn synAn = new SynAn(new LexAn("test/" + acceptor.getName() + ".ar",
-				false), false);
-		AbsStmts source = (AbsStmts) synAn.parse();
+		SynAn synAn = new SynAn(new LexAn("test/" + acceptor.getName() + ".ar", false), false);
+		synAn.parseStandardLibrary = acceptor.getName().equals(Constants.standardLibraryIdentifier);
 
+		AbsStmts source = (AbsStmts) synAn.parse();
 		LinkedList<AbsDef> definitions = new LinkedList<>();
 		
 		for (AbsStmt s : source.statements) {
 			// skip statements which are not definitions
-			if (!(s instanceof AbsDef))
-				continue;
+			if (!(s instanceof AbsDef)) {
+                continue;
+            }
 
 			AbsDef definition = (AbsDef) s;
 
 			if (acceptor.definitions.size() > 0) {
 				String name = definition.getName();
 
-				if (!acceptor.definitions.contains(name))
-					continue;
+				if (!acceptor.definitions.contains(name)) {
+                    continue;
+                }
 			}
 			
 			definitions.add(definition);

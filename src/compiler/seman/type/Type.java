@@ -25,6 +25,23 @@ import compiler.abstr.tree.def.AbsDef;
  */
 public abstract class Type {
 
+    // MARK: - Type descriptor
+    // Current descriptor available.
+    private static int TYPE_DESCRIPTOR = 0;
+
+    /**
+     * Get type descriptor.
+     * @return Current descriptor
+     */
+    private int getTypeDescriptor() {
+        return TYPE_DESCRIPTOR++;
+    }
+
+    /** Descriptor for this type (automatically assigned when new type is instantiated)  */
+    public final int descriptor = getTypeDescriptor();
+
+
+    // MARK: - Methods
 	/**
 	 * Check if types structurarily match.
 	 * 

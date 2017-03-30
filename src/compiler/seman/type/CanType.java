@@ -29,11 +29,7 @@ public class CanType extends Type {
 	
 	public final Type childType;
 	
-	public CanType(ClassType child) {
-		this.childType = child;
-	}
-	
-	public CanType(EnumType child) {
+	public CanType(Type child) {
 		this.childType = child;
 	}
 
@@ -69,7 +65,10 @@ public class CanType extends Type {
 
 	@Override
 	public String friendlyName() {
-		return toString();
+        if (childType instanceof ClassType)
+            return childType.friendlyName() + ".Type";
+        else
+            return ((EnumType) childType).enumDefinition.name + ".Type";
 	}
 
 	@Override

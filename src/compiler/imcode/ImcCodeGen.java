@@ -20,6 +20,7 @@ package compiler.imcode;
 import java.util.LinkedList;
 import java.util.Stack;
 
+import Utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsDefs;
@@ -129,11 +130,19 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-		for (AbsDef def : acceptor.definitions.definitions)
-			def.accept(this);
+		for (AbsDef def : acceptor.definitions.definitions) {
+            def.accept(this);
+        }
 
-		ClassType classType = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
+        AbsVarDef descriptorDefinition = (AbsVarDef) acceptor.findDefinitionForName(Constants.classDescriptorIdentifier);
+		if (SymbDesc.getType(descriptorDefinition).isBuiltinType()) descriptorDefinition = null;
+
+		CanType type = (CanType) SymbDesc.getType(acceptor);
+		ClassType classType = (ClassType) type.childType;
 		int size = classType.size();
+
+		int descriptor = classType.descriptor;
+		String name = type.friendlyName();
 
         for (AbsFunDef constructor : acceptor.contrustors) {
             FrmFrame constructorFrame = FrmDesc.getFrame(constructor);
@@ -148,8 +157,25 @@ public class ImcCodeGen implements ASTVisitor {
             ImcCONST offset = new ImcCONST(4);
             ImcMEM location = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, framePointer, offset));
 
+            if (descriptorDefinition != null) {
+                // initialize descriptor object
+                ImcMOVE s = (ImcMOVE) constructorCode.stmts.getFirst();
+                ImcExpr descriptorLocation = new ImcMEM(s.dst);
+                ImcMOVE assignDescriptor = new ImcMOVE(descriptorLocation, new ImcCONST(descriptor));
+
+                ImcDataChunk nameChunk = new ImcDataChunk(FrmLabel.newLabel(), name.length());
+                nameChunk.data = name;
+                chunks.add(nameChunk);
+
+                ImcMOVE assignName = new ImcMOVE(new ImcBINOP(ImcBINOP.ADD, descriptorLocation, offset),
+                        new ImcMEM(new ImcNAME(nameChunk.label)));
+
+                constructorCode.stmts.add(assignDescriptor);
+                constructorCode.stmts.add(assignName);
+            }
+
             // assign new object as "self" parameter
-            constructorCode.stmts.add(0, new ImcMOVE(location, new ImcMALLOC(size)));
+            constructorCode.stmts.addFirst(new ImcMOVE(location, new ImcMALLOC(size)));
 
             // return new object
             constructorCode.stmts.add(new ImcMOVE(new ImcTEMP(constructorFrame.RV), location));
@@ -174,10 +200,8 @@ public class ImcCodeGen implements ASTVisitor {
         }
 		else if (acceptor.type == AtomTypeKind.STR) {
 			FrmLabel l = FrmLabel.newLabel();
-			ImcDataChunk str = new ImcDataChunk(l, 4);
-			str.data = new String(acceptor.value.substring(1,
-					acceptor.value.length() - 1)
-					+ "\0");
+			ImcDataChunk str = new ImcDataChunk(l, acceptor.value.length());
+			str.data = acceptor.value;
 			chunks.add(str);
 			ImcDesc.setImcCode(acceptor, new ImcMEM(new ImcNAME(l)));
 		}

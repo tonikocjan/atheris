@@ -27,7 +27,7 @@ class Rect {
 	}
 }
 
-class ArrayList {
+/*class ArrayList {
 	var data: [Int]
 
 	init() {
@@ -35,9 +35,10 @@ class ArrayList {
 	}
 }
 
-let rect = Rect(origin: Point(x: 20, y: 30), size: Point(x: 800, y: 600))
 let array = ArrayList()
 print(integer: array.data[2])
+
+let rect = Rect(origin: Point(x: 20, y: 30), size: Point(x: 800, y: 600))
 
 let p1 = Point()
 p1.x = 20
@@ -47,4 +48,16 @@ print(integer: p2.x)
 
 p2 = Point(x: 10, y: 30)
 print(integer: p2.y)
-print(integer: p1.x)
+print(integer: p1.x)*/
+
+let p = Point()
+print(integer: p.descriptor.descriptor)
+print(string: p.descriptor.name)
+
+let p2 = Point(x: 10, y: 20)
+print(integer: p2.descriptor.descriptor)
+print(string: p2.descriptor.name)
+
+let rect = Rect()
+print(integer: rect.descriptor.descriptor)
+print(string: rect.descriptor.name)

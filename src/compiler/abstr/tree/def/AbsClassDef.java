@@ -19,13 +19,13 @@ package compiler.abstr.tree.def;
 
 import java.util.LinkedList;
 
+import Utils.Constants;
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
-import compiler.abstr.tree.AbsDefs;
-import compiler.abstr.tree.AbsStmt;
-import compiler.abstr.tree.AbsStmts;
-import compiler.abstr.tree.AtomTypeKind;
+import compiler.abstr.tree.*;
 import compiler.abstr.tree.type.AbsAtomType;
+import compiler.abstr.tree.type.AbsType;
+import compiler.abstr.tree.type.AbsTypeName;
 
 /**
  * Class definition.
@@ -55,17 +55,8 @@ public class AbsClassDef extends AbsTypeDef {
         this.definitions = new AbsDefs(position, definitions);
 
         // set this definition as parent for all member definitions
-        for (AbsDef def : this.definitions.definitions)
+        for (AbsDef def : this.definitions.definitions) {
             def.setParentDefinition(this);
-
-		Position position;
-		if (definitions.size() > 0) {
-			Position start = definitions.getFirst().position;
-			Position end = definitions.getLast().position;
-			position = new Position(start, end);
-		}
-		else {
-            position = pos;
         }
 
 		String constructorName = name;

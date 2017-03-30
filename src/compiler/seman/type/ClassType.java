@@ -58,11 +58,11 @@ public class ClassType extends ReferenceType {
 	 * @param names Name for each member.
 	 * @param types Type for each member.
 	 */
-	public ClassType(AbsClassDef definition, 
-			ArrayList<String> names, ArrayList<Type> types) {
-		if (names.size() != types.size())
-			Report.error("Internal error :: compiler.seman.type.SemClassType: "
-					+ "names count not equal types count");
+	public ClassType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types) {
+		if (names.size() != types.size()) {
+            Report.error("Internal error :: compiler.seman.type.ClassType: "
+                    + "names count not equal types count");
+        }
 
 		int size = 0;
 		for (int i = 0; i < names.size(); i++) {
