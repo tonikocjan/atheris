@@ -74,8 +74,8 @@ CODE CHUNK: label=_ClassDescriptor
           TEMP name=T14
           CONST value=4
     LABEL label=L8
-DATA CHUNK: label=L13 size=0 .BYTE: 
-DATA CHUNK: label=L14 size=10 .BYTE: Point.Type
+DATA CHUNK: label=L14 size=0 .BYTE: 
+DATA CHUNK: label=L15 size=10 .BYTE: Point.Type
 CODE CHUNK: label=_init
   FRAME(init: level=1,label=_init,sizeLocs=0,sizeArgs=16,size=24,FP=T16,RV=T17)
   SEQ
@@ -86,25 +86,25 @@ CODE CHUNK: label=_init
           CONST value=4
       MALLOC size: 16 BYTES
     MOVE
-      TEMP name=T24
+      TEMP name=T26
       CONST value=16755455
     MOVE
-      TEMP name=T25
+      TEMP name=T27
       CONST value=0
     MOVE
-      TEMP name=T26
+      TEMP name=T28
       CONST value=12345
     MOVE
-      TEMP name=T27
+      TEMP name=T29
       MEM
-        NAME label=L13
+        NAME label=L14
     MOVE
-      TEMP name=T28
+      TEMP name=T30
       CALL label=_init
-        TEMP name=T24
-        TEMP name=T25
         TEMP name=T26
         TEMP name=T27
+        TEMP name=T28
+        TEMP name=T29
     MOVE
       MEM
         BINOP op=+
@@ -113,7 +113,7 @@ CODE CHUNK: label=_init
               TEMP name=T16
               CONST value=4
           CONST value=0
-      TEMP name=T28
+      TEMP name=T30
     MOVE
       MEM
         BINOP op=+
@@ -178,7 +178,7 @@ CODE CHUNK: label=_init
               CONST value=0
         CONST value=4
       MEM
-        NAME label=L14
+        NAME label=L15
     MOVE
       TEMP name=T17
       MEM
@@ -186,8 +186,8 @@ CODE CHUNK: label=_init
           TEMP name=T16
           CONST value=4
     LABEL label=L9
-DATA CHUNK: label=L15 size=0 .BYTE: 
-DATA CHUNK: label=L16 size=10 .BYTE: Point.Type
+DATA CHUNK: label=L16 size=0 .BYTE: 
+DATA CHUNK: label=L17 size=10 .BYTE: Point.Type
 CODE CHUNK: label=_Point
   FRAME(Point: level=1,label=_Point,sizeLocs=0,sizeArgs=16,size=24,FP=T18,RV=T19)
   SEQ
@@ -198,25 +198,25 @@ CODE CHUNK: label=_Point
           CONST value=4
       MALLOC size: 16 BYTES
     MOVE
-      TEMP name=T29
+      TEMP name=T31
       CONST value=16755455
     MOVE
-      TEMP name=T30
+      TEMP name=T32
       CONST value=0
     MOVE
-      TEMP name=T31
+      TEMP name=T33
       CONST value=12345
     MOVE
-      TEMP name=T32
+      TEMP name=T34
       MEM
-        NAME label=L15
+        NAME label=L16
     MOVE
-      TEMP name=T33
+      TEMP name=T35
       CALL label=_init
-        TEMP name=T29
-        TEMP name=T30
         TEMP name=T31
         TEMP name=T32
+        TEMP name=T33
+        TEMP name=T34
     MOVE
       MEM
         BINOP op=+
@@ -225,7 +225,7 @@ CODE CHUNK: label=_Point
               TEMP name=T18
               CONST value=4
           CONST value=0
-      TEMP name=T33
+      TEMP name=T35
     MOVE
       MEM
         BINOP op=+
@@ -266,7 +266,7 @@ CODE CHUNK: label=_Point
               CONST value=0
         CONST value=4
       MEM
-        NAME label=L16
+        NAME label=L17
     MOVE
       TEMP name=T19
       MEM
@@ -274,8 +274,8 @@ CODE CHUNK: label=_Point
           TEMP name=T18
           CONST value=4
     LABEL label=L10
-DATA CHUNK: label=L17 size=0 .BYTE: 
-DATA CHUNK: label=L18 size=9 .BYTE: Rect.Type
+DATA CHUNK: label=L18 size=0 .BYTE: 
+DATA CHUNK: label=L19 size=9 .BYTE: Rect.Type
 CODE CHUNK: label=_init
   FRAME(init: level=1,label=_init,sizeLocs=0,sizeArgs=16,size=24,FP=T20,RV=T21)
   SEQ
@@ -286,25 +286,25 @@ CODE CHUNK: label=_init
           CONST value=4
       MALLOC size: 40 BYTES
     MOVE
-      TEMP name=T34
+      TEMP name=T36
       CONST value=16755455
     MOVE
-      TEMP name=T35
+      TEMP name=T37
       CONST value=0
     MOVE
-      TEMP name=T36
+      TEMP name=T38
       CONST value=12345
     MOVE
-      TEMP name=T37
+      TEMP name=T39
       MEM
-        NAME label=L17
+        NAME label=L18
     MOVE
-      TEMP name=T38
+      TEMP name=T40
       CALL label=_init
-        TEMP name=T34
-        TEMP name=T35
         TEMP name=T36
         TEMP name=T37
+        TEMP name=T38
+        TEMP name=T39
     MOVE
       MEM
         BINOP op=+
@@ -313,18 +313,18 @@ CODE CHUNK: label=_init
               TEMP name=T20
               CONST value=4
           CONST value=0
-      TEMP name=T38
-    MOVE
-      TEMP name=T39
-      CONST value=16755455
-    MOVE
       TEMP name=T40
-      CONST value=0
     MOVE
       TEMP name=T41
+      CONST value=16755455
+    MOVE
+      TEMP name=T42
+      CONST value=0
+    MOVE
+      TEMP name=T43
       CALL label=_Point
-        TEMP name=T39
-        TEMP name=T40
+        TEMP name=T41
+        TEMP name=T42
     MOVE
       MEM
         BINOP op=+
@@ -333,18 +333,18 @@ CODE CHUNK: label=_init
               TEMP name=T20
               CONST value=4
           CONST value=24
-      TEMP name=T41
-    MOVE
-      TEMP name=T42
-      CONST value=16755455
-    MOVE
       TEMP name=T43
-      CONST value=0
     MOVE
       TEMP name=T44
+      CONST value=16755455
+    MOVE
+      TEMP name=T45
+      CONST value=0
+    MOVE
+      TEMP name=T46
       CALL label=_Point
-        TEMP name=T42
-        TEMP name=T43
+        TEMP name=T44
+        TEMP name=T45
     MOVE
       MEM
         BINOP op=+
@@ -353,7 +353,7 @@ CODE CHUNK: label=_init
               TEMP name=T20
               CONST value=4
           CONST value=8
-      TEMP name=T44
+      TEMP name=T46
     MOVE
       MEM
         MEM
@@ -376,7 +376,7 @@ CODE CHUNK: label=_init
               CONST value=0
         CONST value=4
       MEM
-        NAME label=L18
+        NAME label=L19
     MOVE
       TEMP name=T21
       MEM
@@ -384,8 +384,8 @@ CODE CHUNK: label=_init
           TEMP name=T20
           CONST value=4
     LABEL label=L11
-DATA CHUNK: label=L19 size=0 .BYTE: 
-DATA CHUNK: label=L20 size=9 .BYTE: Rect.Type
+DATA CHUNK: label=L20 size=0 .BYTE: 
+DATA CHUNK: label=L21 size=9 .BYTE: Rect.Type
 CODE CHUNK: label=_init
   FRAME(init: level=1,label=_init,sizeLocs=0,sizeArgs=16,size=24,FP=T22,RV=T23)
   SEQ
@@ -396,25 +396,25 @@ CODE CHUNK: label=_init
           CONST value=4
       MALLOC size: 40 BYTES
     MOVE
-      TEMP name=T45
+      TEMP name=T47
       CONST value=16755455
     MOVE
-      TEMP name=T46
+      TEMP name=T48
       CONST value=0
     MOVE
-      TEMP name=T47
+      TEMP name=T49
       CONST value=12345
     MOVE
-      TEMP name=T48
+      TEMP name=T50
       MEM
-        NAME label=L19
+        NAME label=L20
     MOVE
-      TEMP name=T49
+      TEMP name=T51
       CALL label=_init
-        TEMP name=T45
-        TEMP name=T46
         TEMP name=T47
         TEMP name=T48
+        TEMP name=T49
+        TEMP name=T50
     MOVE
       MEM
         BINOP op=+
@@ -423,7 +423,7 @@ CODE CHUNK: label=_init
               TEMP name=T22
               CONST value=4
           CONST value=0
-      TEMP name=T49
+      TEMP name=T51
     MOVE
       MEM
         BINOP op=+
@@ -470,7 +470,7 @@ CODE CHUNK: label=_init
               CONST value=0
         CONST value=4
       MEM
-        NAME label=L20
+        NAME label=L21
     MOVE
       TEMP name=T23
       MEM
@@ -478,35 +478,214 @@ CODE CHUNK: label=_init
           TEMP name=T22
           CONST value=4
     LABEL label=L12
+DATA CHUNK: label=L22 size=0 .BYTE: 
+DATA CHUNK: label=L23 size=20
+DATA CHUNK: label=L24 size=14 .BYTE: ArrayList.Type
+CODE CHUNK: label=_init
+  FRAME(init: level=1,label=_init,sizeLocs=0,sizeArgs=16,size=24,FP=T24,RV=T25)
+  SEQ
+    MOVE
+      MEM
+        BINOP op=+
+          TEMP name=T24
+          CONST value=4
+      MALLOC size: 8 BYTES
+    MOVE
+      TEMP name=T52
+      CONST value=16755455
+    MOVE
+      TEMP name=T53
+      CONST value=0
+    MOVE
+      TEMP name=T54
+      CONST value=12345
+    MOVE
+      TEMP name=T55
+      MEM
+        NAME label=L22
+    MOVE
+      TEMP name=T56
+      CALL label=_init
+        TEMP name=T52
+        TEMP name=T53
+        TEMP name=T54
+        TEMP name=T55
+    MOVE
+      MEM
+        BINOP op=+
+          MEM
+            BINOP op=+
+              TEMP name=T24
+              CONST value=4
+          CONST value=0
+      TEMP name=T56
+    MOVE
+      MEM
+        BINOP op=+
+          NAME label=L23
+          BINOP op=*
+            CONST value=0
+            CONST value=4
+      CONST value=1
+    MOVE
+      MEM
+        BINOP op=+
+          NAME label=L23
+          BINOP op=*
+            CONST value=1
+            CONST value=4
+      CONST value=2
+    MOVE
+      MEM
+        BINOP op=+
+          NAME label=L23
+          BINOP op=*
+            CONST value=2
+            CONST value=4
+      CONST value=3
+    MOVE
+      MEM
+        BINOP op=+
+          NAME label=L23
+          BINOP op=*
+            CONST value=3
+            CONST value=4
+      CONST value=4
+    MOVE
+      MEM
+        BINOP op=+
+          NAME label=L23
+          BINOP op=*
+            CONST value=4
+            CONST value=4
+      CONST value=5
+    MOVE
+      MEM
+        BINOP op=+
+          MEM
+            BINOP op=+
+              TEMP name=T24
+              CONST value=4
+          CONST value=8
+      NAME label=L23
+    MOVE
+      MEM
+        MEM
+          BINOP op=+
+            MEM
+              BINOP op=+
+                TEMP name=T24
+                CONST value=4
+            CONST value=0
+      CONST value=32
+    MOVE
+      BINOP op=+
+        MEM
+          MEM
+            BINOP op=+
+              MEM
+                BINOP op=+
+                  TEMP name=T24
+                  CONST value=4
+              CONST value=0
+        CONST value=4
+      MEM
+        NAME label=L24
+    MOVE
+      TEMP name=T25
+      MEM
+        BINOP op=+
+          TEMP name=T24
+          CONST value=4
+    LABEL label=L13
+DATA CHUNK: label=_array size=4
+DATA CHUNK: label=_p1 size=4
 DATA CHUNK: label=_p size=4
 DATA CHUNK: label=_p2 size=4
 DATA CHUNK: label=_rect size=4
-DATA CHUNK: label=L22 size=12 .BYTE: "p is Point"
-DATA CHUNK: label=L25 size=16 .BYTE: "p is not Point"
-DATA CHUNK: label=L27 size=14 .BYTE: "rect is Rect"
+DATA CHUNK: label=L26 size=12 .BYTE: "p is Point"
+DATA CHUNK: label=L29 size=16 .BYTE: "p is not Point"
+DATA CHUNK: label=L31 size=14 .BYTE: "rect is Rect"
 CODE CHUNK: label=__main
   FRAME(_main: level=0,label=__main,sizeLocs=0,sizeArgs=16,size=24,FP=T0,RV=T1)
   SEQ
     MOVE
-      TEMP name=T50
+      TEMP name=T57
       TEMP name=T0
     MOVE
-      TEMP name=T51
+      TEMP name=T58
       CONST value=0
     MOVE
-      TEMP name=T52
+      TEMP name=T59
+      CALL label=_init
+        TEMP name=T57
+        TEMP name=T58
+    MOVE
+      MEM
+        NAME label=_array
+      TEMP name=T59
+    MOVE
+      TEMP name=T60
+      TEMP name=T0
+    MOVE
+      TEMP name=T61
+      MEM
+        BINOP op=+
+          MEM
+            BINOP op=+
+              MEM
+                NAME label=_array
+              CONST value=0
+          CONST value=0
+    MOVE
+      TEMP name=T62
+      CALL label=_print
+        TEMP name=T60
+        TEMP name=T61
+    EXP
+      TEMP name=T62
+    MOVE
+      TEMP name=T63
+      TEMP name=T0
+    MOVE
+      TEMP name=T64
+      CONST value=0
+    MOVE
+      TEMP name=T65
       CALL label=_Point
-        TEMP name=T50
-        TEMP name=T51
+        TEMP name=T63
+        TEMP name=T64
+    MOVE
+      MEM
+        NAME label=_p1
+      TEMP name=T65
+    MOVE
+      MEM
+        BINOP op=+
+          MEM
+            NAME label=_p1
+          CONST value=8
+      CONST value=20
+    MOVE
+      TEMP name=T66
+      TEMP name=T0
+    MOVE
+      TEMP name=T67
+      CONST value=0
+    MOVE
+      TEMP name=T68
+      CALL label=_Point
+        TEMP name=T66
+        TEMP name=T67
     MOVE
       MEM
         NAME label=_p
-      TEMP name=T52
+      TEMP name=T68
     MOVE
-      TEMP name=T53
+      TEMP name=T69
       TEMP name=T0
     MOVE
-      TEMP name=T54
+      TEMP name=T70
       MEM
         BINOP op=+
           MEM
@@ -516,17 +695,17 @@ CODE CHUNK: label=__main
               CONST value=0
           CONST value=0
     MOVE
-      TEMP name=T55
+      TEMP name=T71
       CALL label=_print
-        TEMP name=T53
-        TEMP name=T54
+        TEMP name=T69
+        TEMP name=T70
     EXP
-      TEMP name=T55
+      TEMP name=T71
     MOVE
-      TEMP name=T56
+      TEMP name=T72
       TEMP name=T0
     MOVE
-      TEMP name=T57
+      TEMP name=T73
       MEM
         BINOP op=+
           MEM
@@ -536,40 +715,40 @@ CODE CHUNK: label=__main
               CONST value=0
           CONST value=4
     MOVE
-      TEMP name=T58
+      TEMP name=T74
       CALL label=_print
-        TEMP name=T56
-        TEMP name=T57
+        TEMP name=T72
+        TEMP name=T73
     EXP
-      TEMP name=T58
+      TEMP name=T74
     MOVE
-      TEMP name=T59
+      TEMP name=T75
       TEMP name=T0
     MOVE
-      TEMP name=T60
+      TEMP name=T76
       CONST value=0
     MOVE
-      TEMP name=T61
+      TEMP name=T77
       CONST value=10
     MOVE
-      TEMP name=T62
+      TEMP name=T78
       CONST value=20
     MOVE
-      TEMP name=T63
+      TEMP name=T79
       CALL label=_init
-        TEMP name=T59
-        TEMP name=T60
-        TEMP name=T61
-        TEMP name=T62
+        TEMP name=T75
+        TEMP name=T76
+        TEMP name=T77
+        TEMP name=T78
     MOVE
       MEM
         NAME label=_p2
-      TEMP name=T63
+      TEMP name=T79
     MOVE
-      TEMP name=T64
+      TEMP name=T80
       TEMP name=T0
     MOVE
-      TEMP name=T65
+      TEMP name=T81
       MEM
         BINOP op=+
           MEM
@@ -579,17 +758,17 @@ CODE CHUNK: label=__main
               CONST value=0
           CONST value=0
     MOVE
-      TEMP name=T66
+      TEMP name=T82
       CALL label=_print
-        TEMP name=T64
-        TEMP name=T65
+        TEMP name=T80
+        TEMP name=T81
     EXP
-      TEMP name=T66
+      TEMP name=T82
     MOVE
-      TEMP name=T67
+      TEMP name=T83
       TEMP name=T0
     MOVE
-      TEMP name=T68
+      TEMP name=T84
       MEM
         BINOP op=+
           MEM
@@ -599,32 +778,32 @@ CODE CHUNK: label=__main
               CONST value=0
           CONST value=4
     MOVE
-      TEMP name=T69
+      TEMP name=T85
       CALL label=_print
-        TEMP name=T67
-        TEMP name=T68
+        TEMP name=T83
+        TEMP name=T84
     EXP
-      TEMP name=T69
+      TEMP name=T85
     MOVE
-      TEMP name=T70
+      TEMP name=T86
       TEMP name=T0
     MOVE
-      TEMP name=T71
+      TEMP name=T87
       CONST value=0
     MOVE
-      TEMP name=T72
+      TEMP name=T88
       CALL label=_init
-        TEMP name=T70
-        TEMP name=T71
+        TEMP name=T86
+        TEMP name=T87
     MOVE
       MEM
         NAME label=_rect
-      TEMP name=T72
+      TEMP name=T88
     MOVE
-      TEMP name=T73
+      TEMP name=T89
       TEMP name=T0
     MOVE
-      TEMP name=T74
+      TEMP name=T90
       MEM
         BINOP op=+
           MEM
@@ -634,17 +813,17 @@ CODE CHUNK: label=__main
               CONST value=0
           CONST value=0
     MOVE
-      TEMP name=T75
+      TEMP name=T91
       CALL label=_print
-        TEMP name=T73
-        TEMP name=T74
+        TEMP name=T89
+        TEMP name=T90
     EXP
-      TEMP name=T75
+      TEMP name=T91
     MOVE
-      TEMP name=T76
+      TEMP name=T92
       TEMP name=T0
     MOVE
-      TEMP name=T77
+      TEMP name=T93
       MEM
         BINOP op=+
           MEM
@@ -654,77 +833,77 @@ CODE CHUNK: label=__main
               CONST value=0
           CONST value=4
     MOVE
-      TEMP name=T78
+      TEMP name=T94
       CALL label=_print
-        TEMP name=T76
-        TEMP name=T77
+        TEMP name=T92
+        TEMP name=T93
     EXP
-      TEMP name=T78
-    CJUMP labels=L23,L30
+      TEMP name=T94
+    CJUMP labels=L27,L34
       BINOP op=null
         MEM
           MEM
             MEM
               NAME label=_p
         CONST value=20
-    LABEL label=L30
-    JUMP label=L24
-    LABEL label=L23
+    LABEL label=L34
+    JUMP label=L28
+    LABEL label=L27
     MOVE
-      TEMP name=T79
+      TEMP name=T95
       TEMP name=T0
     MOVE
-      TEMP name=T80
+      TEMP name=T96
       MEM
-        NAME label=L22
+        NAME label=L26
     MOVE
-      TEMP name=T81
+      TEMP name=T97
       CALL label=_print
-        TEMP name=T79
-        TEMP name=T80
+        TEMP name=T95
+        TEMP name=T96
     EXP
-      TEMP name=T81
-    JUMP label=L21
-    LABEL label=L24
+      TEMP name=T97
+    JUMP label=L25
+    LABEL label=L28
     MOVE
-      TEMP name=T82
+      TEMP name=T98
       TEMP name=T0
     MOVE
-      TEMP name=T83
+      TEMP name=T99
       MEM
-        NAME label=L25
+        NAME label=L29
     MOVE
-      TEMP name=T84
+      TEMP name=T100
       CALL label=_print
-        TEMP name=T82
-        TEMP name=T83
+        TEMP name=T98
+        TEMP name=T99
     EXP
-      TEMP name=T84
-    LABEL label=L21
-    CJUMP labels=L28,L31
+      TEMP name=T100
+    LABEL label=L25
+    CJUMP labels=L32,L35
       BINOP op=null
         MEM
           MEM
             MEM
               NAME label=_rect
         CONST value=26
-    LABEL label=L31
-    JUMP label=L29
-    LABEL label=L28
+    LABEL label=L35
+    JUMP label=L33
+    LABEL label=L32
     MOVE
-      TEMP name=T85
+      TEMP name=T101
       TEMP name=T0
     MOVE
-      TEMP name=T86
+      TEMP name=T102
       MEM
-        NAME label=L27
+        NAME label=L31
     MOVE
-      TEMP name=T87
+      TEMP name=T103
       CALL label=_print
-        TEMP name=T85
-        TEMP name=T86
+        TEMP name=T101
+        TEMP name=T102
     EXP
-      TEMP name=T87
-    JUMP label=L26
-    LABEL label=L29
-    LABEL label=L26
+      TEMP name=T103
+    JUMP label=L30
+    LABEL label=L33
+    LABEL label=L30
