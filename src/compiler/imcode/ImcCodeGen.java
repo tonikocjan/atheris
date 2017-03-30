@@ -135,7 +135,10 @@ public class ImcCodeGen implements ASTVisitor {
         }
 
         AbsVarDef descriptorDefinition = (AbsVarDef) acceptor.findDefinitionForName(Constants.classDescriptorIdentifier);
-		if (SymbDesc.getType(descriptorDefinition).isBuiltinType()) descriptorDefinition = null;
+		if (descriptorDefinition != null) {
+		    // TODO: - Reimplement this logic
+            if (SymbDesc.getType(descriptorDefinition).isBuiltinType()) descriptorDefinition = null;
+        }
 
 		CanType type = (CanType) SymbDesc.getType(acceptor);
 		ClassType classType = (ClassType) type.childType;

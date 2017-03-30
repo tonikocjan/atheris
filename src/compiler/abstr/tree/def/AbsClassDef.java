@@ -40,6 +40,9 @@ public class AbsClassDef extends AbsTypeDef {
 	/** Constructors (initializers) */
 	public final LinkedList<AbsFunDef> contrustors;
 
+	/** Base class type name (null if no base class) */
+	public final AbsType baseClass;
+
     /**
      * * Create new class definition.
      * @param name Definition's name
@@ -48,11 +51,12 @@ public class AbsClassDef extends AbsTypeDef {
      * @param initExpressions Initializing expressions for default constructor
      * @param constructors Other constructors
      */
-	public AbsClassDef(String name, Position pos, LinkedList<AbsDef> definitions, 
-			LinkedList<AbsStmt> initExpressions, LinkedList<AbsFunDef> constructors) {
+	public AbsClassDef(String name, Position pos, AbsType baseClass, LinkedList<AbsDef> definitions,
+                       LinkedList<AbsStmt> initExpressions, LinkedList<AbsFunDef> constructors) {
 		super(pos, name);
         this.contrustors = constructors;
         this.definitions = new AbsDefs(position, definitions);
+        this.baseClass = baseClass;
 
         // set this definition as parent for all member definitions
         for (AbsDef def : this.definitions.definitions) {
@@ -88,6 +92,11 @@ public class AbsClassDef extends AbsTypeDef {
             contrustors.add(defaultConstructor);
         }
 	}
+
+    public AbsClassDef(String name, Position pos, LinkedList<AbsDef> definitions,
+                       LinkedList<AbsStmt> initExpressions, LinkedList<AbsFunDef> constructors) {
+        this(name, pos, null, definitions, initExpressions, constructors);
+    }
 	
 	public AbsDef findDefinitionForName(String name) {
 		return definitions.findDefinitionForName(name);

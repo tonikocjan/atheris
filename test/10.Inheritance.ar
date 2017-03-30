@@ -1,0 +1,10 @@
+import stdlib
+
+class A {}
+
+class B: A {
+	
+}
+
+let a = A()
+print(integer: a.descriptor.descriptor)

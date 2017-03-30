@@ -498,12 +498,23 @@ public class SynAn {
 	private AbsClassDef parseClassDefinition() {
 		Position start = symbol.position;
 		String className = skip(new Symbol(TokenType.IDENTIFIER, "IDENTIFIER", null)).lexeme;
+		skip();
+
+		AbsType baseClass = null;
+		if (symbol.token == TokenType.COLON) {
+		    skip();
+
+		    // parse base class type name
+            baseClass = parseType();
+        }
+
+        if (symbol.token != TokenType.LBRACE) {
+		    Report.error(symbol.position, "Expected \"{\"");
+        }
 		
-		skip(new Symbol(TokenType.LBRACE, "{", null));
-		skip(new Symbol(TokenType.NEWLINE, "\n", null));
 		skip();
 		
-		LinkedList[] data = parseClassMemberDefinitions(className);
+		LinkedList[] data = parseClassMemberDefinitions();
 		LinkedList<AbsDef> definitions = data[0];
         LinkedList<AbsStmt> initExpressions = data[1];
         LinkedList<AbsFunDef> constructors = data[2];
@@ -540,61 +551,70 @@ public class SynAn {
             initExpressions.addFirst(assignExpr);
         }
 		
-		return new AbsClassDef(className, definitionPosition, definitions, initExpressions, constructors);
+		return new AbsClassDef(className, definitionPosition, baseClass, definitions, initExpressions, constructors);
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private LinkedList[] parseClassMemberDefinitions(String className) {
+	private LinkedList[] parseClassMemberDefinitions() {
 		LinkedList<AbsDef> definitions = new LinkedList<>();
         LinkedList<AbsFunDef> constructors = new LinkedList<>();
 		LinkedList<AbsStmt> defaultConstructor = new LinkedList<>();
+
+
+        if (symbol.token == TokenType.RBRACE) {
+            return new LinkedList[]{definitions, defaultConstructor, constructors};
+        }
+
+        if (symbol.token != TokenType.NEWLINE) {
+            Report.error(symbol.position, "Invalid token");
+        }
+        skip();
 		
 		while (true) {
-			AbsDef definition;
-			
-			switch (symbol.token) {
-			case KW_PUBLIC:
-			case KW_PRIVATE:
-			case KW_VAR:
-			case KW_LET:
-				definition = parseDefinition();
-				definitions.add(definition);
-				
-				if (symbol.token == TokenType.ASSIGN) {
-					skip();
-					dump("var_definition -> = expression");
-					
-					AbsVarNameExpr varNameExpr = new AbsVarNameExpr(definition.position, ((AbsVarDef) definition).name);
-					AbsExpr valueExpr = parseExpression();
-                    AbsBinExpr dotExpr = new AbsBinExpr(
-                            new Position(definition.position, valueExpr.position), AbsBinExpr.DOT,
-                            new AbsVarNameExpr(definition.position, Constants.selfParameterIdentifier), varNameExpr);
-					AbsBinExpr assignExpr = new AbsBinExpr(definition.position, AbsBinExpr.ASSIGN, dotExpr, valueExpr);
+            AbsDef definition;
 
-					defaultConstructor.add(assignExpr);
-				}
-				break;
-			case KW_FUN:
-				AbsFunDef funDef = (AbsFunDef) parseDefinition();
-                definitions.add(funDef);
-				break;
-            case KW_INIT:
-                funDef = (AbsFunDef) parseDefinition();
-                funDef.isConstructor = true;
+            switch (symbol.token) {
+                case KW_PUBLIC:
+                case KW_PRIVATE:
+                case KW_VAR:
+                case KW_LET:
+                    definition = parseDefinition();
+                    definitions.add(definition);
 
-                constructors.add(funDef);
-                break;
-			case RBRACE:
-				return new LinkedList[] {definitions, defaultConstructor, constructors};
-			default:
-				Report.error(symbol.position, "Syntax error todooooo");
-			}
-			
-			if (symbol.token == TokenType.SEMIC)
-				skip();
-			if (symbol.token == TokenType.NEWLINE)
-				skip();
-		}
+                    if (symbol.token == TokenType.ASSIGN) {
+                        skip();
+                        dump("var_definition -> = expression");
+
+                        AbsVarNameExpr varNameExpr = new AbsVarNameExpr(definition.position, ((AbsVarDef) definition).name);
+                        AbsExpr valueExpr = parseExpression();
+                        AbsBinExpr dotExpr = new AbsBinExpr(
+                                new Position(definition.position, valueExpr.position), AbsBinExpr.DOT,
+                                new AbsVarNameExpr(definition.position, Constants.selfParameterIdentifier), varNameExpr);
+                        AbsBinExpr assignExpr = new AbsBinExpr(definition.position, AbsBinExpr.ASSIGN, dotExpr, valueExpr);
+
+                        defaultConstructor.add(assignExpr);
+                    }
+                    break;
+                case KW_FUN:
+                    AbsFunDef funDef = (AbsFunDef) parseDefinition();
+                    definitions.add(funDef);
+                    break;
+                case KW_INIT:
+                    funDef = (AbsFunDef) parseDefinition();
+                    funDef.isConstructor = true;
+
+                    constructors.add(funDef);
+                    break;
+                case RBRACE:
+                    return new LinkedList[]{definitions, defaultConstructor, constructors};
+                case NEWLINE:
+                case SEMIC:
+                    skip();
+                    continue;
+                default:
+                    Report.error(symbol.position, "Consecutive statements must be separated by a separator");
+            }
+        }
 	}
 	
 	private AbsEnumDef parseEnumDefinition() {
