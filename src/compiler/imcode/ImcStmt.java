@@ -22,7 +22,7 @@ package compiler.imcode;
  * 
  * @author sliva
  */
-public abstract class ImcStmt extends ImcCode {
+public abstract class ImcStmt implements ImcCode {
 
 	/**
 	 * Vrne linearizirano vmesno kodo stavka.

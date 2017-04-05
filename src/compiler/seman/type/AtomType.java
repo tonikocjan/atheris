@@ -45,8 +45,7 @@ public class AtomType extends Type {
 	@Override
 	public boolean sameStructureAs(Type type) {
 		if (type.isBuiltinType()) {
-			AtomType atomType = (AtomType) type;
-			return this.type == atomType.type;
+		    return this.type == ((AtomType) type).type;
 		}
 
 		return false;

@@ -86,11 +86,10 @@ public class NameChecker implements ASTVisitor {
         SymbTable.newScope();
 
 		for (AbsDef def : acceptor.definitions.definitions) {
-			if (def instanceof AbsFunDef) {
+			if (def instanceof AbsFunDef /* && !def.isStatic */) {
                 // add implicit self: classType parameter to instance methods
                 AbsFunDef funDef = (AbsFunDef) def;
 
-                // FIXME: - Position
                 AbsParDef parDef = new AbsParDef(funDef.position, "self",
                         new AbsAtomType(funDef.position, AtomTypeKind.NIL));
                 funDef.addParamater(parDef);
@@ -108,16 +107,18 @@ public class NameChecker implements ASTVisitor {
                     + "\'");
         }
 
+        if (acceptor.baseClass != null) {
+            acceptor.baseClass.accept(this);
+        }
+
         for (AbsFunDef constructor: acceptor.contrustors) {
             // add implicit self: classType parameter to constructors
-            // FIXME: - Position
-            AbsParDef parDef = new AbsParDef(constructor.position, "self",
+            AbsParDef parDef = new AbsParDef(constructor.position, Constants.selfParameterIdentifier,
                     new AbsAtomType(constructor.position, AtomTypeKind.NIL));
 
             constructor.addParamater(parDef);
             constructor.accept(this);
         }
-
     }
 
 	@Override

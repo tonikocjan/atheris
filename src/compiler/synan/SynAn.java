@@ -516,12 +516,11 @@ public class SynAn {
 		
 		LinkedList[] data = parseClassMemberDefinitions();
 		LinkedList<AbsDef> definitions = data[0];
-        LinkedList<AbsStmt> initExpressions = data[1];
+        LinkedList<AbsStmt> defaultConstructor = data[1];
         LinkedList<AbsFunDef> constructors = data[2];
 
 		if (symbol.token != TokenType.RBRACE) {
-            Report.error(symbol.position, "Syntax error on token \""
-                    + symbol.lexeme + "\", expected \"}\"");
+            Report.error(symbol.position, "Syntax error on token \"" + symbol.lexeme + "\", expected \"}\"");
         }
 
 		Position end = symbol.position;
@@ -532,26 +531,28 @@ public class SynAn {
 		// TODO: - Altering AST in SynAn probably isn't the best idea
 		if (!parseStandardLibrary) {
             // implicitly add classDescriptor object definition to this class definition
-            AbsVarDef classDescriptorDefinition = new AbsVarDef(definitionPosition, Constants.classDescriptorIdentifier,
+            String descriptorName = Constants.descriptorName(className);
+            AbsVarDef classDescriptorDefinition = new AbsVarDef(definitionPosition, descriptorName,
                     new AbsTypeName(definitionPosition, Constants.classDescriptorClassIdentifier), false, AccessControl.Public);
             definitions.addFirst(classDescriptorDefinition);
 
             // initialize classDescriptor
-            AbsVarNameExpr descriptorNameExpr = new AbsVarNameExpr(definitionPosition, Constants.classDescriptorIdentifier);
+            AbsVarNameExpr descriptorNameExpr = new AbsVarNameExpr(definitionPosition, descriptorName);
             AbsVarNameExpr selfParExpr = new AbsVarNameExpr(definitionPosition, Constants.selfParameterIdentifier);
             AbsBinExpr dotExpr =
                     new AbsBinExpr(definitionPosition, AbsBinExpr.DOT, selfParExpr, descriptorNameExpr);
             Vector<AbsLabeledExpr> args = new Vector<>();
             args.add(new AbsLabeledExpr(definitionPosition,
-                    new AbsAtomConstExpr(definitionPosition, AtomTypeKind.INT, "12345"), "descriptor"));
+                    new AbsAtomConstExpr(definitionPosition, AtomTypeKind.INT, "-1"), "descriptor"));
             args.add(new AbsLabeledExpr(definitionPosition,
                     new AbsAtomConstExpr(definitionPosition, AtomTypeKind.STR, ""), "name"));
             AbsFunCall constructorCallExpr = new AbsFunCall(definitionPosition, Constants.classDescriptorClassIdentifier, args);
             AbsBinExpr assignExpr = new AbsBinExpr(definitionPosition, AbsBinExpr.ASSIGN, dotExpr, constructorCallExpr);
-            initExpressions.addFirst(assignExpr);
+
+            defaultConstructor.addFirst(assignExpr);
         }
 		
-		return new AbsClassDef(className, definitionPosition, baseClass, definitions, initExpressions, constructors);
+		return new AbsClassDef(className, definitionPosition, baseClass, definitions, defaultConstructor, constructors);
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -559,7 +560,6 @@ public class SynAn {
 		LinkedList<AbsDef> definitions = new LinkedList<>();
         LinkedList<AbsFunDef> constructors = new LinkedList<>();
 		LinkedList<AbsStmt> defaultConstructor = new LinkedList<>();
-
 
         if (symbol.token == TokenType.RBRACE) {
             return new LinkedList[]{definitions, defaultConstructor, constructors};

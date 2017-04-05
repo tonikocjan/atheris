@@ -125,7 +125,7 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsListType acceptor) {
-
+        ///
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class ImcCodeGen implements ASTVisitor {
             def.accept(this);
         }
 
-        AbsVarDef descriptorDefinition = (AbsVarDef) acceptor.findDefinitionForName(Constants.classDescriptorIdentifier);
+        AbsVarDef descriptorDefinition = (AbsVarDef) acceptor.findDefinitionForName(Constants.descriptorName(acceptor.name));
 		if (descriptorDefinition != null) {
 		    // TODO: - Reimplement this logic
             if (SymbDesc.getType(descriptorDefinition).isBuiltinType()) descriptorDefinition = null;
@@ -146,6 +146,11 @@ public class ImcCodeGen implements ASTVisitor {
 
 		int descriptor = classType.descriptor;
 		String name = type.friendlyName();
+
+		if (classType.baseClass != null) {
+            descriptor = classType.baseClass.descriptor;
+            name = classType.baseClass.friendlyName();
+        }
 
         for (AbsFunDef constructor : acceptor.contrustors) {
             FrmFrame constructorFrame = FrmDesc.getFrame(constructor);
@@ -159,23 +164,6 @@ public class ImcCodeGen implements ASTVisitor {
             ImcTEMP framePointer = new ImcTEMP(constructorFrame.FP);
             ImcCONST offset = new ImcCONST(4);
             ImcMEM location = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, framePointer, offset));
-
-            if (descriptorDefinition != null) {
-                // initialize descriptor object
-                ImcMOVE s = (ImcMOVE) constructorCode.stmts.getFirst();
-                ImcExpr descriptorLocation = new ImcMEM(s.dst);
-                ImcMOVE assignDescriptor = new ImcMOVE(descriptorLocation, new ImcCONST(descriptor));
-
-                ImcDataChunk nameChunk = new ImcDataChunk(FrmLabel.newLabel(), name.length());
-                nameChunk.data = name;
-                chunks.add(nameChunk);
-
-                ImcMOVE assignName = new ImcMOVE(new ImcBINOP(ImcBINOP.ADD, descriptorLocation, offset),
-                        new ImcMEM(new ImcNAME(nameChunk.label)));
-
-                constructorCode.stmts.add(assignDescriptor);
-                constructorCode.stmts.add(assignName);
-            }
 
             // assign new object as "self" parameter
             constructorCode.stmts.addFirst(new ImcMOVE(location, new ImcMALLOC(size)));

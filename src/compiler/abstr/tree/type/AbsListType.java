@@ -38,7 +38,7 @@ public class AbsListType extends AbsType {
 	 * 
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
-	 * @param length
+	 * @param count
 	 *            Dolzina seznama.
 	 * @param type
 	 *            Tip elementa tabele.

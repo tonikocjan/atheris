@@ -1,10 +1,46 @@
 import stdlib
 
-class A {}
+class A {
+	let x: Int = 10
+	let a: Double = 10.0
+}
 
 class B: A {
-	
+	let y: Int = 20
+	let b: Bool = false
+
+	init() {
+		self.x = 100
+		self.y = 200
+	}
+}
+
+class C: B {
+	let c: String = "test"
 }
 
 let a = A()
-print(integer: a.descriptor.descriptor)
+
+let b = B()
+print(integer: b.x)
+print(integer: b.y)
+
+print(integer: a.A_descriptor.descriptor)
+print(integer: b.A_descriptor.descriptor)
+print(integer: b.B_descriptor.descriptor)
+print(string: a.A_descriptor.name)
+print(string: b.A_descriptor.name)
+print(string: b.B_descriptor.name)
+
+
+print(double: b.a)
+print(bool: b.b)
+
+if b is B {
+	print(string: "b is instance of B")
+}
+else {
+	print(string: "b is not instance of B")	
+}
+
+print(double: C().a)

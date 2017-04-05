@@ -35,7 +35,7 @@ public class ImcSEQ extends ImcStmt {
 	 * Ustvari zaporedje stavkov.
 	 */
 	public ImcSEQ() {
-		stmts = new LinkedList<ImcStmt>();
+		stmts = new LinkedList<>();
 	}
 
 	@Override

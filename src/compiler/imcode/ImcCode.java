@@ -22,7 +22,7 @@ package compiler.imcode;
  * 
  * @author sliva
  */
-public abstract class ImcCode {
+public interface ImcCode {
 
 	/**
 	 * Izpise drevo vmesne kode na datoteko vmesnih rezultatov.

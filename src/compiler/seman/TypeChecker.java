@@ -65,6 +65,7 @@ import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsType;
 import compiler.abstr.tree.type.AbsTypeName;
+import compiler.imcode.ImcCONST;
 import compiler.seman.type.ArrayType;
 import compiler.seman.type.AtomType;
 import compiler.seman.type.CanType;
@@ -108,13 +109,28 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-		ArrayList<Type> types = new ArrayList<>();
-		ArrayList<String> names = new ArrayList<>();
+		LinkedList<Type> types = new LinkedList<>();
+        LinkedList<String> names = new LinkedList<>();
 
-		traversalState = TraversalState.definitions;
+		CanType baseClass = null;
+		AbsFunDef baseClassDefaultConstructor = null;
+
+        traversalState = TraversalState.definitions;
+
+		if (acceptor.baseClass != null) {
+            acceptor.baseClass.accept(this);
+
+            Type type = SymbDesc.getType(acceptor.baseClass);
+            if (!type.isCanType() || !((CanType) type).childType.isClassType()) {
+                Report.error(acceptor.baseClass.position, "Inheritance from non-class type \"" + type.friendlyName() + "\" is not allowed");
+            }
+
+            baseClass = (CanType) type;
+            baseClassDefaultConstructor = ((ClassType) ((CanType) type).childType).classDefinition.defaultConstructor;
+        }
 
 		for (AbsDef def : acceptor.definitions.definitions) {
-			if (names.contains(def.getName()))
+			if (names.contains(def.getName()) || (baseClass != null && baseClass.containsMember(def.getName())))
 				Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
 
 			names.add(def.getName());
@@ -130,12 +146,13 @@ public class TypeChecker implements ASTVisitor {
         for (AbsDef def : acceptor.definitions.definitions) {
 		    Type defType = SymbDesc.getType(def);
             types.add(defType);
-		}
+        }
 		
-		ClassType classType = new ClassType(acceptor, names, types);
-		SymbDesc.setType(acceptor, new CanType(classType));
+		ClassType classType = new ClassType(acceptor, names, types, baseClass);
+        CanType canType = new CanType(classType);
+		SymbDesc.setType(acceptor, canType);
 		
-		// add implicit self: classType parameter to instance methods
+		// add implicit "self: classType" parameter to instance methods
 		for (AbsDef def : acceptor.definitions.definitions) {
 			if (def instanceof AbsFunDef) {
 				AbsFunDef funDef = (AbsFunDef) def;
@@ -148,13 +165,29 @@ public class TypeChecker implements ASTVisitor {
 			def.accept(this);
 		}
 
-        // add implicit self: classType parameter to constructors
+        // add implicit "self: classType" parameter to constructors
         for (AbsFunDef constructor : acceptor.contrustors) {
             AbsParDef selfParDef = constructor.getParameterForIndex(0);
-            selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);;
+            selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
 
             SymbDesc.setNameDef(selfParDef.type, acceptor);
             SymbDesc.setType(selfParDef, classType);
+
+            // descriptor initialization
+            if (constructor.func.statements.size() > 0 && constructor.func.statements.getFirst() instanceof AbsBinExpr) {
+                AbsBinExpr binExpr = (AbsBinExpr) constructor.func.statements.getFirst();
+                if (binExpr.expr2 instanceof AbsFunCall) {
+                    AbsFunCall fnCall = (AbsFunCall) binExpr.expr2;
+                    // TODO: - Reimplement this
+                    ((AbsAtomConstExpr) fnCall.args.get(1).expr).value = "" + classType.descriptor;
+                    ((AbsAtomConstExpr) fnCall.args.get(2).expr).value = "" + canType.friendlyName();
+                }
+            }
+
+            // append base classes' initialization code
+            if (baseClassDefaultConstructor != null) {
+                constructor.func.statements.addAll(0, baseClassDefaultConstructor.func.statements);
+            }
 
             constructor.accept(this);
 
@@ -163,6 +196,8 @@ public class TypeChecker implements ASTVisitor {
 
             SymbDesc.setType(constructor, funType);
         }
+
+//        classType.debugPrint();
 	}
 
 	@Override
@@ -216,11 +251,11 @@ public class TypeChecker implements ASTVisitor {
 		if (oper == AbsBinExpr.ASSIGN) {
 		    boolean success = false;
 			
-			// if left variable doesn't have type, assign right type
+			// type inference: if lhs doesn't have type, assign rhs type
 			if (t1 == null) {
-				t1 = t2;
-				SymbDesc.setType(acceptor.expr1, t1);
-				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t1);
+                SymbDesc.setType(acceptor, t2);
+				SymbDesc.setType(acceptor.expr1, t2);
+				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
 				return;
 			}
 			
@@ -849,8 +884,8 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumMemberDef acceptor) {
-		ArrayList<String> names = new ArrayList<>(1);
-		ArrayList<Type> types = new ArrayList<>(1);
+        LinkedList<String> names = new LinkedList<>();
+        LinkedList<Type> types = new LinkedList<>();
 		LinkedList<AbsDef> definitions = new LinkedList<>();
 		
 		acceptor.name.accept(this);

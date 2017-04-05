@@ -43,6 +43,11 @@ public class AbsTypeName extends AbsType {
 		this.name = name;
 	}
 
-	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

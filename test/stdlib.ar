@@ -19,6 +19,6 @@ class ClassDescriptor {
 
 	init(descriptor: Int, name: String) {
 		self.descriptor = descriptor
-		self.name = name;
+		self.name = name
 	}
 }

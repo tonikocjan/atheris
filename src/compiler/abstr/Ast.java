@@ -224,6 +224,10 @@ public class Ast implements ASTVisitor {
 			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
 					+ ": DOT");
 			break;
+        case AbsBinExpr.IS:
+            Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
+                    + ": IS");
+            break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
 		}

@@ -22,7 +22,7 @@ package compiler.imcode;
  * 
  * @author sliva
  */
-public abstract class ImcExpr extends ImcCode {
+public abstract class ImcExpr implements ImcCode {
 
 	/**
 	 * Vrne linearizirano vmesno kodo izraza.

@@ -32,7 +32,7 @@ public class AbsAtomConstExpr extends AbsExpr {
 	public final AtomTypeKind type;
 	
 	/** Vrednost. */
-	public final String value;
+	public String value;
 
 	/**
 	 * Ustvari konstanto.

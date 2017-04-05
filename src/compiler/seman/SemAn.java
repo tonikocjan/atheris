@@ -111,6 +111,12 @@ public class SemAn implements ASTVisitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2;
+        Report.dump(indent, "Base class: " + ((classDef.baseClass == null) ? "None" : classDef.baseClass.toString()));
+        if (classDef.baseClass != null) {
+            indent += 2;
+            classDef.baseClass.accept(this);
+            indent -= 2;
+        }
 		Report.dump(indent, "Member definitions:");
 		indent += 2; classDef.definitions.accept(this); indent -= 2;
 		Report.dump(indent, "Constructors:");
@@ -237,6 +243,10 @@ public class SemAn implements ASTVisitor {
 		case AbsBinExpr.DOT:
 			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": DOT");
 			break;
+        case AbsBinExpr.IS:
+            Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
+                    + ": IS");
+            break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
 		}

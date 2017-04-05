@@ -36,22 +36,22 @@ class ArrayList {
 }
 
 let array = ArrayList()
-print(integer: array.descriptor.descriptor)
+print(integer: array.ArrayList_descriptor.descriptor)
 
 let p1 = Point()
 p1.x = 20
 
 let p = Point()
-print(integer: p.descriptor.descriptor)
-print(string: p.descriptor.name)
+print(integer: p.Point_descriptor.descriptor)
+print(string: p.Point_descriptor.name)
 
 let p2 = Point(x: 10, y: 20)
-print(integer: p2.descriptor.descriptor)
-print(string: p2.descriptor.name)
+print(integer: p2.Point_descriptor.descriptor)
+print(string: p2.Point_descriptor.name)
 
 let rect = Rect()
-print(integer: rect.descriptor.descriptor)
-print(string: rect.descriptor.name)
+print(integer: rect.Rect_descriptor.descriptor)
+print(string: rect.Rect_descriptor.name)
 
 if p is Point {
 	print(string: "p is Point")

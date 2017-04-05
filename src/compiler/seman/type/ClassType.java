@@ -17,10 +17,7 @@
 
 package compiler.seman.type;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import compiler.Report;
 import compiler.abstr.tree.def.AbsClassDef;
@@ -38,27 +35,35 @@ public class ClassType extends ReferenceType {
 	public final AbsClassDef classDefinition;
 
 	/**
-	 * Class member types.
+	 * Class member names and types.
 	 */
-	private final LinkedHashMap<String, Type> members = new LinkedHashMap<>();
-	
+	public final LinkedList<String> memberNames;
+    public final LinkedList<Type> memberTypes;
+
 	/**
 	 * Mapping for definitions.
 	 */
-	private final HashMap<String, AbsDef> definitions = new HashMap<>();
-	
+	public final HashMap<String, AbsDef> definitions = new HashMap<>();
+
 	/**
 	 * Sum of sizes of all members.
 	 */
 	private final int size;
+
+    /**
+     * Base class (null if no base class).
+     */
+    public final CanType baseClass;
+    private final ClassType base;
 
 	/**
 	 * Create new class type.
 	 * @param definition Class definition.
 	 * @param names Name for each member.
 	 * @param types Type for each member.
+     * @param baseClass Base class for this class type.
 	 */
-	public ClassType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types) {
+	public ClassType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types, CanType baseClass) {
 		if (names.size() != types.size()) {
             Report.error("Internal error :: compiler.seman.type.ClassType: "
                     + "names count not equal types count");
@@ -66,16 +71,30 @@ public class ClassType extends ReferenceType {
 
 		int size = 0;
 		for (int i = 0; i < names.size(); i++) {
-			members.put(names.get(i), types.get(i));
 			definitions.put(names.get(i), definition.definitions.definitions.get(i));
 			size += types.get(i).size();
 		}
-		
-		this.size = size;
+
+        this.size = size;
+		this.memberNames = names;
+		this.memberTypes = types;
 		this.classDefinition = definition;
+		this.baseClass = baseClass;
+		this.base = baseClass == null ? null : (ClassType) baseClass.childType;
 
         descriptorMapping.put(this, descriptor - 1);
 	}
+
+    /**
+     * Create new class type.
+     * @param definition Class definition.
+     * @param names Name for each member.
+     * @param types Type for each member.
+     */
+    public ClassType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types) {
+        this(definition, names, types, null);
+    }
+
 	
 	/**
 	 * Get type for member.
@@ -83,7 +102,22 @@ public class ClassType extends ReferenceType {
 	 * @return Type of the member (or null if member with such name doesn't exist).
 	 */
 	public Type getMemberTypeForName(String name) {
-		return members.get(name);
+	    // first check in base class
+        if (baseClass != null) {
+            Type type = base.getMemberTypeForName(name);
+
+            if (type != null) {
+                return type;
+            }
+        }
+
+		int index = memberNames.indexOf(name);
+
+		if (index >= 0) {
+		    return memberTypes.get(index);
+        }
+
+        return null;
 	}
 	
 	/**
@@ -93,10 +127,18 @@ public class ClassType extends ReferenceType {
 	 */
 	public int offsetForMember(String name) {
 		int offset = 0;
+
+        // first check in base class
+        if (baseClass != null) {
+            offset = base.offsetForMember(name);
+        }
+
+		Iterator<String> namesIterator = memberNames.iterator();
+        Iterator<Type> typesIterator = memberTypes.iterator();
 		
-		for (Map.Entry<String, Type> entry : members.entrySet()) {
-			if (name.equals(entry.getKey())) break;
-			offset += entry.getValue().size();
+		while (namesIterator.hasNext()) {
+			if (name.equals(namesIterator.next())) break;
+			offset += typesIterator.next().size();
 		}
 		
 		return offset;
@@ -112,7 +154,14 @@ public class ClassType extends ReferenceType {
 
 	@Override
 	public boolean containsMember(String name) {
-		return members.containsKey(name);
+	    // first check in base class
+        if (base != null) {
+            boolean contains = base.containsMember(name);
+
+            if (contains) return true;
+        }
+
+		return memberNames.contains(name);
 	}
 
 	@Override
@@ -125,25 +174,45 @@ public class ClassType extends ReferenceType {
 	
 	@Override
 	public AbsDef findMemberForName(String name) {
+	    if (base != null) {
+            AbsDef member = base.findMemberForName(name);
+
+            if (member != null) return member;
+        }
+
 		return definitions.get(name);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		int i = 0;
+
 		sb.append("Class: ");
 		sb.append(classDefinition.name + "(");
-		for (Map.Entry<String, Type> entry : members.entrySet()) {
-			sb.append(entry.getKey() + ":" + entry.getValue().toString());
-			if (++i < members.size()) sb.append(";");
+		sb.append("Base: (");
+		sb.append(classDefinition.baseClass == null ? "/" : classDefinition.baseClass.toString());
+		sb.append("), ");
+
+        Iterator<String> namesIterator = memberNames.iterator();
+        Iterator<Type> typesIterator = memberTypes.iterator();
+
+        while (namesIterator.hasNext()) {
+			sb.append(namesIterator.next() + ":" + typesIterator.next().toString());
+			if (!namesIterator.hasNext()) sb.append(";");
 		}
+
 		sb.append(")");
 		return sb.toString();
 	}
 
 	@Override
 	public int size() {
+	    int size = this.size;
+
+	    if (base != null) {
+	        size += base.size();
+        }
+
 		return size;
 	}
 
@@ -157,4 +226,16 @@ public class ClassType extends ReferenceType {
 		return classDefinition.name;
 	}
 
+	public void debugPrint() {
+        System.out.println(friendlyName());
+
+        Iterator<String> namesIterator = memberNames.iterator();
+        Iterator<Type> typesIterator = memberTypes.iterator();
+
+        while (namesIterator.hasNext()) {
+            String name = namesIterator.next();
+            System.out.println("  " + name + ": " + typesIterator.next().friendlyName());
+            System.out.println("    Offset: " + offsetForMember(name));
+        }
+    }
 }
