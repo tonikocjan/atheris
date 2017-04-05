@@ -169,7 +169,27 @@ public class ClassType extends ReferenceType {
         if (!type.isClassType())
             return false;
 
-        return type.friendlyName().equals(friendlyName());
+        return descriptor == type.descriptor;
+    }
+
+    @Override
+    public boolean canCastTo(Type type) {
+        if (!type.isClassType() || base == null) {
+            return false;
+        }
+
+        ClassType baseClass = base;
+        int targetDescriptor = type.descriptor;
+
+        while (baseClass != null) {
+            if (targetDescriptor == baseClass.descriptor) {
+                return true;
+            }
+
+            baseClass = baseClass.base;
+        }
+
+        return false;
     }
 	
 	@Override
@@ -214,11 +234,6 @@ public class ClassType extends ReferenceType {
         }
 
 		return size;
-	}
-
-	@Override
-	public boolean canCastTo(Type t) {
-		return false;
 	}
 
 	@Override

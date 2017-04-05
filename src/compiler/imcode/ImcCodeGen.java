@@ -278,8 +278,9 @@ public class ImcCodeGen implements ASTVisitor {
 					AbsDef memberDef = enumType.findMemberForName(enumType.selectedMember);
 					code = ImcDesc.getImcCode(memberDef);
 				}
-				else 
-					code = new ImcCONST(enumType.memberOffsetForName(memberName));
+				else {
+                    code = new ImcCONST(enumType.memberOffsetForName(memberName));
+                }
 			}
 
 			/**
@@ -301,7 +302,7 @@ public class ImcCodeGen implements ASTVisitor {
             else if (t.isTupleType()) {
                 TupleType tupleType = (TupleType) t;
 
-                // member acces code
+                // member access code
                 if (acceptor.expr2 instanceof AbsFunCall) {
                     code = c2;
                 }
@@ -318,14 +319,6 @@ public class ImcCodeGen implements ASTVisitor {
             else if (t.isArrayType()) {
                 code = new ImcCONST(((ArrayType) t).count);
             }
-
-			/**
-			 * Handle canonical types.
-			 */
-//			else if (t.isCanType()) {
-//				EnumType enumType = (EnumType) ((CanType) t).childType;
-//				code = new ImcCONST(enumType.offsetForDefinitionName(memberName));
-//			}
 		}
 
 		ImcDesc.setImcCode(acceptor, code);
