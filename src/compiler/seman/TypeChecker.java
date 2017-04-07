@@ -173,17 +173,6 @@ public class TypeChecker implements ASTVisitor {
             SymbDesc.setNameDef(selfParDef.type, acceptor);
             SymbDesc.setType(selfParDef, classType);
 
-            // descriptor initialization
-            if (constructor.func.statements.size() > 0 && constructor.func.statements.getFirst() instanceof AbsBinExpr) {
-                AbsBinExpr binExpr = (AbsBinExpr) constructor.func.statements.getFirst();
-                if (binExpr.expr2 instanceof AbsFunCall) {
-                    AbsFunCall fnCall = (AbsFunCall) binExpr.expr2;
-                    // TODO: - Reimplement this
-                    ((AbsAtomConstExpr) fnCall.args.get(1).expr).value = "" + classType.descriptor;
-                    ((AbsAtomConstExpr) fnCall.args.get(2).expr).value = "" + canType.friendlyName();
-                }
-            }
-
             // append base classes' initialization code
             if (baseClassDefaultConstructor != null) {
                 constructor.func.statements.addAll(0, baseClassDefaultConstructor.func.statements);
@@ -197,7 +186,7 @@ public class TypeChecker implements ASTVisitor {
             SymbDesc.setType(constructor, funType);
         }
 
-//        classType.debugPrint();
+        classType.debugPrint();
 	}
 
 	@Override
@@ -650,8 +639,7 @@ public class TypeChecker implements ASTVisitor {
 			else
 				Report.error(acceptor.position,
 						"Operator \"!\" is not defined for type " + type);
-		} else if (acceptor.oper == AbsUnExpr.ADD
-				|| acceptor.oper == AbsUnExpr.SUB) {
+		} else if (acceptor.oper == AbsUnExpr.ADD || acceptor.oper == AbsUnExpr.SUB) {
 			if (type.isBuiltinIntType() || type.canCastTo(Type.intType))
 				SymbDesc.setType(acceptor, type);
 			else
@@ -820,8 +808,7 @@ public class TypeChecker implements ASTVisitor {
 				AbsEnumMemberDef enumMemberDef = (AbsEnumMemberDef) def;
 				
 				if (enumRawValueType != null && enumMemberDef.value == null) {
-					if (!enumRawValueType.isBuiltinStringType() && 
-							!enumRawValueType.isBuiltinIntType())
+					if (!enumRawValueType.isBuiltinStringType() && !enumRawValueType.isBuiltinIntType())
 						Report.error(enumMemberDef.position, 
 								"Enum members require explicit raw values when "
 								+ "the raw type is not Int or String literal");
@@ -864,17 +851,7 @@ public class TypeChecker implements ASTVisitor {
 					previousValue = enumMemberDef.value.value;
 				}
 			}
-			else if (def instanceof AbsFunDef) {
-//				FunctionType fnType = (FunctionType) SymbDesc.getType(def);
-//				Vector<Type> parTypes = fnType.parameterTypes;
-//				parTypes.add(0, enumType);
-//				
-//				FunctionType newFnType = new FunctionType(parTypes, 
-//						fnType.resultType, (AbsFunDef) def);
-//				
-//				SymbDesc.setType(def, newFnType);
-			}
-			
+
 			types.add((ClassType) SymbDesc.getType(def));
 			names.add(def.getName());
 		}

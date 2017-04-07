@@ -118,6 +118,7 @@ public class FunctionType extends ReferenceType {
 	@Override
 	public int size() {
 		int size = 4;
+
 		for (Type t : parameterTypes)
 			size += t.size();
 		

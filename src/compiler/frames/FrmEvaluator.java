@@ -87,9 +87,11 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
+        FrmDesc.setAccess(acceptor, new FrmVirtualTableAccess(acceptor));
+
 		Type tmp = parentType;
-		parentType = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
-		
+		parentType = ((CanType) SymbDesc.getType(acceptor)).childType;
+
 		acceptor.definitions.accept(this);
 		for (AbsFunDef c : acceptor.contrustors) {
 			c.accept(this);
@@ -195,7 +197,7 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsTypeName acceptor) {
-
+        ///
 	}
 
 	@Override
@@ -205,20 +207,23 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		if (parentType != null)
-			// member access
-			FrmDesc.setAccess(acceptor, new FrmMemberAccess(acceptor, parentType));
-		else if (currentFrame.label.name().equals("_" + ENTRY_POINT))
-			// var access
-			FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
-		else
-			// local function access
-			FrmDesc.setAccess(acceptor, new FrmLocAccess(acceptor, currentFrame));
+		if (parentType != null) {
+            // member access
+            FrmDesc.setAccess(acceptor, new FrmMemberAccess(acceptor, parentType));
+        }
+		else if (currentFrame.label.name().equals("_" + ENTRY_POINT)) {
+            // var access
+            FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
+        }
+		else {
+            // local function access
+            FrmDesc.setAccess(acceptor, new FrmLocAccess(acceptor, currentFrame));
+        }
 	}
 
 	@Override
 	public void visit(AbsVarNameExpr acceptor) {
-
+        ///
 	}
 
 	@Override

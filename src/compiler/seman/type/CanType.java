@@ -49,7 +49,7 @@ public class CanType extends Type {
 
 	@Override
 	public int size() {
-		return 0;
+		return childType.size();
 	}
 
 	@Override

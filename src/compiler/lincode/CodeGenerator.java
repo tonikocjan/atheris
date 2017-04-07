@@ -18,15 +18,14 @@
 package compiler.lincode;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import compiler.frames.FrmFrame;
 import compiler.frames.FrmLabel;
-import compiler.imcode.ImcChunk;
-import compiler.imcode.ImcCode;
-import compiler.imcode.ImcCodeChunk;
-import compiler.imcode.ImcDataChunk;
+import compiler.imcode.*;
 import compiler.interpreter.Interpreter;
+import compiler.seman.type.ClassType;
 
 public class CodeGenerator {
 	
@@ -64,10 +63,36 @@ public class CodeGenerator {
 			else {
 				ImcDataChunk data = (ImcDataChunk) chnk;
 				Interpreter.locations.put(data.label, Interpreter.heapPointer);
-				if (data.data != null)
-					Interpreter.stM(Interpreter.heapPointer, data.data);
-				else
-					Interpreter.stM(Interpreter.heapPointer, 0);
+
+				if (data.data != null) {
+                    Interpreter.stM(Interpreter.heapPointer, data.data);
+                }
+				else {
+                    if (data instanceof ImcVirtualTableDataChunk) {
+                        // load vtable
+                        ImcVirtualTableDataChunk vtableChunk = (ImcVirtualTableDataChunk) data;
+                        ClassType type = vtableChunk.classType;
+
+                        int heap = Interpreter.heapPointer;
+                        Interpreter.debug = true;
+                        Interpreter.stM(heap, type.descriptor);
+                        Interpreter.stM(heap + 4, 0);
+                        heap += 8;
+
+                        for (Iterator<Integer> it = type.getOffsets(); it.hasNext(); ) {
+                            Integer offset = it.next();
+                            System.out.println("offset " + offset);
+
+                            Interpreter.stM(heap, offset);
+                            heap += 4;
+                        }
+                        System.out.println("end");
+                        Interpreter.debug = false;
+                    }
+                    else {
+                        Interpreter.stM(Interpreter.heapPointer, 0);
+                    }
+                }
 					
 				Interpreter.heapPointer += data.size;
 			}

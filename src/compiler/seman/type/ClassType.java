@@ -37,13 +37,13 @@ public class ClassType extends ReferenceType {
 	/**
 	 * Class member names and types.
 	 */
-	public final LinkedList<String> memberNames;
-    public final LinkedList<Type> memberTypes;
+	private final LinkedList<String> memberNames;
+    private final LinkedList<Type> memberTypes;
 
 	/**
 	 * Mapping for definitions.
 	 */
-	public final HashMap<String, AbsDef> definitions = new HashMap<>();
+	private final HashMap<String, AbsDef> definitions = new HashMap<>();
 
 	/**
 	 * Sum of sizes of all members.
@@ -51,10 +51,16 @@ public class ClassType extends ReferenceType {
 	private final int size;
 
     /**
+     * Inital offset of all members (space used for type descriptor).
+     */
+    private final int reservedSize = 4;
+
+    /**
      * Base class (null if no base class).
      */
     public final CanType baseClass;
     private final ClassType base;
+
 
 	/**
 	 * Create new class type.
@@ -75,14 +81,14 @@ public class ClassType extends ReferenceType {
 			size += types.get(i).size();
 		}
 
-        this.size = size;
+        this.size = size + reservedSize;
 		this.memberNames = names;
 		this.memberTypes = types;
 		this.classDefinition = definition;
 		this.baseClass = baseClass;
 		this.base = baseClass == null ? null : (ClassType) baseClass.childType;
 
-        descriptorMapping.put(this, descriptor - 1);
+        descriptorMapping.put(this, descriptor);
 	}
 
     /**
@@ -126,11 +132,14 @@ public class ClassType extends ReferenceType {
 	 * @return offset of that member
 	 */
 	public int offsetForMember(String name) {
-		int offset = 0;
+		int offset = reservedSize;
 
         // first check in base class
-        if (baseClass != null) {
+        if (base != null) {
             offset = base.offsetForMember(name);
+
+            if (offset < base.size())
+                return offset;
         }
 
 		Iterator<String> namesIterator = memberNames.iterator();
@@ -144,13 +153,53 @@ public class ClassType extends ReferenceType {
 		return offset;
 	}
 
-	/**
-	 * Get name of this type.
-	 * @return Class name.
-	 */
-	public String getName() {
-		return classDefinition.name;
-	}
+	public Iterator<Integer> getOffsets() {
+        Iterator<Integer> baseIterator = base == null ? null : base.getOffsets();
+
+	    Iterator<Integer> iterator = new Iterator<Integer>() {
+            Iterator<Type> typesIterator = memberTypes.iterator();
+            int offset = reservedSize;
+
+            @Override
+            public boolean hasNext() {
+                if (baseIterator != null && baseIterator.hasNext())
+                    return true;
+                return typesIterator.hasNext();
+            }
+
+            @Override
+            public Integer next() {
+                int currentOffset = offset;
+
+                Type type;
+                if (baseIterator != null && baseIterator.hasNext()) {
+                    int off = baseIterator.next();
+                    if (!baseIterator.hasNext())
+                        offset += off;
+                    return off;
+                }
+                else {
+                    type = typesIterator.next();
+                    offset += type.size();
+                }
+
+                return currentOffset;
+            }
+        };
+
+        return iterator;
+    }
+
+    @Override
+    public int size() {
+        int size = this.size;
+
+        if (base != null) {
+            size += base.size() - reservedSize;
+        }
+
+        return size;
+    }
 
 	@Override
 	public boolean containsMember(String name) {
@@ -203,7 +252,15 @@ public class ClassType extends ReferenceType {
 		return definitions.get(name);
 	}
 
-	@Override
+    /**
+     * Get name of this type.
+     * @return Classes name.
+     */
+    public String getName() {
+        return classDefinition.name;
+    }
+
+    @Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
@@ -226,22 +283,15 @@ public class ClassType extends ReferenceType {
 	}
 
 	@Override
-	public int size() {
-	    int size = this.size;
-
-	    if (base != null) {
-	        size += base.size();
-        }
-
-		return size;
-	}
-
-	@Override
 	public String friendlyName() {
 		return classDefinition.name;
 	}
 
 	public void debugPrint() {
+        if (base != null) {
+            base.debugPrint();
+        }
+
         System.out.println(friendlyName());
 
         Iterator<String> namesIterator = memberNames.iterator();

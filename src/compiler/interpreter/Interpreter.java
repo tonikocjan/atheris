@@ -32,7 +32,7 @@ public class Interpreter {
 	/*--- staticni del navideznega stroja ---*/
 	
 	/** Pomnilnik navideznega stroja. */
-	public static HashMap<Integer, Object> mems = new HashMap<Integer, Object>();
+	public static HashMap<Integer, Object> mems = new HashMap<>();
 	public static HashMap<FrmLabel, Integer> locations = new HashMap<>();
 	
 	/** Vrhnji naslov kopice */
@@ -79,17 +79,11 @@ public class Interpreter {
 	/**
 	 * Debug print memory
 	 */
-	private void printMemory() {
-		for (Map.Entry<FrmLabel, Integer> entry : locations.entrySet()) {
-			System.out.println("Label: " + entry.getKey() + 
-								", Address: " + entry.getValue() + 
-								", Value: " + mems.get(entry.getValue()));
-			if (entry.getKey().name().equals("L8")) {
-				System.out.println("Label: " + entry.getKey() + 
-						", Adress: " + (entry.getValue() + 4) + 
-						", Value: " + mems.get(entry.getValue() + 4));
-			}
-		}
+	public static void printMemory() {
+	    int address = 4;
+		for (int i = 0; i < mems.size(); i++, address += 4) {
+            System.out.println("Address: " + address + ": " + mems.get(address));
+        }
 	}
 	
 	/*--- Izvajanje navideznega stroja. ---*/
@@ -213,6 +207,9 @@ public class Interpreter {
 			if (instr.label.name().equals("_rand")) {
 				return new Random().nextInt((Integer)ldM(stackPointer + 4));
 			}
+			if (instr.label.name().equals("_mem")) {
+			    return ldM((Integer)ldM(stackPointer + 4));
+            }
 			
 			new Interpreter(CodeGenerator.getFrameForLabel(instr.label), (ImcSEQ) CodeGenerator.getCodeForLabel(instr.label));
 			return ldM(stackPointer);
@@ -297,5 +294,8 @@ public class Interpreter {
 	
 		return null;
 	}
-	
+
+	private void loadVirtualTable() {
+
+    }
 }

@@ -157,6 +157,8 @@ public class Main {
 			ImcCodeChunk mainFrame = CodeGenerator.linearize(imcodegen.chunks);
 			imcode = new ImCode(dumpPhases.contains("interpret"));
 			imcode.dump(imcodegen.chunks);
+
+			Interpreter.printMemory();
 			
 			// clean-up
 			SymbTable.clean();

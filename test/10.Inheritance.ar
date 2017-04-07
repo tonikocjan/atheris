@@ -3,10 +3,19 @@ import stdlib
 class A {
 	let x: Int = 10
 	let a: Int = 15
+
+	func test() {
+
+	}
 }
 
 class B: A {
 	let y: Int = 20
+
+	func test2() {
+	
+	}
+
 	let b: Int = -100
 }
 
@@ -18,29 +27,4 @@ let a = A()
 let b = B()
 let c = C()
 
-print(integer: b.x)
-print(integer: b.y)
-print(integer: b.a)
-print(integer: b.b)
-
-print(integer: a.A_descriptor.descriptor)
-print(integer: b.A_descriptor.descriptor)
-print(integer: b.B_descriptor.descriptor)
-print(integer: c.A_descriptor.descriptor)
-print(integer: c.B_descriptor.descriptor)
-print(integer: c.C_descriptor.descriptor)
-print(string: a.A_descriptor.name)
-print(string: b.A_descriptor.name)
-print(string: b.B_descriptor.name)
-print(string: c.A_descriptor.name)
-print(string: c.B_descriptor.name)
-print(string: c.C_descriptor.name)
-
-print(integer: c.x)
-print(integer: c.y)
-print(integer: c.a)
-print(integer: c.b)
-print(integer: c.c)
-
-let test: A = B()
-print(integer: test.x)
+print(integer: mem(4))

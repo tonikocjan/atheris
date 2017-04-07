@@ -527,30 +527,6 @@ public class SynAn {
 		Position definitionPosition = new Position(start, end);
 
 		skip();
-
-		// TODO: - Altering AST in SynAn probably isn't the best idea
-		if (!parseStandardLibrary) {
-            // implicitly add classDescriptor object definition to this class definition
-            String descriptorName = Constants.descriptorName(className);
-            AbsVarDef classDescriptorDefinition = new AbsVarDef(definitionPosition, descriptorName,
-                    new AbsTypeName(definitionPosition, Constants.classDescriptorClassIdentifier), false, AccessControl.Public);
-            definitions.addFirst(classDescriptorDefinition);
-
-            // initialize classDescriptor
-            AbsVarNameExpr descriptorNameExpr = new AbsVarNameExpr(definitionPosition, descriptorName);
-            AbsVarNameExpr selfParExpr = new AbsVarNameExpr(definitionPosition, Constants.selfParameterIdentifier);
-            AbsBinExpr dotExpr =
-                    new AbsBinExpr(definitionPosition, AbsBinExpr.DOT, selfParExpr, descriptorNameExpr);
-            Vector<AbsLabeledExpr> args = new Vector<>();
-            args.add(new AbsLabeledExpr(definitionPosition,
-                    new AbsAtomConstExpr(definitionPosition, AtomTypeKind.INT, "-1"), "descriptor"));
-            args.add(new AbsLabeledExpr(definitionPosition,
-                    new AbsAtomConstExpr(definitionPosition, AtomTypeKind.STR, ""), "name"));
-            AbsFunCall constructorCallExpr = new AbsFunCall(definitionPosition, Constants.classDescriptorClassIdentifier, args);
-            AbsBinExpr assignExpr = new AbsBinExpr(definitionPosition, AbsBinExpr.ASSIGN, dotExpr, constructorCallExpr);
-
-            defaultConstructor.addFirst(assignExpr);
-        }
 		
 		return new AbsClassDef(className, definitionPosition, baseClass, definitions, defaultConstructor, constructors);
 	}

@@ -62,16 +62,7 @@ import compiler.abstr.tree.type.AbsFunType;
 import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsTypeName;
-import compiler.frames.FrmAccess;
-import compiler.frames.FrmDesc;
-import compiler.frames.FrmFrame;
-import compiler.frames.FrmFunAccess;
-import compiler.frames.FrmLabel;
-import compiler.frames.FrmLocAccess;
-import compiler.frames.FrmMemberAccess;
-import compiler.frames.FrmParAccess;
-import compiler.frames.FrmTemp;
-import compiler.frames.FrmVarAccess;
+import compiler.frames.*;
 import compiler.seman.SymbDesc;
 import compiler.seman.type.ArrayType;
 import compiler.seman.type.CanType;
@@ -130,27 +121,21 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
+        FrmVirtualTableAccess access = (FrmVirtualTableAccess) FrmDesc.getAccess(acceptor);
+        CanType varType = (CanType) SymbDesc.getType(acceptor);
+
+        int descriptorOffset = 8; // offset for super and descriptor id
+        chunks.addFirst(new ImcVirtualTableDataChunk(
+                FrmLabel.newLabel(varType.friendlyName()),
+                varType.size() + descriptorOffset, (ClassType) varType.childType));
+
 		for (AbsDef def : acceptor.definitions.definitions) {
             def.accept(this);
-        }
-
-        AbsVarDef descriptorDefinition = (AbsVarDef) acceptor.findDefinitionForName(Constants.descriptorName(acceptor.name));
-		if (descriptorDefinition != null) {
-		    // TODO: - Reimplement this logic
-            if (SymbDesc.getType(descriptorDefinition).isBuiltinType()) descriptorDefinition = null;
         }
 
 		CanType type = (CanType) SymbDesc.getType(acceptor);
 		ClassType classType = (ClassType) type.childType;
 		int size = classType.size();
-
-		int descriptor = classType.descriptor;
-		String name = type.friendlyName();
-
-		if (classType.baseClass != null) {
-            descriptor = classType.baseClass.descriptor;
-            name = classType.baseClass.friendlyName();
-        }
 
         for (AbsFunDef constructor : acceptor.contrustors) {
             FrmFrame constructorFrame = FrmDesc.getFrame(constructor);
@@ -240,12 +225,12 @@ public class ImcCodeGen implements ASTVisitor {
             code = new ImcMOVE(e1, e2);
         }
         else if (acceptor.oper == AbsBinExpr.IS) {
-            Type dstType = SymbDesc.getType(acceptor.expr2);
-            int dstDescriptor = Type.getDescriptorForType(dstType);
+            int dstDescriptor = Type.getDescriptorForType(SymbDesc.getType(acceptor.expr2));
 
             code = new ImcBINOP(acceptor.oper, new ImcMEM(new ImcMEM(e1)), new ImcCONST(dstDescriptor));
         }
 		else if (acceptor.oper == AbsBinExpr.ARR) {
+		    // TODO: -
 			ArrayType type = (ArrayType) SymbDesc.getType(acceptor.expr1);
 			int size = type.type.size();
 			

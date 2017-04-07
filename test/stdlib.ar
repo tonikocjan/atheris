@@ -9,16 +9,9 @@ func print(char: Char) {
 }
 func print(bool: Bool) {
 }
+func print() {
+}
 
-# MARK: - Class Descriptor
-class ClassDescriptor {
-	# Identifier for the type given by compiler
-	var descriptor: Int
-	# Name of the type
-	var name: String
-
-	init(descriptor: Int, name: String) {
-		self.descriptor = descriptor
-		self.name = name
-	}
+func mem(_ memory: Int) Int {
+	
 }

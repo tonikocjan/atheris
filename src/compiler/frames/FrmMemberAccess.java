@@ -32,7 +32,12 @@ public class FrmMemberAccess extends FrmAccess {
 	 * Parent type.
 	 */
 	public final Type parentType;
-	
+
+    /**
+     *
+     * @param memberDef
+     * @param parentType
+     */
 	public FrmMemberAccess(AbsVarDef memberDef, Type parentType) {
 		this.memberDef = memberDef;
 		this.parentType = parentType;
