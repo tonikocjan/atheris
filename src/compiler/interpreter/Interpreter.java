@@ -27,7 +27,7 @@ import compiler.lincode.CodeGenerator;
 public class Interpreter {
 
 	public static boolean debug = false;
-	public static boolean shouldPrintMemory = false;
+	public static boolean shouldPrintMemory = true;
 	
 	/*--- staticni del navideznega stroja ---*/
 	
@@ -80,9 +80,14 @@ public class Interpreter {
 	 * Debug print memory
 	 */
 	public static void printMemory() {
-	    int address = 4;
+	    int address = 0;
 		for (int i = 0; i < mems.size(); i++, address += 4) {
-            System.out.println("Address: " + address + ": " + mems.get(address));
+		    Object value = mems.get(address);
+		    if (value == null) {
+		        i--;
+		        continue;
+            }
+            System.out.println("Address [" + address + "]: " + value);
         }
 	}
 	

@@ -21,6 +21,7 @@ import java.util.*;
 
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.AbsDef;
+import compiler.seman.type.ClassType;
 
 /**
  * Shranjevanje klicnih zapisov.
@@ -29,8 +30,20 @@ import compiler.abstr.tree.def.AbsDef;
  */
 public class FrmDesc {
 
-	/** Klicni zapisi. */
-	private static HashMap<AbsDef, FrmFrame> frames = new HashMap<AbsDef, FrmFrame>();
+	/**
+     * Klicni zapisi.
+     */
+	private static HashMap<AbsDef, FrmFrame> frames = new HashMap<>();
+
+    /**
+     * Opisi dostopa.
+     */
+    private static HashMap<AbsDef, FrmAccess> acceses = new HashMap<>();
+
+    /**
+     * Opisi dostopa.
+     */
+    private static HashMap<ClassType, FrmVirtualTableAccess> virtualTables = new HashMap<>();
 
 	/**
 	 * Poveze funkcijo s klicnim zapisom.
@@ -52,9 +65,6 @@ public class FrmDesc {
 		return FrmDesc.frames.get(fun);
 	}
 
-	/** Opisi dostopa. */
-	private static HashMap<AbsDef, FrmAccess> acceses = new HashMap<AbsDef, FrmAccess>();
-
 	/**
 	 * Poveze spremenljivko, parameter ali komponento z opisom dostopa.
 	 * 
@@ -75,9 +85,23 @@ public class FrmDesc {
 		return FrmDesc.acceses.get(var);
 	}
 
+
+    public static void setVirtualTable(ClassType classType, FrmVirtualTableAccess virtualTable) {
+        virtualTables.put(classType, virtualTable);
+    }
+
+    public static FrmVirtualTableAccess getVirtualTable(ClassType classType) {
+        return virtualTables.get(classType);
+    }
+
+    /**
+     * Cleanup.
+     */
 	public static void clean() {
 		frames.clear();
 		frames = null;
+        acceses.clear();
+        acceses = null;
 	}
 
 }

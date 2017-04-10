@@ -60,13 +60,16 @@ import compiler.seman.type.Type;
 
 public class FrmEvaluator implements ASTVisitor {
 
+    private Type parentType = null;
+    private FrmFrame currentFrame = null;
+    public FrmFrame entryPoint = null;
 	private int currentLevel = 1;
-	private FrmFrame currentFrame = null;
-	private Type parentType = null;
-	public FrmFrame entryPoint = null;
 	
 	public static final String ENTRY_POINT = "_main";
-	
+
+    /**
+     *
+     */
 	public FrmEvaluator() {
 		AbsFunDef _main = new AbsFunDef(null, ENTRY_POINT, new LinkedList<>(), 
 				new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(null, 
@@ -82,15 +85,17 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsListType acceptor) {
-
+        ///
 	}
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-        FrmDesc.setAccess(acceptor, new FrmVirtualTableAccess(acceptor));
+        Type tmp = parentType;
+        parentType = ((CanType) SymbDesc.getType(acceptor)).childType;
 
-		Type tmp = parentType;
-		parentType = ((CanType) SymbDesc.getType(acceptor)).childType;
+        FrmVirtualTableAccess virtualTableAccess = new FrmVirtualTableAccess(acceptor, parentType.size() + 8);
+        FrmDesc.setAccess(acceptor, virtualTableAccess);
+        FrmDesc.setVirtualTable((ClassType) parentType, virtualTableAccess);
 
 		acceptor.definitions.accept(this);
 		for (AbsFunDef c : acceptor.contrustors) {
@@ -102,7 +107,7 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsAtomConstExpr acceptor) {
-
+        ///
 	}
 
 	@Override

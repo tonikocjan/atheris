@@ -24,7 +24,7 @@ import compiler.abstr.tree.def.AbsVarDef;
  * 
  * @author sliva
  */
-public class FrmVarAccess extends FrmAccess {
+public class FrmVarAccess implements FrmAccess {
 
 	/** Opis spremenljivke.  */
 	public final AbsVarDef var;

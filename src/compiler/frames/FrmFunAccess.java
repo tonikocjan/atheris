@@ -24,7 +24,7 @@ import compiler.abstr.tree.def.AbsFunDef;
  * 
  * @author toni
  */
-public class FrmFunAccess extends FrmAccess {
+public class FrmFunAccess implements FrmAccess {
 
 	/** Opis funkcije.  */
 	public final AbsFunDef fun;

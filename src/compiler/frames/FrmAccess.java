@@ -22,6 +22,6 @@ package compiler.frames;
  * 
  * @author sliva
  */
-public abstract class FrmAccess {
-	public abstract String toString();
+public interface FrmAccess {
+    String toString();
 }

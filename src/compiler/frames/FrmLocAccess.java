@@ -27,7 +27,7 @@ import compiler.seman.type.*;
  * 
  * @author sliva
  */
-public class FrmLocAccess extends FrmAccess {
+public class FrmLocAccess implements FrmAccess {
 
 	/** Opis spremenljivke.  */
 	public final AbsVarDef var;

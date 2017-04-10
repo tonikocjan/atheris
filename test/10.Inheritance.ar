@@ -1,30 +1,14 @@
 import stdlib
 
 class A {
-	let x: Int = 10
-	let a: Int = 15
-
-	func test() {
-
-	}
 }
 
 class B: A {
-	let y: Int = 20
-
-	func test2() {
-	
-	}
-
-	let b: Int = -100
 }
 
 class C: B {
-	let c: Int = 55
 }
 
 let a = A()
 let b = B()
 let c = C()
-
-print(integer: mem(4))

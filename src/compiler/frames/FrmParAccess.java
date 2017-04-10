@@ -24,7 +24,7 @@ import compiler.abstr.tree.def.AbsParDef;
  * 
  * @author sliva
  */
-public class FrmParAccess extends FrmAccess {
+public class FrmParAccess implements FrmAccess {
 
 	/** Opis argumenta.  */
 	public AbsParDef par;

@@ -21,10 +21,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import compiler.frames.FrmDesc;
 import compiler.frames.FrmFrame;
 import compiler.frames.FrmLabel;
+import compiler.frames.FrmVirtualTableAccess;
 import compiler.imcode.*;
 import compiler.interpreter.Interpreter;
+import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
 
 public class CodeGenerator {
@@ -72,22 +75,24 @@ public class CodeGenerator {
                         // load vtable
                         ImcVirtualTableDataChunk vtableChunk = (ImcVirtualTableDataChunk) data;
                         ClassType type = vtableChunk.classType;
+                        CanType baseClass = type.baseClass;
 
-                        int heap = Interpreter.heapPointer;
-                        Interpreter.debug = true;
-                        Interpreter.stM(heap, type.descriptor);
-                        Interpreter.stM(heap + 4, 0);
-                        heap += 8;
+                        int baseClassVirtualTablePointer = 0;
+                        if (baseClass != null) {
+                            FrmVirtualTableAccess baseVirtualTable = FrmDesc.getVirtualTable((ClassType) baseClass.childType);
+                            baseClassVirtualTablePointer = baseVirtualTable.location;
+                        }
+
+                        Interpreter.stM(Interpreter.heapPointer, type.descriptor);
+                        Interpreter.stM(Interpreter.heapPointer + 4, baseClassVirtualTablePointer);
+                        Interpreter.heapPointer += 8;
 
                         for (Iterator<Integer> it = type.getOffsets(); it.hasNext(); ) {
                             Integer offset = it.next();
-                            System.out.println("offset " + offset);
 
-                            Interpreter.stM(heap, offset);
-                            heap += 4;
+                            Interpreter.stM(Interpreter.heapPointer, offset);
+                            Interpreter.heapPointer += 4;
                         }
-                        System.out.println("end");
-                        Interpreter.debug = false;
                     }
                     else {
                         Interpreter.stM(Interpreter.heapPointer, 0);
@@ -99,5 +104,4 @@ public class CodeGenerator {
 		}
 		return mainFrame;
 	}
-	
 }

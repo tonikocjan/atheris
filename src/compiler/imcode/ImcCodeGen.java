@@ -77,6 +77,7 @@ public class ImcCodeGen implements ASTVisitor {
 	 * Data and code chunks.
 	 */
 	public LinkedList<ImcChunk> chunks;
+	private int virtualTableCount = 0;
 	
 	/**
 	 * Code to be executed at the beginning of execution.
@@ -122,12 +123,11 @@ public class ImcCodeGen implements ASTVisitor {
 	@Override
 	public void visit(AbsClassDef acceptor) {
         FrmVirtualTableAccess access = (FrmVirtualTableAccess) FrmDesc.getAccess(acceptor);
-        CanType varType = (CanType) SymbDesc.getType(acceptor);
+        CanType varType = (CanType) SymbDesc.getType(access.classDef);
 
-        int descriptorOffset = 8; // offset for super and descriptor id
-        chunks.addFirst(new ImcVirtualTableDataChunk(
+        chunks.add(virtualTableCount++, new ImcVirtualTableDataChunk(
                 FrmLabel.newLabel(varType.friendlyName()),
-                varType.size() + descriptorOffset, (ClassType) varType.childType));
+                varType.size(), (ClassType) varType.childType));
 
 		for (AbsDef def : acceptor.definitions.definitions) {
             def.accept(this);
@@ -152,6 +152,9 @@ public class ImcCodeGen implements ASTVisitor {
 
             // assign new object as "self" parameter
             constructorCode.stmts.addFirst(new ImcMOVE(location, new ImcMALLOC(size)));
+
+            // assign pointer to vtable
+            constructorCode.stmts.add(1, new ImcMOVE(new ImcMEM(location), new ImcCONST("loc: " + access.location)));
 
             // return new object
             constructorCode.stmts.add(new ImcMOVE(new ImcTEMP(constructorFrame.RV), location));
