@@ -27,7 +27,7 @@ import compiler.lincode.CodeGenerator;
 public class Interpreter {
 
 	public static boolean debug = false;
-	public static boolean shouldPrintMemory = true;
+	public static boolean shouldPrintMemory = false;
 	
 	/*--- staticni del navideznega stroja ---*/
 	

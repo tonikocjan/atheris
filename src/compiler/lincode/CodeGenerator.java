@@ -72,7 +72,7 @@ public class CodeGenerator {
                 }
 				else {
                     if (data instanceof ImcVirtualTableDataChunk) {
-                        // load vtable
+                        // load virtual table into memory
                         ImcVirtualTableDataChunk vtableChunk = (ImcVirtualTableDataChunk) data;
                         ClassType type = vtableChunk.classType;
                         CanType baseClass = type.baseClass;
