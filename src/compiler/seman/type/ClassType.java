@@ -154,6 +154,28 @@ public class ClassType extends ReferenceType {
 		return offset;
 	}
 
+	public int indexForMember(String name) {
+        int index = 0;
+
+        // first check in base class
+        if (base != null) {
+            index = base.indexForMember(name);
+
+            if (index < base.memberNames.size())
+                return index;
+        }
+
+        Iterator<String> namesIterator = memberNames.iterator();
+        Iterator<Type> typesIterator = memberTypes.iterator();
+
+        while (namesIterator.hasNext()) {
+            if (name.equals(namesIterator.next())) break;
+            index++;
+        }
+
+        return index;
+    }
+
     @Override
     public int size() {
         int size = this.size;

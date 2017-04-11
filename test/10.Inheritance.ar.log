@@ -30,9 +30,24 @@ CODE CHUNK: label=_mem
   FRAME(mem: level=1,label=_mem,sizeLocs=0,sizeArgs=0,size=8,FP=T14,RV=T15)
   SEQ
     LABEL label=L8
+DATA CHUNK: label=L16 size=4 .BYTE: "hello world"
 CODE CHUNK: label=_a
-  FRAME(a: level=1,label=_a,sizeLocs=0,sizeArgs=0,size=8,FP=T16,RV=T17)
+  FRAME(a: level=1,label=_a,sizeLocs=0,sizeArgs=8,size=16,FP=T16,RV=T17)
   SEQ
+    MOVE
+      TEMP name=T33
+      CONST value=16755455
+    MOVE
+      TEMP name=T34
+      MEM
+        NAME label=L16
+    MOVE
+      TEMP name=T35
+      CALL label=_print
+        TEMP name=T33
+        TEMP name=T34
+    EXP
+      TEMP name=T35
     LABEL label=L9
 CODE CHUNK: label=_A
   FRAME(A: level=1,label=_A,sizeLocs=0,sizeArgs=0,size=8,FP=T18,RV=T19)
@@ -135,26 +150,26 @@ CODE CHUNK: label=_D
           CONST value=4
     LABEL label=L15
 DATA CHUNK: label=_a size=4
-DATA CHUNK: label=L22 size=8 .BYTE: "a is A"
-DATA CHUNK: label=L25 size=12 .BYTE: "a is not A"
+DATA CHUNK: label=L23 size=4 .BYTE: "is A"
+DATA CHUNK: label=L26 size=4 .BYTE: "is not A"
 CODE CHUNK: label=__main
   FRAME(_main: level=0,label=__main,sizeLocs=0,sizeArgs=8,size=16,FP=T0,RV=T1)
   SEQ
     MOVE
-      TEMP name=T32
+      TEMP name=T36
       TEMP name=T0
     MOVE
-      TEMP name=T33
+      TEMP name=T37
       CONST value=0
     MOVE
-      TEMP name=T34
+      TEMP name=T38
       CALL label=_A
-        TEMP name=T32
-        TEMP name=T33
+        TEMP name=T36
+        TEMP name=T37
     MOVE
       MEM
         NAME label=_a
-      TEMP name=T34
+      TEMP name=T38
     MOVE
       TEMP name=T31
       CONST value=0
@@ -163,70 +178,91 @@ CODE CHUNK: label=__main
       MEM
         MEM
           NAME label=_a
-    LABEL label=L17
-    CJUMP labels=L18,L26
+    LABEL label=L18
+    CJUMP labels=L19,L27
       BINOP op=!=
         TEMP name=T30
         CONST value=0
-    LABEL label=L26
-    JUMP label=L19
-    LABEL label=L18
-    CJUMP labels=L20,L27
+    LABEL label=L27
+    JUMP label=L20
+    LABEL label=L19
+    CJUMP labels=L21,L28
       BINOP op===
         MEM
           TEMP name=T30
         CONST value=16
-    LABEL label=L27
-    JUMP label=L21
-    LABEL label=L20
+    LABEL label=L28
+    JUMP label=L22
+    LABEL label=L21
     MOVE
       TEMP name=T31
       CONST value=1
-    JUMP label=L19
-    LABEL label=L21
+    JUMP label=L20
+    LABEL label=L22
     MOVE
       TEMP name=T30
       MEM
         BINOP op=+
           TEMP name=T30
           CONST value=4
-    JUMP label=L17
-    LABEL label=L19
-    CJUMP labels=L23,L28
+    JUMP label=L18
+    LABEL label=L20
+    CJUMP labels=L24,L29
       BINOP op===
         TEMP name=T31
         CONST value=1
-    LABEL label=L28
-    JUMP label=L24
-    LABEL label=L23
-    MOVE
-      TEMP name=T35
-      TEMP name=T0
-    MOVE
-      TEMP name=T36
-      MEM
-        NAME label=L22
-    MOVE
-      TEMP name=T37
-      CALL label=_print
-        TEMP name=T35
-        TEMP name=T36
-    EXP
-      TEMP name=T37
-    JUMP label=L16
+    LABEL label=L29
+    JUMP label=L25
     LABEL label=L24
     MOVE
-      TEMP name=T38
+      TEMP name=T39
       TEMP name=T0
     MOVE
-      TEMP name=T39
+      TEMP name=T40
       MEM
-        NAME label=L25
+        NAME label=L23
     MOVE
-      TEMP name=T40
+      TEMP name=T41
       CALL label=_print
-        TEMP name=T38
         TEMP name=T39
+        TEMP name=T40
     EXP
-      TEMP name=T40
-    LABEL label=L16
+      TEMP name=T41
+    JUMP label=L17
+    LABEL label=L25
+    MOVE
+      TEMP name=T42
+      TEMP name=T0
+    MOVE
+      TEMP name=T43
+      MEM
+        NAME label=L26
+    MOVE
+      TEMP name=T44
+      CALL label=_print
+        TEMP name=T42
+        TEMP name=T43
+    EXP
+      TEMP name=T44
+    LABEL label=L17
+    MOVE
+      TEMP name=T32
+      BINOP op=+
+        MEM
+          MEM
+            NAME label=_a
+        CONST value=8
+    MOVE
+      TEMP name=T45
+      TEMP name=T0
+    MOVE
+      TEMP name=T46
+      MEM
+        NAME label=_a
+    MOVE
+      TEMP name=T47
+      METHOD CALL temp=T32
+        TEMP name=T45
+        TEMP name=T46
+    EXP
+      TEMP name=T47

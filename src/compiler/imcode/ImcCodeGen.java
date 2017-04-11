@@ -180,7 +180,7 @@ public class ImcCodeGen implements ASTVisitor {
         }
 		else if (acceptor.type == AtomTypeKind.STR) {
 			FrmLabel l = FrmLabel.newLabel();
-			ImcDataChunk str = new ImcDataChunk(l, acceptor.value.length());
+			ImcDataChunk str = new ImcDataChunk(l, 4);
 			str.data = acceptor.value;
 			chunks.add(str);
 			ImcDesc.setImcCode(acceptor, new ImcMEM(new ImcNAME(l)));
@@ -311,7 +311,21 @@ public class ImcCodeGen implements ASTVisitor {
 			else if (t.isClassType()) {
 				// member access code
 				if (acceptor.expr2 instanceof AbsFunCall) {
-                    code = c2;
+				    ClassType classType = (ClassType) t;
+				    int indexForMember = classType.indexForMember(((AbsFunCall) acceptor.expr2).getStringRepresentation());
+				    int offset = (indexForMember + 2) * 4;
+
+				    FrmTemp frmTemp = new FrmTemp();
+                    ImcTEMP temp = new ImcTEMP(frmTemp);
+
+				    ImcSEQ methodCallCode = new ImcSEQ();
+                    methodCallCode.stmts.add(new ImcMOVE(temp, new ImcBINOP(ImcBINOP.ADD, new ImcMEM(e1), new ImcCONST(offset))));
+//                    new ImcMEM(new ImcBINOP(ImcBINOP.ADD, new ImcMEM(e1), new ImcCONST(offset)))
+
+                    ImcMethodCALL methodCall = new ImcMethodCALL(frmTemp);
+                    methodCall.args = ((ImcCALL) c2).args;
+
+                    code = new ImcESEQ(methodCallCode, methodCall);
                 }
 				else {
                     code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, e2));

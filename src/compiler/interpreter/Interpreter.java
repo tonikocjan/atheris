@@ -72,6 +72,7 @@ public class Interpreter {
 
 	public Object ldT(FrmTemp temp) {
 		Object value = temps.get(temp);
+
 		if (debug) System.out.println(" " + temp.name() + " => " + value);
 		return value;
 	}
@@ -152,10 +153,12 @@ public class Interpreter {
 	}
 	
 	public Object execute(ImcCode instruction) {
-		if (instruction instanceof ImcBINOP) {
+        if (instruction instanceof ImcBINOP) {
 			ImcBINOP instr = (ImcBINOP) instruction;
+
 			Object fstSubValue = execute(instr.limc);
 			Object sndSubValue = execute(instr.rimc);
+
 			switch (instr.op) {
 			case ImcBINOP.OR:
 				return ((((Integer) fstSubValue).intValue() != 0) || (((Integer) sndSubValue).intValue() != 0) ? 1 : 0);
@@ -219,15 +222,36 @@ public class Interpreter {
 			new Interpreter(CodeGenerator.getFrameForLabel(instr.label), (ImcSEQ) CodeGenerator.getCodeForLabel(instr.label));
 			return ldM(stackPointer);
 		}
+
+        if (instruction instanceof ImcMethodCALL) {
+            ImcMethodCALL instr = (ImcMethodCALL) instruction;
+            int offset = 0;
+
+            stM(stackPointer, execute(instr.args.getFirst()));
+
+            offset += 4;
+
+            for (int i = 1; i < instr.args.size(); i++) {
+                stM(stackPointer + offset, execute(instr.args.get(i)));
+                offset += 4;
+            }
+
+            FrmLabel label = (FrmLabel) ldM((Integer) ldT(instr.temp));
+            new Interpreter(CodeGenerator.getFrameForLabel(label), (ImcSEQ) CodeGenerator.getCodeForLabel(label));
+            return ldM(stackPointer);
+        }
 		
 		if (instruction instanceof ImcCJUMP) {
 			ImcCJUMP instr = (ImcCJUMP) instruction;
 			Object cond = execute(instr.cond);
+
 			if (cond instanceof Integer) {
-				if (((Integer) cond).intValue() != 0)
-					return instr.trueLabel;
-				else
-					return instr.falseLabel;
+				if (((Integer) cond).intValue() != 0) {
+                    return instr.trueLabel;
+                }
+				else {
+                    return instr.falseLabel;
+                }
 			}
 			else Report.error("CJUMP: illegal condition type.");
 		}

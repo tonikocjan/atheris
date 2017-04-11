@@ -2,7 +2,7 @@ import stdlib
 
 class A {
 	func a() {
-
+		print(string: "hello world")
 	}
 }
 
@@ -29,3 +29,6 @@ if a is A {
 else {
 	print(string: "is not A")	
 }
+
+
+a.a()
