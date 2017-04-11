@@ -322,6 +322,7 @@ public class SemAn implements ASTVisitor {
 		for (AbsParDef par : funDef.getParamaters()) {
 			indent += 2; par.accept(this); indent -= 2;
 		}
+        Report.dump(indent + 2, "Overriding: " + funDef.isOverriding());
 		indent += 2; funDef.type.accept(this); indent -= 2;
 		indent += 2; funDef.func.accept(this); indent -= 2;
 	}

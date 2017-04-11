@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import compiler.Report;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;
@@ -136,53 +137,18 @@ public class CodeGenerator {
     }
 
     private static Iterator<FrmLabel> generateVirtualTableForClass(ClassType classType) {
-	    final AbsClassDef def = classType.classDefinition;
-        Iterator<FrmLabel> baseIterator = null;
-
-	    if (def.baseClass != null) {
-	         baseIterator = generateVirtualTableForClass((ClassType) classType.baseClass.childType);
-        }
-
-        Iterator<FrmLabel> finalBaseIterator = baseIterator;
         return new Iterator<FrmLabel>() {
 
-	        public AbsFunDef current = null;
-	        Iterator<AbsDef> defIterator = def.definitions.definitions.iterator();
+            Iterator<AbsFunDef> iter = classType.generateVirtualTable();
 
             @Override
             public boolean hasNext() {
-                if (finalBaseIterator != null && finalBaseIterator.hasNext()) {
-                    return true;
-                }
-
-                while (defIterator.hasNext()) {
-                    AbsDef next = defIterator.next();
-
-                    if (next instanceof AbsFunDef) {
-                        current = (AbsFunDef) next;
-                        return true;
-                    }
-                }
-
-                return false;
+                return iter.hasNext();
             }
 
             @Override
             public FrmLabel next() {
-                if (finalBaseIterator != null) {
-                    FrmLabel nxt = finalBaseIterator.next();
-
-                    if (nxt != null) {
-                        return nxt;
-                    }
-                }
-
-                if (current == null) return null;
-
-                FrmLabel label = FrmDesc.getFrame(current).label;
-                current = null;
-
-                return label;
+                return FrmDesc.getFrame(iter.next()).label;
             }
         };
     }

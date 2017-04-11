@@ -2,33 +2,48 @@ import stdlib
 
 class A {
 	func a() {
-		print(string: "hello world")
+		print(string: "A::a()")
+	}
+
+	func foo() {
+		print(string: "A::foo()")	
 	}
 }
 
 class B: A {
-	func b() {
+	override func a() {
+		print(string: "B::a()")
+	}
 
+	func b() {
+		print(string: "B::b()")
 	}
 }
 
 class C: B {
-	func c() {
-
+	override func a() {
+		print(string: "C::a()")
 	}
 }
 
 class D {
 }
 
-let a: A = A()
+var a: A
+let x = 30
 
-if a is A {
-	print(string: "is A")
+if x == 10 {
+	a = A()
+}
+else if x == 20 {
+	a = B()
 }
 else {
-	print(string: "is not A")	
+	a = C()
 }
 
-
 a.a()
+
+C().foo()
+C().b()
+

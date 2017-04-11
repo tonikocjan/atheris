@@ -92,6 +92,32 @@ public class AbsFunDef extends AbsDef {
         this.func = bodyStatements;
         this.isConstructor = isConstructor;
     }
+
+    /**
+     * Create new function definition.
+     *
+     * @param pos
+     *            Position
+     * @param name
+     *            Function name
+     * @param parameters
+     *            Parameter list
+     * @param returnType
+     *            Return type
+     * @param bodyStatements
+     *            Function code
+     * @param isConstructor
+     *            Is this function a constructor
+     */
+    public AbsFunDef(Position pos, String name,
+                     LinkedList<AbsParDef> parameters, AbsType returnType, AbsStmts bodyStatements, boolean isConstructor, boolean isOverriding) {
+        super(pos, name);
+
+        this.pars = parameters;
+        this.type = returnType;
+        this.func = bodyStatements;
+        this.isConstructor = isConstructor;
+    }
 	
 	@Override
 	public String getName() {

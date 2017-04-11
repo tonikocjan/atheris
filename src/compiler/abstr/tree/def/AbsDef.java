@@ -38,12 +38,14 @@ public abstract class AbsDef extends AbsStmt {
 	 */
 	protected AbsDef parentDef;
 
-	/** Is this definition public / private (used for class members) */
+	/** Definition's access control (used for member definitions) */
 	protected AccessControl accessControl;
 
 	/** Is this definition mutable */
 	public final boolean isMutable;
 
+    /** Is this definition overriding another definitition */
+    private boolean isOverriding;
 	
 	/**
 	 * Create new definition.
@@ -58,6 +60,7 @@ public abstract class AbsDef extends AbsStmt {
 		this.name = name;
 		this.accessControl = AccessControl.Public;
 		this.isMutable = false;
+		this.isOverriding = false;
 	}
 	
 	/**
@@ -73,21 +76,25 @@ public abstract class AbsDef extends AbsStmt {
 		this.name = name;
 		this.accessControl = visibility;
         this.isMutable = false;
+        this.isOverriding = false;
 	}
 
     /**
      * Create new definition.
-     *
      * @param pos
-     *            Position.
+     * @param name
+     * @param isMutable
+     * @param isOverriding
+     * @param visibility
      */
-    public AbsDef(Position pos, String name, boolean isMutable, AccessControl visibility) {
+    public AbsDef(Position pos, String name, boolean isMutable, boolean isOverriding, AccessControl visibility) {
         super(pos);
 
         this.parentDef = null;
         this.name = name;
         this.accessControl = visibility;
         this.isMutable = isMutable;
+        this.isOverriding = isOverriding;
     }
 	
 	/**
@@ -144,4 +151,20 @@ public abstract class AbsDef extends AbsStmt {
 	public void setAccessControl(AccessControl accessControl) {
 		this.accessControl = accessControl;
 	}
+
+    /**
+     *
+     * @return
+     */
+    public boolean isOverriding() {
+        return isOverriding;
+    }
+
+    /**
+     *
+     * @param isOverriding
+     */
+    public void setOverriding(boolean isOverriding) {
+        this.isOverriding = isOverriding;
+    }
 }

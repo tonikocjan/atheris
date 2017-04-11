@@ -294,15 +294,22 @@ public class SynAn {
 
 	private AbsDef parseDefinition() {
 		AbsDef definition = null;
-		AccessControl visibility = AccessControl.Public;
+		AccessControl accessControl = AccessControl.Public;
 
-		if (symbol.token == TokenType.KW_PUBLIC)
+        boolean isOverriding = false;
+
+        if (symbol.token == TokenType.KW_OVERRIDE) {
+            isOverriding = true;
+            skip();
+        }
+
+        if (symbol.token == TokenType.KW_PUBLIC)
 			skip();
 		else if (symbol.token == TokenType.KW_PRIVATE) {
-			visibility = AccessControl.Private;
+			accessControl = AccessControl.Private;
 			skip();
 		}
-		
+
 		switch (symbol.token) {
 		case KW_FUN:
             dump("definition -> function_definition");
@@ -314,8 +321,6 @@ public class SynAn {
 			break;
 		case KW_VAR:
 		case KW_LET:
-		case KW_PUBLIC:
-		case KW_PRIVATE:
 			dump("definition -> variable_definition");
 			definition = parseVarDefinition(); 
 			break;
@@ -344,13 +349,16 @@ public class SynAn {
 						+ previous.lexeme + "\", delete this token");
 		}
 
-		definition.setAccessControl(visibility);
+		definition.setAccessControl(accessControl);
+		definition.setOverriding(isOverriding);
+
 		return definition;
 	}
 
 	private AbsFunDef parseFunDefinition() {
 		Position startPos = symbol.position;
-		if (symbol.token == TokenType.KW_FUN) {
+
+        if (symbol.token == TokenType.KW_FUN) {
 			Symbol functionName = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
 
 			skip(new Symbol(TokenType.LPARENT, "(", null));
@@ -369,6 +377,7 @@ public class SynAn {
 
     private AbsFunDef parseConstructorDefinition() {
         Position startPos = symbol.position;
+
         if (symbol.token == TokenType.KW_INIT) {
             Symbol functionName = symbol;
 
@@ -380,20 +389,21 @@ public class SynAn {
 
             return parseFunDefinition_(startPos, functionName, params);
         }
+
         Report.error(previous.position, "Syntax error on token \""
                 + previous.lexeme + "\", expected keyword \"init\"");
 
         return null;
     }
 
-	private AbsFunDef parseFunDefinition_(Position startPos, Symbol functionName,
-			LinkedList<AbsParDef> params) {
-		AbsType type = null;
+	private AbsFunDef parseFunDefinition_(Position startPos, Symbol functionName, LinkedList<AbsParDef> params) {
+		AbsType type;
 
 		if (symbol.token == TokenType.LBRACE) {
 			dump("function_definition' -> { statements } ");
 			type = new AbsAtomType(symbol.position, AtomTypeKind.VOID);
-		} else {
+		}
+		else {
 			dump("function_definition' -> type { statements } ");
 			type = parseType();
 		}
@@ -411,8 +421,7 @@ public class SynAn {
 					+ previous.lexeme + "\", expected \"}\" after this token");
 		skip();
 
-		return new AbsFunDef(new Position(startPos, expr.position), functionName.lexeme,
-				params, type, expr);
+		return new AbsFunDef(new Position(startPos, expr.position), functionName.lexeme, params, type, expr);
 	}
 
 	private AbsDef parseVarDefinition() {
@@ -554,6 +563,7 @@ public class SynAn {
                 case KW_PRIVATE:
                 case KW_VAR:
                 case KW_LET:
+                case KW_OVERRIDE:
                     definition = parseDefinition();
                     definitions.add(definition);
 

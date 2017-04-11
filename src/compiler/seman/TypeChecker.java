@@ -130,8 +130,22 @@ public class TypeChecker implements ASTVisitor {
         }
 
 		for (AbsDef def : acceptor.definitions.definitions) {
-			if (names.contains(def.getName()) || (baseClass != null && baseClass.containsMember(def.getName())))
-				Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+			if (names.contains(def.getName())) {
+                Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+            }
+            else if (baseClass != null) {
+                if (def.isOverriding()) {
+                    if (!baseClass.containsMember(def.getName())) {
+                        Report.error(def.position, "Invalid overriding todo \"" + def.getName() + "\"");
+                    }
+                }
+                else if (baseClass.containsMember(def.getName())) {
+                    Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+                }
+            }
+            else if (def.isOverriding()) {
+                Report.error(def.position, "Invalid overriding todo \"" + def.getName() + "\"");
+            }
 
 			names.add(def.getName());
 			def.accept(this);

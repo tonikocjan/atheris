@@ -22,6 +22,8 @@ import java.util.*;
 import compiler.Report;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsFunDef;
+import compiler.frames.FrmDesc;
 import compiler.frames.FrmLabel;
 
 /**
@@ -166,7 +168,6 @@ public class ClassType extends ReferenceType {
         }
 
         Iterator<String> namesIterator = memberNames.iterator();
-        Iterator<Type> typesIterator = memberTypes.iterator();
 
         while (namesIterator.hasNext()) {
             if (name.equals(namesIterator.next())) break;
@@ -174,6 +175,16 @@ public class ClassType extends ReferenceType {
         }
 
         return index;
+    }
+
+    public int definitonsCount() {
+	    int count = 0;
+
+	    if (base != null) {
+	        count += base.definitonsCount();
+        }
+
+	    return count;
     }
 
     @Override
@@ -201,6 +212,52 @@ public class ClassType extends ReferenceType {
         }
 
         return size;
+    }
+
+    public Iterator<AbsFunDef> generateVirtualTable() {
+        Iterator<AbsFunDef> baseIterator = null;
+
+        if (base != null) {
+            baseIterator = base.generateVirtualTable();
+        }
+
+        Iterator<AbsFunDef> finalBaseIterator = baseIterator;
+        return new Iterator<AbsFunDef>() {
+
+            public AbsFunDef current = null;
+            Iterator<AbsDef> defIterator = classDefinition.definitions.definitions.iterator();
+
+            @Override
+            public boolean hasNext() {
+                if (finalBaseIterator != null && finalBaseIterator.hasNext()) {
+                    current = (AbsFunDef) finalBaseIterator.next();
+
+                    AbsDef member = findMemberForName(current.getName(), false);
+                    if (member != null) {
+                        if (!(member instanceof AbsFunDef)) Report.error("Member must be AbsFunDef - FIXME");
+                        current = (AbsFunDef) member;
+                    }
+
+                    return true;
+                }
+
+                while (defIterator.hasNext()) {
+                    AbsDef next = defIterator.next();
+
+                    if (next instanceof AbsFunDef) {
+                        current = (AbsFunDef) next;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            @Override
+            public AbsFunDef next() {
+                return current;
+            }
+        };
     }
 
     @Override
@@ -245,14 +302,18 @@ public class ClassType extends ReferenceType {
 	
 	@Override
 	public AbsDef findMemberForName(String name) {
-	    if (base != null) {
+	    return findMemberForName(name, true);
+	}
+
+    public AbsDef findMemberForName(String name, boolean fromBase) {
+        if (fromBase && base != null) {
             AbsDef member = base.findMemberForName(name);
 
             if (member != null) return member;
         }
 
-		return definitions.get(name);
-	}
+        return definitions.get(name);
+    }
 
     /**
      * Get name of this type.

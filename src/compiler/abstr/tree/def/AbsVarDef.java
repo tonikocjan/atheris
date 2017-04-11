@@ -78,7 +78,7 @@ public class AbsVarDef extends AbsDef {
 	 */
 	public AbsVarDef(Position pos, String name, 
 			AbsType type, boolean isMutable, AccessControl accessControl) {
-		super(pos, name, isMutable, accessControl);
+		super(pos, name, isMutable, false, accessControl);
 		
 		this.type = type;
 	}
