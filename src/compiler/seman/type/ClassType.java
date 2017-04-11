@@ -22,6 +22,7 @@ import java.util.*;
 import compiler.Report;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
+import compiler.frames.FrmLabel;
 
 /**
  * Class type. 
@@ -153,43 +154,6 @@ public class ClassType extends ReferenceType {
 		return offset;
 	}
 
-	public Iterator<Integer> getOffsets() {
-        Iterator<Integer> baseIterator = base == null ? null : base.getOffsets();
-
-	    Iterator<Integer> iterator = new Iterator<Integer>() {
-            Iterator<Type> typesIterator = memberTypes.iterator();
-            int offset = reservedSize;
-
-            @Override
-            public boolean hasNext() {
-                if (baseIterator != null && baseIterator.hasNext())
-                    return true;
-                return typesIterator.hasNext();
-            }
-
-            @Override
-            public Integer next() {
-                int currentOffset = offset;
-
-                Type type;
-                if (baseIterator != null && baseIterator.hasNext()) {
-                    int off = baseIterator.next();
-                    if (!baseIterator.hasNext())
-                        offset += off;
-                    return off;
-                }
-                else {
-                    type = typesIterator.next();
-                    offset += type.size();
-                }
-
-                return currentOffset;
-            }
-        };
-
-        return iterator;
-    }
-
     @Override
     public int size() {
         int size = this.size;
@@ -201,7 +165,23 @@ public class ClassType extends ReferenceType {
         return size;
     }
 
-	@Override
+    public int virtualTableSize() {
+	    int size = 0;
+
+	    if (base != null) {
+	        size = base.virtualTableSize();
+        }
+
+        for (Type type : memberTypes) {
+            if (type instanceof FunctionType) {
+                size += 4;
+            }
+        }
+
+        return size;
+    }
+
+    @Override
 	public boolean containsMember(String name) {
 	    // first check in base class
         if (base != null) {
@@ -302,5 +282,9 @@ public class ClassType extends ReferenceType {
             System.out.println("  " + name + ": " + typesIterator.next().friendlyName());
             System.out.println("    Offset: " + offsetForMember(name));
         }
+    }
+
+    public Iterator<Type> getTypes() {
+        return memberTypes.iterator();
     }
 }

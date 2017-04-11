@@ -93,7 +93,8 @@ public class FrmEvaluator implements ASTVisitor {
         Type tmp = parentType;
         parentType = ((CanType) SymbDesc.getType(acceptor)).childType;
 
-        FrmVirtualTableAccess virtualTableAccess = new FrmVirtualTableAccess(acceptor, parentType.size() + 8);
+        FrmVirtualTableAccess virtualTableAccess = new FrmVirtualTableAccess(acceptor,
+                ((ClassType) parentType).virtualTableSize() + 8);
         FrmDesc.setAccess(acceptor, virtualTableAccess);
         FrmDesc.setVirtualTable((ClassType) parentType, virtualTableAccess);
 

@@ -186,7 +186,7 @@ public class TypeChecker implements ASTVisitor {
             SymbDesc.setType(constructor, funType);
         }
 
-        classType.debugPrint();
+//        classType.debugPrint();
 	}
 
 	@Override

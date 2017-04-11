@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import compiler.abstr.tree.def.AbsClassDef;
+import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsFunDef;
 import compiler.frames.FrmDesc;
 import compiler.frames.FrmFrame;
 import compiler.frames.FrmLabel;
@@ -31,23 +34,47 @@ import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
 
 public class CodeGenerator {
-	
+
+    /**
+     *
+     */
 	private static HashMap<FrmLabel, ImcCodeChunk> dict = new HashMap<>();
 
+    /**
+     *
+     * @param label
+     * @return
+     */
 	public static FrmFrame getFrameForLabel(FrmLabel label) {
 		return dict.get(label).frame;
 	}
-	
+
+    /**
+     *
+     * @param label
+     * @return
+     */
 	public static ImcCode getCodeForLabel(FrmLabel label) {
 		return dict.get(label).lincode;
 	}
-	
+
+    /**
+     *
+     * @param label
+     * @param code
+     */
 	public static void insertCodeForLabel(FrmLabel label, ImcCodeChunk code) {
 		dict.put(label, code);
 	}
 
+    /**
+     *
+     * @param chunks
+     * @return
+     */
 	public static ImcCodeChunk linearize(LinkedList<ImcChunk> chunks) {
 		ImcCodeChunk mainFrame = null;
+
 		for (ImcChunk chnk : chunks) {
 			if (chnk instanceof ImcCodeChunk) {
 				ImcCodeChunk fn = (ImcCodeChunk) chnk;
@@ -67,41 +94,96 @@ public class CodeGenerator {
 				ImcDataChunk data = (ImcDataChunk) chnk;
 				Interpreter.locations.put(data.label, Interpreter.heapPointer);
 
-				if (data.data != null) {
-                    Interpreter.stM(Interpreter.heapPointer, data.data);
+				if (data instanceof ImcVirtualTableDataChunk) {
+				    loadVirtualTable((ImcVirtualTableDataChunk) data);
                 }
-				else {
-                    if (data instanceof ImcVirtualTableDataChunk) {
-                        // load virtual table into memory
-                        ImcVirtualTableDataChunk vtableChunk = (ImcVirtualTableDataChunk) data;
-                        ClassType type = vtableChunk.classType;
-                        CanType baseClass = type.baseClass;
-
-                        int baseClassVirtualTablePointer = 0;
-                        if (baseClass != null) {
-                            FrmVirtualTableAccess baseVirtualTable = FrmDesc.getVirtualTable((ClassType) baseClass.childType);
-                            baseClassVirtualTablePointer = baseVirtualTable.location;
-                        }
-
-                        Interpreter.stM(Interpreter.heapPointer, type.descriptor);
-                        Interpreter.stM(Interpreter.heapPointer + 4, baseClassVirtualTablePointer);
-                        Interpreter.heapPointer += 8;
-
-                        for (Iterator<Integer> it = type.getOffsets(); it.hasNext(); ) {
-                            Integer offset = it.next();
-
-                            Interpreter.stM(Interpreter.heapPointer, offset);
-                            Interpreter.heapPointer += 4;
-                        }
+                else {
+                    if (data.data != null) {
+                        Interpreter.stM(Interpreter.heapPointer, data.data);
                     }
                     else {
                         Interpreter.stM(Interpreter.heapPointer, 0);
                     }
+
+                    Interpreter.heapPointer += data.size;
                 }
-					
-				Interpreter.heapPointer += data.size;
 			}
 		}
+
 		return mainFrame;
 	}
+
+	private static void loadVirtualTable(ImcVirtualTableDataChunk vtableChunk) {
+        ClassType type = vtableChunk.classType;
+        CanType baseClass = type.baseClass;
+
+        int baseClassVirtualTablePointer = 0;
+        if (baseClass != null) {
+            FrmVirtualTableAccess baseVirtualTable = FrmDesc.getVirtualTable((ClassType) baseClass.childType);
+            baseClassVirtualTablePointer = baseVirtualTable.location;
+        }
+
+        Interpreter.stM(Interpreter.heapPointer, type.descriptor);
+        Interpreter.stM(Interpreter.heapPointer + 4, baseClassVirtualTablePointer);
+        Interpreter.heapPointer += 8;
+
+        for (Iterator<FrmLabel> it = generateVirtualTableForClass(type); it.hasNext(); ) {
+            FrmLabel label = it.next();
+
+            Interpreter.stM(Interpreter.heapPointer, label);
+            Interpreter.heapPointer += 4;
+        }
+    }
+
+    private static Iterator<FrmLabel> generateVirtualTableForClass(ClassType classType) {
+	    final AbsClassDef def = classType.classDefinition;
+        Iterator<FrmLabel> baseIterator = null;
+
+	    if (def.baseClass != null) {
+	         baseIterator = generateVirtualTableForClass((ClassType) classType.baseClass.childType);
+        }
+
+        Iterator<FrmLabel> finalBaseIterator = baseIterator;
+        return new Iterator<FrmLabel>() {
+
+	        public AbsFunDef current = null;
+	        Iterator<AbsDef> defIterator = def.definitions.definitions.iterator();
+
+            @Override
+            public boolean hasNext() {
+                if (finalBaseIterator != null && finalBaseIterator.hasNext()) {
+                    return true;
+                }
+
+                while (defIterator.hasNext()) {
+                    AbsDef next = defIterator.next();
+
+                    if (next instanceof AbsFunDef) {
+                        current = (AbsFunDef) next;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            @Override
+            public FrmLabel next() {
+                if (finalBaseIterator != null) {
+                    FrmLabel nxt = finalBaseIterator.next();
+
+                    if (nxt != null) {
+                        return nxt;
+                    }
+                }
+
+                if (current == null) return null;
+
+                FrmLabel label = FrmDesc.getFrame(current).label;
+                current = null;
+
+                return label;
+            }
+        };
+    }
 }

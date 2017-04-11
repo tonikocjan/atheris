@@ -159,7 +159,7 @@ public class Main {
 			imcode.dump(imcodegen.chunks);
 
 			Interpreter.printMemory();
-			
+
 			// clean-up
 			SymbTable.clean();
 			SymbDesc.clean();

@@ -127,7 +127,8 @@ public class ImcCodeGen implements ASTVisitor {
 
         chunks.add(virtualTableCount++, new ImcVirtualTableDataChunk(
                 FrmLabel.newLabel(varType.friendlyName()),
-                varType.size(), (ClassType) varType.childType));
+                access.size,
+                (ClassType) varType.childType));
 
 		for (AbsDef def : acceptor.definitions.definitions) {
             def.accept(this);

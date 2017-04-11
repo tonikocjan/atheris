@@ -1,67 +1,31 @@
 import stdlib
 
 class A {
+	func a() {
+
+	}
 }
 
 class B: A {
+	func b() {
+
+	}
 }
 
 class C: B {
+	func c() {
+
+	}
 }
 
 class D {
 }
 
-let a = A()
-let b = B()
-let c = C()
-let d = D()
+let a: A = A()
 
 if a is A {
-	print(string: "a is A")
+	print(string: "is A")
 }
 else {
-	print(string: "a is not A")
-}
-
-if b is A {
-	print(string: "b is A")
-}
-else {
-	print(string: "b is not A")
-}
-
-if b is B {
-	print(string: "b is B")
-}
-else {
-	print(string: "b is not B")
-}
-
-if c is A {
-	print(string: "c is A")
-}
-else {
-	print(string: "c is not A")
-}
-
-if c is B {
-	print(string: "c is B")
-}
-else {
-	print(string: "c is not B")
-}
-
-if c is C {
-	print(string: "c is C")
-}
-else {
-	print(string: "c is not C")
-}
-
-if d is B {
-	print(string: "d is A")
-}
-else {
-	print(string: "d is not A")
+	print(string: "is not A")	
 }

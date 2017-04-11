@@ -38,12 +38,12 @@ public class Interpreter {
 	/** Vrhnji naslov kopice */
 	public static int heapPointer = 4;
 	
-	public static void stM(Integer address, Object value) {
+	public static void stM(int address, Object value) {
 		if (debug) System.out.println(" [" + address + "] <= " + value);
 		mems.put(address, value);
 	}
 
-	public static Object ldM(Integer address) {
+	public static Object ldM(int address) {
 		Object value = mems.get(address);
 		if (debug) System.out.println(" [" + address + "] => " + value);
 		return value;
@@ -52,7 +52,7 @@ public class Interpreter {
 	public static int getFP() { return framePointer; }
 	
 	/** Velikost sklada */
-	public  static int STACK_SIZE = 1000;
+	public static int STACK_SIZE = 1000;
 	
 	/** Kazalec na vrh klicnega zapisa. */
 	private static int framePointer = STACK_SIZE;
@@ -63,7 +63,7 @@ public class Interpreter {
 	/*--- dinamicni del navideznega stroja ---*/
 	
 	/** Zacasne spremenljivke (`registri') navideznega stroja. */
-	public HashMap<FrmTemp, Object> temps = new HashMap<FrmTemp, Object>();
+	public HashMap<FrmTemp, Object> temps = new HashMap<>();
 		
 	public void stT(FrmTemp temp, Object value) {
 		if (debug) System.out.println(" " + temp.name() + " <= " + value);
@@ -90,7 +90,7 @@ public class Interpreter {
             System.out.println("Address [" + address + "]: " + value);
         }
 	}
-	
+
 	/*--- Izvajanje navideznega stroja. ---*/
 	
 	public Interpreter(FrmFrame frame, ImcSEQ code) {
