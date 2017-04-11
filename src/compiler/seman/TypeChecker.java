@@ -161,7 +161,7 @@ public class TypeChecker implements ASTVisitor {
 		    Type defType = SymbDesc.getType(def);
             types.add(defType);
         }
-		
+
 		ClassType classType = new ClassType(acceptor, names, types, baseClass);
         CanType canType = new CanType(classType);
 		SymbDesc.setType(acceptor, canType);

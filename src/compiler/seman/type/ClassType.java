@@ -168,10 +168,17 @@ public class ClassType extends ReferenceType {
         }
 
         Iterator<String> namesIterator = memberNames.iterator();
+        Iterator<Type> typeIterator = memberTypes.iterator();
 
         while (namesIterator.hasNext()) {
-            if (name.equals(namesIterator.next())) break;
-            index++;
+            String next = namesIterator.next();
+            Type type = typeIterator.next();
+
+            if (name.equals(next)) break;
+
+            if (type instanceof FunctionType) {
+                index++;
+            }
         }
 
         return index;

@@ -5,12 +5,17 @@ class A {
 		print(string: "A::a()")
 	}
 
+	let A_a: Int = 10
+
 	func foo() {
 		print(string: "A::foo()")	
 	}
 }
 
 class B: A {
+	
+	let B_b: Int = 33
+
 	override func a() {
 		print(string: "B::a()")
 	}
@@ -24,6 +29,8 @@ class C: B {
 	override func a() {
 		print(string: "C::a()")
 	}
+
+	let C_c: Int = 100
 }
 
 class D {
@@ -47,3 +54,6 @@ a.a()
 C().foo()
 C().b()
 
+print(integer: C().A_a)
+print(integer: C().B_b)
+print(integer: C().C_c)
