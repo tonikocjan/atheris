@@ -33,10 +33,8 @@ class C: B {
 	let C_c: Int = 100
 }
 
-class D {
-}
-
-var a: A
+########################
+/*var a: A
 let x = 30
 
 if x == 10 {
@@ -56,4 +54,17 @@ C().b()
 
 print(integer: C().A_a)
 print(integer: C().B_b)
-print(integer: C().C_c)
+print(integer: C().C_c)*/
+
+#######################
+
+var object: A = A()
+
+let casted = object as B
+
+if casted != nil {
+	casted.b()
+}
+else {
+	print(string: "cast failed")
+}

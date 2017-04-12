@@ -45,6 +45,7 @@ public class AbsBinExpr extends AbsExpr {
 	public static final int ARR = 14;
 	public static final int ASSIGN = 15;
     public static final int IS = 16;
+    public static final int AS = 17;
 
 	/** Operator. */
 	public int oper;

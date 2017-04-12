@@ -244,8 +244,10 @@ public class SemAn implements ASTVisitor {
 			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": DOT");
 			break;
         case AbsBinExpr.IS:
-            Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-                    + ": IS");
+            Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": IS");
+            break;
+        case AbsBinExpr.AS:
+            Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": As");
             break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");

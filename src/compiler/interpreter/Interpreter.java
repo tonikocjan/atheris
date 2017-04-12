@@ -98,16 +98,16 @@ public class Interpreter {
 		if (debug) {
 			System.out.println("[START OF " + frame.label.name() + "]");
 		}
-	
+
 		stM(stackPointer - frame.sizeLocs - 4, framePointer);
 		framePointer = stackPointer;
 		stT(frame.FP, framePointer);
 		stackPointer = stackPointer - frame.size();
-		
+
 		if (stackPointer < 0) {
 			Report.error("Error, stack overflow");
 		}
-		
+
 		if (debug) {
 			System.out.println("[FP=" + framePointer + "]");
 			System.out.println("[SP=" + stackPointer + "]");
@@ -127,21 +127,21 @@ public class Interpreter {
 			}
 			else
 				pc++;
-			
+
 			if (shouldPrintMemory) {
 				System.out.println(frame.label.name() + ": " + pc);
 				printMemory();
 				System.out.println();
 			}
 		}
-		
+
 		framePointer = (Integer) ldM(framePointer - frame.sizeLocs - 4);
 		stackPointer = stackPointer + frame.size();
 		if (debug) {
 			System.out.println("[FP=" + framePointer + "]");
 			System.out.println("[SP=" + stackPointer + "]");
 		}
-		
+
 		stM(stackPointer, ldT(frame.RV));
 		if (debug) {
 			System.out.println("[RV=" + ldT(frame.RV) + "]");
@@ -278,7 +278,7 @@ public class Interpreter {
 			ImcMEM instr = (ImcMEM) instruction;
 			Integer address = (Integer) execute(instr.expr);
 			if (address == 0)
-				Report.error("Nil pointer exception");
+				Report.error("Null pointer exception");
 			return ldM(address);
 		}
 		

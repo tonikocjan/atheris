@@ -141,7 +141,6 @@ public class NameChecker implements ASTVisitor {
 			if (acceptor.expr2 instanceof AbsFunCall) {
 				AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
 
-				// TODO: - Fix position
 				AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.expr2.position, acceptor.expr1, Constants.selfParameterIdentifier);
 				funCall.addArgument(selfArg);
 			}

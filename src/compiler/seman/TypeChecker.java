@@ -419,10 +419,31 @@ public class TypeChecker implements ASTVisitor {
 			return;
 		}
 
+        /**
+         * reference type comparison to nil
+         */
+        if (t1.isPointerType() && t2.isBuiltinNilType()) {
+            SymbDesc.setType(acceptor, Type.boolType);
+            return;
+        }
+
+        /**
+         * expr1 is expr2
+         */
 		if (oper == AbsBinExpr.IS) {
 		    if (!t1.isCanType() && t2.isCanType()) {
 		        SymbDesc.setType(acceptor, Type.boolType);
 		        return;
+            }
+        }
+
+        /**
+         * expr1 as expr2
+         */
+        if (oper == AbsBinExpr.AS) {
+            if (t2.isCanType()) {
+                SymbDesc.setType(acceptor, ((CanType) t2).childType);
+                return;
             }
         }
 
@@ -869,7 +890,7 @@ public class TypeChecker implements ASTVisitor {
 			types.add((ClassType) SymbDesc.getType(def));
 			names.add(def.getName());
 		}
-		
+
 		SymbDesc.setType(acceptor, new EnumType(acceptor, names, types));
 	}
 
@@ -933,9 +954,10 @@ public class TypeChecker implements ASTVisitor {
 			types.add(SymbDesc.getType(labeledExpr));
 			names.add(labeledExpr.name);
 		}
-		
-		TupleType tupleType = new TupleType(types, names);
-		SymbDesc.setType(acceptor, tupleType);
+
+		// TODO:
+        Type type = types.size() == 1 ? new TupleType(types, names) : new TupleType(types, names);
+		SymbDesc.setType(acceptor, type);
 	}
 
 	@Override

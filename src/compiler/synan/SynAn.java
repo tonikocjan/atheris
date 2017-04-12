@@ -196,7 +196,6 @@ public class SynAn {
 		case KW_ENUM:
 		case KW_FUN:
 		case KW_IMPORT:
-		case LPARENT:
 			dump("statement -> definition");
 			return parseDefinition();
 			
@@ -1075,6 +1074,8 @@ public class SynAn {
                 break;
             case KW_IS:
                 break;
+            case KW_AS:
+                break;
             case NEQ:
                 break;
             case LTH:
@@ -1248,6 +1249,16 @@ public class SynAn {
             expr = parseAddExpression();
             oper = AbsBinExpr.IS;
             break;
+
+        case KW_AS:
+            dump("compare_expression' -> as identifier");
+            skip();
+
+            expr = new AbsVarNameExpr(symbol.position, symbol.lexeme);;
+            skip();
+
+            oper = AbsBinExpr.AS;
+            break;
 		case NEQ:
 			dump("compare_expression' -> != compare_expression");
 			skip();
@@ -1341,6 +1352,7 @@ public class SynAn {
 		case EOF:
 		case EQU:
         case KW_IS:
+        case KW_AS:
 		case NEQ:
 		case GTH:
 		case LTH:
@@ -1420,6 +1432,7 @@ public class SynAn {
 		case EOF:
 		case EQU:
         case KW_IS:
+        case KW_AS:
 		case NEQ:
 		case GTH:
 		case LTH:
@@ -1592,6 +1605,7 @@ public class SynAn {
 		case EOF:
         case EQU:
         case KW_IS:
+        case KW_AS:
 		case NEQ:
 		case GTH:
 		case LTH:

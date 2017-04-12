@@ -223,6 +223,9 @@ public class ImcCodeGen implements ASTVisitor {
 		ImcCode code = null;
 
 		if (acceptor.oper >= 0 && acceptor.oper <= 11) {
+//		    if ((acceptor.oper == 2 || acceptor.oper == 3) && e1 instanceof ImcMEM) {
+//		        e1 = ((ImcMEM) e1).expr;
+//            }
             code = new ImcBINOP(acceptor.oper, e1, e2);
         }
 		else if (acceptor.oper == AbsBinExpr.ASSIGN) {
@@ -265,6 +268,46 @@ public class ImcCodeGen implements ASTVisitor {
             endLabelStack.pop();
 
             code = new ImcESEQ(statements, new ImcBINOP(ImcBINOP.EQU, result, new ImcCONST(1)));
+        }
+        else if (acceptor.oper == AbsBinExpr.AS) {
+            int dstDescriptor = Type.getDescriptorForType(SymbDesc.getType(acceptor.expr2));
+
+            FrmLabel l1 = FrmLabel.newLabel(),
+                     l2 = FrmLabel.newLabel(),
+                     l3 = FrmLabel.newLabel(),
+                     l4 = FrmLabel.newLabel(),
+                     l5 = FrmLabel.newLabel(),
+                     l6 = FrmLabel.newLabel();
+
+            startLabelStack.push(l1);
+            endLabelStack.push(l3);
+
+            ImcMEM virtualTable = new ImcMEM(e1);
+
+            ImcTEMP virtualTablePointer = new ImcTEMP(new FrmTemp());
+            ImcTEMP result = new ImcTEMP(new FrmTemp());
+
+            ImcSEQ statements = new ImcSEQ();
+            statements.stmts.add(new ImcMOVE(virtualTablePointer, virtualTable));
+            statements.stmts.add(new ImcLABEL(l1));
+            statements.stmts.add(new ImcCJUMP(new ImcBINOP(ImcBINOP.NEQ, virtualTablePointer, new ImcCONST(0)), l2, l6));
+            statements.stmts.add(new ImcLABEL(l2));
+            statements.stmts.add(new ImcCJUMP(new ImcBINOP(ImcBINOP.EQU, new ImcMEM(virtualTablePointer), new ImcCONST(dstDescriptor)), l4, l5));
+            statements.stmts.add(new ImcLABEL(l4));
+            statements.stmts.add(new ImcMOVE(result, e1));
+            statements.stmts.add(new ImcJUMP(l3));
+            statements.stmts.add(new ImcLABEL(l5));
+            statements.stmts.add(new ImcMOVE(virtualTablePointer, new ImcMEM(new ImcBINOP(ImcBINOP.ADD, virtualTablePointer, new ImcCONST(4)))));
+            statements.stmts.add(new ImcJUMP(l1));
+            statements.stmts.add(new ImcLABEL(l6));
+            statements.stmts.add(new ImcMOVE(result, new ImcCONST(0)));
+            statements.stmts.add(new ImcLABEL(l3));
+
+            ImcDesc.setImcCode(acceptor, statements);
+            startLabelStack.pop();
+            endLabelStack.pop();
+
+            code = new ImcESEQ(statements, result);
         }
 		else if (acceptor.oper == AbsBinExpr.ARR) {
 		    // TODO: -
