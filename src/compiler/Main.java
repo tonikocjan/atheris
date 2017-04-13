@@ -158,8 +158,6 @@ public class Main {
 			imcode = new ImCode(dumpPhases.contains("interpret"));
 			imcode.dump(imcodegen.chunks);
 
-			Interpreter.printMemory();
-
 			// clean-up
 			SymbTable.clean();
 			SymbDesc.clean();

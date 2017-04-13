@@ -223,9 +223,6 @@ public class ImcCodeGen implements ASTVisitor {
 		ImcCode code = null;
 
 		if (acceptor.oper >= 0 && acceptor.oper <= 11) {
-//		    if ((acceptor.oper == 2 || acceptor.oper == 3) && e1 instanceof ImcMEM) {
-//		        e1 = ((ImcMEM) e1).expr;
-//            }
             code = new ImcBINOP(acceptor.oper, e1, e2);
         }
 		else if (acceptor.oper == AbsBinExpr.ASSIGN) {

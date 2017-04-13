@@ -58,7 +58,7 @@ print(integer: C().C_c)*/
 
 #######################
 
-var object: A = A()
+var object: A = B()
 
 let casted = object as B
 

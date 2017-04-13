@@ -163,7 +163,7 @@ public class ClassType extends ReferenceType {
         if (base != null) {
             index = base.indexForMember(name);
 
-            if (index < base.memberNames.size())
+            if (index < base.instanceMethodCount())
                 return index;
         }
 
@@ -176,7 +176,7 @@ public class ClassType extends ReferenceType {
 
             if (name.equals(next)) break;
 
-            if (type instanceof FunctionType) {
+            if (type.isFunctionType()) {
                 index++;
             }
         }
@@ -184,14 +184,18 @@ public class ClassType extends ReferenceType {
         return index;
     }
 
-    public int definitonsCount() {
-	    int count = 0;
+    public int instanceMethodCount() {
+	    // TODO: - Optimize
+        int count = 0;
+        Iterator<Type> typeIterator = memberTypes.iterator();
 
-	    if (base != null) {
-	        count += base.definitonsCount();
+        while (typeIterator.hasNext()) {
+            if (typeIterator.next().isFunctionType()) {
+                count += 1;
+            }
         }
 
-	    return count;
+        return count;
     }
 
     @Override

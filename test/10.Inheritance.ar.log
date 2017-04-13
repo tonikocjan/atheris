@@ -261,7 +261,7 @@ CODE CHUNK: label=__main
       CONST value=0
     MOVE
       TEMP name=T52
-      CALL label=_A
+      CALL label=_B
         TEMP name=T50
         TEMP name=T51
     MOVE
@@ -325,7 +325,7 @@ CODE CHUNK: label=__main
         MEM
           MEM
             NAME label=_casted
-        CONST value=16
+        CONST value=20
     MOVE
       TEMP name=T53
       TEMP name=T0
