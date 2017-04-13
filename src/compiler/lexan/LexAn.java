@@ -60,9 +60,9 @@ public class LexAn {
 			{ 
 			"Int", "String", "Double", "Bool", "Char", "Void", "else", 
 			"for", "func", "if", "var", "while", "struct", "import", 
-			"let", "nil", "class", "in", "return", "public", 
+			"let", "null", "class", "in", "return", "public",
 			"private", "continue", "break", "switch", "case", "default",
-			"enum", "init", "is", "override", "as"
+			"enum", "init", "is", "override", "as", "extension"
 			};
 
 	/**

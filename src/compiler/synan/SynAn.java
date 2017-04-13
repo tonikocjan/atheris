@@ -24,14 +24,7 @@ import Utils.Constants;
 import compiler.Position;
 import compiler.Report;
 import compiler.abstr.tree.*;
-import compiler.abstr.tree.def.AbsClassDef;
-import compiler.abstr.tree.def.AbsDef;
-import compiler.abstr.tree.def.AbsEnumDef;
-import compiler.abstr.tree.def.AbsEnumMemberDef;
-import compiler.abstr.tree.def.AbsFunDef;
-import compiler.abstr.tree.def.AbsImportDef;
-import compiler.abstr.tree.def.AbsParDef;
-import compiler.abstr.tree.def.AbsVarDef;
+import compiler.abstr.tree.def.*;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
@@ -196,6 +189,7 @@ public class SynAn {
 		case KW_ENUM:
 		case KW_FUN:
 		case KW_IMPORT:
+        case KW_EXTENSION:
 			dump("statement -> definition");
 			return parseDefinition();
 			
@@ -238,58 +232,59 @@ public class SynAn {
 		}
 	}
 
-//	private AbsDefs parseDefinitions() {
-//		dump("definitions -> definition definitions'");
-//		AbsDef definition = parseDefinition();
-//
-//		Vector<AbsDef> absDefs = parseDefinitions_();
-//		absDefs.add(0, definition);
-//		return new AbsDefs(new Position(absDefs.firstElement().position,
-//				absDefs.lastElement().position), absDefs);
-//	}
+	private AbsDefs parseDefinitions() {
+		dump("definitions -> definition definitions'");
 
-//	private Vector<AbsDef> parseDefinitions_() {
-//		switch (symbol.token) {
-//		case EOF:
-//			dump("definitions' -> $");
-//
-//			return new Vector<>();
-//		case RBRACE:
-//			dump("definitions' -> e");
-//			skip();
-//
-//			return new Vector<>();
-//		case SEMIC:
-//			dump("definitions' -> ; definitions");
-//			skip();
-//			if (symbol.token == Token.NEWLINE)
-//				skip();
-//
-//			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
-//				return new Vector<>();
-//
-//			AbsDef definition = parseDefinition();
-//			Vector<AbsDef> absDefs = parseDefinitions_();
-//			absDefs.add(0, definition);
-//			return absDefs;
-//		case NEWLINE:
-//			dump("definitions' -> \n definitions");
-//			skip();
-//
-//			if (symbol.token == Token.EOF || symbol.token == Token.RBRACE)
-//				return new Vector<>();
-//
-//			definition = parseDefinition();
-//			absDefs = parseDefinitions_();
-//			absDefs.add(0, definition);
-//			return absDefs;
-//		default:
-//			Report.error(symbol.position, "Syntax error on token \""
-//					+ previous.lexeme
-//					+ "\", expected \";\" or \"}\" after this token");
-//		}
-//		return null;
-//	}
+        if (symbol.token == TokenType.NEWLINE) {
+            skip();
+        }
+        else {
+            Report.error(symbol.position, "Invalid token");
+        }
+
+        if (symbol.token == TokenType.RBRACE) {
+            return new AbsDefs(symbol.position, new LinkedList<>());
+        }
+
+        AbsDef definition = parseDefinition();
+
+		LinkedList<AbsDef> absDefs = parseDefinitions_();
+		absDefs.add(0, definition);
+		return new AbsDefs(new Position(absDefs.getFirst().position, absDefs.getLast().position), absDefs);
+	}
+
+	private LinkedList<AbsDef> parseDefinitions_() {
+		switch (symbol.token) {
+		case EOF:
+			dump("definitions' -> $");
+
+			return new LinkedList<>();
+		case RBRACE:
+			dump("definitions' -> e");
+			skip();
+
+			return new LinkedList<>();
+		case SEMIC:
+        case NEWLINE:
+			dump("definitions' -> ; definitions");
+			skip();
+			if (symbol.token == TokenType.NEWLINE)
+				skip();
+
+			if (symbol.token == TokenType.EOF || symbol.token == TokenType.RBRACE)
+				return new LinkedList<>();
+
+			AbsDef definition = parseDefinition();
+            LinkedList<AbsDef> absDefs = parseDefinitions_();
+			absDefs.add(0, definition);
+			return absDefs;
+		default:
+			Report.error(symbol.position, "Syntax error on token \""
+					+ previous.lexeme
+					+ "\", expected \";\" or \"}\" after this token");
+		}
+		return null;
+	}
 
 	private AbsDef parseDefinition() {
 		AbsDef definition = null;
@@ -335,6 +330,10 @@ public class SynAn {
 			dump("definition -> enum_definition");
 			definition = parseEnumDefinition();
 			break;
+        case KW_EXTENSION:
+            dump("definition -> extension_definition");
+            definition = parseExtensionDefinition();
+            break;
 		case KW_CASE:
 			dump("definition -> enum_member_definition");
 			definition = parseEnumCaseDefinition();
@@ -682,6 +681,27 @@ public class SynAn {
 		}
 		return new AbsEnumMemberDef(name.position, name, null);
 	}
+
+	private AbsExtensionDef parseExtensionDefinition() {
+        skip();
+        AbsType type = parseType();
+
+        if (symbol.token != TokenType.LBRACE) {
+            Report.error(symbol.position, "Expected \"{\"");
+        }
+
+        skip();
+
+        AbsDefs defs = parseDefinitions();
+
+        if (symbol.token != TokenType.RBRACE) {
+            Report.error(symbol.position, "Expected \"}\"");
+        }
+
+        skip();
+
+        return new AbsExtensionDef(new Position(symbol.position, defs.position), type, defs);
+    }
 	
 	private AbsType parseType() {
 		AbsType type = parseChildType();
@@ -914,7 +934,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
-		case KW_NIL:
+		case KW_NULL:
 		case LBRACKET:
 		case LPARENT:
 		case KW_IF:
@@ -970,7 +990,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
-		case KW_NIL:
+		case KW_NULL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -1030,7 +1050,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
-		case KW_NIL:
+		case KW_NULL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -1150,7 +1170,7 @@ public class SynAn {
                 break;
             case KW_LET:
                 break;
-            case KW_NIL:
+            case KW_NULL:
                 break;
             case KW_CLASS:
                 break;
@@ -1194,7 +1214,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
-		case KW_NIL:
+		case KW_NULL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -1313,7 +1333,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
-		case KW_NIL:
+		case KW_NULL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -1392,7 +1412,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
-		case KW_NIL:
+		case KW_NULL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -1539,7 +1559,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
-		case KW_NIL:
+		case KW_NULL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -1564,7 +1584,7 @@ public class SynAn {
 		case STR_CONST:
 		case CHAR_CONST:
 		case DOUBLE_CONST:
-		case KW_NIL:
+		case KW_NULL:
 		case LBRACKET:
 		case KW_IF:
 		case KW_WHILE:
@@ -1682,7 +1702,7 @@ public class SynAn {
 
 			return new AbsAtomConstExpr(current.position, AtomTypeKind.DOB,
 					current.lexeme);
-		case KW_NIL:
+		case KW_NULL:
 			dump("atom_expression -> nil");
 			skip();
 

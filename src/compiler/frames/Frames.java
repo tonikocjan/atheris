@@ -20,16 +20,7 @@ package compiler.frames;
 import compiler.*;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
-import compiler.abstr.tree.def.AbsClassDef;
-import compiler.abstr.tree.def.AbsDef;
-import compiler.abstr.tree.def.AbsEnumDef;
-import compiler.abstr.tree.def.AbsEnumMemberDef;
-import compiler.abstr.tree.def.AbsFunDef;
-import compiler.abstr.tree.def.AbsImportDef;
-import compiler.abstr.tree.def.AbsParDef;
-import compiler.abstr.tree.def.AbsTupleDef;
-import compiler.abstr.tree.def.AbsTypeDef;
-import compiler.abstr.tree.def.AbsVarDef;
+import compiler.abstr.tree.def.*;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsExpr;
@@ -717,5 +708,10 @@ public class Frames implements ASTVisitor {
 	public void visit(AbsForceValueExpr acceptor) {
 		acceptor.subExpr.accept(this);
 	}
+
+    @Override
+    public void visit(AbsExtensionDef acceptor) {
+
+    }
 
 }

@@ -121,7 +121,7 @@ public class Symbol {
 		case KW_STRUCT : tokenName = "STRUCT"    ; break;
 		case KW_CLASS  : tokenName = "CLASS"     ; break;
 //		case KW_SELF   : tokenName = "SELF"      ; break;
-		case KW_NIL    : tokenName = "NIL"       ; break;
+		case KW_NULL: tokenName = "NIL"       ; break;
 		
 		case ASSIGN    : tokenName = "ASSIGN"    ; break;
 		
@@ -153,6 +153,11 @@ public class Symbol {
 		case KW_CASE : tokenName = "CASE"   ; break;
 		case KW_DEFAULT : tokenName = "DEFAULT"   ; break;
 		case KW_ENUM : tokenName = "ENUM"   ; break;
+            case KW_AS: tokenName = "AS"; break;
+            case KW_INIT: tokenName = "INIT"; break;
+            case KW_EXTENSION: tokenName = "EXTENSION"; break;
+            case KW_IS: tokenName = "IS"; break;
+            case KW_OVERRIDE: tokenName = "OVERRIDE"; break;
 		
 		default:
 			Report.error("Internal error: token=" + token + " in compiler.lexan.Symbol.toString().");

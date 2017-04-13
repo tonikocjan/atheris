@@ -58,7 +58,7 @@ print(integer: C().C_c)*/
 
 #######################
 
-var object: A = B()
+/*var object: A = B()
 
 let casted = object as B
 
@@ -67,4 +67,18 @@ if casted != nil {
 }
 else {
 	print(string: "cast failed")
+}*/
+
+#######################
+
+extension test {
+	func joze() {
+
+	}
+
+	var x: Int
 }
+
+
+
+

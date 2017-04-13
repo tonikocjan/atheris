@@ -18,14 +18,7 @@
 package compiler.abstr;
 
 import compiler.abstr.tree.*;
-import compiler.abstr.tree.def.AbsClassDef;
-import compiler.abstr.tree.def.AbsEnumDef;
-import compiler.abstr.tree.def.AbsEnumMemberDef;
-import compiler.abstr.tree.def.AbsFunDef;
-import compiler.abstr.tree.def.AbsImportDef;
-import compiler.abstr.tree.def.AbsParDef;
-import compiler.abstr.tree.def.AbsTupleDef;
-import compiler.abstr.tree.def.AbsVarDef;
+import compiler.abstr.tree.def.*;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
 import compiler.abstr.tree.expr.AbsForceValueExpr;
@@ -86,4 +79,5 @@ public interface ASTVisitor {
 	public void visit(AbsOptionalType acceptor);
 	public void visit(AbsOptionalEvaluationExpr acceptor);
 	public void visit(AbsForceValueExpr acceptor);
+	void visit(AbsExtensionDef acceptor);
 }
