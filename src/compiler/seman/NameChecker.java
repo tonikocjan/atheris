@@ -85,6 +85,8 @@ public class NameChecker implements ASTVisitor {
                 AbsParDef parDef = new AbsParDef(funDef.position, "self",
                         new AbsAtomType(funDef.position, AtomTypeKind.NIL));
                 funDef.addParamater(parDef);
+
+                funDef.modifier = AbsFunDef.FunctionModifier.dynamicInstanceMethod;
             }
 
             def.accept(this);
@@ -144,8 +146,9 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsDefs acceptor) {
-		for (AbsDef def : acceptor.definitions)
-			def.accept(this);
+		for (AbsDef def : acceptor.definitions) {
+            def.accept(this);
+        }
 	}
 
 	@Override
@@ -454,6 +457,24 @@ public class NameChecker implements ASTVisitor {
 
     @Override
     public void visit(AbsExtensionDef acceptor) {
+	    acceptor.extendingType.accept(this);
 
+	    for (AbsDef def : acceptor.definitions.definitions) {
+            if (def instanceof AbsFunDef /* && !def.isStatic */) {
+                // add implicit self: classType parameter to instance methods
+                AbsFunDef funDef = (AbsFunDef) def;
+
+                AbsParDef parDef = new AbsParDef(funDef.position, "self",
+                        new AbsAtomType(funDef.position, AtomTypeKind.NIL));
+                funDef.addParamater(parDef);
+
+                funDef.modifier = AbsFunDef.FunctionModifier.instanceMethod;
+            }
+            else {
+                Report.error(def.position, "Only function definition are allowed in extensions");
+            }
+
+            def.accept(this);
+        }
     }
 }

@@ -992,6 +992,26 @@ public class TypeChecker implements ASTVisitor {
 
     @Override
     public void visit(AbsExtensionDef acceptor) {
+        acceptor.extendingType.accept(this);
 
+        Type type = SymbDesc.getType(acceptor.extendingType);
+        SymbDesc.setType(acceptor, type);
+
+        if (!type.isCanType() || !((CanType) type).childType.isClassType()) {
+            Report.error(acceptor.position, "Only classes can be extended (for now)");
+        }
+
+        ClassType extendingType = (ClassType) ((CanType) type).childType;
+
+        for (AbsDef def : acceptor.definitions.definitions) {
+            def.accept(this);
+
+            String memberName = def.getName();
+            Type memberType = SymbDesc.getType(def);
+
+            if (!extendingType.addMember(def, memberName, memberType)) {
+                Report.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
+            }
+        }
     }
 }

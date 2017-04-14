@@ -23,8 +23,6 @@ import compiler.Report;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;
-import compiler.frames.FrmDesc;
-import compiler.frames.FrmLabel;
 
 /**
  * Class type. 
@@ -104,6 +102,26 @@ public class ClassType extends ReferenceType {
         this(definition, names, types, null);
     }
 
+    /**
+     *
+     * @param definition
+     * @param memberName
+     * @param memberType
+     * @return
+     */
+    public boolean addMember(AbsDef definition, String memberName, Type memberType) {
+        memberNames.add(memberName);
+        memberTypes.add(memberType);
+
+        if (definitions.containsKey(memberName)) {
+            return false;
+        }
+
+        definitions.put(memberName, definition);
+        return true;
+    }
+
+    /////////
 	
 	/**
 	 * Get type for member.

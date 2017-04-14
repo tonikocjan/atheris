@@ -122,9 +122,7 @@ public class ImcCodeGen implements ASTVisitor {
                 access.size,
                 (ClassType) varType.childType));
 
-		for (AbsDef def : acceptor.definitions.definitions) {
-            def.accept(this);
-        }
+		acceptor.definitions.accept(this);
 
 		CanType type = (CanType) SymbDesc.getType(acceptor);
 		ClassType classType = (ClassType) type.childType;
@@ -343,21 +341,33 @@ public class ImcCodeGen implements ASTVisitor {
 			else if (t.isClassType()) {
 				// member access code
 				if (acceptor.expr2 instanceof AbsFunCall) {
-				    ClassType classType = (ClassType) t;
-				    int indexForMember = classType.indexForMember(((AbsFunCall) acceptor.expr2).getStringRepresentation());
-				    int offset = (indexForMember + 2) * 4;
+                    AbsFunDef.FunctionModifier modifier = ((AbsFunDef) SymbDesc.getNameDef(acceptor.expr2)).modifier;
 
-				    FrmTemp frmTemp = new FrmTemp();
-                    ImcTEMP temp = new ImcTEMP(frmTemp);
+                    if (modifier == AbsFunDef.FunctionModifier.dynamicInstanceMethod) {
+                        ClassType classType = (ClassType) t;
+                        int indexForMember = classType.indexForMember(((AbsFunCall) acceptor.expr2).getStringRepresentation());
+                        int offset = (indexForMember + 2) * 4;
 
-				    ImcSEQ methodCallCode = new ImcSEQ();
-                    methodCallCode.stmts.add(new ImcMOVE(temp, new ImcBINOP(ImcBINOP.ADD, new ImcMEM(e1), new ImcCONST(offset))));
-//                    new ImcMEM(new ImcBINOP(ImcBINOP.ADD, new ImcMEM(e1), new ImcCONST(offset)))
+                        FrmTemp frmTemp = new FrmTemp();
+                        ImcTEMP temp = new ImcTEMP(frmTemp);
 
-                    ImcMethodCALL methodCall = new ImcMethodCALL(frmTemp);
-                    methodCall.args = ((ImcCALL) c2).args;
+                        ImcSEQ methodCallCode = new ImcSEQ();
+                        methodCallCode.stmts.add(
+                                new ImcMOVE(temp,
+                                        new ImcBINOP(ImcBINOP.ADD,
+                                                new ImcMEM(e1),
+                                                new ImcCONST(offset))
+                                )
+                        );
 
-                    code = new ImcESEQ(methodCallCode, methodCall);
+                        ImcMethodCALL methodCall = new ImcMethodCALL(frmTemp);
+                        methodCall.args = ((ImcCALL) c2).args;
+
+                        code = new ImcESEQ(methodCallCode, methodCall);
+                    }
+                    else {
+                        code = c2;
+                    }
                 }
 				else {
                     code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, e2));
@@ -901,6 +911,7 @@ public class ImcCodeGen implements ASTVisitor {
 
     @Override
     public void visit(AbsExtensionDef acceptor) {
-
+        acceptor.extendingType.accept(this);
+        acceptor.definitions.accept(this);
     }
 }

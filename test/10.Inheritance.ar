@@ -8,7 +8,8 @@ class A {
 	let A_a: Int = 10
 
 	func foo() {
-		print(string: "A::foo()")	
+		print(string: "A::foo()")
+		self.joze()	
 	}
 }
 
@@ -71,14 +72,17 @@ else {
 
 #######################
 
-extension test {
-	func joze() {
+extension A {
+
+	func joze(a: Int) {
 
 	}
 
-	var x: Int
+	func joze() {
+		print(string: "test")
+	}
 }
 
-
+A().joze()
 
 

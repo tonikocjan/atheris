@@ -30,8 +30,12 @@ import compiler.abstr.tree.type.AbsType;
  * @author toni kocjan
  */
 public class AbsFunDef extends AbsDef {
-	
-	/** Parameters. */
+
+    public enum FunctionModifier {
+        staticMethod, instanceMethod, dynamicInstanceMethod
+    }
+
+    /** Parameters. */
 	public final LinkedList<AbsParDef> pars;
 
 	/** Return type. */
@@ -42,6 +46,9 @@ public class AbsFunDef extends AbsDef {
 
 	/** Is this function a constructor. */
 	public boolean isConstructor;
+
+    /** Modifier */
+	public FunctionModifier modifier = FunctionModifier.staticMethod;
 
 	/**
 	 * Create new function definition.

@@ -325,7 +325,8 @@ public class FrmEvaluator implements ASTVisitor {
 
     @Override
     public void visit(AbsExtensionDef acceptor) {
-
+        acceptor.extendingType.accept(this);
+        acceptor.definitions.accept(this);
     }
 
 }
