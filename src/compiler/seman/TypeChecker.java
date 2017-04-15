@@ -56,7 +56,6 @@ import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsType;
 import compiler.abstr.tree.type.AbsTypeName;
-import compiler.imcode.ImcCONST;
 import compiler.seman.type.ArrayType;
 import compiler.seman.type.AtomType;
 import compiler.seman.type.CanType;
@@ -76,18 +75,25 @@ import managers.LanguageManager;
 public class TypeChecker implements ASTVisitor {
 
 	private enum TraversalState {
-		normal, definitions
+		extensions, normal
 	}
+
+	private boolean isBaseNode = true;
 
 	/**
 	 * Current state of traversal
 	 */
-	private TraversalState traversalState = TraversalState.normal;
+	private TraversalState traversalState = TraversalState.extensions;
 
 	/**
      * True if assigning to variable, otherwise false.
 	 */
 	private boolean assign = false;
+
+    /**
+     *
+     */
+    private boolean resolveTypeOnly = false;
 
 
 	// MARK: - Methods
@@ -100,98 +106,112 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-		LinkedList<Type> types = new LinkedList<>();
-        LinkedList<String> names = new LinkedList<>();
+	    if (traversalState == TraversalState.extensions) {
+            LinkedList<Type> types = new LinkedList<>();
+            LinkedList<String> names = new LinkedList<>();
 
-		CanType baseClass = null;
-		AbsFunDef baseClassDefaultConstructor = null;
+            CanType baseClass = null;
 
-        traversalState = TraversalState.definitions;
+            // check wether inheritance is legal
+            if (acceptor.baseClass != null) {
+                acceptor.baseClass.accept(this);
 
-		if (acceptor.baseClass != null) {
-            acceptor.baseClass.accept(this);
-
-            Type type = SymbDesc.getType(acceptor.baseClass);
-            if (!type.isCanType() || !((CanType) type).childType.isClassType()) {
-                Report.error(acceptor.baseClass.position, "Inheritance from non-class type \"" + type.friendlyName() + "\" is not allowed");
-            }
-
-            baseClass = (CanType) type;
-            baseClassDefaultConstructor = ((ClassType) ((CanType) type).childType).classDefinition.defaultConstructor;
-        }
-
-		for (AbsDef def : acceptor.definitions.definitions) {
-			if (names.contains(def.getName())) {
-                Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
-            }
-            else if (baseClass != null) {
-                if (def.isOverriding()) {
-                    if (!baseClass.containsMember(def.getName())) {
-                        Report.error(def.position, "Invalid overriding todo \"" + def.getName() + "\"");
-                    }
+                Type type = SymbDesc.getType(acceptor.baseClass);
+                if (!type.isCanType() || !((CanType) type).childType.isClassType()) {
+                    Report.error(acceptor.baseClass.position,
+                            "Inheritance from non-class type \"" + type.friendlyName() + "\" is not allowed");
                 }
-                else if (baseClass.containsMember(def.getName())) {
+
+                baseClass = (CanType) type;
+            }
+
+            resolveTypeOnly = true;
+
+            for (AbsDef def : acceptor.definitions.definitions) {
+                if (names.contains(def.getName())) {
                     Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
                 }
-            }
-            else if (def.isOverriding()) {
-                Report.error(def.position, "Invalid overriding todo \"" + def.getName() + "\"");
-            }
+                else if (baseClass != null) {
+                    // check whether inheritance (overriding) is legal
+                    if (def.isOverriding()) {
+                        if (!baseClass.containsMember(def.getName())) {
+                            Report.error(def.position, "Invalid overriding todo \"" + def.getName() + "\"");
+                        }
+                    }
+                    else if (baseClass.containsMember(def.getName())) {
+                        Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+                    }
+                }
+                else if (def.isOverriding()) {
+                    Report.error(def.position, "Invalid overriding todo \"" + def.getName() + "\"");
+                }
 
-			names.add(def.getName());
-			def.accept(this);
-		}
+                def.accept(this);
 
-		for (AbsFunDef c : acceptor.contrustors) {
-            c.accept(this);
-        }
-
-        traversalState = TraversalState.normal;
-
-        for (AbsDef def : acceptor.definitions.definitions) {
-		    Type defType = SymbDesc.getType(def);
-            types.add(defType);
-        }
-
-		ClassType classType = new ClassType(acceptor, names, types, baseClass);
-        CanType canType = new CanType(classType);
-		SymbDesc.setType(acceptor, canType);
-		
-		// add implicit "self: classType" parameter to instance methods
-		for (AbsDef def : acceptor.definitions.definitions) {
-			if (def instanceof AbsFunDef) {
-				AbsFunDef funDef = (AbsFunDef) def;
-				AbsParDef selfParDef = funDef.getParameterForIndex(0);
-				selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
-
-				SymbDesc.setNameDef(selfParDef.type, acceptor);
-			}
-
-			def.accept(this);
-		}
-
-        // add implicit "self: classType" parameter to constructors
-        for (AbsFunDef constructor : acceptor.contrustors) {
-            AbsParDef selfParDef = constructor.getParameterForIndex(0);
-            selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
-
-            SymbDesc.setNameDef(selfParDef.type, acceptor);
-            SymbDesc.setType(selfParDef, classType);
-
-            // append base classes' initialization code
-            if (baseClassDefaultConstructor != null) {
-                constructor.func.statements.addAll(0, baseClassDefaultConstructor.func.statements);
+                names.add(def.getName());
             }
 
-            constructor.accept(this);
+            for (AbsFunDef c : acceptor.contrustors) {
+                c.accept(this);
+            }
 
-            FunctionType funType = (FunctionType) SymbDesc.getType(constructor);
-            funType.resultType = classType;
+            for (AbsDef def : acceptor.definitions.definitions) {
+                def.accept(this);
+                types.add(SymbDesc.getType(def));
+            }
 
-            SymbDesc.setType(constructor, funType);
+            ClassType classType = new ClassType(acceptor, names, types, baseClass);
+            CanType canType = new CanType(classType);
+
+            SymbDesc.setType(acceptor, canType);
         }
 
-//        classType.debugPrint();
+        else {
+            resolveTypeOnly = false;
+
+            Type t = SymbDesc.getType(acceptor);
+            ClassType classType = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
+	        CanType baseClass = classType.baseClass;
+
+            // add implicit "self: classType" parameter to instance methods
+            for (AbsDef def : acceptor.definitions.definitions) {
+                if (def instanceof AbsFunDef) {
+                    AbsFunDef funDef = (AbsFunDef) def;
+                    AbsParDef selfParDef = funDef.getParameterForIndex(0);
+                    selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
+
+                    SymbDesc.setNameDef(selfParDef.type, acceptor);
+                }
+
+                def.accept(this);
+            }
+
+            AbsFunDef baseClassDefaultConstructor = null;
+            if (baseClass != null) {
+                baseClassDefaultConstructor = ((ClassType) baseClass.childType).classDefinition.defaultConstructor;
+            }
+
+            // add implicit "self: classType" parameter to constructors
+            for (AbsFunDef constructor : acceptor.contrustors) {
+                AbsParDef selfParDef = constructor.getParameterForIndex(0);
+                selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
+
+                SymbDesc.setNameDef(selfParDef.type, acceptor);
+                SymbDesc.setType(selfParDef, classType);
+
+                // append base classes' initialization code
+                if (baseClassDefaultConstructor != null) {
+                    constructor.func.statements.addAll(0, baseClassDefaultConstructor.func.statements);
+                }
+
+                constructor.accept(this);
+
+                FunctionType funType = (FunctionType) SymbDesc.getType(constructor);
+                funType.resultType = classType;
+
+                SymbDesc.setType(constructor, funType);
+            }
+        }
 	}
 
 	@Override
@@ -267,7 +287,7 @@ public class TypeChecker implements ASTVisitor {
 				success = true;
 			}
 			// nil can be assigned to any pointer type
-			else if (t2.isBuiltinNilType() && t1.isPointerType()) {
+			else if (t2.isBuiltinNilType() && t1.isReferenceType()) {
 				SymbDesc.setType(acceptor.expr2, t1);
 				SymbDesc.setType(acceptor, t1);
 				success = true;
@@ -300,7 +320,6 @@ public class TypeChecker implements ASTVisitor {
 				if (!name.equals("count"))
 					Report.error("Lists have no attribute named \"" + name
 							+ "\"");
-
 				SymbDesc.setType(acceptor, Type.intType);
 				return;
 			}
@@ -413,7 +432,7 @@ public class TypeChecker implements ASTVisitor {
         /**
          * reference type comparison to nil
          */
-        if (t1.isPointerType() && t2.isBuiltinNilType()) {
+        if (t1.isReferenceType() && t2.isBuiltinNilType()) {
             SymbDesc.setType(acceptor, Type.boolType);
             return;
         }
@@ -514,8 +533,9 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsDefs acceptor) {
-		for (AbsDef def : acceptor.definitions)
-			def.accept(this);
+        for (AbsDef def : acceptor.definitions) {
+            def.accept(this);
+        }
 	}
 
 	@Override
@@ -571,25 +591,20 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
-	    // TODO: - ??
-		if (traversalState == TraversalState.normal || traversalState == TraversalState.definitions) {
-			Vector<Type> parameters = new Vector<>();
+        Vector<Type> parameters = new Vector<>();
 
-			for (AbsParDef par : acceptor.getParamaters()) {
-				par.accept(this);
-				parameters.add(SymbDesc.getType(par));
-			}
+        for (AbsParDef par : acceptor.getParamaters()) {
+            par.accept(this);
+            parameters.add(SymbDesc.getType(par));
+        }
 
-			acceptor.type.accept(this);
-			Type returnType = SymbDesc.getType(acceptor.type);
+        acceptor.type.accept(this);
+        Type returnType = SymbDesc.getType(acceptor.type);
 
-			FunctionType funType = new FunctionType(parameters, returnType, acceptor);
-			SymbDesc.setType(acceptor, funType);
-		}
+        FunctionType funType = new FunctionType(parameters, returnType, acceptor);
+        SymbDesc.setType(acceptor, funType);
 
-		if (traversalState == TraversalState.normal) {
-			FunctionType funType = (FunctionType) SymbDesc.getType(acceptor);
-
+        if (!resolveTypeOnly){
 			acceptor.func.accept(this);
 
 			// check if return type matches
@@ -677,7 +692,7 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		if (acceptor.type != null) {
+        if (acceptor.type != null) {
 			acceptor.type.accept(this);
 
 			Type type = SymbDesc.getType(acceptor.type);
@@ -730,9 +745,22 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsStmts stmts) {
-		for (AbsStmt s : stmts.statements) {
-			s.accept(this);
-		}
+	    if (isBaseNode) {
+	        isBaseNode = false;
+
+            for (TraversalState state : TraversalState.values()) {
+                traversalState = state;
+
+                for (AbsStmt s : stmts.statements) {
+                    s.accept(this);
+                }
+            }
+        }
+        else {
+            for (AbsStmt s : stmts.statements) {
+                s.accept(this);
+            }
+        }
 	}
 
 	@Override
@@ -816,7 +844,9 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumDef acceptor) {
-		AtomType enumRawValueType = null;
+        if (traversalState == TraversalState.extensions) return;
+
+        AtomType enumRawValueType = null;
 		
 		if (acceptor.type != null) {
 			acceptor.type.accept(this);
@@ -910,7 +940,9 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsTupleDef acceptor) {
-		LinkedList<Type> types = new LinkedList<>();
+        if (traversalState == TraversalState.extensions) return;
+
+        LinkedList<Type> types = new LinkedList<>();
 		LinkedList<String> names = new LinkedList<>();
 		
 		for (AbsDef def : acceptor.definitions.definitions) {
@@ -992,25 +1024,45 @@ public class TypeChecker implements ASTVisitor {
 
     @Override
     public void visit(AbsExtensionDef acceptor) {
-        acceptor.extendingType.accept(this);
+	    if (traversalState == TraversalState.extensions) {
+            acceptor.extendingType.accept(this);
 
-        Type type = SymbDesc.getType(acceptor.extendingType);
-        SymbDesc.setType(acceptor, type);
+            Type type = SymbDesc.getType(acceptor.extendingType);
+            SymbDesc.setType(acceptor, type);
 
-        if (!type.isCanType() || !((CanType) type).childType.isClassType()) {
-            Report.error(acceptor.position, "Only classes can be extended (for now)");
+            if (!type.isCanType() || !((CanType) type).childType.isClassType()) {
+                Report.error(acceptor.position, "Only classes can be extended (for now)");
+            }
+
+            ClassType extendingType = (ClassType) ((CanType) type).childType;
+
+            resolveTypeOnly = true;
+
+            for (AbsDef def : acceptor.definitions.definitions) {
+                def.accept(this);
+
+                String memberName = def.getName();
+                Type memberType = SymbDesc.getType(def);
+
+                if (!extendingType.addMember(def, memberName, memberType)) {
+                    Report.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
+                }
+            }
+
+            resolveTypeOnly = false;
         }
+        else {
+            // add implicit "self: classType" parameter to instance methods
+            for (AbsDef def : acceptor.definitions.definitions) {
+                if (def instanceof AbsFunDef) {
+                    AbsFunDef funDef = (AbsFunDef) def;
+                    AbsParDef selfParDef = funDef.getParameterForIndex(0);
+                    selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.getName());
 
-        ClassType extendingType = (ClassType) ((CanType) type).childType;
+                    SymbDesc.setNameDef(selfParDef.type, acceptor);
+                }
 
-        for (AbsDef def : acceptor.definitions.definitions) {
-            def.accept(this);
-
-            String memberName = def.getName();
-            Type memberType = SymbDesc.getType(def);
-
-            if (!extendingType.addMember(def, memberName, memberType)) {
-                Report.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
+                def.accept(this);
             }
         }
     }

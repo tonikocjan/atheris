@@ -9,7 +9,8 @@ class A {
 
 	func foo() {
 		print(string: "A::foo()")
-		self.joze()	
+		self.a()
+		self.joze()
 	}
 }
 
@@ -75,14 +76,19 @@ else {
 extension A {
 
 	func joze(a: Int) {
-
+		print(string: "extension::joze(a:)")
+		print(integer: a)
 	}
 
 	func joze() {
-		print(string: "test")
+		print(string: "extension::joze()")
 	}
 }
 
+
+A().foo()
+A().joze(a: 10)
 A().joze()
-
-
+B().joze(a: 20)
+B().joze()
+B().a()

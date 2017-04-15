@@ -464,7 +464,9 @@ public class NameChecker implements ASTVisitor {
                 // add implicit self: classType parameter to instance methods
                 AbsFunDef funDef = (AbsFunDef) def;
 
-                AbsParDef parDef = new AbsParDef(funDef.position, "self",
+                AbsParDef parDef = new AbsParDef(
+                        funDef.position,
+                        "self",
                         new AbsAtomType(funDef.position, AtomTypeKind.NIL));
                 funDef.addParamater(parDef);
 

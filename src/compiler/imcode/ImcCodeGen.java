@@ -20,7 +20,6 @@ package compiler.imcode;
 import java.util.LinkedList;
 import java.util.Stack;
 
-import Utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsDefs;
@@ -606,7 +605,7 @@ public class ImcCodeGen implements ASTVisitor {
 		Type varType = SymbDesc.getType(acceptor);
 		
 		int size = varType.size();
-		if (varType.isPointerType())
+		if (varType.isReferenceType())
 			size = 4;
 
 		if (access instanceof FrmVarAccess)

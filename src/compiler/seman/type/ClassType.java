@@ -399,4 +399,8 @@ public class ClassType extends ReferenceType {
     public Iterator<Type> getTypes() {
         return memberTypes.iterator();
     }
+
+    public Iterator<String> getNames() {
+        return memberNames.iterator();
+    }
 }

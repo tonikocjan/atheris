@@ -4,16 +4,17 @@ import compiler.Position;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.AbsDefs;
 import compiler.abstr.tree.type.AbsType;
+import compiler.abstr.tree.type.AbsTypeName;
 
 /**
  *
  */
-public class AbsExtensionDef extends AbsDef {
+public class AbsExtensionDef extends AbsTypeDef {
 
     /**
      *
      */
-    public final AbsType extendingType;
+    public final AbsTypeName extendingType;
 
     /**
      * New definitions.
@@ -25,8 +26,8 @@ public class AbsExtensionDef extends AbsDef {
      * @param pos
      * @param extendingType
      */
-    public AbsExtensionDef(Position pos, AbsType extendingType, AbsDefs definitions) {
-        super(pos, "");
+    public AbsExtensionDef(Position pos, String name, AbsTypeName extendingType, AbsDefs definitions) {
+        super(pos, name);
 
         this.extendingType = extendingType;
         this.definitions = definitions;

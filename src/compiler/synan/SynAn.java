@@ -683,8 +683,10 @@ public class SynAn {
 	}
 
 	private AbsExtensionDef parseExtensionDefinition() {
+        skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
+
+        AbsTypeName type = new AbsTypeName(symbol.position, symbol.lexeme);
         skip();
-        AbsType type = parseType();
 
         if (symbol.token != TokenType.LBRACE) {
             Report.error(symbol.position, "Expected \"{\"");
@@ -700,7 +702,7 @@ public class SynAn {
 
         skip();
 
-        return new AbsExtensionDef(new Position(symbol.position, defs.position), type, defs);
+        return new AbsExtensionDef(new Position(symbol.position, defs.position), type.name, type, defs);
     }
 	
 	private AbsType parseType() {

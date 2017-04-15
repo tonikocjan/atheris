@@ -56,8 +56,10 @@ public class AbsAtomType extends AbsType {
 			return "Void";
 		case STR:
 			return "String";
+        case LOG:
+            return "Bool";
 		case NIL:
-			Report.error("Internal error @ AtomType toString");
+			return "Null";
 		default:
 			return null;
 		}

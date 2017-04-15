@@ -140,7 +140,7 @@ public class FrmEvaluator implements ASTVisitor {
 
 		for (AbsExpr arg: acceptor.args) {
             Type argType = SymbDesc.getType(arg);
-            int size = argType.isPointerType() ? 4 : argType.size(); // FIXME: -
+            int size = argType.isReferenceType() ? 4 : argType.size(); // FIXME: -
 
             parSize += size;
         }
@@ -187,7 +187,7 @@ public class FrmEvaluator implements ASTVisitor {
 		FrmDesc.setAccess(acceptor, new FrmParAccess(acceptor, currentFrame, currentFrame.sizePars));
 		
 		Type type = SymbDesc.getType(acceptor);
-		int size = type.isPointerType() ? 4 : type.size(); // FIXME: -
+		int size = type.isReferenceType() ? 4 : type.size(); // FIXME: -
 		
 		currentFrame.sizePars += size;
 		currentFrame.numPars++;
