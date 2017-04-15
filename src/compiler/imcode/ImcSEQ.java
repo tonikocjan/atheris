@@ -42,9 +42,12 @@ public class ImcSEQ extends ImcStmt {
 	public void dump(int indent) {
 		Report.dump(indent, "SEQ");
 		Iterator<ImcStmt> stmts = this.stmts.iterator();
+		int index = 0;
 		while (stmts.hasNext()) {
 			ImcStmt stmt = stmts.next();
+            Report.dump(indent + 2, "PC [" + index + "]: ", false);
 			stmt.dump(indent + 2);
+			index++;
 		}
 	}
 

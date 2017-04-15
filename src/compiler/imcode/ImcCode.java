@@ -29,6 +29,5 @@ public interface ImcCode {
 	 * 
 	 * @param indent Zamik.
 	 */
-	public abstract void dump(int indent);
-	
+	void dump(int indent);
 }

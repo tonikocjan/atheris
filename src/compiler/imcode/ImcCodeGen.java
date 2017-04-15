@@ -99,7 +99,7 @@ public class ImcCodeGen implements ASTVisitor {
 
 	public ImcCodeGen(FrmFrame entryPoint) {
 		frameStack.add(entryPoint);
-		chunks = new LinkedList<ImcChunk>();
+		chunks = new LinkedList<>();
 	}
 
 	@Override
@@ -222,33 +222,43 @@ public class ImcCodeGen implements ASTVisitor {
 		    Type expressionType = SymbDesc.getType(acceptor.expr1);
 
 		    if (expressionType.isStructType()) {
-                // copy content of one struct into another
-                StructType structType = (StructType) expressionType;
-                ImcSEQ copyCode = new ImcSEQ();
-
-                e1 = ((ImcMEM)e1).expr;
-                if (e2 instanceof ImcMEM)
-                    e2 = ((ImcMEM)e2).expr;
-                else {
-                    ImcTEMP temp = new ImcTEMP(new FrmTemp());
-                    copyCode.stmts.add(new ImcMOVE(temp, e2));
-                    e2 = temp;
+		        if (acceptor.expr2 instanceof AbsFunCall && ((AbsFunDef) SymbDesc.getNameDef(acceptor.expr2)).isConstructor) {
+                    code = new ImcMOVE(e1, e2);
                 }
+		        else {
+                    // copy content of one struct into another
+                    StructType structType = (StructType) expressionType;
+                    ImcSEQ copyCode = new ImcSEQ();
 
-                Iterator<Type> types = structType.getTypes();
+                    e1 = ((ImcMEM) e1).expr;
+                    if (e2 instanceof ImcMEM)
+                        e2 = ((ImcMEM) e2).expr;
+                    else {
+                        ImcTEMP temp = new ImcTEMP(new FrmTemp());
+                        copyCode.stmts.add(new ImcMOVE(temp, e2));
+                        e2 = temp;
+                    }
 
-                int offset = 0;
-                while (types.hasNext()) {
-                    ImcMEM dst = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcCONST(offset)));
-                    ImcMEM src = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e2, new ImcCONST(offset)));
+                    Iterator<Type> types = structType.getTypes();
 
-                    ImcMOVE move = new ImcMOVE(dst, src);
-                    copyCode.stmts.add(move);
+                    int offset = 0;
+                    while (types.hasNext()) {
+                        Type t = types.next();
 
-                    offset += types.next().size();
+                        // FIXME: - This won't work for variables with function type
+                        if (t.isFunctionType()) continue;
+
+                        ImcMEM dst = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcCONST(offset)));
+                        ImcMEM src = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e2, new ImcCONST(offset)));
+
+                        ImcMOVE move = new ImcMOVE(dst, src);
+                        copyCode.stmts.add(move);
+
+                        offset += t.size();
+                    }
+
+                    code = copyCode;
                 }
-
-                code = copyCode;
             }
             else {
                 code = new ImcMOVE(e1, e2);
@@ -407,7 +417,11 @@ public class ImcCodeGen implements ASTVisitor {
                     }
                 }
 				else {
-                    code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, e2));
+                    code = new ImcBINOP(ImcBINOP.ADD, e1, e2);
+
+//                    if (t.isReferenceType()) {
+                        code = new ImcMEM((ImcBINOP) code);
+//                    }
                 }
 			}
 
@@ -558,12 +572,18 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
+	    Type resultType = ((FunctionType) SymbDesc.getType(acceptor)).resultType;
 		frameStack.push(FrmDesc.getFrame(acceptor));
 
 		acceptor.func.accept(this);
 		
 		ImcSEQ code = (ImcSEQ) ImcDesc.getImcCode(acceptor.func);
 		code.stmts.add(new ImcLABEL(frameStack.peek().endLabel));
+
+		if (resultType.isVoidType()) {
+		    code.stmts.addFirst(new ImcMOVE(new ImcTEMP(frameStack.peek().RV), new ImcCONST(-555)));
+        }
+
 		chunks.add(new ImcCodeChunk(frameStack.peek(), code));
 		
 		frameStack.pop();
@@ -748,6 +768,7 @@ public class ImcCodeGen implements ASTVisitor {
 
 		scope--;
 		if (scope == 0) {
+            seq.stmts.addFirst(new ImcMOVE(new ImcTEMP(frameStack.peek().RV), new ImcCONST(-555)));
 			entryPointCode = new ImcCodeChunk(frameStack.peek(), seq);
 			chunks.add(entryPointCode);
 		}

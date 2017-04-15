@@ -19,6 +19,7 @@ package compiler.frames;
 
 import compiler.abstr.tree.def.AbsVarDef;
 import compiler.seman.type.ClassType;
+import compiler.seman.type.ObjectType;
 import compiler.seman.type.Type;
 
 public class FrmMemberAccess implements FrmAccess {
@@ -31,22 +32,20 @@ public class FrmMemberAccess implements FrmAccess {
 	/**
 	 * Parent type.
 	 */
-	public final Type parentType;
+	public final ObjectType parentType;
 
     /**
      *
      * @param memberDef
      * @param parentType
      */
-	public FrmMemberAccess(AbsVarDef memberDef, Type parentType) {
+	public FrmMemberAccess(AbsVarDef memberDef, ObjectType parentType) {
 		this.memberDef = memberDef;
 		this.parentType = parentType;
 	}
 	
 	public int offsetForMember() {
-		if (parentType.isClassType())
-			return ((ClassType) parentType).offsetForMember(memberDef.getName());
-		return -1;
+		return parentType.offsetForMember(memberDef.getName());
 	}
 
 	@Override

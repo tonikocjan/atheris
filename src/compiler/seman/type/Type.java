@@ -229,8 +229,18 @@ public abstract class Type {
 	public boolean isBuiltinNilType() {
 		return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.NIL;
 	}
-	
-	/**
+
+    /**
+     * Check if this type is builtin Nil type.
+     * @return True if it is, otherwise false.
+     */
+    public boolean isVoidType() {
+        return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.VOID;
+    }
+
+
+
+    /**
 	 * String representation.
 	 */
 	public abstract String toString();

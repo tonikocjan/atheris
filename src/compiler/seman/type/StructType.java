@@ -11,7 +11,7 @@ import java.util.LinkedList;
 public class StructType extends ObjectType implements ValueType {
 
     public StructType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types) {
-        super(definition, names, types, null, 4);
+        super(definition, names, types, null, 0);
     }
 
     @Override

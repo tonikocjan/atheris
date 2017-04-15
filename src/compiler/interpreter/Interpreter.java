@@ -27,7 +27,8 @@ import compiler.lincode.CodeGenerator;
 public class Interpreter {
 
 	public static boolean debug = false;
-	public static boolean shouldPrintMemory = false;
+	public static boolean printMemory = false;
+    public static boolean checkMemory = true;
 	
 	/*--- staticni del navideznega stroja ---*/
 	
@@ -39,7 +40,10 @@ public class Interpreter {
 	public static int heapPointer = 4;
 	
 	public static void stM(int address, Object value) {
+	    if (checkMemory && value == null)
+	        Report.error("Storing null is illegal");
 		if (debug) System.out.println(" [" + address + "] <= " + value);
+
 		mems.put(address, value);
 	}
 
@@ -66,6 +70,8 @@ public class Interpreter {
 	public HashMap<FrmTemp, Object> temps = new HashMap<>();
 		
 	public void stT(FrmTemp temp, Object value) {
+        if (checkMemory && value == null)
+            Report.error("Storing null is illegal");
 		if (debug) System.out.println(" " + temp.name() + " <= " + value);
 		temps.put(temp, value);
 	}
@@ -82,7 +88,10 @@ public class Interpreter {
 	 */
 	public static void printMemory() {
 	    int address = 0;
-		for (int i = 0; i < mems.size(); i++, address += 4) {
+		for (int i = 0; i < mems.size(); i++, address += 1) {
+		    if (address > STACK_SIZE + 4)
+		        Report.error("Memory overflow");
+
 		    Object value = mems.get(address);
 		    if (value == null) {
 		        i--;
@@ -93,7 +102,7 @@ public class Interpreter {
 	}
 
 	/*--- Izvajanje navideznega stroja. ---*/
-	
+
 	public Interpreter(FrmFrame frame, ImcSEQ code) {
 		if (debug) {
 			System.out.println("[START OF " + frame.label.name() + "]");
@@ -128,7 +137,7 @@ public class Interpreter {
 			else
 				pc++;
 
-			if (shouldPrintMemory) {
+			if (printMemory) {
 				System.out.println(frame.label.name() + ": " + pc);
 				printMemory();
 				System.out.println();
@@ -207,16 +216,16 @@ public class Interpreter {
 
 			if (instr.label.name().equals("_print")) {
 				System.out.println(ldM(stackPointer + 4));
-				return null;
+				return 0;
 			}
 			if (instr.label.name().equals("_time")) {
-				return (int)System.currentTimeMillis();
+				return (int) System.currentTimeMillis();
 			}
 			if (instr.label.name().equals("_rand")) {
 				return new Random().nextInt((Integer)ldM(stackPointer + 4));
 			}
 			if (instr.label.name().equals("_mem")) {
-			    return ldM((Integer)ldM(stackPointer + 4));
+			    return ldM((Integer) ldM(stackPointer + 4));
             }
 			
 			new Interpreter(CodeGenerator.getFrameForLabel(instr.label), (ImcSEQ) CodeGenerator.getCodeForLabel(instr.label));
@@ -286,7 +295,7 @@ public class Interpreter {
 			ImcMALLOC malloc = (ImcMALLOC) instruction;
 			int location = heapPointer;
 			heapPointer += malloc.size;
-			return location;
+            return location;
 		}
 		
 		if (instruction instanceof ImcMOVE) {

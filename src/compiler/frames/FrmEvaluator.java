@@ -53,7 +53,7 @@ import compiler.seman.type.Type;
 
 public class FrmEvaluator implements ASTVisitor {
 
-    private Type parentType = null;
+    private ObjectType parentType = null;
     private FrmFrame currentFrame = null;
     public FrmFrame entryPoint = null;
 	private int currentLevel = 1;
@@ -83,8 +83,8 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-        Type tmp = parentType;
-        parentType = ((CanType) SymbDesc.getType(acceptor)).childType;
+        ObjectType tmp = parentType;
+        parentType = (ObjectType) ((CanType) SymbDesc.getType(acceptor)).childType;
 
         if (parentType.isClassType()) {
             FrmVirtualTableAccess virtualTableAccess = new FrmVirtualTableAccess(acceptor,

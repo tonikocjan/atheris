@@ -113,6 +113,7 @@ public class Report {
 			message = fileName + ": " + message;
 		
 		System.err.println(":-( " + message);
+		System.err.flush();
 		System.exit(1);
 	}
 
@@ -191,7 +192,22 @@ public class Report {
 	 *            Vsebina vrstice.
 	 */
 	public static void dump(int indent, String line) {
-		for (int i = 0; i < indent; i++) dumpFile.print(" ");
-		dumpFile.println(line);
+		dump(indent, line, true);
 	}
+
+    /**
+     * Izpise vrstico na datoteko z vmesnimi rezultati zamknjeno v desno.
+     *
+     * @param indent
+     *            Sirina zamika.
+     * @param line
+     *            Vsebina vrstice.
+     */
+    public static void dump(int indent, String line, boolean newLine) {
+        for (int i = 0; i < indent; i++) dumpFile.print(" ");
+        if (newLine)
+            dumpFile.println(line);
+        else
+            dumpFile.print(line);
+    }
 }
