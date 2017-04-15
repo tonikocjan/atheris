@@ -2,9 +2,9 @@ package compiler.seman.type;
 
 import compiler.abstr.tree.def.AbsDef;
 
-public class OptionalType extends ReferenceType {
-	
-	/** Child type */
+public class OptionalType extends Type implements ReferenceType {
+
+        /** Child type */
 	public final Type childType;
 
     /** Is implicitly forced */

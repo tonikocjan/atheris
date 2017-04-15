@@ -24,7 +24,7 @@ import java.util.Map;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsTupleDef;
 
-public class TupleType extends ReferenceType {
+public class TupleType extends Type implements ReferenceType {
 	
 	/**
 	 * Definition for this type.

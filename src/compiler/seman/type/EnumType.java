@@ -31,7 +31,7 @@ import compiler.abstr.tree.def.AbsEnumMemberDef;
  * @author toni kocjan
  *
  */
-public class EnumType extends ReferenceType {
+public class EnumType extends Type implements ReferenceType {
 
 	/**
 	 * Enumeration definition.

@@ -109,6 +109,14 @@ public abstract class Type {
 		return this instanceof CanType;
 	}
 
+    /**
+     * Check if this type is class type.
+     * @return True if it is, otherwise false.
+     */
+    public boolean isObjectType() {
+        return this instanceof ObjectType;
+    }
+
 	/**
 	 * Check if this type is class type.
 	 * @return True if it is, otherwise false.

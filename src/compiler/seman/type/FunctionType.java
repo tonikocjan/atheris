@@ -27,7 +27,7 @@ import compiler.abstr.tree.def.AbsFunDef;
  * 
  * @author toni
  */
-public class FunctionType extends ReferenceType {
+public class FunctionType extends Type implements ReferenceType {
 
 	/** 
 	 * Parameter types. 

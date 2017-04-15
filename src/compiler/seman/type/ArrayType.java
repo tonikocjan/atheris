@@ -24,7 +24,7 @@ import compiler.abstr.tree.def.AbsDef;
  * 
  * @author toni
  */
-public class ArrayType extends ReferenceType {
+public class ArrayType extends Type implements ReferenceType {
 
 	/**
 	 * Type of array member.

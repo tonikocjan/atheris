@@ -17,6 +17,6 @@
 
 package compiler.seman.type;
 
-public abstract class ReferenceType extends Type {
-	
+public interface ReferenceType {
+
 }
