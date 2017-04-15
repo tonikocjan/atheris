@@ -99,10 +99,11 @@ public class AbsClassDef extends AbsTypeDef {
                        LinkedList<AbsStmt> defaultConstructor, LinkedList<AbsFunDef> constructors) {
         this(name, pos, null, definitions, defaultConstructor, constructors);
     }
-	
-	public AbsDef findDefinitionForName(String name) {
-		return definitions.findDefinitionForName(name);
-	}
-	
+
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
+
+    @Override
+    public String toString() {
+        return "AbsClassDef " + position.toString() + ": " + getName();
+    }
 }

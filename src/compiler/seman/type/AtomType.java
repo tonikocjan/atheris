@@ -26,7 +26,7 @@ import compiler.abstr.tree.def.AbsDef;
  * 
  * @author toni
  */
-public class AtomType extends Type {
+public class AtomType extends Type implements ValueType {
 
 	/**
 	 * Type kind.

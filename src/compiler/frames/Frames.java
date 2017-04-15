@@ -102,7 +102,7 @@ public class Frames implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef classDef) {
-		Report.dump(indent, "AbsClassDef " + classDef.position.toString() + ": " + classDef.getName());		
+        Report.dump(indent, classDef.toString());
 		{
 			Type typ = SymbDesc.getType(classDef);
 			if (typ != null)

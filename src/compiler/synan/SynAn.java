@@ -323,8 +323,9 @@ public class SynAn {
 			definition = parseImportDefinition();
 			break;
 		case KW_CLASS:
+        case KW_STRUCT:
 			dump("definition -> class_definition");
-			definition = parseClassDefinition();
+			definition = parseClassDefinition(symbol.token == TokenType.KW_STRUCT);
 			break;
 		case KW_ENUM:
 			dump("definition -> enum_definition");
@@ -502,17 +503,19 @@ public class SynAn {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private AbsClassDef parseClassDefinition() {
+	private AbsClassDef parseClassDefinition(boolean parseStructure) {
 		Position start = symbol.position;
 		String className = skip(new Symbol(TokenType.IDENTIFIER, "IDENTIFIER", null)).lexeme;
 		skip();
 
 		AbsType baseClass = null;
-		if (symbol.token == TokenType.COLON) {
-		    skip();
+		if (!parseStructure) {
+            if (symbol.token == TokenType.COLON) {
+                skip();
 
-		    // parse base class type name
-            baseClass = parseType();
+                // parse base class type name
+                baseClass = parseType();
+            }
         }
 
         if (symbol.token != TokenType.LBRACE) {
@@ -534,8 +537,11 @@ public class SynAn {
 		Position definitionPosition = new Position(start, end);
 
 		skip();
-		
-		return new AbsClassDef(className, definitionPosition, baseClass, definitions, defaultConstructor, constructors);
+
+        if (parseStructure) {
+            return new AbsStructDef(className, definitionPosition, baseClass, definitions, defaultConstructor, constructors);
+        }
+        return new AbsClassDef(className, definitionPosition, baseClass, definitions, defaultConstructor, constructors);
 	}
 	
 	@SuppressWarnings("rawtypes")

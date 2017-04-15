@@ -80,7 +80,7 @@ public class Ast implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef classDef) {
-		Report.dump(indent, "AbsClassDef " + classDef.position.toString() + ": " + classDef.getName());		
+		Report.dump(indent, classDef.toString());
 		indent += 2;
 		Report.dump(indent, "Member definitions:");
 		indent += 2; classDef.definitions.accept(this); indent -= 2;

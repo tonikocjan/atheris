@@ -194,5 +194,4 @@ public class Report {
 		for (int i = 0; i < indent; i++) dumpFile.print(" ");
 		dumpFile.println(line);
 	}
-	
 }

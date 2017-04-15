@@ -86,9 +86,27 @@ extension A {
 }
 
 
-A().foo()
+/*A().foo()
 A().joze(a: 10)
 A().joze()
 B().joze(a: 20)
 B().joze()
-B().a()
+B().a()*/
+
+#######################
+
+class Point {
+	var x: Int = 0
+	var y: Int = 0
+}
+
+var p1 = Point()
+var p2 = Point()
+
+print(integer: p1.x)
+print(integer: p1.y)
+
+
+
+
+
