@@ -104,7 +104,7 @@ public class FunctionType extends Type implements ReferenceType {
 		String str = "";
 		str += "(";
 		for (Type t : parameterTypes)
-			str += t.toString() + (t == parameterTypes.lastElement() ? "" : ",") ;
+			str += t.friendlyName() + (t == parameterTypes.lastElement() ? "" : ",") ;
 		String res = resultType == null ? "?" : resultType.toString();
 		str += ") -> " + res;
 		return str;

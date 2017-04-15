@@ -42,24 +42,25 @@ public class AbsStmts extends AbsTree {
 	 */
 	public AbsStmts(Position position, LinkedList<AbsStmt> absStmts) {
 		super(position);
-		
 		this.statements = absStmts;
 	}
 
-	/**
-	 * Find definition for given name.
-	 * @param name Definition name
-	 * @return Definition if found, otherwise null.
-	 */
-	public AbsDef findDefinitionForName(String name) {
-		for (AbsStmt s : statements) {
-			if (s instanceof AbsDef)
-				if (((AbsDef) s).getName().equals(name))
-					return (AbsDef) s;
-		}
-		return null;
-	}
-	
+    /**
+     * Create new statements list.
+     * @param position
+     * 			Position.
+     * @param defs
+     * 			Definitions.
+     */
+    public AbsStmts(Position position, LinkedList<AbsDef> defs, boolean ignore) {
+        super(position);
+
+        this.statements = new LinkedList<>();
+        for (AbsDef def : defs) {
+            this.statements.add(def);
+        }
+    }
+
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
 }

@@ -509,13 +509,11 @@ public class SynAn {
 		skip();
 
 		AbsType baseClass = null;
-		if (!parseStructure) {
-            if (symbol.token == TokenType.COLON) {
-                skip();
+        if (symbol.token == TokenType.COLON) {
+            skip();
 
-                // parse base class type name
-                baseClass = parseType();
-            }
+            // parse base class type name
+            baseClass = parseType();
         }
 
         if (symbol.token != TokenType.LBRACE) {

@@ -76,12 +76,12 @@ else {
 extension A {
 
 	func joze(a: Int) {
-		print(string: "extension::joze(a:)")
+		print(string: "extension::A::joze(a:)")
 		print(integer: a)
 	}
 
 	func joze() {
-		print(string: "extension::joze()")
+		print(string: "extension::A::joze()")
 	}
 }
 
@@ -95,18 +95,35 @@ B().a()*/
 
 #######################
 
-class Point {
+struct Point {
 	var x: Int = 0
 	var y: Int = 0
 }
 
 var p1 = Point()
-var p2 = Point()
+var p2 = p1
 
 print(integer: p1.x)
 print(integer: p1.y)
 
+print(integer: p2.x)
+print(integer: p2.y)
+
+p2.y = 20
+
+print(integer: p1.x)
+print(integer: p1.y)
+
+print(integer: p2.x)
+print(integer: p2.y)
 
 
+extension Point {
+	func test() {
+		print(string: "extension::Point::test()")
+	}
+}
 
+
+p1.test()
 

@@ -12,7 +12,7 @@ import java.util.LinkedList;
 /**
  * Created by toni on 15/04/2017.
  */
-public class ObjectType extends Type {
+public abstract class ObjectType extends Type {
 
     /**
      * Class definition.
@@ -38,7 +38,7 @@ public class ObjectType extends Type {
     /**
      * Inital offset of all members (space used for type descriptor).
      */
-    protected final int reservedSize = 4;
+    protected final int reservedSize;
 
     /**
      * Base class (null if no base class).
@@ -53,7 +53,7 @@ public class ObjectType extends Type {
      * @param types Type for each member.
      * @param baseClass Base class for this class type.
      */
-    public ObjectType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types, CanType baseClass) {
+    public ObjectType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types, CanType baseClass, int reservedSize) {
         if (names.size() != types.size()) {
             Report.error("Internal error :: compiler.seman.type.ObjectType: "
                     + "names count not equal types count");
@@ -71,6 +71,7 @@ public class ObjectType extends Type {
         this.classDefinition = definition;
         this.baseClass = baseClass;
         this.base = baseClass == null ? null : (ObjectType) baseClass.childType;
+        this.reservedSize = reservedSize;
 
         descriptorMapping.put(this, descriptor);
     }
@@ -81,8 +82,8 @@ public class ObjectType extends Type {
      * @param names Name for each member.
      * @param types Type for each member.
      */
-    public ObjectType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types) {
-        this(definition, names, types, null);
+    public ObjectType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types, int reservedSize) {
+        this(definition, names, types, null, reservedSize);
     }
 
     /**
@@ -229,28 +230,6 @@ public class ObjectType extends Type {
      */
     public String getName() {
         return classDefinition.name;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("Class: ");
-        sb.append(classDefinition.name + "(");
-        sb.append("Base: (");
-        sb.append(classDefinition.baseClass == null ? "/" : classDefinition.baseClass.toString());
-        sb.append("), ");
-
-        Iterator<String> namesIterator = memberNames.iterator();
-        Iterator<Type> typesIterator = memberTypes.iterator();
-
-        while (namesIterator.hasNext()) {
-            sb.append(namesIterator.next() + ":" + typesIterator.next().toString());
-            if (!namesIterator.hasNext()) sb.append(";");
-        }
-
-        sb.append(")");
-        return sb.toString();
     }
 
     @Override

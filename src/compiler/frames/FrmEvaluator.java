@@ -48,6 +48,7 @@ import compiler.abstr.tree.type.AbsTypeName;
 import compiler.seman.SymbDesc;
 import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
+import compiler.seman.type.ObjectType;
 import compiler.seman.type.Type;
 
 public class FrmEvaluator implements ASTVisitor {
@@ -85,12 +86,15 @@ public class FrmEvaluator implements ASTVisitor {
         Type tmp = parentType;
         parentType = ((CanType) SymbDesc.getType(acceptor)).childType;
 
-        FrmVirtualTableAccess virtualTableAccess = new FrmVirtualTableAccess(acceptor,
-                ((ClassType) parentType).virtualTableSize() + 8);
-        FrmDesc.setAccess(acceptor, virtualTableAccess);
-        FrmDesc.setVirtualTable((ClassType) parentType, virtualTableAccess);
+        if (parentType.isClassType()) {
+            FrmVirtualTableAccess virtualTableAccess = new FrmVirtualTableAccess(acceptor,
+                    ((ClassType) parentType).virtualTableSize() + 8);
+            FrmDesc.setAccess(acceptor, virtualTableAccess);
+            FrmDesc.setVirtualTable((ClassType) parentType, virtualTableAccess);
+        }
 
 		acceptor.definitions.accept(this);
+
 		for (AbsFunDef c : acceptor.contrustors) {
 			c.accept(this);
 		}

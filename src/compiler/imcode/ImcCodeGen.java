@@ -17,6 +17,7 @@
 
 package compiler.imcode;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -55,12 +56,7 @@ import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsTypeName;
 import compiler.frames.*;
 import compiler.seman.SymbDesc;
-import compiler.seman.type.ArrayType;
-import compiler.seman.type.CanType;
-import compiler.seman.type.ClassType;
-import compiler.seman.type.EnumType;
-import compiler.seman.type.TupleType;
-import compiler.seman.type.Type;
+import compiler.seman.type.*;
 
 public class ImcCodeGen implements ASTVisitor {
 
@@ -113,19 +109,25 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-        FrmVirtualTableAccess access = (FrmVirtualTableAccess) FrmDesc.getAccess(acceptor);
-        CanType varType = (CanType) SymbDesc.getType(access.classDef);
+        CanType type = (CanType) SymbDesc.getType(acceptor);
+	    FrmAccess access = FrmDesc.getAccess(acceptor);
 
-        chunks.add(virtualTableCount++, new ImcVirtualTableDataChunk(
-                FrmLabel.newLabel(varType.friendlyName()),
-                access.size,
-                (ClassType) varType.childType));
+	    Integer virtualTablePointer = null;
+
+	    if (type.childType.isClassType()) {
+            FrmVirtualTableAccess virtualTableAccess = (FrmVirtualTableAccess) access;
+            virtualTablePointer = virtualTableAccess.location;
+
+            chunks.add(virtualTableCount++, new ImcVirtualTableDataChunk(
+                    FrmLabel.newLabel(type.friendlyName()),
+                    virtualTableAccess.size,
+                    (ClassType) type.childType));
+        }
 
 		acceptor.definitions.accept(this);
 
-		CanType type = (CanType) SymbDesc.getType(acceptor);
-		ClassType classType = (ClassType) type.childType;
-		int size = classType.size();
+		ObjectType objectType = (ObjectType) type.childType;
+		int size = objectType.size();
 
         for (AbsFunDef constructor : acceptor.contrustors) {
             FrmFrame constructorFrame = FrmDesc.getFrame(constructor);
@@ -144,7 +146,9 @@ public class ImcCodeGen implements ASTVisitor {
             constructorCode.stmts.addFirst(new ImcMOVE(location, new ImcMALLOC(size)));
 
             // assign pointer to vtable
-            constructorCode.stmts.add(1, new ImcMOVE(new ImcMEM(location), new ImcCONST(access.location)));
+            if (virtualTablePointer != null) {
+                constructorCode.stmts.add(1, new ImcMOVE(new ImcMEM(location), new ImcCONST(virtualTablePointer)));
+            }
 
             // return new object
             constructorCode.stmts.add(new ImcMOVE(new ImcTEMP(constructorFrame.RV), location));
@@ -215,7 +219,40 @@ public class ImcCodeGen implements ASTVisitor {
             code = new ImcBINOP(acceptor.oper, e1, e2);
         }
 		else if (acceptor.oper == AbsBinExpr.ASSIGN) {
-            code = new ImcMOVE(e1, e2);
+		    Type expressionType = SymbDesc.getType(acceptor.expr1);
+
+		    if (expressionType.isStructType()) {
+                // copy content of one struct into another
+                StructType structType = (StructType) expressionType;
+                ImcSEQ copyCode = new ImcSEQ();
+
+                e1 = ((ImcMEM)e1).expr;
+                if (e2 instanceof ImcMEM)
+                    e2 = ((ImcMEM)e2).expr;
+                else {
+                    ImcTEMP temp = new ImcTEMP(new FrmTemp());
+                    copyCode.stmts.add(new ImcMOVE(temp, e2));
+                    e2 = temp;
+                }
+
+                Iterator<Type> types = structType.getTypes();
+
+                int offset = 0;
+                while (types.hasNext()) {
+                    ImcMEM dst = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcCONST(offset)));
+                    ImcMEM src = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e2, new ImcCONST(offset)));
+
+                    ImcMOVE move = new ImcMOVE(dst, src);
+                    copyCode.stmts.add(move);
+
+                    offset += types.next().size();
+                }
+
+                code = copyCode;
+            }
+            else {
+                code = new ImcMOVE(e1, e2);
+            }
         }
         else if (acceptor.oper == AbsBinExpr.IS) {
             int dstDescriptor = Type.getDescriptorForType(SymbDesc.getType(acceptor.expr2));
@@ -337,12 +374,13 @@ public class ImcCodeGen implements ASTVisitor {
 			/**
 			 * Handle classes.
 			 */
-			else if (t.isClassType()) {
+			else if (t.isObjectType()) {
 				// member access code
 				if (acceptor.expr2 instanceof AbsFunCall) {
                     AbsFunDef.FunctionModifier modifier = ((AbsFunDef) SymbDesc.getNameDef(acceptor.expr2)).modifier;
 
                     if (modifier == AbsFunDef.FunctionModifier.dynamicInstanceMethod) {
+                        // dynamic dispatch magic ...
                         ClassType classType = (ClassType) t;
                         int indexForMember = classType.indexForMember(((AbsFunCall) acceptor.expr2).getStringRepresentation());
                         int offset = (indexForMember + 2) * 4;

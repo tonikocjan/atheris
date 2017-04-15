@@ -19,6 +19,7 @@ package compiler.seman.type;
 
 import compiler.abstr.tree.AtomTypeKind;
 import compiler.abstr.tree.def.AbsDef;
+import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 
 import java.util.HashMap;
 
@@ -125,6 +126,14 @@ public abstract class Type {
 		return this instanceof ClassType;
 	}
 
+    /**
+     * Check if this type is class type.
+     * @return True if it is, otherwise false.
+     */
+    public boolean isStructType() {
+        return this instanceof StructType;
+    }
+
 	/**
 	 * Check if this type is enum type.
 	 * @return True if it is, otherwise false.
@@ -148,6 +157,14 @@ public abstract class Type {
 	public boolean isReferenceType() {
 		return this instanceof ReferenceType;
 	}
+
+    /**
+     * Check if this type is pointer type.
+     * @return True if it is, otherwise false.
+     */
+    public boolean isValueType() {
+        return this instanceof ValueType;
+    }
 
 	/**
 	 * Check if this type is optional type.

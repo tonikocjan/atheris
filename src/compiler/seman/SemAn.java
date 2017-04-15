@@ -103,11 +103,13 @@ public class SemAn implements ASTVisitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2;
-        Report.dump(indent, "Base class: " + ((classDef.baseClass == null) ? "None" : classDef.baseClass.toString()));
-        if (classDef.baseClass != null) {
-            indent += 2;
-            classDef.baseClass.accept(this);
-            indent -= 2;
+		if (!(classDef instanceof AbsStructDef)) {
+            Report.dump(indent, "Base class: " + ((classDef.baseClass == null) ? "None" : classDef.baseClass.toString()));
+            if (classDef.baseClass != null) {
+                indent += 2;
+                classDef.baseClass.accept(this);
+                indent -= 2;
+            }
         }
 		Report.dump(indent, "Member definitions:");
 		indent += 2; classDef.definitions.accept(this); indent -= 2;

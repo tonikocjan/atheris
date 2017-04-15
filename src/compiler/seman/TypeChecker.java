@@ -56,15 +56,7 @@ import compiler.abstr.tree.type.AbsListType;
 import compiler.abstr.tree.type.AbsOptionalType;
 import compiler.abstr.tree.type.AbsType;
 import compiler.abstr.tree.type.AbsTypeName;
-import compiler.seman.type.ArrayType;
-import compiler.seman.type.AtomType;
-import compiler.seman.type.CanType;
-import compiler.seman.type.ClassType;
-import compiler.seman.type.EnumType;
-import compiler.seman.type.FunctionType;
-import compiler.seman.type.OptionalType;
-import compiler.seman.type.TupleType;
-import compiler.seman.type.Type;
+import compiler.seman.type.*;
 import managers.LanguageManager;
 
 /**
@@ -112,11 +104,17 @@ public class TypeChecker implements ASTVisitor {
 
             CanType baseClass = null;
 
-            // check wether inheritance is legal
+            // check whether inheritance is legal
             if (acceptor.baseClass != null) {
                 acceptor.baseClass.accept(this);
 
                 Type type = SymbDesc.getType(acceptor.baseClass);
+
+                if (acceptor instanceof AbsStructDef) {
+                    // only classes are allowed to inherit
+                    Report.error("Structs are not allowed to inherit");
+                }
+
                 if (!type.isCanType() || !((CanType) type).childType.isClassType()) {
                     Report.error(acceptor.baseClass.position,
                             "Inheritance from non-class type \"" + type.friendlyName() + "\" is not allowed");
@@ -160,9 +158,16 @@ public class TypeChecker implements ASTVisitor {
                 types.add(SymbDesc.getType(def));
             }
 
-            ClassType classType = new ClassType(acceptor, names, types, baseClass);
-            CanType canType = new CanType(classType);
+            ObjectType type;
 
+            if (acceptor instanceof AbsStructDef) {
+                type = new StructType(acceptor, names, types);
+            }
+            else {
+                type = new ClassType(acceptor, names, types, baseClass);
+            }
+
+            CanType canType = new CanType(type);
             SymbDesc.setType(acceptor, canType);
         }
 
@@ -170,8 +175,8 @@ public class TypeChecker implements ASTVisitor {
             resolveTypeOnly = false;
 
             Type t = SymbDesc.getType(acceptor);
-            ClassType classType = (ClassType) ((CanType) SymbDesc.getType(acceptor)).childType;
-	        CanType baseClass = classType.baseClass;
+            ObjectType objectType = (ObjectType) ((CanType) SymbDesc.getType(acceptor)).childType;
+	        CanType baseClass = objectType.baseClass;
 
             // add implicit "self: classType" parameter to instance methods
             for (AbsDef def : acceptor.definitions.definitions) {
@@ -197,7 +202,7 @@ public class TypeChecker implements ASTVisitor {
                 selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
 
                 SymbDesc.setNameDef(selfParDef.type, acceptor);
-                SymbDesc.setType(selfParDef, classType);
+                SymbDesc.setType(selfParDef, objectType);
 
                 // append base classes' initialization code
                 if (baseClassDefaultConstructor != null) {
@@ -207,7 +212,7 @@ public class TypeChecker implements ASTVisitor {
                 constructor.accept(this);
 
                 FunctionType funType = (FunctionType) SymbDesc.getType(constructor);
-                funType.resultType = classType;
+                funType.resultType = objectType;
 
                 SymbDesc.setType(constructor, funType);
             }
@@ -237,6 +242,9 @@ public class TypeChecker implements ASTVisitor {
 
 		Type t1 = SymbDesc.getType(acceptor.expr1);
 		Type t2 = SymbDesc.getType(acceptor.expr2);
+
+		if (t1 == null)
+		    System.out.println();
 
 		int oper = acceptor.oper;
 
@@ -342,7 +350,7 @@ public class TypeChecker implements ASTVisitor {
 			    Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" not unwrapped");
             }
 			
-			if (t1.isClassType()) {
+			if (t1.isObjectType()) {
 				if (!t1.containsMember(memberName))
 					Report.error(acceptor.expr2.position, 
 							LanguageManager.localize("type_error_member_not_found", 
@@ -368,7 +376,7 @@ public class TypeChecker implements ASTVisitor {
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				SymbDesc.setNameDef(acceptor, definition);
 	
-				Type memberType = ((ClassType) t1).getMemberTypeForName(memberName);
+				Type memberType = ((ObjectType) t1).getMemberTypeForName(memberName);
 				Type acceptorType = memberType.isFunctionType() ? ((FunctionType) memberType).resultType : memberType;
 
                 SymbDesc.setType(acceptor.expr2, memberType);
@@ -566,7 +574,6 @@ public class TypeChecker implements ASTVisitor {
 		FunctionType funType = (FunctionType) SymbDesc.getType(definition);
 
 		SymbDesc.setType(acceptor, funType.resultType);
-
 		boolean isConstructor = definition.isConstructor;
 
 		for (int i = 0; i < acceptor.numArgs(); i++) {
@@ -581,6 +588,8 @@ public class TypeChecker implements ASTVisitor {
 			arg.accept(this);
 
 			Type argType = SymbDesc.getType(arg);
+
+            if (argType == null) return;
 
 			if (!(funType.getParType(i).sameStructureAs(argType))) {
 				Report.error(arg.position, "Cannot convert value of type \"" +
@@ -734,13 +743,14 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsImportDef importDef) {
-		String tmp = Report.fileName;
-		Report.fileName = importDef.getName();
+	    if (traversalState == TraversalState.extensions) {
+            String tmp = Report.fileName;
+            Report.fileName = importDef.getName();
 
-		for (AbsDef def : importDef.imports.definitions)
-			def.accept(this);
+            new AbsStmts(importDef.imports.position, importDef.imports.definitions, false).accept(new TypeChecker());
 
-		Report.fileName = tmp;
+            Report.fileName = tmp;
+        }
 	}
 
 	@Override
@@ -752,6 +762,9 @@ public class TypeChecker implements ASTVisitor {
                 traversalState = state;
 
                 for (AbsStmt s : stmts.statements) {
+                    if (traversalState == TraversalState.extensions && s instanceof AbsExpr)
+                        continue;
+
                     s.accept(this);
                 }
             }
@@ -1030,11 +1043,11 @@ public class TypeChecker implements ASTVisitor {
             Type type = SymbDesc.getType(acceptor.extendingType);
             SymbDesc.setType(acceptor, type);
 
-            if (!type.isCanType() || !((CanType) type).childType.isClassType()) {
+            if (!type.isCanType() || !((CanType) type).childType.isObjectType()) {
                 Report.error(acceptor.position, "Only classes can be extended (for now)");
             }
 
-            ClassType extendingType = (ClassType) ((CanType) type).childType;
+            ObjectType extendingType = (ObjectType) ((CanType) type).childType;
 
             resolveTypeOnly = true;
 

@@ -31,11 +31,11 @@ import compiler.abstr.tree.def.AbsFunDef;
 public class ClassType extends ObjectType implements ReferenceType {
 
     public ClassType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types, CanType baseClass) {
-        super(definition, names, types, baseClass);
+        super(definition, names, types, baseClass, 4);
     }
 
     public ClassType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types) {
-        super(definition, names, types, null);
+        super(definition, names, types, null, 4);
     }
 
     public int indexForMember(String name) {
@@ -112,7 +112,7 @@ public class ClassType extends ObjectType implements ReferenceType {
             @Override
             public boolean hasNext() {
                 if (finalBaseIterator != null && finalBaseIterator.hasNext()) {
-                    current = (AbsFunDef) finalBaseIterator.next();
+                    current = finalBaseIterator.next();
 
                     AbsDef member = findMemberForName(current.getName(), false);
                     if (member != null) {
@@ -142,4 +142,25 @@ public class ClassType extends ObjectType implements ReferenceType {
         };
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Class: ");
+        sb.append(classDefinition.name + "(");
+        sb.append("Base: (");
+        sb.append(classDefinition.baseClass == null ? "/" : classDefinition.baseClass.toString());
+        sb.append("), ");
+
+        Iterator<String> namesIterator = memberNames.iterator();
+        Iterator<Type> typesIterator = memberTypes.iterator();
+
+        while (namesIterator.hasNext()) {
+            sb.append(namesIterator.next() + ":" + typesIterator.next().toString());
+            if (namesIterator.hasNext()) sb.append(";");
+        }
+
+        sb.append(")");
+        return sb.toString();
+    }
 }

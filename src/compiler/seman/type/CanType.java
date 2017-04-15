@@ -54,10 +54,7 @@ public class CanType extends Type {
 
 	@Override
 	public String toString() {
-		if (childType instanceof ClassType)
-			return ((ClassType) childType).getName() + ".Type";
-		else
-			return ((EnumType) childType).enumDefinition.name + ".Type";
+		return childType.friendlyName() + ".Type";
 	}
 
 	@Override
