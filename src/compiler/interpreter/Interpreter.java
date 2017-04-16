@@ -332,8 +332,4 @@ public class Interpreter {
 	
 		return null;
 	}
-
-	private void loadVirtualTable() {
-
-    }
 }

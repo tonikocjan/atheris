@@ -162,6 +162,8 @@ public class FrmEvaluator implements ASTVisitor {
 		FrmFrame tmp = currentFrame;
 		currentFrame = frame;
 
+		frame.numPars = acceptor.pars.size();
+
 		for (AbsParDef par : acceptor.pars) {
             par.accept(this);
         }
@@ -191,10 +193,9 @@ public class FrmEvaluator implements ASTVisitor {
 		FrmDesc.setAccess(acceptor, new FrmParAccess(acceptor, currentFrame, currentFrame.sizePars));
 		
 		Type type = SymbDesc.getType(acceptor);
-		int size = type.isReferenceType() ? 4 : type.size(); // FIXME: -
+		int size = type.isObjectType() ? 4 : type.size(); // FIXME: -
 		
 		currentFrame.sizePars += size;
-		currentFrame.numPars++;
 	}
 
 	@Override
