@@ -30,7 +30,6 @@ import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.AbsStmts;
 import compiler.abstr.tree.AtomTypeKind;
 import compiler.abstr.tree.Condition;
-import compiler.abstr.tree.AccessControl;
 import compiler.abstr.tree.def.*;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
@@ -132,8 +131,13 @@ public class TypeChecker implements ASTVisitor {
                 else if (baseClass != null) {
                     // check whether inheritance (overriding) is legal
                     if (def.isOverriding()) {
-                        if (!baseClass.containsMember(def.getName())) {
-                            Report.error(def.position, "Invalid overriding todo \"" + def.getName() + "\"");
+                        AbsDef baseDefinition = baseClass.findMemberForName(def.getName());
+
+                        if (baseDefinition == null || baseDefinition.isStatic()) {
+                            Report.error(def.position, "Method does not override any method from it's super class");
+                        }
+                        else if (baseDefinition.isFinal()) {
+                            Report.error(def.position, "Cannot override \"final\" instance method");
                         }
                     }
                     else if (baseClass.containsMember(def.getName())) {
@@ -141,7 +145,7 @@ public class TypeChecker implements ASTVisitor {
                     }
                 }
                 else if (def.isOverriding()) {
-                    Report.error(def.position, "Invalid overriding todo \"" + def.getName() + "\"");
+                    Report.error(def.position, "Method does not override any method from it's super class");
                 }
 
                 def.accept(this);
@@ -216,6 +220,8 @@ public class TypeChecker implements ASTVisitor {
 
                 SymbDesc.setType(constructor, funType);
             }
+
+//            objectType.debugPrint();
         }
 	}
 
@@ -368,9 +374,10 @@ public class TypeChecker implements ASTVisitor {
 
 				// check for access control (if object name is not "self")
                 if (!objectDefinition.name.equals(Constants.selfParameterIdentifier)) {
-                    if (definition.getAccessControl() == AccessControl.Private)
+                    if (definition.isPrivate()) {
                         Report.error(acceptor.expr2.position,
                                 "Member '" + memberName + "' is inaccessible due to it's private protection level");
+                    }
                 }
 				
 				SymbDesc.setNameDef(acceptor.expr2, definition);
@@ -397,7 +404,7 @@ public class TypeChecker implements ASTVisitor {
 					
 					AbsDef definition = enumType.findMemberForName(memberName);
 					
-					if (definition.getAccessControl() == AccessControl.Private)
+					if (definition.isPrivate())
 						Report.error(acceptor.expr2.position,
                                 "Member '" + memberName + "' is inaccessible due to it's private protection level");
 					
@@ -762,7 +769,7 @@ public class TypeChecker implements ASTVisitor {
                 traversalState = state;
 
                 for (AbsStmt s : stmts.statements) {
-                    if (traversalState == TraversalState.extensions && s instanceof AbsExpr)
+                    if (traversalState == TraversalState.extensions && !(s instanceof AbsDef))
                         continue;
 
                     s.accept(this);
@@ -941,8 +948,7 @@ public class TypeChecker implements ASTVisitor {
 			
 			names.add("rawValue");
 			types.add(SymbDesc.getType(acceptor.value));
-			definitions.add(new AbsVarDef(acceptor.position, "rawValue", 
-					new AbsAtomType(null, null)));
+			definitions.add(new AbsVarDef(acceptor.position, "rawValue", new AbsAtomType(null, null)));
 		}
 		
 		AbsClassDef classDef = new AbsClassDef(acceptor.getName(), acceptor.position, 

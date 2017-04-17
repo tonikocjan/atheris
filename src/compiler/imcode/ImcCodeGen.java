@@ -23,13 +23,7 @@ import java.util.Stack;
 
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
-import compiler.abstr.tree.AbsDefs;
-import compiler.abstr.tree.AbsExprs;
-import compiler.abstr.tree.AbsStmt;
-import compiler.abstr.tree.AbsStmts;
-import compiler.abstr.tree.AtomTypeKind;
-import compiler.abstr.tree.Condition;
-import compiler.abstr.tree.ControlTransferKind;
+import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.*;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
@@ -387,9 +381,9 @@ public class ImcCodeGen implements ASTVisitor {
 			else if (t.isObjectType()) {
 				// member access code
 				if (acceptor.expr2 instanceof AbsFunCall) {
-                    AbsFunDef.FunctionModifier modifier = ((AbsFunDef) SymbDesc.getNameDef(acceptor.expr2)).modifier;
+                    boolean isDynamic = SymbDesc.getNameDef(acceptor.expr2).isDynamic();
 
-                    if (modifier == AbsFunDef.FunctionModifier.dynamicInstanceMethod) {
+                    if (isDynamic) {
                         // dynamic dispatch magic ...
                         ClassType classType = (ClassType) t;
                         int indexForMember = classType.indexForMember(((AbsFunCall) acceptor.expr2).getStringRepresentation());

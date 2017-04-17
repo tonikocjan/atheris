@@ -78,15 +78,13 @@ public class NameChecker implements ASTVisitor {
         SymbTable.newScope();
 
 		for (AbsDef def : acceptor.definitions.definitions) {
-			if (def instanceof AbsFunDef /* && !def.isStatic */) {
+			if (def instanceof AbsFunDef && !def.isStatic()) {
                 // add implicit self: classType parameter to instance methods
                 AbsFunDef funDef = (AbsFunDef) def;
 
                 AbsParDef parDef = new AbsParDef(funDef.position, "self",
                         new AbsAtomType(funDef.position, AtomTypeKind.NIL));
                 funDef.addParamater(parDef);
-
-                funDef.modifier = AbsFunDef.FunctionModifier.dynamicInstanceMethod;
             }
 
             def.accept(this);
@@ -117,12 +115,12 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsAtomConstExpr acceptor) {
-
+        ///
 	}
 
 	@Override
 	public void visit(AbsAtomType acceptor) {
-
+        ///
 	}
 
 	@Override
@@ -460,20 +458,18 @@ public class NameChecker implements ASTVisitor {
 	    acceptor.extendingType.accept(this);
 
 	    for (AbsDef def : acceptor.definitions.definitions) {
-            if (def instanceof AbsFunDef /* && !def.isStatic */) {
+            if (def instanceof AbsFunDef && !def.isStatic()) {
                 // add implicit self: classType parameter to instance methods
                 AbsFunDef funDef = (AbsFunDef) def;
 
                 AbsParDef parDef = new AbsParDef(
                         funDef.position,
-                        "self",
+                        Constants.selfParameterIdentifier,
                         new AbsAtomType(funDef.position, AtomTypeKind.NIL));
                 funDef.addParamater(parDef);
-
-                funDef.modifier = AbsFunDef.FunctionModifier.instanceMethod;
             }
             else {
-                Report.error(def.position, "Only function definition are allowed in extensions");
+                Report.error(def.position, "Only function definitions are allowed in extensions");
             }
 
             def.accept(this);

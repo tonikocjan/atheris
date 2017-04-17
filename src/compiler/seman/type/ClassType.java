@@ -58,7 +58,7 @@ public class ClassType extends ObjectType implements ReferenceType {
 
             if (name.equals(next)) break;
 
-            if (type.isFunctionType()) {
+            if (type.isFunctionType() && ((FunctionType) type).functionDefinition.isDynamic()) {
                 index++;
             }
         }
@@ -69,10 +69,17 @@ public class ClassType extends ObjectType implements ReferenceType {
     public int instanceMethodCount() {
         // TODO: - Optimize
         int count = 0;
+
+        if (base != null) {
+            count += ((ClassType) base).instanceMethodCount();
+        }
+
         Iterator<Type> typeIterator = memberTypes.iterator();
 
         while (typeIterator.hasNext()) {
-            if (typeIterator.next().isFunctionType()) {
+            Type next = typeIterator.next();
+
+            if (next.isFunctionType() && ((FunctionType) next).functionDefinition.isDynamic()) {
                 count += 1;
             }
         }
@@ -116,7 +123,6 @@ public class ClassType extends ObjectType implements ReferenceType {
 
                     AbsDef member = findMemberForName(current.getName(), false);
                     if (member != null) {
-                        if (!(member instanceof AbsFunDef)) Report.error("Member must be AbsFunDef - FIXME");
                         current = (AbsFunDef) member;
                     }
 

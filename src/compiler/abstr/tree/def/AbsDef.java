@@ -19,7 +19,9 @@ package compiler.abstr.tree.def;
 
 import compiler.*;
 import compiler.abstr.tree.AbsStmt;
-import compiler.abstr.tree.AccessControl;
+import compiler.abstr.tree.Modifier;
+
+import java.util.HashSet;
 
 /**
  * Definicija.
@@ -38,14 +40,11 @@ public abstract class AbsDef extends AbsStmt {
 	 */
 	protected AbsDef parentDef;
 
-	/** Definition's access control (used for member definitions) */
-	protected AccessControl accessControl;
-
 	/** Is this definition mutable */
 	public final boolean isMutable;
 
-    /** Is this definition overriding another definitition */
-    private boolean isOverriding;
+	/***/
+	protected HashSet<Modifier> modifiers;
 	
 	/**
 	 * Create new definition.
@@ -58,9 +57,10 @@ public abstract class AbsDef extends AbsStmt {
 		
 		this.parentDef = null;
 		this.name = name;
-		this.accessControl = AccessControl.Public;
 		this.isMutable = false;
-		this.isOverriding = false;
+
+		this.modifiers = new HashSet<>();
+		this.modifiers.add(Modifier.isPublic);
 	}
 	
 	/**
@@ -69,33 +69,16 @@ public abstract class AbsDef extends AbsStmt {
 	 * @param pos
 	 *            Position.
 	 */
-	public AbsDef(Position pos, String name, AccessControl visibility) {
+	public AbsDef(Position pos, String name, boolean isMutable) {
 		super(pos);
-		
+
 		this.parentDef = null;
 		this.name = name;
-		this.accessControl = visibility;
-        this.isMutable = false;
-        this.isOverriding = false;
-	}
-
-    /**
-     * Create new definition.
-     * @param pos
-     * @param name
-     * @param isMutable
-     * @param isOverriding
-     * @param visibility
-     */
-    public AbsDef(Position pos, String name, boolean isMutable, boolean isOverriding, AccessControl visibility) {
-        super(pos);
-
-        this.parentDef = null;
-        this.name = name;
-        this.accessControl = visibility;
         this.isMutable = isMutable;
-        this.isOverriding = isOverriding;
-    }
+
+        this.modifiers = new HashSet<>();
+        this.modifiers.add(Modifier.isPublic);
+	}
 	
 	/**
 	 * Crate new definition.
@@ -106,11 +89,10 @@ public abstract class AbsDef extends AbsStmt {
 	 * 			  Parent definition for this definition
 	 */
 	public AbsDef(Position pos, String name, AbsDef parent) {
-		this(pos, name);
-		
-		this.parentDef = parent;
-		this.accessControl = AccessControl.Public;
-	}
+        this(pos, name);
+
+        this.parentDef = parent;
+    }
 
 	/**
 	 * Set parent definition.
@@ -124,7 +106,7 @@ public abstract class AbsDef extends AbsStmt {
 	 * Get parent definition.
 	 * @return Parent definition.
 	 */
-	public AbsDef getParemtDefinition() {
+	public AbsDef getParentDefinition() {
 		return this.parentDef;
 	}
 	
@@ -135,36 +117,60 @@ public abstract class AbsDef extends AbsStmt {
 	public String getName() {
 		return name;
 	}
-	
-	/**
+
+    /**
+     *
+     * @param modifiers
+     */
+    public void setModifiers(HashSet<Modifier> modifiers) {
+        this.modifiers.addAll(modifiers);
+    }
+
+    /**
 	 * 
 	 * @return
 	 */
-	public AccessControl getAccessControl() {
-		return accessControl;
-	}
-	
-	/**
-	 * 
-	 * @param accessControl
-	 */
-	public void setAccessControl(AccessControl accessControl) {
-		this.accessControl = accessControl;
+	public boolean isPublic() {
+        return modifiers.isEmpty() || modifiers.contains(Modifier.isPublic);
 	}
 
     /**
      *
      * @return
      */
-    public boolean isOverriding() {
-        return isOverriding;
+    public boolean isPrivate() {
+        return modifiers.contains(Modifier.isPrivate);
     }
 
     /**
      *
-     * @param isOverriding
+     * @return
      */
-    public void setOverriding(boolean isOverriding) {
-        this.isOverriding = isOverriding;
+    public boolean isOverriding() {
+        return modifiers.contains(Modifier.isOverriding);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isFinal() {
+        return modifiers.contains(Modifier.isFinal);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isStatic() {
+        return modifiers.contains(Modifier.isStatic);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isDynamic() {
+        return !(isFinal() || isStatic());
     }
 }

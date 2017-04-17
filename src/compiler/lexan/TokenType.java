@@ -102,4 +102,6 @@ public enum TokenType {
     /** Token type: keyword override.  */ 						KW_OVERRIDE,
     /** Token type: keyword override.  */ 						KW_AS,
     /** Token type: keyword extension.  */ 						KW_EXTENSION,
+    /** Token type: keyword final.  */ 						    KW_FINAL,
+    /** Token type: keyword static.  */ 						KW_STATIC,
 }

@@ -246,6 +246,11 @@ public class Interpreter {
             }
 
             FrmLabel label = (FrmLabel) ldM((Integer) ldT(instr.temp));
+
+            if (label == null) {
+                System.out.println();
+            }
+
             new Interpreter(CodeGenerator.getFrameForLabel(label), (ImcSEQ) CodeGenerator.getCodeForLabel(label));
             return ldM(stackPointer);
         }

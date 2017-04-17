@@ -4,6 +4,7 @@ import compiler.Report;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;
+import compiler.abstr.tree.def.AbsVarDef;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,7 +54,8 @@ public abstract class ObjectType extends Type {
      * @param types Type for each member.
      * @param baseClass Base class for this class type.
      */
-    public ObjectType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types, CanType baseClass, int reservedSize) {
+    public ObjectType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types,
+                      CanType baseClass, int reservedSize) {
         if (names.size() != types.size()) {
             Report.error("Internal error :: compiler.seman.type.ObjectType: "
                     + "names count not equal types count");
@@ -62,7 +64,10 @@ public abstract class ObjectType extends Type {
         int size = 0;
         for (int i = 0; i < names.size(); i++) {
             definitions.put(names.get(i), definition.definitions.definitions.get(i));
-            size += types.get(i).size();
+
+            if (definition.definitions.definitions.get(i) instanceof AbsVarDef) {
+                size += types.get(i).size();
+            }
         }
 
         this.size = size + reservedSize;
@@ -94,14 +99,16 @@ public abstract class ObjectType extends Type {
      * @return
      */
     public boolean addMember(AbsDef definition, String memberName, Type memberType) {
-        memberNames.add(memberName);
-        memberTypes.add(memberType);
-
         if (definitions.containsKey(memberName)) {
             return false;
         }
 
         definitions.put(memberName, definition);
+
+        memberNames.add(memberName);
+        memberTypes.add(memberType);
+        classDefinition.definitions.definitions.add(definition);
+
         return true;
     }
 
@@ -149,8 +156,17 @@ public abstract class ObjectType extends Type {
 
         Iterator<String> namesIterator = memberNames.iterator();
         Iterator<Type> typesIterator = memberTypes.iterator();
+        Iterator<AbsDef> defsIterator = classDefinition.definitions.definitions.iterator();
 
-        while (namesIterator.hasNext()) {
+        while (defsIterator.hasNext()) {
+            AbsDef next = defsIterator.next();
+
+            if (!(next instanceof AbsVarDef)) {
+                namesIterator.next();
+                typesIterator.next();
+                continue;
+            }
+
             if (name.equals(namesIterator.next())) break;
             offset += typesIterator.next().size();
         }
@@ -242,7 +258,7 @@ public abstract class ObjectType extends Type {
             base.debugPrint();
         }
 
-        System.out.println(friendlyName());
+        System.out.println(friendlyName() + " - size: " + size());
 
         Iterator<String> namesIterator = memberNames.iterator();
         Iterator<Type> typesIterator = memberTypes.iterator();

@@ -22,6 +22,7 @@ import java.util.*;
 import compiler.*;
 import compiler.abstr.*;
 import compiler.abstr.tree.AbsStmts;
+import compiler.abstr.tree.Modifier;
 import compiler.abstr.tree.type.AbsType;
 
 /**
@@ -30,10 +31,6 @@ import compiler.abstr.tree.type.AbsType;
  * @author toni kocjan
  */
 public class AbsFunDef extends AbsDef {
-
-    public enum FunctionModifier {
-        staticMethod, instanceMethod, dynamicInstanceMethod
-    }
 
     /** Parameters. */
 	public final LinkedList<AbsParDef> pars;
@@ -46,9 +43,6 @@ public class AbsFunDef extends AbsDef {
 
 	/** Is this function a constructor. */
 	public boolean isConstructor;
-
-    /** Modifier */
-	public FunctionModifier modifier = FunctionModifier.staticMethod;
 
 	/**
 	 * Create new function definition.

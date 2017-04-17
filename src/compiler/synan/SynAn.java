@@ -17,10 +17,12 @@
 
 package compiler.synan;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Vector;
 
 import Utils.Constants;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import compiler.Position;
 import compiler.Report;
 import compiler.abstr.tree.*;
@@ -288,21 +290,8 @@ public class SynAn {
 
 	private AbsDef parseDefinition() {
 		AbsDef definition = null;
-		AccessControl accessControl = AccessControl.Public;
 
-        boolean isOverriding = false;
-
-        if (symbol.token == TokenType.KW_OVERRIDE) {
-            isOverriding = true;
-            skip();
-        }
-
-        if (symbol.token == TokenType.KW_PUBLIC)
-			skip();
-		else if (symbol.token == TokenType.KW_PRIVATE) {
-			accessControl = AccessControl.Private;
-			skip();
-		}
+		HashSet<Modifier> modifiers = parseModifiers();
 
 		switch (symbol.token) {
 		case KW_FUN:
@@ -316,7 +305,7 @@ public class SynAn {
 		case KW_VAR:
 		case KW_LET:
 			dump("definition -> variable_definition");
-			definition = parseVarDefinition(); 
+			definition = parseVarDefinition();
 			break;
 		case KW_IMPORT:
 			dump("definition -> import_definition");
@@ -348,11 +337,52 @@ public class SynAn {
 						+ previous.lexeme + "\", delete this token");
 		}
 
-		definition.setAccessControl(accessControl);
-		definition.setOverriding(isOverriding);
+		definition.setModifiers(modifiers);
 
 		return definition;
 	}
+
+	private HashSet<Modifier> parseModifiers() {
+	    HashSet<Modifier> modifiers = new HashSet<>();
+
+	    Modifier modifier = parseModifier();
+
+        while (modifier != Modifier.none) {
+	        if (modifiers.contains(modifier)) {
+	            Report.error(symbol.position, "Duplicate modifier");
+            }
+
+            modifiers.add(modifier);
+            modifier = parseModifier();
+        }
+
+	    return modifiers;
+    }
+
+    private Modifier parseModifier() {
+	    if (symbol.token == TokenType.KW_STATIC) {
+	        skip();
+	        return Modifier.isStatic;
+        }
+        if (symbol.token == TokenType.KW_FINAL) {
+            skip();
+            return Modifier.isFinal;
+        }
+        if (symbol.token == TokenType.KW_OVERRIDE) {
+            skip();
+            return Modifier.isOverriding;
+        }
+        if (symbol.token == TokenType.KW_PUBLIC) {
+            skip();
+            return Modifier.isPublic;
+        }
+        if (symbol.token == TokenType.KW_PRIVATE) {
+            skip();
+            return Modifier.isPrivate;
+        }
+
+        return Modifier.none;
+    }
 
 	private AbsFunDef parseFunDefinition() {
 		Position startPos = symbol.position;
@@ -366,7 +396,7 @@ public class SynAn {
 
 			LinkedList<AbsParDef> params = parseParameters();
 
-			return parseFunDefinition_(startPos, functionName, params);
+			return parseFunDefinition_(startPos, functionName, params, false);
 		}
 		Report.error(previous.position, "Syntax error on token \""
 				+ previous.lexeme + "\", expected keyword \"fun\"");
@@ -386,7 +416,7 @@ public class SynAn {
 
             LinkedList<AbsParDef> params = parseParameters();
 
-            return parseFunDefinition_(startPos, functionName, params);
+            return parseFunDefinition_(startPos, functionName, params, true);
         }
 
         Report.error(previous.position, "Syntax error on token \""
@@ -395,7 +425,7 @@ public class SynAn {
         return null;
     }
 
-	private AbsFunDef parseFunDefinition_(Position startPos, Symbol functionName, LinkedList<AbsParDef> params) {
+	private AbsFunDef parseFunDefinition_(Position startPos, Symbol functionName, LinkedList<AbsParDef> params, boolean isConstructor) {
 		AbsType type;
 
 		if (symbol.token == TokenType.LBRACE) {
@@ -420,7 +450,7 @@ public class SynAn {
 					+ previous.lexeme + "\", expected \"}\" after this token");
 		skip();
 
-		return new AbsFunDef(new Position(startPos, expr.position), functionName.lexeme, params, type, expr);
+		return new AbsFunDef(new Position(startPos, expr.position), functionName.lexeme, params, type, expr, isConstructor);
 	}
 
 	private AbsDef parseVarDefinition() {
@@ -539,6 +569,7 @@ public class SynAn {
         if (parseStructure) {
             return new AbsStructDef(className, definitionPosition, baseClass, definitions, defaultConstructor, constructors);
         }
+
         return new AbsClassDef(className, definitionPosition, baseClass, definitions, defaultConstructor, constructors);
 	}
 	
@@ -558,50 +589,39 @@ public class SynAn {
         skip();
 		
 		while (true) {
-            AbsDef definition;
-
-            switch (symbol.token) {
-                case KW_PUBLIC:
-                case KW_PRIVATE:
-                case KW_VAR:
-                case KW_LET:
-                case KW_OVERRIDE:
-                    definition = parseDefinition();
-                    definitions.add(definition);
-
-                    if (symbol.token == TokenType.ASSIGN) {
-                        skip();
-                        dump("var_definition -> = expression");
-
-                        AbsVarNameExpr varNameExpr = new AbsVarNameExpr(definition.position, ((AbsVarDef) definition).name);
-                        AbsExpr valueExpr = parseExpression();
-                        AbsBinExpr dotExpr = new AbsBinExpr(
-                                new Position(definition.position, valueExpr.position), AbsBinExpr.DOT,
-                                new AbsVarNameExpr(definition.position, Constants.selfParameterIdentifier), varNameExpr);
-                        AbsBinExpr assignExpr = new AbsBinExpr(definition.position, AbsBinExpr.ASSIGN, dotExpr, valueExpr);
-
-                        defaultConstructor.add(assignExpr);
-                    }
-                    break;
-                case KW_FUN:
-                    AbsFunDef funDef = (AbsFunDef) parseDefinition();
-                    definitions.add(funDef);
-                    break;
-                case KW_INIT:
-                    funDef = (AbsFunDef) parseDefinition();
-                    funDef.isConstructor = true;
-
-                    constructors.add(funDef);
-                    break;
-                case RBRACE:
-                    return new LinkedList[]{definitions, defaultConstructor, constructors};
-                case NEWLINE:
-                case SEMIC:
-                    skip();
-                    continue;
-                default:
-                    Report.error(symbol.position, "Consecutive statements must be separated by a separator");
+            if (symbol.token == TokenType.RBRACE) {
+                return new LinkedList[] { definitions, defaultConstructor, constructors };
             }
+
+            AbsDef definition = parseDefinition();
+            definitions.add(definition);
+
+            if (definition instanceof AbsVarDef) {
+                if (symbol.token == TokenType.ASSIGN) {
+                    skip();
+                    dump("var_definition -> = expression");
+
+                    AbsVarNameExpr varNameExpr = new AbsVarNameExpr(definition.position, ((AbsVarDef) definition).name);
+                    AbsExpr valueExpr = parseExpression();
+                    AbsBinExpr dotExpr = new AbsBinExpr(
+                            new Position(definition.position, valueExpr.position), AbsBinExpr.DOT,
+                            new AbsVarNameExpr(definition.position, Constants.selfParameterIdentifier), varNameExpr);
+                    AbsBinExpr assignExpr = new AbsBinExpr(definition.position, AbsBinExpr.ASSIGN, dotExpr, valueExpr);
+
+                    defaultConstructor.add(assignExpr);
+                }
+            }
+
+            if (symbol.token == TokenType.RBRACE) {
+                return new LinkedList[] { definitions, defaultConstructor, constructors };
+            }
+
+            if (symbol.token == TokenType.NEWLINE || symbol.token == TokenType.SEMIC) {
+                skip();
+                continue;
+            }
+
+            Report.error(symbol.position, "Consecutive statements must be separated by a separator");
         }
 	}
 	

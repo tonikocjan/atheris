@@ -1,6 +1,6 @@
 import stdlib
 
-/*class A {
+class A {
 	func a() {
 		print(string: "A::a()")
 	}
@@ -25,6 +25,10 @@ class B: A {
 	func b() {
 		print(string: "B::b()")
 	}
+
+	override func joze() {
+		print(string: "extension::B::joze()")
+	}
 }
 
 class C: B {
@@ -33,11 +37,12 @@ class C: B {
 	}
 
 	let C_c: Int = 100
-}*/
+}
 
 ########################
-/*var a: A
-let x = 30
+
+var a: A
+let x: Int = 30
 
 if x == 10 {
 	a = A()
@@ -53,27 +58,28 @@ a.a()
 
 C().foo()
 C().b()
+C().joze()
 
 print(integer: C().A_a)
 print(integer: C().B_b)
-print(integer: C().C_c)*/
+print(integer: C().C_c)
 
 #######################
 
-/*var object: A = B()
+var object: A = C()
 
 let casted = object as B
 
-if casted != nil {
+if casted != null {
 	casted.b()
 }
 else {
 	print(string: "cast failed")
-}*/
+}
 
 #######################
 
-/*extension A {
+extension A {
 
 	func joze(a: Int) {
 		print(string: "extension::A::joze(a:)")
@@ -83,48 +89,33 @@ else {
 	func joze() {
 		print(string: "extension::A::joze()")
 	}
-}*/
+}
 
 
-/*A().foo()
+A().foo()
 A().joze(a: 10)
 A().joze()
 B().joze(a: 20)
 B().joze()
-B().a()*/
+B().a()
 
 #######################
 
-struct Point {
+/*struct Point {
 	var x: Int = 3333
 	var y: Int = 5555
 }
 
 var p1 = Point()
 
-/*extension Point {
+extension Point {
 	func test() {
 		print(string: "extension::Point::test()")
 		print(integer: self.x)
 	}
-}*/
+}
 
-
-#p1.test()
-
-print(integer: p1.x)
-print(integer: p1.y)
-
-var p2 = Point(x: p1.x, y: p1.y)
+var p2 = p1
 
 print(integer: p2.x)
-print(integer: p2.y)
-
-p2.x = 4000
-p2.y = 4005
-
-print(integer: p1.x)
-print(integer: p1.y)
-
-print(integer: p2.x)
-print(integer: p2.y)
+print(integer: p2.x*/

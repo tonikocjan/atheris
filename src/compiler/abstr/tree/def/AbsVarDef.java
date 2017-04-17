@@ -19,8 +19,10 @@ package compiler.abstr.tree.def;
 
 import compiler.*;
 import compiler.abstr.*;
-import compiler.abstr.tree.AccessControl;
+import compiler.abstr.tree.Modifier;
 import compiler.abstr.tree.type.AbsType;
+
+import java.util.HashSet;
 
 /**
  * Variable definition.
@@ -32,53 +34,25 @@ public class AbsVarDef extends AbsDef {
 	/** Variable type. */
 	public final AbsType type;
 
-	/**
-	 * Create new variable definition.
-	 * 
-	 * @param pos
-	 *            Position.
-	 * @param name
-	 *            Name.
-	 * @param type
-	 *            Type.
-	 */
-	public AbsVarDef(Position pos, String name, AbsType type) {
-		this(pos, name, type, true, AccessControl.Public);
-	}
-	
-	/**
-	 * Create new variable definition.
-	 * 
-	 * @param pos
-	 *            Position.
-	 * @param name
-	 *            Name.
-	 * @param type
-	 *            Type.
-	 * @param isMutable
-	 * 			  Is this variable mutable.
-	 */
+    /**
+     *
+     * @param pos
+     * @param name
+     * @param type
+     */
+    public AbsVarDef(Position pos, String name, AbsType type) {
+        this(pos, name, type, false);
+    }
+
+    /**
+     *
+     * @param pos
+     * @param name
+     * @param type
+     * @param isMutable
+     */
 	public AbsVarDef(Position pos, String name, AbsType type, boolean isMutable) {
-		this(pos, name, type, isMutable, AccessControl.Public);
-	}
-	
-	/**
-	 * Create new variable definition.
-	 * 
-	 * @param pos
-	 *            Position.
-	 * @param name
-	 *            Name.
-	 * @param type
-	 *            Type.
-	 * @param isMutable
-	 * 			  Is this variable mutable.
-	 * @param accessControl
-	 * 			  Visibility.
-	 */
-	public AbsVarDef(Position pos, String name, 
-			AbsType type, boolean isMutable, AccessControl accessControl) {
-		super(pos, name, isMutable, false, accessControl);
+		super(pos, name, isMutable);
 		
 		this.type = type;
 	}

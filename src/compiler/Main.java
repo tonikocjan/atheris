@@ -166,6 +166,8 @@ public class Main {
 
 			System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
 
+//			Interpreter.printMemory();
+
 			// Izvajanje linearizirane vmesne kode
 			Interpreter.stM(Interpreter.getFP() + 4, 0);
 			if (mainFrame != null)
