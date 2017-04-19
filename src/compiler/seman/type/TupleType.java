@@ -56,8 +56,6 @@ public class TupleType extends Type implements ReferenceType {
 		
 		this.definition = null;
 		this.size = size;
-
-        descriptorMapping.put(this, descriptor - 1);
 	}
 	
 	/**

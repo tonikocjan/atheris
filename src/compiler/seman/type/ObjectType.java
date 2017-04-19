@@ -77,8 +77,6 @@ public abstract class ObjectType extends Type {
         this.baseClass = baseClass;
         this.base = baseClass == null ? null : (ObjectType) baseClass.childType;
         this.reservedSize = reservedSize;
-
-        descriptorMapping.put(this, descriptor);
     }
 
     /**

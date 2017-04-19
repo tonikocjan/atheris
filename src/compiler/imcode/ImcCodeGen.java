@@ -259,7 +259,7 @@ public class ImcCodeGen implements ASTVisitor {
             }
         }
         else if (acceptor.oper == AbsBinExpr.IS) {
-            int dstDescriptor = Type.getDescriptorForType(SymbDesc.getType(acceptor.expr2));
+            int dstDescriptor = SymbDesc.getType(acceptor.expr2).descriptor;
 
             FrmLabel l1 = FrmLabel.newLabel(),
                      l2 = FrmLabel.newLabel(),
@@ -297,7 +297,7 @@ public class ImcCodeGen implements ASTVisitor {
             code = new ImcESEQ(statements, new ImcBINOP(ImcBINOP.EQU, result, new ImcCONST(1)));
         }
         else if (acceptor.oper == AbsBinExpr.AS) {
-            int dstDescriptor = Type.getDescriptorForType(SymbDesc.getType(acceptor.expr2));
+            int dstDescriptor = SymbDesc.getType(acceptor.expr2).descriptor;
 
             FrmLabel l1 = FrmLabel.newLabel(),
                      l2 = FrmLabel.newLabel(),

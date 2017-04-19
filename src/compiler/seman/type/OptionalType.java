@@ -17,8 +17,6 @@ public class OptionalType extends Type implements ReferenceType {
 	public OptionalType(Type childType, boolean isForced) {
 		this.childType = childType;
 		this.isForced = isForced;
-
-        descriptorMapping.put(this, descriptor - 1);
 	}
 
 	

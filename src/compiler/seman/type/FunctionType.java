@@ -58,8 +58,6 @@ public class FunctionType extends Type implements ReferenceType {
 		this.parameterTypes = parTypes;
 		this.resultType = resultType;
 		this.functionDefinition = definition;
-
-        descriptorMapping.put(this, descriptor - 1);
 	}
 
 	/**

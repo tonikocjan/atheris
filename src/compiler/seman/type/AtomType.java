@@ -39,7 +39,6 @@ public class AtomType extends Type implements ValueType {
 	 */
 	public AtomType(AtomTypeKind type) {
 		this.type = type;
-		descriptorMapping.put(this, descriptor - 1);
 	}
 
 	@Override

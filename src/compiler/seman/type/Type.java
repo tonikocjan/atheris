@@ -31,11 +31,6 @@ public abstract class Type {
     // MARK: - Type descriptor
     // Current descriptor available.
     private static int TYPE_DESCRIPTOR = 0;
-    protected static HashMap<Type, Integer> descriptorMapping = new HashMap<>();
-
-    public static int getDescriptorForType(Type t) {
-        return descriptorMapping.get(t);
-    }
 
     /**
      * Get type descriptor.
@@ -237,8 +232,6 @@ public abstract class Type {
     public boolean isVoidType() {
         return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.VOID;
     }
-
-
 
     /**
 	 * String representation.
