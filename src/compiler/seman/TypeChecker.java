@@ -481,7 +481,9 @@ public class TypeChecker implements ASTVisitor {
 			}
 
 			if (t1.isCanType()) {
-			    if (!t1.containsMember(memberName)) {
+			    CanType canType = (CanType) t1;
+
+			    if (!canType.containsStaticMember(memberName)) {
                     Report.error(acceptor.expr2.position,
                             LanguageManager.localize("type_error_member_not_found",
                                     t1.friendlyName(),
@@ -494,7 +496,7 @@ public class TypeChecker implements ASTVisitor {
                         arg.accept(this);
                 }
 
-                AbsDef definition = t1.findMemberForName(memberName);
+                AbsDef definition = canType.findStaticMemberForName(memberName);
 
                 if (definition.isPrivate()) {
                     Report.error(acceptor.expr2.position,
@@ -503,9 +505,8 @@ public class TypeChecker implements ASTVisitor {
 
                 SymbDesc.setNameDef(acceptor.expr2, definition);
                 SymbDesc.setNameDef(acceptor, definition);
-//                acceptor.accept(new NameChecker(true));
 
-                Type memberType = ((ObjectType) t1).getMemberTypeForName(memberName);
+                Type memberType = canType.getStaticMemberTypeForName(memberName);
                 Type acceptorType = memberType.isFunctionType() ? ((FunctionType) memberType).resultType : memberType;
 
                 SymbDesc.setType(acceptor.expr2, memberType);
@@ -1134,22 +1135,31 @@ public class TypeChecker implements ASTVisitor {
                 String memberName = def.getName();
                 Type memberType = SymbDesc.getType(def);
 
-                if (!extendingType.addMember(def, memberName, memberType)) {
-                    Report.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
+                if (def.isStatic()) {
+                    if (!((CanType) type).addStaticMember(def, memberName, memberType)) {
+                        Report.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
+                    }
+                }
+                else {
+                    if (!extendingType.addMember(def, memberName, memberType)) {
+                        Report.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
+                    }
                 }
             }
 
             resolveTypeOnly = false;
         }
         else {
-            // add implicit "self: classType" parameter to instance methods
             for (AbsDef def : acceptor.definitions.definitions) {
                 if (def instanceof AbsFunDef) {
-                    AbsFunDef funDef = (AbsFunDef) def;
-                    AbsParDef selfParDef = funDef.getParameterForIndex(0);
-                    selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.getName());
+                    if (!def.isStatic()) {
+                        // add implicit "self: classType" parameter to instance methods
+                        AbsFunDef funDef = (AbsFunDef) def;
+                        AbsParDef selfParDef = funDef.getParameterForIndex(0);
+                        selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.getName());
 
-                    SymbDesc.setNameDef(selfParDef.type, acceptor);
+                        SymbDesc.setNameDef(selfParDef.type, acceptor);
+                    }
                 }
 
                 def.accept(this);

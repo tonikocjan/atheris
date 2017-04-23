@@ -449,15 +449,17 @@ public class NameChecker implements ASTVisitor {
 	    acceptor.extendingType.accept(this);
 
 	    for (AbsDef def : acceptor.definitions.definitions) {
-            if (def instanceof AbsFunDef && !def.isStatic()) {
-                // add implicit self: classType parameter to instance methods
-                AbsFunDef funDef = (AbsFunDef) def;
+            if (def instanceof AbsFunDef) {
+                if (!def.isStatic()) {
+                    // add implicit self: classType parameter to instance methods
+                    AbsFunDef funDef = (AbsFunDef) def;
 
-                AbsParDef parDef = new AbsParDef(
-                        funDef.position,
-                        Constants.selfParameterIdentifier,
-                        new AbsAtomType(funDef.position, AtomTypeKind.NIL));
-                funDef.addParamater(parDef);
+                    AbsParDef parDef = new AbsParDef(
+                            funDef.position,
+                            Constants.selfParameterIdentifier,
+                            new AbsAtomType(funDef.position, AtomTypeKind.NIL));
+                    funDef.addParamater(parDef);
+                }
             }
             else {
                 Report.error(def.position, "Only function definitions are allowed in extensions");

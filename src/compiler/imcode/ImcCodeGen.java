@@ -427,6 +427,22 @@ public class ImcCodeGen implements ASTVisitor {
 			}
 
             /**
+             * Handle Can Type (static members).
+             */
+            else if (t.isCanType()) {
+                if (acceptor.expr2 instanceof AbsFunCall) {
+                    code = c2;
+                }
+                else {
+                    code = new ImcBINOP(ImcBINOP.ADD, e1, e2);
+
+//                    if (t.isReferenceType()) {
+                    code = new ImcMEM((ImcBINOP) code);
+//                    }
+                }
+            }
+
+            /**
              * Handle tuples.
              */
             else if (t.isTupleType()) {

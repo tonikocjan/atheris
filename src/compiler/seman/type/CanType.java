@@ -141,4 +141,42 @@ public class CanType extends Type {
 
         return offset;
     }
+    /**
+     *
+     * @param definition
+     * @param memberName
+     * @param memberType
+     * @return
+     */
+    public boolean addStaticMember(AbsDef definition, String memberName, Type memberType) {
+        if (staticDefinitions.contains(memberName)) {
+            return false;
+        }
+
+        staticNames.add(memberName);
+        staticTypes.add(memberType);
+        staticDefinitions.add(definition);
+
+        return true;
+    }
+
+    /**
+     * Get type for member.
+     * @param name Name of the member.
+     * @return Type of the member (or null if member with such name doesn't exist).
+     */
+    public Type getStaticMemberTypeForName(String name) {
+        Iterator<String> namesIterator = staticNames.iterator();
+        Iterator<Type> typesIterator = staticTypes.iterator();
+
+        while (namesIterator.hasNext()) {
+            Type t = typesIterator.next();
+
+            if (namesIterator.next().equals(name)) {
+                return t;
+            }
+        }
+
+        return null;
+    }
 }
