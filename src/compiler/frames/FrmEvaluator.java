@@ -19,6 +19,7 @@ package compiler.frames;
 
 import java.util.LinkedList;
 
+import Utils.Constants;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.*;
@@ -87,8 +88,9 @@ public class FrmEvaluator implements ASTVisitor {
         parentType = (ObjectType) ((CanType) SymbDesc.getType(acceptor)).childType;
 
         if (parentType.isClassType()) {
-            FrmVirtualTableAccess virtualTableAccess = new FrmVirtualTableAccess(acceptor,
-                    ((ClassType) parentType).virtualTableSize() + 8);
+            FrmVirtualTableAccess virtualTableAccess = new FrmVirtualTableAccess(
+                    acceptor,
+                    ((ClassType) parentType).virtualTableSize() + Constants.Byte*2);
             FrmDesc.setAccess(acceptor, virtualTableAccess);
             FrmDesc.setVirtualTable((ClassType) parentType, virtualTableAccess);
         }

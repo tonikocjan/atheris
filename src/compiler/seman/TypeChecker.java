@@ -18,6 +18,7 @@
 package compiler.seman;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -101,6 +102,10 @@ public class TypeChecker implements ASTVisitor {
             LinkedList<Type> types = new LinkedList<>();
             LinkedList<String> names = new LinkedList<>();
 
+            LinkedList<Type> staticTypes = new LinkedList<>();
+            LinkedList<String> staticNames = new LinkedList<>();
+            LinkedList<AbsDef> staticDefinitions = new LinkedList<>();
+
             CanType baseClass = null;
 
             // check whether inheritance is legal
@@ -131,7 +136,7 @@ public class TypeChecker implements ASTVisitor {
                 else if (baseClass != null) {
                     // check whether inheritance (overriding) is legal
                     if (def.isOverriding()) {
-                        AbsDef baseDefinition = baseClass.findMemberForName(def.getName());
+                        AbsDef baseDefinition = baseClass.childType.findMemberForName(def.getName());
 
                         if (baseDefinition == null || baseDefinition.isStatic()) {
                             Report.error(def.position, "Method does not override any method from it's super class");
@@ -150,7 +155,13 @@ public class TypeChecker implements ASTVisitor {
 
                 def.accept(this);
 
-                names.add(def.getName());
+                if (def.isStatic()) {
+                    staticNames.add(def.getName());
+                    staticDefinitions.add(def);
+                }
+                else {
+                    names.add(def.getName());
+                }
             }
 
             for (AbsFunDef c : acceptor.contrustors) {
@@ -159,11 +170,16 @@ public class TypeChecker implements ASTVisitor {
 
             for (AbsDef def : acceptor.definitions.definitions) {
                 def.accept(this);
-                types.add(SymbDesc.getType(def));
+
+                if (def.isStatic()) {
+                    staticTypes.add(SymbDesc.getType(def));
+                }
+                else {
+                    types.add(SymbDesc.getType(def));
+                }
             }
 
             ObjectType type;
-
             if (acceptor instanceof AbsStructDef) {
                 type = new StructType(acceptor, names, types);
             }
@@ -173,18 +189,25 @@ public class TypeChecker implements ASTVisitor {
 
             CanType canType = new CanType(type);
             SymbDesc.setType(acceptor, canType);
-        }
 
+            // add static member definitions to canType
+            Iterator<String> namesIterator = staticNames.iterator();
+            Iterator<Type> typesIterator = staticTypes.iterator();
+            Iterator<AbsDef> defsIterator = staticDefinitions.iterator();
+
+            while (namesIterator.hasNext()) {
+                canType.addStaticDefinition(defsIterator.next(), namesIterator.next(), typesIterator.next());
+            }
+        }
         else {
             resolveTypeOnly = false;
 
-            Type t = SymbDesc.getType(acceptor);
             ObjectType objectType = (ObjectType) ((CanType) SymbDesc.getType(acceptor)).childType;
 	        CanType baseClass = objectType.baseClass;
 
-            // add implicit "self: classType" parameter to instance methods
             for (AbsDef def : acceptor.definitions.definitions) {
-                if (def instanceof AbsFunDef) {
+                if (!def.isStatic() && def instanceof AbsFunDef) {
+                    // add implicit "self: classType" parameter to instance methods
                     AbsFunDef funDef = (AbsFunDef) def;
                     AbsParDef selfParDef = funDef.getParameterForIndex(0);
                     selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
@@ -248,9 +271,6 @@ public class TypeChecker implements ASTVisitor {
 
 		Type t1 = SymbDesc.getType(acceptor.expr1);
 		Type t2 = SymbDesc.getType(acceptor.expr2);
-
-		if (t1 == null)
-		    System.out.println();
 
 		int oper = acceptor.oper;
 
@@ -332,8 +352,7 @@ public class TypeChecker implements ASTVisitor {
 			if (t1.isArrayType()) {
 				String name = ((AbsVarNameExpr) acceptor.expr2).name;
 				if (!name.equals("count"))
-					Report.error("Lists have no attribute named \"" + name
-							+ "\"");
+					Report.error("Lists have no attribute named \"" + name + "\"");
 				SymbDesc.setType(acceptor, Type.intType);
 				return;
 			}
@@ -357,22 +376,30 @@ public class TypeChecker implements ASTVisitor {
             }
 			
 			if (t1.isObjectType()) {
-				if (!t1.containsMember(memberName))
-					Report.error(acceptor.expr2.position, 
-							LanguageManager.localize("type_error_member_not_found", 
-									t1.friendlyName(), 
-									memberName));
-				
-				if (acceptor.expr2 instanceof AbsFunCall) {
-					AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
-					for (AbsExpr arg: funCall.args)
-						arg.accept(this);
-				}
+                AbsLabeledExpr selfArg = null;
+
+			    if (acceptor.expr2 instanceof AbsFunCall) {
+			        AbsFunCall fnCall = (AbsFunCall) acceptor.expr2;
+
+                    // add implicit "self" argument to instance method
+                    selfArg = new AbsLabeledExpr(acceptor.position, acceptor.expr1, Constants.selfParameterIdentifier);
+                    fnCall.addArgument(selfArg);
+
+                    memberName = fnCall.getStringRepresentation();
+                }
+
+				if (!t1.containsMember(memberName)) {
+                    Report.error(acceptor.expr2.position,
+                            LanguageManager.localize(
+                                    "type_error_member_not_found",
+                                    t1.friendlyName(),
+                                    memberName));
+                }
 				
 				AbsDef definition = t1.findMemberForName(memberName);
 				AbsDef objectDefinition = SymbDesc.getNameDef(acceptor.expr1);
 
-				// check for access control (if object name is not "self")
+				// check for access control (if object's name is not "self")
                 if (!objectDefinition.name.equals(Constants.selfParameterIdentifier)) {
                     if (definition.isPrivate()) {
                         Report.error(acceptor.expr2.position,
@@ -382,13 +409,25 @@ public class TypeChecker implements ASTVisitor {
 				
 				SymbDesc.setNameDef(acceptor.expr2, definition);
 				SymbDesc.setNameDef(acceptor, definition);
+
+				if (acceptor.expr2 instanceof AbsFunCall) {
+                    SymbDesc.setNameDef(selfArg.expr, objectDefinition);
+                    SymbDesc.setNameDef(selfArg, objectDefinition);
+                    SymbDesc.setType(selfArg, t1);
+                    SymbDesc.setType(selfArg.expr, t1);
+
+                    acceptor.expr2.accept(new NameChecker());
+
+                    for (AbsExpr arg: ((AbsFunCall) acceptor.expr2).args)
+                        arg.accept(this);
+                }
 	
 				Type memberType = ((ObjectType) t1).getMemberTypeForName(memberName);
 				Type acceptorType = memberType.isFunctionType() ? ((FunctionType) memberType).resultType : memberType;
 
                 SymbDesc.setType(acceptor.expr2, memberType);
 				SymbDesc.setType(acceptor, acceptorType);
-				
+
 				return;
 			}
 			
@@ -440,6 +479,38 @@ public class TypeChecker implements ASTVisitor {
 				SymbDesc.setType(acceptor.expr2, tupleType.typeForName(memberName));
 				SymbDesc.setType(acceptor, tupleType.typeForName(memberName));
 			}
+
+			if (t1.isCanType()) {
+			    if (!t1.containsMember(memberName)) {
+                    Report.error(acceptor.expr2.position,
+                            LanguageManager.localize("type_error_member_not_found",
+                                    t1.friendlyName(),
+                                    memberName));
+                }
+
+                if (acceptor.expr2 instanceof AbsFunCall) {
+                    AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
+                    for (AbsExpr arg: funCall.args)
+                        arg.accept(this);
+                }
+
+                AbsDef definition = t1.findMemberForName(memberName);
+
+                if (definition.isPrivate()) {
+                    Report.error(acceptor.expr2.position,
+                            "Member '" + memberName + "' is inaccessible due to it's private protection level");
+                }
+
+                SymbDesc.setNameDef(acceptor.expr2, definition);
+                SymbDesc.setNameDef(acceptor, definition);
+//                acceptor.accept(new NameChecker(true));
+
+                Type memberType = ((ObjectType) t1).getMemberTypeForName(memberName);
+                Type acceptorType = memberType.isFunctionType() ? ((FunctionType) memberType).resultType : memberType;
+
+                SymbDesc.setType(acceptor.expr2, memberType);
+                SymbDesc.setType(acceptor, acceptorType);
+            }
 			
 			return;
 		}

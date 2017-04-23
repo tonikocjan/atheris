@@ -58,5 +58,4 @@ public class ImcLABEL extends ImcStmt {
 		}
 		return false;
 	}
-
 }

@@ -18,25 +18,40 @@
 package compiler.seman.type;
 
 import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsVarDef;
+
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
- * This type is used for representing class definition, enum definition, ... nodes.
+ * This type is used for representing class definition, enum definition, ... .
  * @author toni
  *
  */
 // TODO: What should this type be called?
 public class CanType extends Type {
-	
+
+    /** Child type. */
 	public final Type childType;
-	
+
+	/** Static definitions in childType */
+	private final LinkedList<AbsDef> staticDefinitions = new LinkedList<>();
+    private final LinkedList<Type> staticTypes = new LinkedList<>();
+    private final LinkedList<String> staticNames = new LinkedList<>();
+
+    /**
+     *
+     * @param child
+     */
 	public CanType(Type child) {
 		this.childType = child;
 	}
 
 	@Override
 	public boolean sameStructureAs(Type type) {
-		if (type instanceof CanType)
-			return ((CanType) type).childType.sameStructureAs(childType);
+		if (type instanceof CanType) {
+            return ((CanType) type).childType.sameStructureAs(childType);
+        }
 		return false;
 	}
 
@@ -62,14 +77,68 @@ public class CanType extends Type {
 
 	@Override
 	public String friendlyName() {
-        if (childType instanceof ClassType)
-            return childType.friendlyName() + ".Type";
-        else
-            return ((EnumType) childType).enumDefinition.name + ".Type";
+        return childType.friendlyName() + ".Type";
 	}
 
 	@Override
 	public AbsDef findMemberForName(String name) {
 		return childType.findMemberForName(name);
 	}
+
+	public void addStaticDefinition(AbsDef def, String name, Type type) {
+	    staticDefinitions.add(def);
+	    staticNames.add(name);
+	    staticTypes.add(type);
+    }
+
+    public int staticSize() {
+        Iterator<AbsDef> defIterator = staticDefinitions.iterator();
+        Iterator<Type> typeIterator = staticTypes.iterator();
+
+        int size = 0;
+        while (defIterator.hasNext()) {
+            Type t = typeIterator.next();
+
+            if (defIterator.next() instanceof AbsVarDef) {
+                size += t.size();
+            }
+        }
+
+        return size;
+    }
+
+    public boolean containsStaticMember(String name) {
+        return staticNames.contains(name);
+    }
+
+    public AbsDef findStaticMemberForName(String name) {
+        for (AbsDef def : staticDefinitions) {
+            if (def.getName().equals(name))
+                return def;
+        }
+
+        return null;
+    }
+
+    public int offsetForStaticMember(String name) {
+        Iterator<String> namesIterator = staticNames.iterator();
+        Iterator<Type> typesIterator = staticTypes.iterator();
+        Iterator<AbsDef> defsIterator = staticDefinitions.iterator();
+
+        int offset = 0;
+        while (defsIterator.hasNext()) {
+            AbsDef next = defsIterator.next();
+
+            if (!(next instanceof AbsVarDef)) {
+                namesIterator.next();
+                typesIterator.next();
+                continue;
+            }
+
+            if (name.equals(namesIterator.next())) break;
+            offset += typesIterator.next().size();
+        }
+
+        return offset;
+    }
 }

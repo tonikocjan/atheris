@@ -144,6 +144,10 @@ public class Frames implements ASTVisitor {
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
 					+ ": VOID(" + atomConst.value + ")");
 			break;
+        case NIL:
+            Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
+                    + ": NULL");
+            break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Frames.visit(AbsAtomConst)");
 		}
@@ -255,6 +259,12 @@ public class Frames implements ASTVisitor {
 		case AbsBinExpr.DOT:
 			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
 					+ ": DOT");
+        case AbsBinExpr.AS:
+            Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
+                    + ": AS");
+        case AbsBinExpr.IS:
+            Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
+                    + ": IS");
 			break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");

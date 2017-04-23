@@ -1,7 +1,7 @@
 package compiler.abstr.tree;
 
 /**
- * Created by toni on 16/04/2017.
+ * Definition modifiers.
  */
 public enum Modifier {
     isOverriding, isFinal, isStatic,

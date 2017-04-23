@@ -12,7 +12,7 @@ import java.util.LinkedList;
  */
 public class ImcMethodCALL extends ImcExpr {
 
-    /** Labela funkcije.  */
+    /** Temporary holding method's frame.  */
     public final FrmTemp temp;
 
     /** Argumenti funkcijskega klica (vkljucno s FP).  */

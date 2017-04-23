@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
 
+import Utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;
@@ -197,8 +198,8 @@ public class ImcCodeGen implements ASTVisitor {
 		ImcCode c1 = ImcDesc.getImcCode(acceptor.expr1);
 		ImcCode c2 = ImcDesc.getImcCode(acceptor.expr2);
 
-		ImcExpr e1 = null;
-		ImcExpr e2 = null;
+		ImcExpr e1;
+		ImcExpr e2;
 
 		if (c1 instanceof ImcEXP) e1 = ((ImcEXP) c1).expr;
 		else e1 = (ImcExpr) c1;
@@ -259,7 +260,10 @@ public class ImcCodeGen implements ASTVisitor {
             }
         }
         else if (acceptor.oper == AbsBinExpr.IS) {
-            int dstDescriptor = SymbDesc.getType(acceptor.expr2).descriptor;
+		    Type type = SymbDesc.getType(acceptor.expr2);
+		    if (type.isCanType()) type = ((CanType) type).childType;
+
+            int dstDescriptor = type.descriptor;
 
             FrmLabel l1 = FrmLabel.newLabel(),
                      l2 = FrmLabel.newLabel(),
@@ -290,14 +294,16 @@ public class ImcCodeGen implements ASTVisitor {
             statements.stmts.add(new ImcJUMP(l1));
             statements.stmts.add(new ImcLABEL(l3));
 
-            ImcDesc.setImcCode(acceptor, statements);
             startLabelStack.pop();
             endLabelStack.pop();
 
             code = new ImcESEQ(statements, new ImcBINOP(ImcBINOP.EQU, result, new ImcCONST(1)));
         }
         else if (acceptor.oper == AbsBinExpr.AS) {
-            int dstDescriptor = SymbDesc.getType(acceptor.expr2).descriptor;
+            Type type = SymbDesc.getType(acceptor.expr2);
+            if (type.isCanType()) type = ((CanType) type).childType;
+
+            int dstDescriptor = type.descriptor;
 
             FrmLabel l1 = FrmLabel.newLabel(),
                      l2 = FrmLabel.newLabel(),
@@ -330,7 +336,6 @@ public class ImcCodeGen implements ASTVisitor {
             statements.stmts.add(new ImcMOVE(result, new ImcCONST(0)));
             statements.stmts.add(new ImcLABEL(l3));
 
-            ImcDesc.setImcCode(acceptor, statements);
             startLabelStack.pop();
             endLabelStack.pop();
 
@@ -384,10 +389,11 @@ public class ImcCodeGen implements ASTVisitor {
                     boolean isDynamic = SymbDesc.getNameDef(acceptor.expr2).isDynamic();
 
                     if (isDynamic) {
-                        // dynamic dispatch magic ...
+                        // dynamic dispatch
                         ClassType classType = (ClassType) t;
+
                         int indexForMember = classType.indexForMember(((AbsFunCall) acceptor.expr2).getStringRepresentation());
-                        int offset = (indexForMember + 2) * 4;
+                        int offset = (indexForMember + 2) * Constants.Byte;
 
                         FrmTemp frmTemp = new FrmTemp();
                         ImcTEMP temp = new ImcTEMP(frmTemp);
@@ -407,6 +413,7 @@ public class ImcCodeGen implements ASTVisitor {
                         code = new ImcESEQ(methodCallCode, methodCall);
                     }
                     else {
+                        // static dispatch
                         code = c2;
                     }
                 }
