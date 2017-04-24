@@ -54,23 +54,21 @@ import compiler.seman.type.Type;
 
 public class FrmEvaluator implements ASTVisitor {
 
-    private ObjectType parentType = null;
+    private Type parentType = null;
     private FrmFrame currentFrame = null;
     public FrmFrame entryPoint = null;
 	private int currentLevel = 1;
-	
-	public static final String ENTRY_POINT = "_main";
 
     /**
      *
      */
 	public FrmEvaluator() {
-		AbsFunDef _main = new AbsFunDef(null, ENTRY_POINT, new LinkedList<>(), 
+		AbsFunDef _main = new AbsFunDef(null, Constants.ENTRY_POINT, new LinkedList<>(),
 				new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(null, 
 						new LinkedList<>()));
 
 		entryPoint = new FrmFrame(_main, 0);
-		entryPoint.label = FrmLabel.newLabel(ENTRY_POINT);
+		entryPoint.label = FrmLabel.newLabel(Constants.ENTRY_POINT);
 		entryPoint.sizePars = 0;
 		entryPoint.numPars = 0;
 		
@@ -84,15 +82,17 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-        ObjectType tmp = parentType;
-        parentType = (ObjectType) ((CanType) SymbDesc.getType(acceptor)).childType;
+        Type tmp = parentType;
+        parentType = SymbDesc.getType(acceptor);
 
-        if (parentType.isClassType()) {
+        if (((CanType) parentType).childType.isClassType()) {
+            ClassType classType = (ClassType) ((CanType) parentType).childType;
+
             FrmVirtualTableAccess virtualTableAccess = new FrmVirtualTableAccess(
                     acceptor,
-                    ((ClassType) parentType).virtualTableSize() + Constants.Byte*2);
+                    classType.virtualTableSize() + Constants.Byte*2);
             FrmDesc.setAccess(acceptor, virtualTableAccess);
-            FrmDesc.setVirtualTable((ClassType) parentType, virtualTableAccess);
+            FrmDesc.setVirtualTable(classType, virtualTableAccess);
         }
 
 		acceptor.definitions.accept(this);
@@ -111,7 +111,7 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsAtomType acceptor) {
-
+        ///
 	}
 
 	@Override
@@ -213,10 +213,19 @@ public class FrmEvaluator implements ASTVisitor {
 	@Override
 	public void visit(AbsVarDef acceptor) {
 		if (parentType != null) {
-            // member access
-            FrmDesc.setAccess(acceptor, new FrmMemberAccess(acceptor, parentType));
+		    if (parentType.isCanType()) {
+                // static access
+                FrmDesc.setAccess(acceptor,
+                        new FrmStaticAccess(
+                                acceptor,
+                                (CanType) parentType));
+            }
+            else {
+                // member access
+                FrmDesc.setAccess(acceptor, new FrmMemberAccess(acceptor, (ObjectType) parentType));
+            }
         }
-		else if (currentFrame.label.name().equals("_" + ENTRY_POINT)) {
+		else if (currentFrame.label.name().equals("_" + Constants.ENTRY_POINT)) {
             // var access
             FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
         }

@@ -5,9 +5,10 @@ package Utils;
  */
 public class Constants {
 
-    public static String selfParameterIdentifier = "self";
-    public static String standardLibraryIdentifier = "stdlib";
+    public static final String selfParameterIdentifier = "self";
+    public static final String standardLibraryIdentifier = "stdlib";
 
+    public static final String ENTRY_POINT = "_main";
 
-    public static int Byte = 4;
+    public static final int Byte = 4;
 }

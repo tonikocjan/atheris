@@ -105,12 +105,15 @@ public class ImcCodeGen implements ASTVisitor {
 	@Override
 	public void visit(AbsClassDef acceptor) {
         CanType type = (CanType) SymbDesc.getType(acceptor);
-	    FrmAccess access = FrmDesc.getAccess(acceptor);
+        FrmVirtualTableAccess virtualTableAccess = (FrmVirtualTableAccess) FrmDesc.getAccess(acceptor);
+
+        // create static instance (singleton)
+        ImcDataChunk staticInstance = new ImcDataChunk(virtualTableAccess.label, type.staticSize());
+        chunks.add(staticInstance);
 
 	    Integer virtualTablePointer = null;
 
 	    if (type.childType.isClassType()) {
-            FrmVirtualTableAccess virtualTableAccess = (FrmVirtualTableAccess) access;
             virtualTablePointer = virtualTableAccess.location;
 
             chunks.add(virtualTableCount++, new ImcVirtualTableDataChunk(
@@ -434,10 +437,10 @@ public class ImcCodeGen implements ASTVisitor {
                     code = c2;
                 }
                 else {
-                    code = new ImcBINOP(ImcBINOP.ADD, e1, e2);
+                    code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, e2));
 
 //                    if (t.isReferenceType()) {
-                    code = new ImcMEM((ImcBINOP) code);
+//                    code = new ImcMEM((ImcBINOP) code);
 //                    }
                 }
             }
@@ -696,8 +699,9 @@ public class ImcCodeGen implements ASTVisitor {
 		
 		ImcExpr expr = null;
 
-		if (access instanceof FrmVarAccess)
-			expr = new ImcMEM(new ImcNAME(((FrmVarAccess) access).label));
+		if (access instanceof FrmVarAccess) {
+            expr = new ImcMEM(new ImcNAME(((FrmVarAccess) access).label));
+        }
 		else if (access instanceof FrmLocAccess) {
 			FrmLocAccess loc = (FrmLocAccess) access;
 			int diff = frameStack.peek().level - loc.frame.level;
@@ -713,6 +717,10 @@ public class ImcCodeGen implements ASTVisitor {
 			FrmMemberAccess member = (FrmMemberAccess) access;
 			expr = new ImcCONST(member.offsetForMember());
 		}
+        else if (access instanceof FrmStaticAccess) {
+            FrmStaticAccess staticAccess = (FrmStaticAccess) access;
+            expr = new ImcCONST(staticAccess.offset());
+        }
 		else if (access instanceof FrmParAccess) {
 			FrmParAccess loc = (FrmParAccess) access;
 			int diff = frameStack.peek().level - loc.frame.level;
@@ -721,11 +729,15 @@ public class ImcCodeGen implements ASTVisitor {
 			for (int i = 0; i < diff; i++)
 				fp = new ImcMEM(fp);
 
-			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, fp, new ImcCONST(
-					loc.offset)));
+			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, fp, new ImcCONST(loc.offset)));
 		} 
-		else if (access instanceof FrmFunAccess)
-			expr = new ImcNAME(((FrmFunAccess) access).label);
+		else if (access instanceof FrmFunAccess) {
+            expr = new ImcNAME(((FrmFunAccess) access).label);
+        }
+        else if (access instanceof FrmVirtualTableAccess) {
+		    FrmVirtualTableAccess virtualAccess = (FrmVirtualTableAccess) access;
+            expr = new ImcNAME(virtualAccess.label);
+        }
 
 		ImcDesc.setImcCode(acceptor, expr);
 	}

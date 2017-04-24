@@ -411,15 +411,9 @@ public class TypeChecker implements ASTVisitor {
 				SymbDesc.setNameDef(acceptor, definition);
 
 				if (acceptor.expr2 instanceof AbsFunCall) {
-                    SymbDesc.setNameDef(selfArg.expr, objectDefinition);
-                    SymbDesc.setNameDef(selfArg, objectDefinition);
-                    SymbDesc.setType(selfArg, t1);
-                    SymbDesc.setType(selfArg.expr, t1);
-
-                    acceptor.expr2.accept(new NameChecker());
-
-                    for (AbsExpr arg: ((AbsFunCall) acceptor.expr2).args)
+                    for (AbsExpr arg: ((AbsFunCall) acceptor.expr2).args) {
                         arg.accept(this);
+                    }
                 }
 	
 				Type memberType = ((ObjectType) t1).getMemberTypeForName(memberName);

@@ -27,12 +27,12 @@ public class FrmMemberAccess implements FrmAccess {
 	/**
 	 * Member definition.
 	 */
-	public final AbsVarDef memberDef;
+	private final AbsVarDef memberDef;
 
 	/**
 	 * Parent type.
 	 */
-	public final ObjectType parentType;
+    private final ObjectType parentType;
 
     /**
      *

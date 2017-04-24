@@ -16,11 +16,13 @@ public class FrmVirtualTableAccess implements FrmAccess  {
     public final int size;
     public final int location;
 
+    public final FrmLabel label;
 
     public FrmVirtualTableAccess(AbsClassDef classDef, int size) {
         this.classDef = classDef;
         this.size = size;
         this.location = heapOffset;
+        this.label = FrmLabel.newLabel(classDef.getName());
 
         heapOffset += size;
     }
