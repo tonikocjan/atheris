@@ -135,6 +135,7 @@ public class FrmEvaluator implements ASTVisitor {
 	@Override
 	public void visit(AbsForStmt acceptor) {
 		SymbDesc.getNameDef(acceptor.iterator).accept(this);
+
 		acceptor.iterator.accept(this);
 		acceptor.collection.accept(this);
 		acceptor.body.accept(this);
@@ -212,17 +213,14 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		if (parentType != null) {
-		    if (parentType.isCanType()) {
+		if (acceptor.getParentDefinition() != null && SymbDesc.getType(acceptor.getParentDefinition()).isCanType()) {
+		    if (acceptor.isStatic()) {
                 // static access
-                FrmDesc.setAccess(acceptor,
-                        new FrmStaticAccess(
-                                acceptor,
-                                (CanType) parentType));
+                FrmDesc.setAccess(acceptor, new FrmStaticAccess(acceptor, (CanType) parentType));
             }
             else {
                 // member access
-                FrmDesc.setAccess(acceptor, new FrmMemberAccess(acceptor, (ObjectType) parentType));
+                FrmDesc.setAccess(acceptor, new FrmMemberAccess(acceptor, (ObjectType) ((CanType) parentType).childType));
             }
         }
 		else if (currentFrame.label.name().equals("_" + Constants.ENTRY_POINT)) {
