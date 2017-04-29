@@ -205,19 +205,6 @@ public class TypeChecker implements ASTVisitor {
             ObjectType objectType = (ObjectType) ((CanType) SymbDesc.getType(acceptor)).childType;
 	        CanType baseClass = objectType.baseClass;
 
-            for (AbsDef def : acceptor.definitions.definitions) {
-                if (!def.isStatic() && def instanceof AbsFunDef) {
-                    // add implicit "self: classType" parameter to instance methods
-                    AbsFunDef funDef = (AbsFunDef) def;
-                    AbsParDef selfParDef = funDef.getParameterForIndex(0);
-                    selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
-
-                    SymbDesc.setNameDef(selfParDef.type, acceptor);
-                }
-
-                def.accept(this);
-            }
-
             AbsFunDef baseClassDefaultConstructor = null;
             if (baseClass != null) {
                 baseClassDefaultConstructor = ((ClassType) baseClass.childType).classDefinition.defaultConstructor;
@@ -242,6 +229,19 @@ public class TypeChecker implements ASTVisitor {
                 funType.resultType = objectType;
 
                 SymbDesc.setType(constructor, funType);
+            }
+
+            for (AbsDef def : acceptor.definitions.definitions) {
+                if (!def.isStatic() && def instanceof AbsFunDef) {
+                    // add implicit "self: classType" parameter to instance methods
+                    AbsFunDef funDef = (AbsFunDef) def;
+                    AbsParDef selfParDef = funDef.getParameterForIndex(0);
+                    selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
+
+                    SymbDesc.setNameDef(selfParDef.type, acceptor);
+                }
+
+                def.accept(this);
             }
 
 //            objectType.debugPrint();
@@ -505,7 +505,10 @@ public class TypeChecker implements ASTVisitor {
 
                 SymbDesc.setType(acceptor.expr2, memberType);
                 SymbDesc.setType(acceptor, acceptorType);
+                return;
             }
+
+            Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" has no member named \"" + memberName + "\"");
 			
 			return;
 		}

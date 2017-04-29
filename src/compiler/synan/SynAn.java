@@ -608,7 +608,9 @@ public class SynAn {
                             new AbsVarNameExpr(definition.position, Constants.selfParameterIdentifier), varNameExpr);
                     AbsBinExpr assignExpr = new AbsBinExpr(definition.position, AbsBinExpr.ASSIGN, dotExpr, valueExpr);
 
-                    defaultConstructor.add(assignExpr);
+                    if (!definition.isStatic()) {
+                        defaultConstructor.add(assignExpr);
+                    }
                 }
             }
 

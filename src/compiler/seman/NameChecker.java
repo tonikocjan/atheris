@@ -69,23 +69,6 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-        SymbTable.newScope();
-
-		for (AbsDef def : acceptor.definitions.definitions) {
-			if (def instanceof AbsFunDef && !def.isStatic()) {
-                // add implicit self: classType parameter to instance methods
-                AbsFunDef funDef = (AbsFunDef) def;
-
-                AbsParDef parDef = new AbsParDef(funDef.position, Constants.selfParameterIdentifier,
-                        new AbsAtomType(funDef.position, AtomTypeKind.NIL));
-                funDef.addParamater(parDef);
-            }
-
-            def.accept(this);
-		}
-
-		SymbTable.oldScope();
-
         try {
             SymbTable.ins(acceptor.getName(), acceptor);
         } catch (SemIllegalInsertException e) {
@@ -104,6 +87,24 @@ public class NameChecker implements ASTVisitor {
             constructor.addParamater(parDef);
             constructor.accept(this);
         }
+
+        SymbTable.newScope();
+
+        for (AbsDef def : acceptor.definitions.definitions) {
+            if (def instanceof AbsFunDef && !def.isStatic()) {
+                // add implicit self: classType parameter to instance methods
+                AbsFunDef funDef = (AbsFunDef) def;
+
+                AbsParDef parDef = new AbsParDef(funDef.position, Constants.selfParameterIdentifier,
+                        new AbsAtomType(funDef.position, AtomTypeKind.NIL));
+                funDef.addParamater(parDef);
+            }
+
+            def.accept(this);
+        }
+
+        SymbTable.oldScope();
+
     }
 
 	@Override
