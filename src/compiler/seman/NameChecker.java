@@ -79,6 +79,10 @@ public class NameChecker implements ASTVisitor {
             acceptor.baseClass.accept(this);
         }
 
+        for (AbsType conformance : acceptor.conformances) {
+            conformance.accept(this);
+        }
+
         for (AbsFunDef constructor: acceptor.contrustors) {
             // add implicit self: classType parameter to constructors
             AbsParDef parDef = new AbsParDef(constructor.position, Constants.selfParameterIdentifier,
@@ -104,7 +108,6 @@ public class NameChecker implements ASTVisitor {
         }
 
         SymbTable.oldScope();
-
     }
 
 	@Override
@@ -467,6 +470,23 @@ public class NameChecker implements ASTVisitor {
             }
 
             def.accept(this);
+        }
+    }
+
+    @Override
+    public void visit(AbsInterfaceDef acceptor) {
+        try {
+            SymbTable.ins(acceptor.getName(), acceptor);
+        } catch (SemIllegalInsertException e) {
+            Report.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName() + "\'");
+        }
+
+        for (AbsDef def : acceptor.definitions.definitions) {
+            // add implicit self: classType parameter to instance methods
+            AbsFunDef funDef = (AbsFunDef) def;
+            AbsParDef parDef = new AbsParDef(funDef.position, Constants.selfParameterIdentifier,
+                    new AbsAtomType(funDef.position, AtomTypeKind.NIL));
+            funDef.addParamater(parDef);
         }
     }
 }

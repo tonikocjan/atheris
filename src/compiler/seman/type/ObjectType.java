@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * Created by toni on 15/04/2017.
+ * Object type.
  */
 public abstract class ObjectType extends Type {
 
@@ -236,6 +236,20 @@ public abstract class ObjectType extends Type {
         }
 
         return definitions.get(name);
+    }
+
+    /**
+     * Check whether this type conforms to interface, i.e. implements all of it's methods.
+     * @param interfaceType
+     * @return
+     */
+    public boolean conformsTo(InterfaceType interfaceType) {
+        for (AbsDef def: interfaceType.definition.definitions.definitions) {
+            AbsDef member = findMemberForName(def.getName());
+            if (member == null) return false;
+        }
+
+        return true;
     }
 
     /**

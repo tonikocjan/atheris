@@ -62,7 +62,8 @@ public class LexAn {
 			"for", "func", "if", "var", "while", "struct", "import", 
 			"let", "null", "class", "in", "return", "public",
 			"private", "continue", "break", "switch", "case", "default",
-			"enum", "init", "is", "override", "as", "extension", "final", "static"
+			"enum", "init", "is", "override", "as", "extension", "final", "static",
+            "interface"
 			};
 
 	/**

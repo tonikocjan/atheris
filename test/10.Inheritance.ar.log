@@ -1,4 +1,5 @@
-VTABLE CHUNK: label=_Static.Type size=8
+VTABLE CHUNK: label=_A2.Type size=16
+VTABLE CHUNK: label=_B2.Type size=12
 CODE CHUNK: label=_print
   FRAME(print: level=1,label=_print,sizeLocs=0,sizeArgs=0,size=8,FP=T2,RV=T3)
   SEQ
@@ -45,74 +46,119 @@ CODE CHUNK: label=_mem
   FRAME(mem: level=1,label=_mem,sizeLocs=0,sizeArgs=0,size=8,FP=T14,RV=T15)
   SEQ
     PC [0]:     LABEL label=L8
-DATA CHUNK: label=_Static size=5
-DATA CHUNK: label=L12 size=4 .BYTE: "This is a static function"
-CODE CHUNK: label=_foo
-  FRAME(foo: level=1,label=_foo,sizeLocs=0,sizeArgs=8,size=16,FP=T16,RV=T17)
+DATA CHUNK: label=_A2 size=0
+CODE CHUNK: label=_test
+  FRAME(test: level=1,label=_test,sizeLocs=0,sizeArgs=8,size=16,FP=T20,RV=T21)
   SEQ
     PC [0]:     MOVE
-      TEMP name=T17
+      TEMP name=T21
       CONST value=-555
     PC [1]:     MOVE
-      TEMP name=T22
+      TEMP name=T31
       CONST value=16755455
     PC [2]:     MOVE
-      TEMP name=T23
-      MEM
-        NAME label=L12
+      TEMP name=T32
+      CONST value=10
     PC [3]:     MOVE
-      TEMP name=T24
+      TEMP name=T33
       CALL label=_print
-        TEMP name=T22
-        TEMP name=T23
+        TEMP name=T31
+        TEMP name=T32
     PC [4]:     EXP
-      TEMP name=T24
-    PC [5]:     LABEL label=L9
-CODE CHUNK: label=_Static
-  FRAME(Static: level=1,label=_Static,sizeLocs=0,sizeArgs=0,size=8,FP=T18,RV=T19)
+      TEMP name=T33
+    PC [5]:     LABEL label=L11
+DATA CHUNK: label=L16 size=4 .BYTE: "This is A2's implementation of P1"
+CODE CHUNK: label=_p
+  FRAME(p: level=1,label=_p,sizeLocs=0,sizeArgs=8,size=16,FP=T22,RV=T23)
+  SEQ
+    PC [0]:     MOVE
+      TEMP name=T23
+      CONST value=-555
+    PC [1]:     MOVE
+      TEMP name=T34
+      CONST value=16755455
+    PC [2]:     MOVE
+      TEMP name=T35
+      MEM
+        NAME label=L16
+    PC [3]:     MOVE
+      TEMP name=T36
+      CALL label=_print
+        TEMP name=T34
+        TEMP name=T35
+    PC [4]:     EXP
+      TEMP name=T36
+    PC [5]:     LABEL label=L12
+CODE CHUNK: label=_A2
+  FRAME(A2: level=1,label=_A2,sizeLocs=0,sizeArgs=0,size=8,FP=T24,RV=T25)
   SEQ
     PC [0]:     MOVE
       MEM
         BINOP op=+
-          TEMP name=T18
+          TEMP name=T24
           CONST value=4
       MALLOC size: 4 BYTES
     PC [1]:     MOVE
       MEM
         MEM
           BINOP op=+
-            TEMP name=T18
+            TEMP name=T24
             CONST value=4
       CONST value=4
     PC [2]:     MOVE
-      TEMP name=T19
+      TEMP name=T25
       MEM
         BINOP op=+
-          TEMP name=T18
+          TEMP name=T24
           CONST value=4
-    PC [3]:     LABEL label=L10
-DATA CHUNK: label=L13 size=4 .BYTE: "This is a second static function"
-CODE CHUNK: label=_foo2
-  FRAME(foo2: level=1,label=_foo2,sizeLocs=0,sizeArgs=8,size=16,FP=T20,RV=T21)
+    PC [3]:     LABEL label=L13
+DATA CHUNK: label=_B2 size=0
+DATA CHUNK: label=L17 size=4 .BYTE: "This is B2's implementation of P1"
+CODE CHUNK: label=_p
+  FRAME(p: level=1,label=_p,sizeLocs=0,sizeArgs=8,size=16,FP=T26,RV=T27)
   SEQ
     PC [0]:     MOVE
-      TEMP name=T21
+      TEMP name=T27
       CONST value=-555
     PC [1]:     MOVE
-      TEMP name=T25
+      TEMP name=T37
       CONST value=16755455
     PC [2]:     MOVE
-      TEMP name=T26
+      TEMP name=T38
       MEM
-        NAME label=L13
+        NAME label=L17
     PC [3]:     MOVE
-      TEMP name=T27
+      TEMP name=T39
       CALL label=_print
-        TEMP name=T25
-        TEMP name=T26
+        TEMP name=T37
+        TEMP name=T38
     PC [4]:     EXP
-      TEMP name=T27
-    PC [5]:     LABEL label=L11
+      TEMP name=T39
+    PC [5]:     LABEL label=L14
+CODE CHUNK: label=_B2
+  FRAME(B2: level=1,label=_B2,sizeLocs=0,sizeArgs=0,size=8,FP=T28,RV=T29)
+  SEQ
+    PC [0]:     MOVE
+      MEM
+        BINOP op=+
+          TEMP name=T28
+          CONST value=4
+      MALLOC size: 4 BYTES
+    PC [1]:     MOVE
+      MEM
+        MEM
+          BINOP op=+
+            TEMP name=T28
+            CONST value=4
+      CONST value=20
+    PC [2]:     MOVE
+      TEMP name=T29
+      MEM
+        BINOP op=+
+          TEMP name=T28
+          CONST value=4
+    PC [3]:     LABEL label=L15
+DATA CHUNK: label=_protocol size=0
 CODE CHUNK: label=__main
   FRAME(_main: level=0,label=__main,sizeLocs=0,sizeArgs=8,size=16,FP=T0,RV=T1)
   SEQ
@@ -120,64 +166,38 @@ CODE CHUNK: label=__main
       TEMP name=T1
       CONST value=-555
     PC [1]:     MOVE
-      MEM
-        BINOP op=+
-          NAME label=_Static
-          CONST value=0
-      CONST value=10
-    PC [2]:     MOVE
-      MEM
-        BINOP op=+
-          NAME label=_Static
-          CONST value=4
-      CONST value=O
-    PC [3]:     MOVE
-      TEMP name=T28
+      TEMP name=T40
       TEMP name=T0
+    PC [2]:     MOVE
+      TEMP name=T41
+      CONST value=0
+    PC [3]:     MOVE
+      TEMP name=T42
+      CALL label=_A2
+        TEMP name=T40
+        TEMP name=T41
     PC [4]:     MOVE
-      TEMP name=T29
       MEM
-        BINOP op=+
-          NAME label=_Static
-          CONST value=0
+        NAME label=_protocol
+      TEMP name=T42
     PC [5]:     MOVE
       TEMP name=T30
-      CALL label=_print
-        TEMP name=T28
-        TEMP name=T29
-    PC [6]:     EXP
-      TEMP name=T30
+      BINOP op=+
+        MEM
+          MEM
+            NAME label=_protocol
+        CONST value=8
+    PC [6]:     MOVE
+      TEMP name=T43
+      TEMP name=T0
     PC [7]:     MOVE
-      TEMP name=T31
-      TEMP name=T0
-    PC [8]:     MOVE
-      TEMP name=T32
+      TEMP name=T44
       MEM
-        BINOP op=+
-          NAME label=_Static
-          CONST value=4
-    PC [9]:     MOVE
-      TEMP name=T33
-      CALL label=_print
-        TEMP name=T31
-        TEMP name=T32
-    PC [10]:     EXP
-      TEMP name=T33
-    PC [11]:     MOVE
-      TEMP name=T34
-      TEMP name=T0
-    PC [12]:     MOVE
-      TEMP name=T35
-      CALL label=_foo
-        TEMP name=T34
-    PC [13]:     EXP
-      TEMP name=T35
-    PC [14]:     MOVE
-      TEMP name=T36
-      TEMP name=T0
-    PC [15]:     MOVE
-      TEMP name=T37
-      CALL label=_foo2
-        TEMP name=T36
-    PC [16]:     EXP
-      TEMP name=T37
+        NAME label=_protocol
+    PC [8]:     MOVE
+      TEMP name=T45
+      METHOD CALL temp=T30
+        TEMP name=T43
+        TEMP name=T44
+    PC [9]:     EXP
+      TEMP name=T45

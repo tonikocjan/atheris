@@ -121,6 +121,14 @@ public abstract class Type {
 		return this instanceof ClassType;
 	}
 
+	/**
+     * Check if this type is interface type.
+     * @return True if it is, otherwise false.
+     */
+    public boolean isInterfaceType() {
+        return this instanceof InterfaceType;
+    }
+
     /**
      * Check if this type is class type.
      * @return True if it is, otherwise false.

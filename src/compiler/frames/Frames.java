@@ -184,6 +184,10 @@ public class Frames implements ASTVisitor {
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString()
 					+ ": VOID");
 			break;
+        case NIL:
+            Report.dump(indent, "AbsAtomType " + atomType.position.toString()
+                    + ": NIL");
+            break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Frames.visit(AbsAtomType)");
 		}
@@ -195,91 +199,71 @@ public class Frames implements ASTVisitor {
 	}
 
 	public void visit(AbsBinExpr binExpr) {
-		switch (binExpr.oper) {
-		case AbsBinExpr.IOR:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": IOR");
-			break;
-		case AbsBinExpr.AND:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": AND");
-			break;
-		case AbsBinExpr.EQU:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": EQU");
-			break;
-		case AbsBinExpr.NEQ:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": NEQ");
-			break;
-		case AbsBinExpr.LEQ:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": LEQ");
-			break;
-		case AbsBinExpr.GEQ:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": GEQ");
-			break;
-		case AbsBinExpr.LTH:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": LTH");
-			break;
-		case AbsBinExpr.GTH:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": GTH");
-			break;
-		case AbsBinExpr.ADD:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": ADD");
-			break;
-		case AbsBinExpr.SUB:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": SUB");
-			break;
-		case AbsBinExpr.MUL:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": MUL");
-			break;
-		case AbsBinExpr.DIV:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": DIV");
-			break;
-		case AbsBinExpr.MOD:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": MOD");
-			break;
-		case AbsBinExpr.ARR:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": ARR");
-			break;
-		case AbsBinExpr.ASSIGN:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": ASSIGN");
-			break;
-		case AbsBinExpr.DOT:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-					+ ": DOT");
-        case AbsBinExpr.AS:
-            Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-                    + ": AS");
-        case AbsBinExpr.IS:
-            Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
-                    + ": IS");
-			break;
-		default:
-			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
-		}
-		{
-			Type typ = SymbDesc.getType(binExpr);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
-		}
-		indent += 2;
-		binExpr.expr1.accept(this);
-		indent -= 2;
-		indent += 2;
-		binExpr.expr2.accept(this);
-		indent -= 2;
+        switch (binExpr.oper) {
+            case AbsBinExpr.IOR:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": IOR");
+                break;
+            case AbsBinExpr.AND:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": AND");
+                break;
+            case AbsBinExpr.EQU:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": EQU");
+                break;
+            case AbsBinExpr.NEQ:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": NEQ");
+                break;
+            case AbsBinExpr.LEQ:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": LEQ");
+                break;
+            case AbsBinExpr.GEQ:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": GEQ");
+                break;
+            case AbsBinExpr.LTH:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": LTH");
+                break;
+            case AbsBinExpr.GTH:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": GTH");
+                break;
+            case AbsBinExpr.ADD:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": ADD");
+                break;
+            case AbsBinExpr.SUB:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": SUB");
+                break;
+            case AbsBinExpr.MUL:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": MUL");
+                break;
+            case AbsBinExpr.DIV:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": DIV");
+                break;
+            case AbsBinExpr.MOD:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": MOD");
+                break;
+            case AbsBinExpr.ARR:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": ARR");
+                break;
+            case AbsBinExpr.ASSIGN:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": ASSIGN");
+                break;
+            case AbsBinExpr.DOT:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": DOT");
+                break;
+            case AbsBinExpr.IS:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": IS");
+                break;
+            case AbsBinExpr.AS:
+                Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": As");
+                break;
+            default:
+                Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
+        }
+        {
+            Type typ = SymbDesc.getType(binExpr);
+            if (typ != null)
+                Report.dump(indent + 2, "#typed as " + typ.toString());
+        }
+        indent += 2; binExpr.expr1.accept(this); indent -= 2;
+        indent += 2; binExpr.expr2.accept(this); indent -= 2;
 	}
 
 	public void visit(AbsDefs defs) {
@@ -724,4 +708,15 @@ public class Frames implements ASTVisitor {
 
     }
 
+    @Override
+    public void visit(AbsInterfaceDef acceptor) {
+        Report.dump(indent, "AbsInterfaceDef " + acceptor.position.toString() + ":");{
+            Type typ = SymbDesc.getType(acceptor);
+            if (typ != null)
+                Report.dump(indent + 2, "#typed as " + typ.toString());
+        }
+        indent += 2;
+        acceptor.definitions.accept(this);
+        indent -= 2;
+    }
 }

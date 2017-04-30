@@ -119,12 +119,31 @@ public class TypeChecker implements ASTVisitor {
                     Report.error("Structs are not allowed to inherit");
                 }
 
-                if (!type.isCanType() || !((CanType) type).childType.isClassType()) {
+                if (!type.isInterfaceType() && (!type.isCanType() || !((CanType) type).childType.isClassType())) {
                     Report.error(acceptor.baseClass.position,
                             "Inheritance from non-class type \"" + type.friendlyName() + "\" is not allowed");
                 }
 
-                baseClass = (CanType) type;
+                if (type.isInterfaceType()) {
+                    acceptor.conformances.addFirst(acceptor.baseClass);
+                }
+                else {
+                    baseClass = (CanType) type;
+                }
+            }
+
+            // check whether conformance is legal
+            for (AbsType conformance : acceptor.conformances) {
+                conformance.accept(this);
+
+                if (!SymbDesc.getType(conformance).isInterfaceType()) {
+                    if (baseClass != null) {
+                        Report.error(conformance.position, "Multiple inheritance is not allowed");
+                    }
+                    else {
+                        Report.error(conformance.position, "Super class must appear first in inheritance clause");
+                    }
+                }
             }
 
             resolveTypeOnly = true;
@@ -208,6 +227,15 @@ public class TypeChecker implements ASTVisitor {
             AbsFunDef baseClassDefaultConstructor = null;
             if (baseClass != null) {
                 baseClassDefaultConstructor = ((ClassType) baseClass.childType).classDefinition.defaultConstructor;
+            }
+
+            // check if class type all methods in conforming interfaces
+            for (AbsType conformance : acceptor.conformances) {
+                InterfaceType interfaceType = (InterfaceType) SymbDesc.getType(conformance);
+
+                if (!objectType.conformsTo(interfaceType)) {
+                    Report.error(conformance.position, "Type \"" + objectType.friendlyName() + "\" does not conform to type \"" + interfaceType.friendlyName() + "\"");
+                }
             }
 
             // add implicit "self: classType" parameter to constructors
@@ -309,9 +337,9 @@ public class TypeChecker implements ASTVisitor {
 			
 			// t1 and t2 are of same structure
 			if (t1.sameStructureAs(t2)) {
-				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
-				SymbDesc.setType(acceptor.expr1, t2);
-				SymbDesc.setType(acceptor, t2);
+//				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
+//				SymbDesc.setType(acceptor.expr1, t2);
+				SymbDesc.setType(acceptor, t1);
 				success = true;
 			}
 			// t2 can be casted to t1
@@ -376,13 +404,11 @@ public class TypeChecker implements ASTVisitor {
             }
 			
 			if (t1.isObjectType()) {
-                AbsLabeledExpr selfArg = null;
-
 			    if (acceptor.expr2 instanceof AbsFunCall) {
 			        AbsFunCall fnCall = (AbsFunCall) acceptor.expr2;
 
                     // add implicit "self" argument to instance method
-                    selfArg = new AbsLabeledExpr(acceptor.position, acceptor.expr1, Constants.selfParameterIdentifier);
+                    AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.position, acceptor.expr1, Constants.selfParameterIdentifier);
                     fnCall.addArgument(selfArg);
 
                     memberName = fnCall.getStringRepresentation();
@@ -505,6 +531,35 @@ public class TypeChecker implements ASTVisitor {
 
                 SymbDesc.setType(acceptor.expr2, memberType);
                 SymbDesc.setType(acceptor, acceptorType);
+                return;
+            }
+
+            if (t1.isInterfaceType()) {
+			    InterfaceType interfaceType = (InterfaceType) t1;
+
+                if (acceptor.expr2 instanceof AbsFunCall) {
+                    AbsFunCall fnCall = (AbsFunCall) acceptor.expr2;
+
+                    // add implicit "self" argument to instance method
+                    fnCall.addArgument(new AbsLabeledExpr(acceptor.position, acceptor.expr1, Constants.selfParameterIdentifier));
+                    memberName = fnCall.getStringRepresentation();
+
+                    for (AbsExpr arg: fnCall.args) {
+                        arg.accept(this);
+                    }
+                }
+                else {
+                    Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                }
+                AbsDef def = interfaceType.findMemberForName(memberName);
+			    if (def == null) {
+                    Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                }
+
+                FunctionType functionType = (FunctionType) SymbDesc.getType(def);
+
+                SymbDesc.setNameDef(acceptor.expr2, def);
+                SymbDesc.setType(acceptor.expr2, functionType);
                 return;
             }
 
@@ -1162,5 +1217,11 @@ public class TypeChecker implements ASTVisitor {
                 def.accept(this);
             }
         }
+    }
+
+    @Override
+    public void visit(AbsInterfaceDef acceptor) {
+        acceptor.definitions.accept(this);
+        SymbDesc.setType(acceptor, new InterfaceType(acceptor));
     }
 }

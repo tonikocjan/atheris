@@ -343,4 +343,8 @@ public class FrmEvaluator implements ASTVisitor {
         acceptor.definitions.accept(this);
     }
 
+    @Override
+    public void visit(AbsInterfaceDef absInterfaceDef) {
+        absInterfaceDef.definitions.accept(this);
+    }
 }

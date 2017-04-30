@@ -335,4 +335,9 @@ public class InitializationChecker implements ASTVisitor {
     public void visit(AbsExtensionDef acceptor) {
 
     }
+
+    @Override
+    public void visit(AbsInterfaceDef absInterfaceDef) {
+
+    }
 }

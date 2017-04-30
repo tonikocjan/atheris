@@ -114,6 +114,10 @@ public class Ast implements ASTVisitor {
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
 					+ ": DOUBLE(" + atomConst.value + ")");
 			break;
+            case NIL:
+            Report.dump(indent, "AbsAtomConst " + atomConst.position.toString()
+                    + ": NIL(" + atomConst.value + ")");
+            break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomConst)");
 		}
@@ -219,6 +223,9 @@ public class Ast implements ASTVisitor {
         case AbsBinExpr.IS:
             Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
                     + ": IS");
+        case AbsBinExpr.AS:
+            Report.dump(indent, "AbsBinExpr " + binExpr.position.toString()
+                    + ": AS");
             break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
@@ -531,6 +538,14 @@ public class Ast implements ASTVisitor {
         Report.dump(indent, "AbsExtensionDef " + acceptor.position.toString() + ":");
         indent += 2;
         acceptor.extendingType.accept(this);
+        acceptor.definitions.accept(this);
+        indent -= 2;
+    }
+
+    @Override
+    public void visit(AbsInterfaceDef acceptor) {
+        Report.dump(indent, "AbsInterfaceDef " + acceptor.position.toString() + ":");
+        indent += 2;
         acceptor.definitions.accept(this);
         indent -= 2;
     }

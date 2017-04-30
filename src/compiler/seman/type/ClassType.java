@@ -23,6 +23,8 @@ import compiler.Report;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;
+import compiler.abstr.tree.type.AbsType;
+import compiler.abstr.tree.type.AbsTypeName;
 
 /**
  * Class type. 
@@ -146,6 +148,18 @@ public class ClassType extends ObjectType implements ReferenceType {
                 return current;
             }
         };
+    }
+
+    public boolean isConformingTo(InterfaceType type) {
+        if (base != null && ((ClassType) base).isConformingTo(type))
+            return true;
+
+        for (AbsType conformance : classDefinition.conformances) {
+            if (((AbsTypeName) conformance).name.equals(type.definition.getName()))
+                return true;
+        }
+
+        return false;
     }
 
     @Override

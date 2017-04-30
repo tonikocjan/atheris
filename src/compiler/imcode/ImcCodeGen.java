@@ -430,6 +430,34 @@ public class ImcCodeGen implements ASTVisitor {
 			}
 
             /**
+             * Handle interfaces.
+             */
+            else if (t.isInterfaceType()) {
+                // dynamic dispatch
+                InterfaceType interfaceType = (InterfaceType) t;
+
+                int indexForMember = interfaceType.indexForMember(((AbsFunCall) acceptor.expr2).getStringRepresentation());
+                int offset = (indexForMember + 2) * Constants.Byte;
+
+                FrmTemp frmTemp = new FrmTemp();
+                ImcTEMP temp = new ImcTEMP(frmTemp);
+
+                ImcSEQ methodCallCode = new ImcSEQ();
+                methodCallCode.stmts.add(
+                        new ImcMOVE(temp,
+                                new ImcBINOP(ImcBINOP.ADD,
+                                        new ImcMEM(e1),
+                                        new ImcCONST(offset))
+                        )
+                );
+
+                ImcMethodCALL methodCall = new ImcMethodCALL(frmTemp);
+                methodCall.args = ((ImcCALL) c2).args;
+
+                code = new ImcESEQ(methodCallCode, methodCall);
+            }
+
+            /**
              * Handle Can Type (static members).
              */
             else if (t.isCanType()) {
@@ -1000,5 +1028,10 @@ public class ImcCodeGen implements ASTVisitor {
     public void visit(AbsExtensionDef acceptor) {
         acceptor.extendingType.accept(this);
         acceptor.definitions.accept(this);
+    }
+
+    @Override
+    public void visit(AbsInterfaceDef absInterfaceDef) {
+
     }
 }

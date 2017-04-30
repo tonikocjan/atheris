@@ -665,7 +665,20 @@ public class SemAn implements ASTVisitor {
                 Report.dump(indent + 2, "#typed as " + typ.toString());
         }
         indent += 2;
+
         acceptor.extendingType.accept(this);
+        acceptor.definitions.accept(this);
+        indent -= 2;
+    }
+
+    @Override
+    public void visit(AbsInterfaceDef acceptor) {
+        Report.dump(indent, "AbsInterfaceDef " + acceptor.position.toString() + ":");{
+            Type typ = SymbDesc.getType(acceptor);
+            if (typ != null)
+                Report.dump(indent + 2, "#typed as " + typ.toString());
+        }
+        indent += 2;
         acceptor.definitions.accept(this);
         indent -= 2;
     }

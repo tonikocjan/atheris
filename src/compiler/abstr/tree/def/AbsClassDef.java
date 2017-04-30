@@ -44,43 +44,50 @@ public class AbsClassDef extends AbsTypeDef {
 	/** Base class type name (null if no base class) */
 	public final AbsType baseClass;
 
+	/** Conforming interfaces. */
+	public final LinkedList<AbsType> conformances;
+
+
     /**
-     * * Create new class definition.
-     * @param name Definition's name
-     * @param pos Position in file
-     * @param definitions Member definitions
-     * @param defaultConstructor Initializing expressions for default constructor
-     * @param constructors Other constructors
+     * Create new class definition.
+     * @param name
+     * @param pos
+     * @param baseClass
+     * @param conformances
+     * @param definitions
+     * @param defaultConstructor
+     * @param constructors
      */
-	public AbsClassDef(String name, Position pos, AbsType baseClass, LinkedList<AbsDef> definitions,
+    public AbsClassDef(String name, Position pos, AbsType baseClass, LinkedList<AbsType> conformances, LinkedList<AbsDef> definitions,
                        LinkedList<AbsStmt> defaultConstructor, LinkedList<AbsFunDef> constructors) {
-		super(pos, name);
+        super(pos, name);
         this.contrustors = constructors;
         this.definitions = new AbsDefs(position, definitions);
         this.baseClass = baseClass;
+        this.conformances = conformances;
 
         // set this definition as parent for all member definitions
         for (AbsDef def : this.definitions.definitions) {
             def.setParentDefinition(this);
         }
 
-		String constructorName = name;
-		String defaultConstructorName = name + "()";
+        String constructorName = name;
+        String defaultConstructorName = name + "()";
 
-		// add default constructor
-		AbsFunDef constructor = new AbsFunDef(pos,
+        // add default constructor
+        AbsFunDef constructor = new AbsFunDef(pos,
                 constructorName,
-				new LinkedList<>(),
-				new AbsAtomType(pos, AtomTypeKind.VOID),
-				new AbsStmts(pos, defaultConstructor),
+                new LinkedList<>(),
+                new AbsAtomType(pos, AtomTypeKind.VOID),
+                new AbsStmts(pos, defaultConstructor),
                 true);
         constructor.setParentDefinition(this);
         this.defaultConstructor = constructor;
 
         // if set to true, don't add defaultConstructor into constructors
-		boolean hasDefaultConstructor = false;
+        boolean hasDefaultConstructor = false;
 
-		// default constructor code is added to every constructor
+        // default constructor code is added to every constructor
         for (AbsFunDef c : constructors) {
             c.setParentDefinition(this);
             c.func.statements.addAll(0, constructor.func.statements);
@@ -93,15 +100,44 @@ public class AbsClassDef extends AbsTypeDef {
         if (!hasDefaultConstructor) {
             contrustors.add(constructor);
         }
-	}
-
-    public AbsClassDef(String name, Position pos, LinkedList<AbsDef> definitions,
-                       LinkedList<AbsStmt> defaultConstructor, LinkedList<AbsFunDef> constructors) {
-        this(name, pos, null, definitions, defaultConstructor, constructors);
     }
 
+    /**
+     * * Create new class definition.
+     * @param name Definition's name
+     * @param pos Position in file
+     * @param definitions Member definitions
+     * @param defaultConstructor Initializing expressions for default constructor
+     * @param constructors Other constructors
+     */
+	public AbsClassDef(String name, Position pos, AbsType baseClass, LinkedList<AbsDef> definitions,
+                       LinkedList<AbsStmt> defaultConstructor, LinkedList<AbsFunDef> constructors) {
+        this(name, pos, baseClass, null, definitions, defaultConstructor, constructors);
+	}
+
+    /**
+     *
+     * @param name
+     * @param pos
+     * @param definitions
+     * @param defaultConstructor
+     * @param constructors
+     */
+    public AbsClassDef(String name, Position pos, LinkedList<AbsDef> definitions,
+                       LinkedList<AbsStmt> defaultConstructor, LinkedList<AbsFunDef> constructors) {
+        this(name, pos, null, new LinkedList<>(), definitions, defaultConstructor, constructors);
+    }
+
+    /**
+     *
+     * @param aSTVisitor
+     */
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "AbsClassDef " + position.toString() + ": " + getName();

@@ -56,7 +56,7 @@ import compiler.lexan.*;
 
 /**
  * Syntax parser.
- * 
+ *
  * @author Toni Kocjan
  */
 public class SynAn {
@@ -75,7 +75,7 @@ public class SynAn {
 
 	/**
 	 * Ustvari nov sintaksni analizator.
-	 * 
+	 *
 	 * @param lexAn
 	 *            Leksikalni analizator.
 	 * @param dump
@@ -95,7 +95,7 @@ public class SynAn {
 	public AbsTree parse() {
 		if (symbol == null)
 			Report.error("Error accessing LexAn");
-		
+
 		if (symbol.token == TokenType.NEWLINE)
 			skip();
 
@@ -111,16 +111,16 @@ public class SynAn {
 
 	private AbsStmts parseStatements() {
 		dump("statements -> statement statements'");
-		
+
 		LinkedList<AbsStmt> absStmts = new LinkedList<>();
 		if (symbol.token == TokenType.RBRACE)
 			return new AbsStmts(symbol.position, absStmts);
-		
+
 		AbsStmt statement = parseStatement();
 
         absStmts.add(statement);
 		absStmts.addAll(parseStatements_(statement));
-		
+
 		return new AbsStmts(new Position(absStmts.getFirst().position,
 				absStmts.getLast().position), absStmts);
 	}
@@ -137,7 +137,7 @@ public class SynAn {
 			skip();
 			if (symbol.token == TokenType.NEWLINE)
 				skip();
-			
+
 			if (symbol.token == TokenType.EOF || symbol.token == TokenType.RBRACE)
 				return new Vector<AbsStmt>();
 		case IDENTIFIER:
@@ -147,8 +147,8 @@ public class SynAn {
 			return absStmts;
 		case NEWLINE:
 			skip();
-			
-			if (symbol.token == TokenType.EOF || symbol.token == TokenType.RBRACE || 
+
+			if (symbol.token == TokenType.EOF || symbol.token == TokenType.RBRACE ||
 				symbol.token == TokenType.KW_CASE || symbol.token == TokenType.KW_DEFAULT)
 				return new Vector<AbsStmt>();
 
@@ -159,19 +159,19 @@ public class SynAn {
 		case ASSIGN:
 			if (!(prevStmt instanceof AbsVarDef))
 				Report.error(prevStmt.position, "Syntax error");
-			
+
 			skip();
 			dump("var_definition -> = expression");
-			
+
 			AbsVarDef var = (AbsVarDef) prevStmt;
 			AbsVarNameExpr varName = new AbsVarNameExpr(var.position, var.name);
 
 			AbsExpr e = parseExpression();
 			absStmts = parseStatements_(null);
-			
-			absStmts.add(0, new AbsBinExpr(new Position(var.position, e.position), 
+
+			absStmts.add(0, new AbsBinExpr(new Position(var.position, e.position),
 					AbsBinExpr.ASSIGN, varName, e));
-			
+
 			return absStmts;
 		default:
 			Report.error(symbol.position, "Consecutive statements must be separated by separator");
@@ -189,26 +189,27 @@ public class SynAn {
 		case KW_STRUCT:
 		case KW_CLASS:
 		case KW_ENUM:
+        case KW_INTERFACE:
 		case KW_FUN:
 		case KW_IMPORT:
         case KW_EXTENSION:
 			dump("statement -> definition");
 			return parseDefinition();
-			
+
 		/**
 		 * Parse control transfer statement.
 		 */
 		case KW_CONTINUE:
 			dump("expression -> continue");
 			skip();
-			return new AbsControlTransferStmt(symbol.position, 
+			return new AbsControlTransferStmt(symbol.position,
 					ControlTransferKind.Continue);
 		case KW_BREAK:
 			dump("expression -> break");
 			skip();
 			return new AbsControlTransferStmt(symbol.position,
 					ControlTransferKind.Break);
-		
+
 		/**
 		 * Parse conditional statements
 		 */
@@ -224,7 +225,7 @@ public class SynAn {
 		case KW_FOR:
 			dump("atom_expression -> for indentifier in expression { expression }");
 			return parseForLoop();
-		
+
 		/**
 		 * Parse expression.
 		 */
@@ -239,9 +240,6 @@ public class SynAn {
 
         if (symbol.token == TokenType.NEWLINE) {
             skip();
-        }
-        else {
-            Report.error(symbol.position, "Invalid token");
         }
 
         if (symbol.token == TokenType.RBRACE) {
@@ -316,6 +314,10 @@ public class SynAn {
 			dump("definition -> class_definition");
 			definition = parseClassDefinition(symbol.token == TokenType.KW_STRUCT);
 			break;
+        case KW_INTERFACE:
+            dump("definition -> interface_definition");
+            definition = parseInterfaceDefinition();
+            break;
 		case KW_ENUM:
 			dump("definition -> enum_definition");
 			definition = parseEnumDefinition();
@@ -437,13 +439,14 @@ public class SynAn {
 			type = parseType();
 		}
 
-		if (symbol.token != TokenType.LBRACE)
-			Report.error(symbol.position, "Syntax error on token \""
-					+ previous.lexeme + "\", expected \"{\" after this token");
+		if (symbol.token != TokenType.LBRACE) {
+            Report.error(symbol.position, "Syntax error on token \""
+                    + previous.lexeme + "\", expected \"{\" after this token");
+        }
 
 		skip(new Symbol(TokenType.NEWLINE, "NEWLINE", null));
 		skip();
-		
+
 		AbsStmts expr = parseStatements();
 		if (symbol.token != TokenType.RBRACE)
 			Report.error(symbol.position, "Syntax error on token \""
@@ -457,7 +460,7 @@ public class SynAn {
 		Position startPos = symbol.position;
 		boolean isMutable = true;
 		Symbol id = null;
-		
+
 		if (symbol.token == TokenType.KW_VAR) {
             id = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
 
@@ -468,11 +471,11 @@ public class SynAn {
 
             isMutable = false;
 		}
-		
+
 		skip();
-		
+
 		AbsType type = null;
-		
+
 		if (symbol.token == TokenType.ASSIGN) {
 			dump("var_definition -> var identifier = expr");
 			return new AbsVarDef(startPos, id.lexeme, type, isMutable);
@@ -481,13 +484,13 @@ public class SynAn {
             Report.error(previous.position, "Syntax error on token \""
                     + previous.lexeme + "\", expected \":\"");
         }
-		
+
 		skip();
 
 		dump("var_definition -> var identifier : type");
 
 		type = parseType();
-		return new AbsVarDef(new Position(startPos, type.position), 
+		return new AbsVarDef(new Position(startPos, type.position),
 				id.lexeme, type, isMutable);
 	}
 
@@ -531,7 +534,7 @@ public class SynAn {
 			return def;
 		}
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private AbsClassDef parseClassDefinition(boolean parseStructure) {
 		Position start = symbol.position;
@@ -539,19 +542,28 @@ public class SynAn {
 		skip();
 
 		AbsType baseClass = null;
-        if (symbol.token == TokenType.COLON) {
-            skip();
+		LinkedList<AbsType> conformances = new LinkedList<>();
 
-            // parse base class type name
-            baseClass = parseType();
+		// parse conformances
+        if (symbol.token == TokenType.COLON) {
+            do {
+                skip();
+                conformances.add(parseType());
+            }
+            while (symbol.token == TokenType.COMMA);
+        }
+
+        if (conformances.size() > 0) {
+            baseClass = conformances.getFirst();
+            conformances.removeFirst();
         }
 
         if (symbol.token != TokenType.LBRACE) {
 		    Report.error(symbol.position, "Expected \"{\"");
         }
-		
+
 		skip();
-		
+
 		LinkedList[] data = parseClassMemberDefinitions();
 		LinkedList<AbsDef> definitions = data[0];
         LinkedList<AbsStmt> defaultConstructor = data[1];
@@ -570,9 +582,9 @@ public class SynAn {
             return new AbsStructDef(className, definitionPosition, baseClass, definitions, defaultConstructor, constructors);
         }
 
-        return new AbsClassDef(className, definitionPosition, baseClass, definitions, defaultConstructor, constructors);
+        return new AbsClassDef(className, definitionPosition, baseClass, conformances, definitions, defaultConstructor, constructors);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	private LinkedList[] parseClassMemberDefinitions() {
 		LinkedList<AbsDef> definitions = new LinkedList<>();
@@ -587,7 +599,7 @@ public class SynAn {
             Report.error(symbol.position, "Invalid token");
         }
         skip();
-		
+
 		while (true) {
             if (symbol.token == TokenType.RBRACE) {
                 return new LinkedList[] { definitions, defaultConstructor, constructors };
@@ -626,42 +638,124 @@ public class SynAn {
             Report.error(symbol.position, "Consecutive statements must be separated by a separator");
         }
 	}
-	
+
+	private AbsInterfaceDef parseInterfaceDefinition() {
+        Position start = symbol.position;
+        String interfaceName = skip(new Symbol(TokenType.IDENTIFIER, "IDENTIFIER", null)).lexeme;
+        skip();
+
+        if (symbol.token != TokenType.LBRACE) {
+            Report.error(symbol.position, "Expected \"{\"");
+        }
+
+        skip();
+
+        if (symbol.token == TokenType.NEWLINE) {
+            skip();
+        }
+
+        LinkedList<AbsDef> defs = parseInterfaceDefinitions();
+        Position positition = start;
+
+        if (defs.size() > 0) {
+            positition = new Position(start, defs.getLast().position);
+        }
+
+        if (symbol.token != TokenType.RBRACE) {
+            Report.error(symbol.position, "Expected \"}\"");
+        }
+
+        skip();
+
+        return new AbsInterfaceDef(positition, interfaceName, new AbsDefs(positition, defs));
+    }
+
+    private LinkedList<AbsDef> parseInterfaceDefinitions() {
+	    LinkedList<AbsDef> defs = new LinkedList<>();
+
+        if (symbol.token == TokenType.NEWLINE) {
+            skip();
+        }
+        while (symbol.token == TokenType.KW_FUN) {
+            defs.add(parseFunctionPrototype());
+
+            if (symbol.token == TokenType.SEMIC) {
+                skip();
+            }
+            if (symbol.token == TokenType.NEWLINE) {
+                skip();
+            }
+        }
+
+	    return defs;
+    }
+
+    private AbsFunDef parseFunctionPrototype() {
+        Position startPos = symbol.position;
+
+        if (symbol.token == TokenType.KW_FUN) {
+            Symbol functionName = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
+
+            skip(new Symbol(TokenType.LPARENT, "(", null));
+            skip();
+            dump("function_prototype -> func identifier ( parameters ) function_prototype'");
+
+            LinkedList<AbsParDef> params = parseParameters();
+
+            AbsType type;
+
+            if (symbol.token == TokenType.NEWLINE || symbol.token == TokenType.SEMIC) {
+                dump("function_prototype' -> $ ");
+                skip();
+                type = new AbsAtomType(symbol.position, AtomTypeKind.VOID);
+            }
+            else {
+                dump("function_prototype' -> type ");
+                type = parseType();
+            }
+
+            return new AbsFunDef(new Position(startPos, type.position), functionName.lexeme, params, type, new AbsStmts(startPos, new LinkedList<>()));
+        }
+        Report.error(previous.position, "Syntax error on token \"" + previous.lexeme + "\", expected keyword \"fun\"");
+
+        return null;
+    }
+
 	private AbsEnumDef parseEnumDefinition() {
 		Position start = symbol.position;
 		String name = skip(new Symbol(TokenType.IDENTIFIER, "IDENTIFIER", null)).lexeme;
 		AbsType type = null;
-		
+
 		skip();
 		if (symbol.token == TokenType.COLON) {
 			skip();
 			type = parseType();
 		}
-		
+
 		if (symbol.token != TokenType.LBRACE)
 			Report.error(symbol.position, "Enum must begin with \"{\"");
-		
+
 		skip(new Symbol(TokenType.NEWLINE, "\n", null));
 		skip(new Symbol(TokenType.KW_CASE, "CASE", null));
-		
+
 		LinkedList<AbsDef> enumDefinitions = parseEnumMemberDefinitions();
 		if (symbol.token != TokenType.RBRACE)
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", expected \"}\"");
 		skip();
-		
+
 		Position end = enumDefinitions.getLast().position;
-		return new AbsEnumDef(new Position(start, end), name, enumDefinitions, 
+		return new AbsEnumDef(new Position(start, end), name, enumDefinitions,
 				(AbsAtomType) type);
 	}
-	
+
 	private LinkedList<AbsDef> parseEnumMemberDefinitions() {
 		LinkedList<AbsDef> definitions = new LinkedList<>();
-		
+
 		while (true) {
 			AbsDef definition = parseDefinition();
 			definitions.add(definition);
-			
+
 			if (symbol.token == TokenType.COMMA) {
 				while (symbol.token == TokenType.COMMA) {
 					skip();
@@ -671,7 +765,7 @@ public class SynAn {
 					definitions.add(parseEnumCaseDefinition());
 				}
 			}
-			
+
 			if (symbol.token == TokenType.NEWLINE) {
 				skip();
 				if (symbol.token == TokenType.RBRACE)
@@ -685,23 +779,23 @@ public class SynAn {
 
 		if (symbol.token != TokenType.RBRACE)
 			Report.error("todo");
-		
+
 		return definitions;
 	}
-	
+
 	private AbsEnumMemberDef parseEnumCaseDefinition() {
 		if (symbol.token == TokenType.KW_CASE)
 			skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
 		AbsVarNameExpr name = new AbsVarNameExpr(symbol.position, symbol.lexeme);
-		
+
 		skip();
 		if (symbol.token == TokenType.ASSIGN) {
 			skip();
-			
+
 			AbsExpr value = parseExpression();
 			if (!(value instanceof AbsAtomConstExpr))
 				Report.error(value.position, "Raw value for enum definition must be literal");
-			
+
 			Position definitionPos = new Position(name.position, value.position);
 			return new AbsEnumMemberDef(definitionPos, name, (AbsAtomConstExpr) value);
 		}
@@ -730,19 +824,19 @@ public class SynAn {
 
         return new AbsExtensionDef(new Position(symbol.position, defs.position), type.name, type, defs);
     }
-	
+
 	private AbsType parseType() {
 		AbsType type = parseChildType();
-		
+
 		if (symbol.token == TokenType.QMARK || symbol.token == TokenType.NOT) {
 		    boolean isForced = symbol.token == TokenType.NOT;
 
 			Position pos = new Position(type.position, symbol.position);
 			skip();
-			
+
 			return new AbsOptionalType(pos, type, isForced);
 		}
-		
+
 		return type;
 	}
 
@@ -800,7 +894,7 @@ public class SynAn {
 			Position start = symbol.position;
 			dump("type -> (parameters) -> type");
 			skip();
-			
+
 			Vector<AbsType> parameters = new Vector<>();
 			if (symbol.token != TokenType.RPARENT) {
 				while (true) {
@@ -815,9 +909,9 @@ public class SynAn {
 						"Syntax error, insert \")\" to complete function declaration");
 			skip(new Symbol(TokenType.ARROW, "->", null));
 			skip();
-			
+
 			type = parseType();
-			return new AbsFunType(new Position(start, type.position), 
+			return new AbsFunType(new Position(start, type.position),
 					parameters, type);
 		default:
 			Report.error(symbol.position, "Syntax error on token \""
@@ -1201,6 +1295,8 @@ public class SynAn {
             case KW_NULL:
                 break;
             case KW_CLASS:
+                break;
+            case KW_INTERFACE:
                 break;
             case KW_IN:
                 break;
@@ -1635,7 +1731,7 @@ public class SynAn {
 
 	private AbsExpr parsePostfixExpression_(AbsExpr e) {
 		Position symbolPos = symbol.position;
-		
+
 		switch (symbol.token) {
 		case AND:
 		case IOR:
@@ -1740,7 +1836,7 @@ public class SynAn {
 			skip();
 			if (symbol.token == TokenType.LPARENT) {
 				skip();
-				
+
 				if (symbol.token == TokenType.RPARENT) {
 					dump("atom_expression -> identifier ( )");
 					skip();
@@ -1760,7 +1856,7 @@ public class SynAn {
 				if (symbol.token != TokenType.RPARENT)
 					Report.error(symbol.position, "Expected ')'");
 				skip();
-				
+
 				return new AbsFunCall(new Position(current.position, absExprs.lastElement().position), current.lexeme, absExprs);
 			} else {
 				dump("atom_expression -> identifier");
@@ -1792,7 +1888,7 @@ public class SynAn {
 			Position start = symbol.position;
 			Symbol count = skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
 			skip();
-			
+
 			if (symbol.token != TokenType.KW_IN)
 				Report.error(previous.position, "Syntax error on token \""
 						+ previous.lexeme
@@ -1806,7 +1902,7 @@ public class SynAn {
 						+ "\", expected \"{\" after this token");
 			skip(new Symbol(TokenType.NEWLINE, "NEWLINE", null));
 			skip();
-			
+
 			AbsStmts s = parseStatements();
 
 			if (symbol.token != TokenType.RBRACE)
@@ -1867,7 +1963,7 @@ public class SynAn {
 		skip();
 		return new Condition(condition, s);
 	}
-	
+
 	private AbsIfStmt parseIf() {
 		if (symbol.token == TokenType.KW_IF) {
 			Position start = symbol.position;
@@ -1879,22 +1975,22 @@ public class SynAn {
 	}
 
 	private AbsIfStmt parseIf_(Position start, Condition condition) {
-		if (symbol.token == TokenType.NEWLINE) 
+		if (symbol.token == TokenType.NEWLINE)
 			skip();
-		
+
 		Vector<Condition> conditions = new Vector<>();
 		conditions.add(condition);
 		AbsStmts elseBody = null;
-		
+
 		while (true) {
 			if (symbol.token == TokenType.KW_ELSE) {
 				skip();
-				
+
 				if (symbol.token == TokenType.KW_IF) {
 					dump("if_expression' -> else if { statements }");
 					conditions.add(parseIfCondition());
-					
-					if (symbol.token == TokenType.NEWLINE) 
+
+					if (symbol.token == TokenType.NEWLINE)
 						skip();
 					continue;
 				}
@@ -1902,7 +1998,7 @@ public class SynAn {
 				if (symbol.token != TokenType.LBRACE)
 					Report.error(symbol.position, "Syntax error on token \""
 							+ previous.lexeme + "\", expected '{' after this token");
-				
+
 				dump("if_expression' -> else { statements }");
 
 				skip(new Symbol(TokenType.NEWLINE, "NEWLINE", null));
@@ -1914,33 +2010,33 @@ public class SynAn {
 			break;
 		}
 
-		Position lastPos = elseBody != null ? 
+		Position lastPos = elseBody != null ?
 				elseBody.position : conditions.lastElement().body.position;
-		return new AbsIfStmt(new Position(condition.cond.position, lastPos), 
+		return new AbsIfStmt(new Position(condition.cond.position, lastPos),
 				conditions, elseBody);
 	}
-	
+
 	private AbsSwitchStmt parseSwitch() {
 		if (symbol.token != TokenType.KW_SWITCH)
 			Report.error(symbol.position,
 					"Syntax error, expected keyword \"switch\"");
-		
+
 		Position start = symbol.position;
 		skip();
 
 		AbsExpr subjectExpr = parseExpression();
 		skip(new Symbol(TokenType.NEWLINE, "newline", null));
 		skip();
-		
+
 		if (symbol.token != TokenType.KW_CASE)
 			Report.error(symbol.position, "Syntax error, \"switch\" must be followed by at least one \"case\" statement");
-		
+
 		Vector<AbsCaseStmt> cases = new Vector<>();
 		AbsStmts defaultBody = null;
-		
+
 		while (symbol.token == TokenType.KW_CASE)
 			cases.add(parseCase());
-		
+
 		if (symbol.token == TokenType.KW_DEFAULT) {
 			skip(new Symbol(TokenType.COLON, ":", null));
 			skip(new Symbol(TokenType.NEWLINE, "newline", null));
@@ -1952,24 +2048,24 @@ public class SynAn {
 			Report.error(symbol.position,
 					"Syntax error, expected \"}\"");
 		skip();
-		
-		Position switchPos = new Position(start, 
+
+		Position switchPos = new Position(start,
 				defaultBody != null ? defaultBody.position : cases.lastElement().position);
-		
+
 		return new AbsSwitchStmt(switchPos, subjectExpr, cases, defaultBody);
 	}
-	
+
 	private AbsCaseStmt parseCase() {
 		if (symbol.token != TokenType.KW_CASE)
 			Report.error(symbol.position,
 					"Syntax error, expected keyword \"case\"");
-		
+
 		Position start = symbol.position;
 		skip();
-		
+
 		LinkedList<AbsExpr> expressions = new LinkedList<>();
 		expressions.add(parseExpression());
-		
+
 		// join conditions
 		while (symbol.token == TokenType.COMMA) {
 			skip();
@@ -1980,64 +2076,64 @@ public class SynAn {
 			Report.error(symbol.position,
 					"Syntax error, case expression must be followed by \":\"");
 		skip();
-		
+
 		if (symbol.token == TokenType.NEWLINE)
 			skip();
-		
+
 		if (symbol.token == TokenType.KW_CASE || symbol.token == TokenType.KW_DEFAULT)
 			Report.error(symbol.position, "Case should have at least one executable statement");
-		
+
 		AbsStmts body = parseStatements();
 		Position casePos = new Position(start, body.position);
-		
+
 		return new AbsCaseStmt(casePos, expressions, body);
 	}
-	
+
 	private AbsExpr parseBracket() {
 		dump("atom_expression -> []");
 
 		Position start = symbol.position;
 		skip();
-		
+
 		if (symbol.token == TokenType.RBRACKET) {
 			skip();
 			return new AbsListExpr(start, new Vector<AbsExpr>());
 		}
-		
+
 		AbsExpr e1 = parseExpression();
-		
+
 //		if (symbol.token == Token.KW_FOR) {
 //			dump("[] -> [ expression for identifier in expression ]");
 //			Vector<AbsStmt> stmt = new Vector<>();
 //			stmt.add(e1);
 //			AbsStmts s = new AbsStmts(new Position(start, e1.position), stmt);
-//			
+//
 //			if (symbol.token != Token.KW_FOR)
 //				Report.error(previous.position, "Syntax error on token \""
 //						+ previous.lexeme
 //						+ "\", expected keyword \"for\" after this token");
-//			
+//
 //			Symbol count = skip(new Symbol(Token.IDENTIFIER, "identifier", null));
 //			AbsVarNameExpr var = new AbsVarNameExpr(count.position, count.lexeme);
 //			skip();
-//			
+//
 //			if (symbol.token != Token.KW_IN)
 //				Report.error(previous.position, "Syntax error on token \""
 //						+ previous.lexeme
 //						+ "\", expected keyword \"in\" after this token");
 //			skip();
-//			
+//
 //			AbsExpr e2 = parseExpression();
-//			
+//
 //			if (symbol.token != Token.RBRACKET)
 //				Report.error(previous.position, "Syntax error on token \""
 //						+ previous.lexeme
 //						+ "\", expected \"]\" after this token");
 //			skip();
-//			
+//
 //			return new AbsForStmt(new Position(start, e2.position), var, e2, s);
 //		}
-		
+
 		/*else */if (symbol.token == TokenType.COMMA) {
 			dump("[] -> [expression, expressions']");
 			Vector<AbsExpr> elements = new Vector<>();
@@ -2051,7 +2147,7 @@ public class SynAn {
 						+ previous.lexeme
 						+ "\", expected \"]\" after this token");
 			skip();
-			return new AbsListExpr(new Position(elements.firstElement().position, 
+			return new AbsListExpr(new Position(elements.firstElement().position,
 					elements.lastElement().position), elements);
 		}
 		else if (symbol.token == TokenType.RBRACKET) {
@@ -2059,46 +2155,46 @@ public class SynAn {
 			Vector<AbsExpr> elements = new Vector<>();
 			elements.add(e1);
 			skip();
-			return new AbsListExpr(new Position(elements.firstElement().position, 
+			return new AbsListExpr(new Position(elements.firstElement().position,
 					elements.lastElement().position), elements);
 		}
-		
+
 		return null;
 	}
-	
-	
+
+
 	private AbsTupleExpr parseTupleExpression(boolean argumentTuple) {
 		Position start = symbol.position;
 		skip();
 
 		LinkedList<AbsExpr> expressions = parseTupleExpressions(argumentTuple);
-		
+
 		if (symbol.token != TokenType.RPARENT)
 			Report.error(symbol.position, "Expected ')'");
-		
+
 		Position tuplePos = new Position(start, symbol.position);
 		skip();
-		
+
 		return new AbsTupleExpr(tuplePos, expressions);
 	}
-	
+
 	private LinkedList<AbsExpr> parseTupleExpressions(boolean argumentTuple) {
 		int index = 0;
-		LinkedList<AbsExpr> expressions = new LinkedList<>(); 
-		
+		LinkedList<AbsExpr> expressions = new LinkedList<>();
+
 		while (true) {
 			AbsExpr e1 = parseExpression();
-			
+
 			if (symbol.token == TokenType.COLON) {
 				if (!(e1 instanceof AbsVarNameExpr))
 					Report.error(e1.position, "Expected identifier for tuple member name");
-				
+
 				String memberName = ((AbsVarNameExpr) e1).name;
-				
+
 				// TODO
 //				if (names.contains(memberName))
 //					Report.error(e1.position, "This tuple already contains member named \"" + memberName + "\"");
-				
+
 				skip();
 				AbsExpr e2 = parseExpression();
 				Position pos = new Position(e1.position, e2.position);
@@ -2114,7 +2210,7 @@ public class SynAn {
 
 				expressions.add(new AbsLabeledExpr(e1.position, e1, memberName));
 			}
-			
+
 			if (symbol.token == TokenType.RPARENT)
 				break;
 			if (symbol.token != TokenType.COMMA)
@@ -2122,10 +2218,10 @@ public class SynAn {
 			skip();
 			if (symbol.token == TokenType.NEWLINE)
 				skip();
-			
+
 			index++;
 		}
-		
+
 		return expressions;
 	}
 
@@ -2140,7 +2236,7 @@ public class SynAn {
 
 	/**
 	 * Get next symbol from lexan.
-	 * 
+	 *
 	 * @param expected
 	 *            symbol which we expect
 	 * @return next symbol
@@ -2155,7 +2251,7 @@ public class SynAn {
 
 	/**
 	 * Izpise produkcijo v datoteko z vmesnimi rezultati.
-	 * 
+	 *
 	 * @param production
 	 *            Produkcija, ki naj bo izpisana.
 	 */

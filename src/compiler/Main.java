@@ -132,7 +132,7 @@ public class Main {
 			if (execPhase.equals("ast")) break;
 			
 			// Semanticna analiza.
-			SemAn semAn = new SemAn(dumpPhases.contains("seman"));
+            Frames semAn = new Frames(dumpPhases.contains("seman"));
 			source.accept(new NameChecker());
 			source.accept(new TypeChecker());
 			semAn.dump(source);

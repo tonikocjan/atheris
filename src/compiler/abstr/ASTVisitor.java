@@ -79,5 +79,6 @@ public interface ASTVisitor {
 	public void visit(AbsOptionalType acceptor);
 	public void visit(AbsOptionalEvaluationExpr acceptor);
 	public void visit(AbsForceValueExpr acceptor);
-	void visit(AbsExtensionDef acceptor);
+    public void visit(AbsExtensionDef acceptor);
+    public void visit(AbsInterfaceDef absInterfaceDef);
 }
