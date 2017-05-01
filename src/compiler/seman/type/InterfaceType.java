@@ -4,7 +4,6 @@ import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsInterfaceDef;
 
-import java.util.Iterator;
 
 /**
  *
@@ -24,11 +23,11 @@ public class InterfaceType extends Type {
 
     @Override
     public boolean sameStructureAs(Type type) {
-        if (!type.isClassType()) {
+        if (!type.isObjectType()) {
             return false;
         }
 
-        ClassType classType = (ClassType) type;
+        ObjectType classType = (ObjectType) type;
         return classType.isConformingTo(this);
     }
 

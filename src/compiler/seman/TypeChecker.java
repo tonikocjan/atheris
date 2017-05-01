@@ -735,7 +735,7 @@ public class TypeChecker implements ASTVisitor {
             if (argType == null) return;
 
 			if (!(funType.getParType(i).sameStructureAs(argType))) {
-				Report.error(arg.position, "Cannot convert value of type \"" +
+				Report.error(arg.position, "Cannot assign value of type \"" +
                         argType.friendlyName() + "\" to type \"" + funType.getParType(i).friendlyName() + "\"");
 			}
 		}
@@ -1099,7 +1099,7 @@ public class TypeChecker implements ASTVisitor {
 					
 					if (!rawValueType.sameStructureAs(enumRawValueType))
 						Report.error(enumMemberDef.value.position, 
-								"Cannot convert value of type \"" + 
+								"Cannot assign value of type \"" +
 								rawValueType.toString() + "\" to type \"" + 
 								enumRawValueType.toString() + "\"");
 

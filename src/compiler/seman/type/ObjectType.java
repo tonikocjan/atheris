@@ -6,6 +6,7 @@ import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsVarDef;
 import compiler.abstr.tree.type.AbsType;
+import compiler.abstr.tree.type.AbsTypeName;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -187,6 +188,10 @@ public abstract class ObjectType extends Type {
         return offset;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int size() {
         int size = this.size;
@@ -198,6 +203,11 @@ public abstract class ObjectType extends Type {
         return size;
     }
 
+    /**
+     *
+     * @param name Member name
+     * @return
+     */
     @Override
     public boolean containsMember(String name) {
         // first check in base class
@@ -210,6 +220,11 @@ public abstract class ObjectType extends Type {
         return memberNames.contains(name);
     }
 
+    /**
+     *
+     * @param type Given type.
+     * @return
+     */
     @Override
     public boolean sameStructureAs(Type type) {
         if (!type.isObjectType())
@@ -218,6 +233,11 @@ public abstract class ObjectType extends Type {
         return descriptor == type.descriptor;
     }
 
+    /**
+     *
+     * @param type Given type
+     * @return
+     */
     @Override
     public boolean canCastTo(Type type) {
         if (!type.isObjectType() || base == null) {
@@ -243,6 +263,12 @@ public abstract class ObjectType extends Type {
         return findMemberForName(name, true);
     }
 
+    /**
+     *
+     * @param name
+     * @param fromBase
+     * @return
+     */
     public AbsDef findMemberForName(String name, boolean fromBase) {
         if (fromBase && base != null) {
             AbsDef member = base.findMemberForName(name);
@@ -280,6 +306,9 @@ public abstract class ObjectType extends Type {
         return classDefinition.name;
     }
 
+    /**
+     *
+     */
     public void debugPrint() {
         if (base != null) {
             base.debugPrint();
@@ -297,10 +326,37 @@ public abstract class ObjectType extends Type {
         }
     }
 
+    /**
+     *
+     * @param type
+     * @return
+     */
+    public boolean isConformingTo(InterfaceType type) {
+        if (base != null && base.isConformingTo(type)) {
+            return true;
+        }
+
+        for (AbsType conformance : classDefinition.conformances) {
+            if (conformance.getName().equals(type.friendlyName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * @return
+     */
     public Iterator<Type> getTypes() {
         return memberTypes.iterator();
     }
 
+    /**
+     *
+     * @return
+     */
     public Iterator<String> getNames() {
         return memberNames.iterator();
     }

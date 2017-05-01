@@ -149,18 +149,6 @@ public class ClassType extends ObjectType implements ReferenceType {
         };
     }
 
-    public boolean isConformingTo(InterfaceType type) {
-        if (base != null && ((ClassType) base).isConformingTo(type))
-            return true;
-
-        for (AbsType conformance : classDefinition.conformances) {
-            if (((AbsTypeName) conformance).name.equals(type.definition.getName()))
-                return true;
-        }
-
-        return false;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
