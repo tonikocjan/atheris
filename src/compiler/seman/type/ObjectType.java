@@ -5,6 +5,7 @@ import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsVarDef;
+import compiler.abstr.tree.type.AbsType;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -107,6 +108,20 @@ public abstract class ObjectType extends Type {
         memberTypes.add(memberType);
         classDefinition.definitions.definitions.add(definition);
 
+        return true;
+    }
+
+    /**
+     *
+     * @param conformance
+     * @return
+     */
+    public boolean addConformance(AbsType conformance) {
+        for (AbsType c : classDefinition.conformances) {
+            if (c.getName().equals(conformance.getName())) return false;
+        }
+
+        classDefinition.conformances.add(conformance);
         return true;
     }
 

@@ -507,8 +507,14 @@ public class Frames implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsImportDef acceptor) {
-		///
+	public void visit(AbsImportDef importDef) {
+        Report.dump(indent, "AbsImportDef " + importDef.position + ":");
+        {
+            Type typ = SymbDesc.getType(importDef);
+            if (typ != null)
+                Report.dump(indent + 2, "#typed as " + typ.toString());
+        }
+        indent += 2; importDef.imports.accept(this); indent -= 2;
 	}
 
 	@Override

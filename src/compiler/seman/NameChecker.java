@@ -458,6 +458,11 @@ public class NameChecker implements ASTVisitor {
     public void visit(AbsExtensionDef acceptor) {
 	    acceptor.extendingType.accept(this);
 
+        for (AbsType conformance: acceptor.conformances) {
+            conformance.accept(this);
+        }
+
+        SymbTable.newScope();
 	    for (AbsDef def : acceptor.definitions.definitions) {
             if (def instanceof AbsFunDef) {
                 if (!def.isStatic()) {
@@ -477,6 +482,7 @@ public class NameChecker implements ASTVisitor {
 
             def.accept(this);
         }
+        SymbTable.oldScope();
     }
 
     @Override

@@ -663,8 +663,29 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsDefs acceptor) {
-        for (AbsDef def : acceptor.definitions) {
-            def.accept(this);
+        if (isBaseNode) {
+            isBaseNode = false;
+
+            for (TraversalState state : TraversalState.values()) {
+                traversalState = state;
+
+                for (AbsDef s : acceptor.definitions) {
+                    s.accept(this);
+                }
+            }
+
+            for (AtomType atomType: Type.atomTypes) {
+                for (AbsType conformance : atomType.classDefinition.conformances) {
+                    if (!atomType.conformsTo((InterfaceType) SymbDesc.getType(conformance))) {
+                        Report.error(conformance.position, "Type \"" + atomType.friendlyName() + "\" does not conform to interface \"" + conformance.getName() + "\"");
+                    }
+                }
+            }
+        }
+        else {
+            for (AbsDef s : acceptor.definitions) {
+                s.accept(this);
+            }
         }
 	}
 
@@ -912,7 +933,7 @@ public class TypeChecker implements ASTVisitor {
             String tmp = Report.fileName;
             Report.fileName = importDef.getName();
 
-            new AbsStmts(importDef.imports.position, importDef.imports.definitions, false).accept(new TypeChecker());
+            importDef.imports.accept(new TypeChecker());
 
             Report.fileName = tmp;
         }
@@ -1204,6 +1225,10 @@ public class TypeChecker implements ASTVisitor {
 	    if (traversalState == TraversalState.extensions) {
             acceptor.extendingType.accept(this);
 
+            for (AbsType conformance: acceptor.conformances) {
+                conformance.accept(this);
+            }
+
             Type type = SymbDesc.getType(acceptor.extendingType);
             boolean isAtomType = false;
 
@@ -1243,6 +1268,12 @@ public class TypeChecker implements ASTVisitor {
                     if (!extendingType.addMember(def, memberName, memberType)) {
                         Report.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
                     }
+                }
+            }
+
+            for (AbsType conformance : acceptor.conformances) {
+                if (!extendingType.addConformance(conformance)) {
+                    Report.error(conformance.position, "Redundant conformance \"" + conformance.getName() + "\"");
                 }
             }
 

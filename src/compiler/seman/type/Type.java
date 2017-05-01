@@ -257,6 +257,8 @@ public abstract class Type {
     public final static AtomType voidType = new AtomType(AtomTypeKind.VOID);
     public final static AtomType nilType = new AtomType(AtomTypeKind.NIL);
 
+    public final static AtomType[] atomTypes = new AtomType[] { Type.intType, Type.charType, Type.doubleType, Type.stringType, Type.boolType, Type.voidType };
+
     public static AtomType atomType(AtomTypeKind kind) {
         switch (kind) {
             case CHR: return Type.charType;

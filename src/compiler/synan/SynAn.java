@@ -548,16 +548,9 @@ public class SynAn {
 		skip();
 
 		AbsType baseClass = null;
-		LinkedList<AbsType> conformances = new LinkedList<>();
 
-		// parse conformances
-        if (symbol.token == TokenType.COLON) {
-            do {
-                skip();
-                conformances.add(parseType());
-            }
-            while (symbol.token == TokenType.COMMA);
-        }
+        // parse conformances
+		LinkedList<AbsType> conformances = parseConformances();
 
         if (conformances.size() > 0) {
             baseClass = conformances.getFirst();
@@ -644,6 +637,20 @@ public class SynAn {
             Report.error(symbol.position, "Consecutive statements must be separated by a separator");
         }
 	}
+
+	private LinkedList<AbsType> parseConformances() {
+	    LinkedList<AbsType> conformances = new LinkedList<>();
+
+        if (symbol.token == TokenType.COLON) {
+            do {
+                skip();
+                conformances.add(parseType());
+            }
+            while (symbol.token == TokenType.COMMA);
+        }
+
+        return conformances;
+    }
 
 	private AbsInterfaceDef parseInterfaceDefinition() {
         Position start = symbol.position;
@@ -816,6 +823,8 @@ public class SynAn {
 
         AbsType type = parseChildType();
 
+        LinkedList<AbsType> conformances = parseConformances();
+
         if (symbol.token != TokenType.LBRACE) {
             Report.error(symbol.position, "Expected \"{\"");
         }
@@ -830,7 +839,7 @@ public class SynAn {
 
         skip();
 
-        return new AbsExtensionDef(new Position(symbol.position, defs.position), type.getName(), type, defs);
+        return new AbsExtensionDef(new Position(symbol.position, defs.position), type.getName(), type, defs, conformances);
     }
 
 	private AbsType parseType() {
