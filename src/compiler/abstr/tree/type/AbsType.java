@@ -37,4 +37,5 @@ public abstract class AbsType extends AbsTree {
 		super(pos);
 	}
 
+	public abstract String getName();
 }

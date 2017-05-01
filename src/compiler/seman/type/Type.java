@@ -19,9 +19,6 @@ package compiler.seman.type;
 
 import compiler.abstr.tree.AtomTypeKind;
 import compiler.abstr.tree.def.AbsDef;
-import jdk.internal.org.objectweb.asm.tree.analysis.Value;
-
-import java.util.HashMap;
 
 /**
  * Data type description.
@@ -93,7 +90,7 @@ public abstract class Type {
 	 * Check if this type is atom (builtin) type.
 	 * @return True if it is, otherwise false.
 	 */
-	public boolean isBuiltinType() {
+	public boolean isAtomType() {
 		return this instanceof AtomType;
 	}
 
@@ -190,7 +187,7 @@ public abstract class Type {
 	 * @return True if it is, otherwise false.
 	 */
 	public boolean isBuiltinIntType() {
-		return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.INT;
+		return isAtomType() && ((AtomType) this).type == AtomTypeKind.INT;
 	}
 
 	/**
@@ -198,7 +195,7 @@ public abstract class Type {
 	 * @return True if it is, otherwise false.
 	 */
 	public boolean isBuiltinCharType() {
-		return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.CHR;
+		return isAtomType() && ((AtomType) this).type == AtomTypeKind.CHR;
 	}
 
 	/**
@@ -206,7 +203,7 @@ public abstract class Type {
 	 * @return True if it is, otherwise false.
 	 */
 	public boolean isBuiltinDoubleType() {
-		return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.DOB;
+		return isAtomType() && ((AtomType) this).type == AtomTypeKind.DOB;
 	}
 
 	/**
@@ -214,7 +211,7 @@ public abstract class Type {
 	 * @return True if it is, otherwise false.
 	 */
 	public boolean isBuiltinStringType() {
-		return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.STR;
+		return isAtomType() && ((AtomType) this).type == AtomTypeKind.STR;
 	}
 
 	/**
@@ -222,7 +219,7 @@ public abstract class Type {
 	 * @return True if it is, otherwise false.
 	 */
 	public boolean isBuiltinBoolType() {
-		return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.LOG;
+		return isAtomType() && ((AtomType) this).type == AtomTypeKind.LOG;
 	}
 	
 	/**
@@ -230,7 +227,7 @@ public abstract class Type {
 	 * @return True if it is, otherwise false.
 	 */
 	public boolean isBuiltinNilType() {
-		return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.NIL;
+		return isAtomType() && ((AtomType) this).type == AtomTypeKind.NIL;
 	}
 
     /**
@@ -238,7 +235,7 @@ public abstract class Type {
      * @return True if it is, otherwise false.
      */
     public boolean isVoidType() {
-        return isBuiltinType() && ((AtomType) this).type == AtomTypeKind.VOID;
+        return isAtomType() && ((AtomType) this).type == AtomTypeKind.VOID;
     }
 
     /**
@@ -252,15 +249,15 @@ public abstract class Type {
 	public abstract String friendlyName();
 
 	/// Static members
-	public final static Type intType = new AtomType(AtomTypeKind.INT);
-	public final static Type charType = new AtomType(AtomTypeKind.CHR);
-	public final static Type doubleType = new AtomType(AtomTypeKind.DOB);
-	public final static Type stringType = new AtomType(AtomTypeKind.STR);
-	public final static Type boolType = new AtomType(AtomTypeKind.LOG);
-    public final static Type voidType = new AtomType(AtomTypeKind.VOID);
-    public final static Type nilType = new AtomType(AtomTypeKind.NIL);
+	public final static AtomType intType = new AtomType(AtomTypeKind.INT);
+	public final static AtomType charType = new AtomType(AtomTypeKind.CHR);
+	public final static AtomType doubleType = new AtomType(AtomTypeKind.DOB);
+	public final static AtomType stringType = new AtomType(AtomTypeKind.STR);
+	public final static AtomType boolType = new AtomType(AtomTypeKind.LOG);
+    public final static AtomType voidType = new AtomType(AtomTypeKind.VOID);
+    public final static AtomType nilType = new AtomType(AtomTypeKind.NIL);
 
-    public static Type atomType(AtomTypeKind kind) {
+    public static AtomType atomType(AtomTypeKind kind) {
         switch (kind) {
             case CHR: return Type.charType;
             case INT: return Type.intType;

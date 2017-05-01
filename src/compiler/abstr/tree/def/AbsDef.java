@@ -127,6 +127,14 @@ public abstract class AbsDef extends AbsStmt {
     }
 
     /**
+     *
+     * @param modifier
+     */
+    public void setModifier(Modifier modifier) {
+        this.modifiers.add(modifier);
+    }
+
+    /**
 	 * 
 	 * @return
 	 */

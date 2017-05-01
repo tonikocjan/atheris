@@ -29,21 +29,40 @@ public class AbsFunType extends AbsType {
 	
 	/** Return type */
 	public final AbsType returnType;
-	
+
+    /**
+     *
+     * @param pos
+     * @param parameters
+     * @param returnType
+     */
 	public AbsFunType(Position pos, Vector<AbsType> parameters, AbsType returnType) {
 		super(pos);
 		this.parameterTypes = parameters;
 		this.returnType = returnType;
 	}
-	
-	public int numPars() {
+
+    /**
+     *
+     * @return
+     */
+	public int parameterCount() {
 		return parameterTypes.size();
 	}
-	
+
+    /**
+     *
+     * @param t
+     * @return
+     */
 	public AbsType type(int t) {
 		return parameterTypes.elementAt(t);
 	}
-	
+
+    /**
+     *
+     * @return
+     */
 	public String toString() {
 		String str = "(";
 		for (AbsType p : parameterTypes) {
@@ -54,9 +73,21 @@ public class AbsFunType extends AbsType {
 		return str;
 	}
 
+    /**
+     *
+     * @param aSTVisitor
+     */
 	@Override
 	public void accept(ASTVisitor aSTVisitor) {
 		aSTVisitor.visit(this);
 	}
 
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String getName() {
+        return null;
+    }
 }

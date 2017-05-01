@@ -31,4 +31,8 @@ public class AbsOptionalType extends AbsType {
 		aSTVisitor.visit(this);
 	}
 
+    @Override
+    public String getName() {
+        return childType.getName();
+    }
 }

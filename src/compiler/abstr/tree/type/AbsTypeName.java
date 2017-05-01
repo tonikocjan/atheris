@@ -50,4 +50,8 @@ public class AbsTypeName extends AbsType {
 
     @Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
+    @Override
+    public String getName() {
+        return name;
+    }
 }

@@ -47,6 +47,26 @@ public class AbsClassDef extends AbsTypeDef {
 	/** Conforming interfaces. */
 	public final LinkedList<AbsType> conformances;
 
+    /**
+     *
+     * @param name
+     */
+	public AbsClassDef(String name) {
+	    super(new Position(0, 0), name);
+	    this.construstors = new LinkedList<>();
+	    this.conformances = new LinkedList<>();
+	    this.baseClass = null;
+	    this.definitions = new AbsDefs(position, new LinkedList<>());
+
+        AbsFunDef constructor = new AbsFunDef(position,
+                name,
+                new LinkedList<>(),
+                new AbsAtomType(position, AtomTypeKind.VOID),
+                new AbsStmts(position, new LinkedList<>()),
+                true);
+        constructor.setParentDefinition(this);
+        this.defaultConstructor = constructor;
+    }
 
     /**
      * Create new class definition.

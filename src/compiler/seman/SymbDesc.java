@@ -85,7 +85,7 @@ public class SymbDesc {
 	}
 
 	/** Tipizacija vozlisc drevesa. */
-	private static HashMap<AbsTree, Type> type = new HashMap<AbsTree, Type>();
+	private static HashMap<AbsTree, Type> type = new HashMap<>();
 
 	/**
 	 * Poveze vozlisce drevesa z opisom tipa.
@@ -114,6 +114,8 @@ public class SymbDesc {
 	public static void clean() {
 		scope.clear();
 		scope = null;
+		type.clear();
+		type = null;
 	}
 
 }

@@ -25,12 +25,7 @@ import java.util.Vector;
 import Utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
-import compiler.abstr.tree.AbsDefs;
-import compiler.abstr.tree.AbsExprs;
-import compiler.abstr.tree.AbsStmt;
-import compiler.abstr.tree.AbsStmts;
-import compiler.abstr.tree.AtomTypeKind;
-import compiler.abstr.tree.Condition;
+import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.*;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
@@ -337,8 +332,6 @@ public class TypeChecker implements ASTVisitor {
 			
 			// t1 and t2 are of same structure
 			if (t1.sameStructureAs(t2)) {
-//				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
-//				SymbDesc.setType(acceptor.expr1, t2);
 				SymbDesc.setType(acceptor, t1);
 				success = true;
 			}
@@ -373,36 +366,34 @@ public class TypeChecker implements ASTVisitor {
 		 * identifier.identifier
 		 */
 		if (oper == AbsBinExpr.DOT) {
+            String memberName = null;
+            if (acceptor.expr2 instanceof AbsVarNameExpr) {
+                memberName = ((AbsVarNameExpr) acceptor.expr2).name;
+            }
+            else if (acceptor.expr2 instanceof AbsFunCall) {
+                memberName = ((AbsFunCall) acceptor.expr2).getStringRepresentation();
+            }
+            else if (acceptor.expr2 instanceof AbsAtomConstExpr) {
+                memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
+            }
+            else if (acceptor.expr2 instanceof AbsBinExpr) {
+                Report.error(acceptor.position, "Not yet supported");
+            }
+
 			/**
 			 * Handle list.count
 			 */
 			// FIXME: - remove this in the future
 			if (t1.isArrayType()) {
-				String name = ((AbsVarNameExpr) acceptor.expr2).name;
-				if (!name.equals("count"))
-					Report.error("Lists have no attribute named \"" + name + "\"");
+				if (!memberName.equals("count"))
+                    Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" has no member named \"" + memberName + "\"");
 				SymbDesc.setType(acceptor, Type.intType);
 				return;
 			}
-			
-			String memberName = null;
-			if (acceptor.expr2 instanceof AbsVarNameExpr) {
-                memberName = ((AbsVarNameExpr) acceptor.expr2).name;
-            }
-			else if (acceptor.expr2 instanceof AbsFunCall) {
-                memberName = ((AbsFunCall) acceptor.expr2).getStringRepresentation();
-            }
-			else if (acceptor.expr2 instanceof AbsAtomConstExpr) {
-                memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
-            }
-			else if (acceptor.expr2 instanceof AbsBinExpr) {
-                Report.error(acceptor.position, "Not yet supported");
-            }
-
             if (t1.isOptionalType()) {
 			    Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" not unwrapped");
             }
-			
+
 			if (t1.isObjectType()) {
 			    if (acceptor.expr2 instanceof AbsFunCall) {
 			        AbsFunCall fnCall = (AbsFunCall) acceptor.expr2;
@@ -641,7 +632,7 @@ public class TypeChecker implements ASTVisitor {
 		 */
 		// FIXME
 		else if (t1.isBuiltinDoubleType() && t2.isBuiltinIntType()
-				|| t1.isBuiltinType() && t2.isBuiltinDoubleType()) {
+				|| t1.isAtomType() && t2.isBuiltinDoubleType()) {
 			// +, -, *, /, %
 			if (oper >= 8 && oper <= 12)
 				SymbDesc.setType(acceptor, Type.doubleType);
@@ -796,6 +787,27 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsTypeName acceptor) {
+        if (acceptor.name.equals("Int")) {
+            SymbDesc.setType(acceptor, Type.intType);
+            return;
+        }
+        if (acceptor.name.equals("Double")) {
+            SymbDesc.setType(acceptor, Type.doubleType);
+            return;
+        }
+        if (acceptor.name.equals("String")) {
+            SymbDesc.setType(acceptor, Type.stringType);
+            return;
+        }
+        if (acceptor.name.equals("Char")) {
+            SymbDesc.setType(acceptor, Type.charType);
+            return;
+        }
+        if (acceptor.name.equals("Void")) {
+            SymbDesc.setType(acceptor, Type.voidType);
+            return;
+        }
+
 		AbsDef definition = SymbDesc.getNameDef(acceptor);
 		
 		if (!(definition instanceof AbsTypeDef))
@@ -846,6 +858,27 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarNameExpr acceptor) {
+        if (acceptor.name.equals("Int")) {
+            SymbDesc.setType(acceptor, Type.intType.staticType);
+            return;
+        }
+        if (acceptor.name.equals("Double")) {
+            SymbDesc.setType(acceptor, Type.doubleType.staticType);
+            return;
+        }
+        if (acceptor.name.equals("String")) {
+            SymbDesc.setType(acceptor, Type.stringType.staticType);
+            return;
+        }
+        if (acceptor.name.equals("Char")) {
+            SymbDesc.setType(acceptor, Type.charType.staticType);
+            return;
+        }
+        if (acceptor.name.equals("Void")) {
+            SymbDesc.setType(acceptor, Type.voidType.staticType);
+            return;
+        }
+
         Type type = SymbDesc.getType(SymbDesc.getNameDef(acceptor));
 
         if (!assign && type.isOptionalType()) {
@@ -1172,6 +1205,14 @@ public class TypeChecker implements ASTVisitor {
             acceptor.extendingType.accept(this);
 
             Type type = SymbDesc.getType(acceptor.extendingType);
+            boolean isAtomType = false;
+
+            if (type.isAtomType()) {
+                AtomType atomType = (AtomType) type;
+                type = atomType.staticType;
+                isAtomType = true;
+            }
+
             SymbDesc.setType(acceptor, type);
 
             if (!type.isCanType() || !((CanType) type).childType.isObjectType()) {
@@ -1183,6 +1224,11 @@ public class TypeChecker implements ASTVisitor {
             resolveTypeOnly = true;
 
             for (AbsDef def : acceptor.definitions.definitions) {
+                if (isAtomType) {
+                    // atomic types methods are always final (not dynamic)
+                    def.setModifier(Modifier.isFinal);
+                }
+
                 def.accept(this);
 
                 String memberName = def.getName();

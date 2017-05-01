@@ -19,31 +19,41 @@ package compiler.seman.type;
 
 import compiler.*;
 import compiler.abstr.tree.AtomTypeKind;
+import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
+
+import java.util.LinkedList;
 
 /**
  * Built-in types.
  * 
  * @author toni
  */
-public class AtomType extends Type implements ValueType {
+public class AtomType extends ObjectType {
 
 	/**
 	 * Type kind.
 	 */
 	public final AtomTypeKind type;
 
+    /**
+     * Static parent type.
+     */
+    public final CanType staticType;
+
 	/**
 	 * Create new Atom type.
 	 * @param type Type kind.
 	 */
 	public AtomType(AtomTypeKind type) {
+	    super(new AbsClassDef(type.toString()), new LinkedList<>(), new LinkedList<>(), 0);
+	    this.staticType = new CanType(this);
 		this.type = type;
 	}
 
 	@Override
 	public boolean sameStructureAs(Type type) {
-		if (type.isBuiltinType()) {
+		if (type.isAtomType()) {
 		    return this.type == ((AtomType) type).type;
 		}
 
@@ -59,7 +69,7 @@ public class AtomType extends Type implements ValueType {
 		case VOID: return "Void";
 		case DOB: return "Double";
 		case CHR: return "Char";
-		case NIL: return "nil";
+		case NIL: return "Nil";
 		}
 		Report.error("Internal error :: compiler.seman.type.SemAtomType.toString()");
 		return "";
@@ -86,25 +96,14 @@ public class AtomType extends Type implements ValueType {
 
 	@Override
 	public boolean canCastTo(Type t) {
-		if (!t.isBuiltinType()) return false;
+		if (!t.isAtomType()) return false;
 		
 		// int can be casted to double
 		return t.isBuiltinDoubleType() && isBuiltinIntType();
 	}
 
 	@Override
-	public boolean containsMember(String name) {
-		return false;
-	}
-
-	@Override
 	public String friendlyName() {
 		return toString();
 	}
-
-	@Override
-	public AbsDef findMemberForName(String name) {
-		return null;
-	}
-	
 }

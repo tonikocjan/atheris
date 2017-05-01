@@ -34,5 +34,4 @@ public class Condition {
 		this.cond = cond;
 		this.body = body;
 	}
-	
 }

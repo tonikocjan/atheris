@@ -246,9 +246,9 @@ public class NameChecker implements ASTVisitor {
 	public void visit(AbsTypeName acceptor) {
 		AbsDef definition = SymbTable.fnd(acceptor.name);
 
-		if (definition == null)
-			Report.error(acceptor.position, "Type \"" + acceptor.name
-					+ "\" is undefined");
+		if (definition == null) {
+            Report.error(acceptor.position, "Type \"" + acceptor.name + "\" is undefined");
+        }
 
 		SymbDesc.setNameDef(acceptor, definition);
 	}
@@ -271,6 +271,12 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarNameExpr acceptor) {
+	    if (acceptor.name.equals("Int")) return;
+        if (acceptor.name.equals("Double")) return;
+        if (acceptor.name.equals("String")) return;
+        if (acceptor.name.equals("Char")) return;
+        if (acceptor.name.equals("Void")) return;
+
         if (SymbDesc.getNameDef(acceptor) != null) {
             return;
         }

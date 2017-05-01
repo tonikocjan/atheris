@@ -48,7 +48,19 @@ public class AbsListType extends AbsType {
 		this.count = count;
 		this.type = type;
 	}
-	
+
+    /**
+     *
+     * @param aSTVisitor
+     */
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String getName() {
+        return null;
+    }
 }

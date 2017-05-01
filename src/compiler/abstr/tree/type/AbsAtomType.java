@@ -45,26 +45,30 @@ public class AbsAtomType extends AbsType {
 	}
 	
 	public String toString() {
-		switch (type) {
-		case INT:
-			return "Int";
-		case DOB:
-			return "Double";
-		case CHR:
-			return "Char";
-		case VOID:
-			return "Void";
-		case STR:
-			return "String";
-        case LOG:
-            return "Bool";
-		case NIL:
-			return "Null";
-		default:
-			return null;
-		}
+        return getName();
 	}
 	
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
+    @Override
+    public String getName() {
+        switch (type) {
+            case INT:
+                return "Int";
+            case DOB:
+                return "Double";
+            case CHR:
+                return "Char";
+            case VOID:
+                return "Void";
+            case STR:
+                return "String";
+            case LOG:
+                return "Bool";
+            case NIL:
+                return "Null";
+            default:
+                return null;
+        }
+    }
 }
