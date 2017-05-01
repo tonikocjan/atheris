@@ -107,19 +107,22 @@ public class ImcCodeGen implements ASTVisitor {
         CanType type = (CanType) SymbDesc.getType(acceptor);
         FrmVirtualTableAccess virtualTableAccess = (FrmVirtualTableAccess) FrmDesc.getAccess(acceptor);
 
-        // create static instance (singleton)
-        ImcDataChunk staticInstance = new ImcDataChunk(virtualTableAccess.label, type.staticSize());
-        chunks.add(staticInstance);
+        Integer virtualTablePointer = null;
 
-	    Integer virtualTablePointer = null;
+        if (virtualTableAccess != null) {
+            // create static instance (singleton)
+            ImcDataChunk staticInstance = new ImcDataChunk(virtualTableAccess.label, type.staticSize());
+            chunks.add(staticInstance);
 
-	    if (type.childType.isClassType()) {
-            virtualTablePointer = virtualTableAccess.location;
+            if (type.childType.isClassType()) {
+                virtualTablePointer = virtualTableAccess.location;
 
-            chunks.add(virtualTableCount++, new ImcVirtualTableDataChunk(
-                    FrmLabel.newLabel(type.friendlyName()),
-                    virtualTableAccess.size,
-                    (ClassType) type.childType));
+                chunks.add(virtualTableCount++,
+                        new ImcVirtualTableDataChunk(
+                            FrmLabel.newLabel(type.friendlyName()),
+                            virtualTableAccess.size,
+                            (ClassType) type.childType));
+            }
         }
 
 		acceptor.definitions.accept(this);
@@ -127,7 +130,7 @@ public class ImcCodeGen implements ASTVisitor {
 		ObjectType objectType = (ObjectType) type.childType;
 		int size = objectType.size();
 
-        for (AbsFunDef constructor : acceptor.contrustors) {
+        for (AbsFunDef constructor : acceptor.construstors) {
             FrmFrame constructorFrame = FrmDesc.getFrame(constructor);
 
             frameStack.push(constructorFrame);

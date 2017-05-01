@@ -115,7 +115,7 @@ public class SemAn implements ASTVisitor {
 		indent += 2; classDef.definitions.accept(this); indent -= 2;
 		Report.dump(indent, "Constructors:");
 		indent += 2;
-		for (AbsFunDef c : classDef.contrustors) {
+		for (AbsFunDef c : classDef.construstors) {
 			c.accept(this);
 		}
 		indent -= 4;

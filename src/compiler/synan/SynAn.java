@@ -538,7 +538,13 @@ public class SynAn {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private AbsClassDef parseClassDefinition(boolean parseStructure) {
 		Position start = symbol.position;
-		String className = skip(new Symbol(TokenType.IDENTIFIER, "IDENTIFIER", null)).lexeme;
+		skip();
+
+		if (!symbol.isIdentifier()) {
+		    Report.error(symbol.position, "Expected identifier");
+        }
+
+		String className = symbol.lexeme;
 		skip();
 
 		AbsType baseClass = null;
@@ -803,7 +809,10 @@ public class SynAn {
 	}
 
 	private AbsExtensionDef parseExtensionDefinition() {
-        skip(new Symbol(TokenType.IDENTIFIER, "identifier", null));
+	    skip();
+        if (!symbol.isIdentifier()) {
+            Report.error(symbol.position, "Expected type name");
+        }
 
         AbsTypeName type = new AbsTypeName(symbol.position, symbol.lexeme);
         skip();
@@ -845,40 +854,47 @@ public class SynAn {
 
 		switch (symbol.token) {
 		case IDENTIFIER:
+            if (symbol.lexeme.equals("Bool")) {
+                dump("type -> logical");
+                skip();
+
+                return new AbsAtomType(s.position, AtomTypeKind.LOG);
+            }
+            if (symbol.lexeme.equals("Int")) {
+                dump("type -> integer");
+                skip();
+
+                return new AbsAtomType(s.position, AtomTypeKind.INT);
+            }
+            if (symbol.lexeme.equals("Double")) {
+                dump("type -> double");
+                skip();
+
+                return new AbsAtomType(s.position, AtomTypeKind.DOB);
+            }
+            if (symbol.lexeme.equals("String")) {
+                dump("type -> string");
+                skip();
+
+                return new AbsAtomType(s.position, AtomTypeKind.STR);
+            }
+            if (symbol.lexeme.equals("Char")) {
+                dump("type -> char");
+                skip();
+
+                return new AbsAtomType(s.position, AtomTypeKind.CHR);
+            }
+            if (symbol.lexeme.equals("Void")) {
+                dump("type -> void");
+                skip();
+
+                return new AbsAtomType(s.position, AtomTypeKind.VOID);
+            }
+
 			dump("type -> identifier");
 			skip();
 
 			return new AbsTypeName(s.position, s.lexeme);
-		case BOOL:
-			dump("type -> logical");
-			skip();
-
-			return new AbsAtomType(s.position, AtomTypeKind.LOG);
-		case INTEGER:
-			dump("type -> integer");
-			skip();
-
-			return new AbsAtomType(s.position, AtomTypeKind.INT);
-		case STRING:
-			dump("type -> string");
-			skip();
-
-			return new AbsAtomType(s.position, AtomTypeKind.STR);
-		case CHAR:
-			dump("type -> char");
-			skip();
-
-			return new AbsAtomType(s.position, AtomTypeKind.CHR);
-		case DOUBLE:
-			dump("type -> double");
-			skip();
-
-			return new AbsAtomType(s.position, AtomTypeKind.DOB);
-		case VOID:
-			dump("type -> void");
-			skip();
-
-			return new AbsAtomType(s.position, AtomTypeKind.VOID);
 		case LBRACKET:
 			skip();
 			dump("type -> [ type ]");
@@ -1210,39 +1226,7 @@ public class SynAn {
 			AbsExpr expr = parseCmpExpression();
 			return parseAndExpression_(new AbsBinExpr(new Position(e.position,
 					expr.position), AbsBinExpr.AND, e, expr));
-            case NOT:
-                break;
-            case EQU:
-                break;
-            case KW_IS:
-                break;
-            case KW_AS:
-                break;
-            case NEQ:
-                break;
-            case LTH:
-                break;
-            case GTH:
-                break;
-            case LEQ:
-                break;
-            case GEQ:
-                break;
-            case MUL:
-                break;
-            case DIV:
-                break;
-            case MOD:
-                break;
-            case ADD:
-                break;
-            case SUB:
-                break;
-            case LPARENT:
-                break;
-            case LBRACKET:
-                break;
-            case IOR:
+        case IOR:
 		case SEMIC:
 		case NEWLINE:
 		case COLON:
@@ -1258,69 +1242,49 @@ public class SynAn {
 		case EOF:
 			dump("logical_and_expression' -> e");
 			return e;
-            case DOT:
-                break;
-            case ARROW:
-                break;
-            case QMARK:
-                break;
-            case EMARK:
-                break;
-            case INTEGER:
-                break;
-            case STRING:
-                break;
-            case DOUBLE:
-                break;
-            case BOOL:
-                break;
-            case CHAR:
-                break;
-            case VOID:
-                break;
-            case KW_FUN:
-                break;
-            case KW_IF:
-                break;
-            case KW_VAR:
-                break;
-            case KW_WHILE:
-                break;
-            case KW_STRUCT:
-                break;
-            case KW_IMPORT:
-                break;
-            case KW_LET:
-                break;
-            case KW_NULL:
-                break;
-            case KW_CLASS:
-                break;
-            case KW_INTERFACE:
-                break;
-            case KW_IN:
-                break;
-            case KW_RETURN:
-                break;
-            case KW_PUBLIC:
-                break;
-            case KW_PRIVATE:
-                break;
-            case KW_CONTINUE:
-                break;
-            case KW_BREAK:
-                break;
-            case KW_SWITCH:
-                break;
-            case KW_CASE:
-                break;
-            case KW_DEFAULT:
-                break;
-            case KW_ENUM:
-                break;
-            case KW_INIT:
-                break;
-            default:
+        case NOT:
+        case EQU:
+        case KW_IS:
+        case KW_AS:
+        case NEQ:
+        case LTH:
+        case GTH:
+        case LEQ:
+        case GEQ:
+        case MUL:
+        case DIV:
+        case MOD:
+        case ADD:
+        case SUB:
+        case LPARENT:
+        case LBRACKET:
+        case DOT:
+        case ARROW:
+        case QMARK:
+        case EMARK:
+        case KW_FUN:
+        case KW_IF:
+        case KW_VAR:
+        case KW_WHILE:
+        case KW_STRUCT:
+        case KW_IMPORT:
+        case KW_LET:
+        case KW_NULL:
+        case KW_CLASS:
+        case KW_INTERFACE:
+        case KW_IN:
+        case KW_RETURN:
+        case KW_PUBLIC:
+        case KW_PRIVATE:
+        case KW_CONTINUE:
+        case KW_BREAK:
+        case KW_SWITCH:
+        case KW_CASE:
+        case KW_DEFAULT:
+        case KW_ENUM:
+        case KW_INIT:
+            break;
+        default:
 			Report.error(symbol.position, "Syntax error on token \""
 					+ symbol.lexeme + "\", delete this token");
 		}

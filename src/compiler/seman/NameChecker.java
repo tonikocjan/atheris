@@ -83,7 +83,7 @@ public class NameChecker implements ASTVisitor {
             conformance.accept(this);
         }
 
-        for (AbsFunDef constructor: acceptor.contrustors) {
+        for (AbsFunDef constructor: acceptor.construstors) {
             // add implicit self: classType parameter to constructors
             AbsParDef parDef = new AbsParDef(constructor.position, Constants.selfParameterIdentifier,
                     new AbsAtomType(constructor.position, AtomTypeKind.NIL));

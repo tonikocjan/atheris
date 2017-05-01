@@ -68,13 +68,13 @@ public enum TokenType {
 
 	/** Token type: question mark.  */ 							QMARK,
 	/** Token type: esclamation mark.  */ 						EMARK,
-	
-	/** Token type: tip integer.  */							INTEGER,
-	/** Token type: tip string.  */								STRING,
-	/** Token type: tip double.  */								DOUBLE,
-	/** Token type: tip bool.  */								BOOL,
-	/** Token type: tip char.  */								CHAR,
-	/** Token type: tip void.  */								VOID,
+
+//	/** Token type: tip integer.  */							INTEGER,
+//	/** Token type: tip string.  */								STRING,
+//	/** Token type: tip double.  */								DOUBLE,
+//	/** Token type: tip bool.  */								BOOL,
+//	/** Token type: tip char.  */								CHAR,
+//	/** Token type: tip void.  */								VOID,
 	
 	/** Token type: kljucna beseda else.  */					KW_ELSE,
 	/** Token type: kljucna beseda for.  */						KW_FOR,

@@ -78,13 +78,13 @@ public class Symbol {
 		String tokenName = "";
 		switch (token) {
 
-		case EOF       : tokenName = "EOF"       ; break;
+		case EOF          : tokenName = "EOF"       ; break;
 		
-		case IDENTIFIER: tokenName = "IDENTIFIER"; break;
+		case IDENTIFIER   : tokenName = "IDENTIFIER"; break;
 
-		case LOG_CONST : tokenName = "LOG_CONST" ; break;
-		case INT_CONST : tokenName = "INT_CONST" ; break;
-		case STR_CONST : tokenName = "STR_CONST" ; break;
+		case LOG_CONST    : tokenName = "LOG_CONST" ; break;
+		case INT_CONST    : tokenName = "INT_CONST" ; break;
+		case STR_CONST    : tokenName = "STR_CONST" ; break;
 		case CHAR_CONST   : tokenName = "CHAR_CONST" ; break;
 		case DOUBLE_CONST : tokenName = "DOUBLE_CONST" ; break;
 
@@ -120,17 +120,16 @@ public class Symbol {
 		
 		case KW_STRUCT : tokenName = "STRUCT"    ; break;
 		case KW_CLASS  : tokenName = "CLASS"     ; break;
-//		case KW_SELF   : tokenName = "SELF"      ; break;
-		case KW_NULL: tokenName = "NIL"       ; break;
+		case KW_NULL   : tokenName = "NIL"       ; break;
 		
 		case ASSIGN    : tokenName = "ASSIGN"    ; break;
 		
-		case BOOL	   : tokenName = "BOOLEAN"	 ; break;
-		case VOID	   : tokenName = "VOID" 	 ; break;
-		case INTEGER   : tokenName = "INTEGER"   ; break;
-		case STRING    : tokenName = "STRING"    ; break;
-		case CHAR      : tokenName = "CHAR"      ; break;
-		case DOUBLE    : tokenName = "DOUBLE"    ; break;
+//		case BOOL	   : tokenName = "BOOLEAN"	 ; break;
+//		case VOID	   : tokenName = "VOID" 	 ; break;
+//		case INTEGER   : tokenName = "INTEGER"   ; break;
+//		case STRING    : tokenName = "STRING"    ; break;
+//		case CHAR      : tokenName = "CHAR"      ; break;
+//		case DOUBLE    : tokenName = "DOUBLE"    ; break;
 		
 		case KW_ELSE   : tokenName = "ELSE"      ; break;
 		case KW_FOR    : tokenName = "FOR"       ; break;
@@ -140,7 +139,7 @@ public class Symbol {
 		case KW_LET    : tokenName = "LET"       ; break;
 		case KW_WHILE  : tokenName = "WHILE"     ; break;
 		
-		case KW_IMPORT : tokenName = "IMPORT"    ; break;
+		case KW_IMPORT   : tokenName = "IMPORT"    ; break;
 		
 		case NEWLINE   	 : tokenName = "NEWLINE"   ; break;
 		case KW_IN     	 : tokenName = "IN"   	 ; break;
@@ -149,20 +148,24 @@ public class Symbol {
 		case KW_PRIVATE	 : tokenName = "PRIVATE"   ; break;
 		case KW_BREAK	 : tokenName = "BREAK"   ; break;
 		case KW_CONTINUE : tokenName = "CONTINUE"   ; break;
-		case KW_SWITCH : tokenName = "SWITCH"   ; break;
-		case KW_CASE : tokenName = "CASE"   ; break;
-		case KW_DEFAULT : tokenName = "DEFAULT"   ; break;
-		case KW_ENUM : tokenName = "ENUM"   ; break;
-            case KW_AS: tokenName = "AS"; break;
-            case KW_INIT: tokenName = "INIT"; break;
-            case KW_EXTENSION: tokenName = "EXTENSION"; break;
-            case KW_IS: tokenName = "IS"; break;
-            case KW_OVERRIDE: tokenName = "OVERRIDE"; break;
+		case KW_SWITCH   : tokenName = "SWITCH"   ; break;
+		case KW_CASE     : tokenName = "CASE"   ; break;
+		case KW_DEFAULT  : tokenName = "DEFAULT"   ; break;
+		case KW_ENUM     : tokenName = "ENUM"   ; break;
+        case KW_AS       : tokenName = "AS"; break;
+        case KW_INIT     : tokenName = "INIT"; break;
+        case KW_EXTENSION   : tokenName = "EXTENSION"; break;
+        case KW_IS          : tokenName = "IS"; break;
+        case KW_OVERRIDE    : tokenName = "OVERRIDE"; break;
 		
 		default:
 			Report.error("Internal error: token=" + token + " in compiler.lexan.Symbol.toString().");
 		}
 		return tokenName + ":" + lexeme;
 	}
+
+	public boolean isIdentifier() {
+	    return token == TokenType.IDENTIFIER;
+    }
 
 }

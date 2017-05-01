@@ -74,7 +74,7 @@ public class InitializationChecker implements ASTVisitor {
 
 		acceptor.definitions.accept(this);
 
-		for (AbsFunDef constructor : acceptor.contrustors) {
+		for (AbsFunDef constructor : acceptor.construstors) {
             constructor.accept(this);
         }
 	}

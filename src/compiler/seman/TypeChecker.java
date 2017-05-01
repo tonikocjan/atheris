@@ -183,7 +183,7 @@ public class TypeChecker implements ASTVisitor {
                 }
             }
 
-            for (AbsFunDef c : acceptor.contrustors) {
+            for (AbsFunDef c : acceptor.construstors) {
                 c.accept(this);
             }
 
@@ -229,7 +229,7 @@ public class TypeChecker implements ASTVisitor {
                 baseClassDefaultConstructor = ((ClassType) baseClass.childType).classDefinition.defaultConstructor;
             }
 
-            // check if class type all methods in conforming interfaces
+            // check if class type implements all methods in conforming interfaces
             for (AbsType conformance : acceptor.conformances) {
                 InterfaceType interfaceType = (InterfaceType) SymbDesc.getType(conformance);
 
@@ -239,7 +239,7 @@ public class TypeChecker implements ASTVisitor {
             }
 
             // add implicit "self: classType" parameter to constructors
-            for (AbsFunDef constructor : acceptor.contrustors) {
+            for (AbsFunDef constructor : acceptor.construstors) {
                 AbsParDef selfParDef = constructor.getParameterForIndex(0);
                 selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
 
@@ -752,13 +752,14 @@ public class TypeChecker implements ASTVisitor {
 				if (stmt instanceof AbsReturnExpr) {
 					Type t = SymbDesc.getType(stmt);
 
-					if (!t.sameStructureAs(funType.resultType))
-						Report.error(stmt.position,
-								"Return type doesn't match, expected \""
-										+ funType.resultType.friendlyName()
-										+ "\", got \""
-										+ t.friendlyName()
-										+ "\" instead");
+					if (!t.sameStructureAs(funType.resultType)) {
+                        Report.error(stmt.position,
+                                "Return type doesn't match, expected \""
+                                        + funType.resultType.friendlyName()
+                                        + "\", got \""
+                                        + t.friendlyName()
+                                        + "\" instead");
+                    }
 				}
 			}
 		}

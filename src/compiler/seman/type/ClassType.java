@@ -19,7 +19,6 @@ package compiler.seman.type;
 
 import java.util.*;
 
-import compiler.Report;
 import compiler.abstr.tree.def.AbsClassDef;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;

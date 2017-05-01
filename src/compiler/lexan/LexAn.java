@@ -58,12 +58,12 @@ public class LexAn {
 	 */
 	private static final String[] keywords = new String[] 
 			{ 
-			"Int", "String", "Double", "Bool", "Char", "Void", "else", 
-			"for", "func", "if", "var", "while", "struct", "import", 
+			/*"Int", "String", "Double", "Bool", "Char", "Void", */
+			"else", "for", "func", "if", "var", "while", "struct", "import",
 			"let", "null", "class", "in", "return", "public",
 			"private", "continue", "break", "switch", "case", "default",
-			"enum", "init", "is", "override", "as", "extension", "final", "static",
-            "interface"
+			"enum", "init", "is", "override", "as", "extension", "final",
+            "static", "interface"
 			};
 
 	/**
@@ -108,9 +108,10 @@ public class LexAn {
 			 * Construct keyword map.
 			 */
 			keywordsMap = new HashMap<>();
-			for (int i = 0; i < keywords.length; i++)
-				keywordsMap.put(keywords[i],
-						TokenType.values()[i + TokenType.INTEGER.ordinal()]);
+			for (int i = 0; i < keywords.length; i++) {
+                keywordsMap.put(keywords[i],
+                        TokenType.values()[i + TokenType.KW_ELSE.ordinal()]);
+            }
 
 		} catch (FileNotFoundException e) {
 			Report.error(LanguageManager.localize("lexan_error_opening_file", sourceFileName));

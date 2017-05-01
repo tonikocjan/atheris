@@ -36,7 +36,7 @@ public class AbsClassDef extends AbsTypeDef {
 	public final AbsDefs definitions;
 	
 	/** Constructors (initializers) */
-	public final LinkedList<AbsFunDef> contrustors;
+	public final LinkedList<AbsFunDef> construstors;
 
 	/** Default constructor */
 	public final AbsFunDef defaultConstructor;
@@ -61,7 +61,7 @@ public class AbsClassDef extends AbsTypeDef {
     public AbsClassDef(String name, Position pos, AbsType baseClass, LinkedList<AbsType> conformances, LinkedList<AbsDef> definitions,
                        LinkedList<AbsStmt> defaultConstructor, LinkedList<AbsFunDef> constructors) {
         super(pos, name);
-        this.contrustors = constructors;
+        this.construstors = constructors;
         this.definitions = new AbsDefs(position, definitions);
         this.baseClass = baseClass;
         this.conformances = conformances;
@@ -98,7 +98,7 @@ public class AbsClassDef extends AbsTypeDef {
         }
 
         if (!hasDefaultConstructor) {
-            contrustors.add(constructor);
+            constructors.add(constructor);
         }
     }
 
@@ -112,7 +112,7 @@ public class AbsClassDef extends AbsTypeDef {
      */
 	public AbsClassDef(String name, Position pos, AbsType baseClass, LinkedList<AbsDef> definitions,
                        LinkedList<AbsStmt> defaultConstructor, LinkedList<AbsFunDef> constructors) {
-        this(name, pos, baseClass, null, definitions, defaultConstructor, constructors);
+        this(name, pos, baseClass, new LinkedList<>(), definitions, defaultConstructor, constructors);
 	}
 
     /**

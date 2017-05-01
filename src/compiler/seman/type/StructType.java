@@ -10,10 +10,20 @@ import java.util.LinkedList;
  */
 public class StructType extends ObjectType implements ValueType {
 
+    /**
+     *
+     * @param definition
+     * @param names
+     * @param types
+     */
     public StructType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types) {
         super(definition, names, types, null, 0);
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

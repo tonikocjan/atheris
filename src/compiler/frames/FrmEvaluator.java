@@ -97,7 +97,7 @@ public class FrmEvaluator implements ASTVisitor {
 
 		acceptor.definitions.accept(this);
 
-		for (AbsFunDef c : acceptor.contrustors) {
+		for (AbsFunDef c : acceptor.construstors) {
 			c.accept(this);
 		}
 		
