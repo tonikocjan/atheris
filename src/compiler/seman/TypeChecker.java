@@ -23,7 +23,6 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 import Utils.Constants;
-import compiler.Position;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;
@@ -62,11 +61,17 @@ import managers.LanguageManager;
  */
 public class TypeChecker implements ASTVisitor {
 
+    /**
+     * Traversal states.
+     */
 	private enum TraversalState {
 		extensions, normal
 	}
 
-	private boolean isBaseNode = true;
+    /**
+     * True if AST node is root node.
+     */
+	private boolean isRootNode = true;
 
 	/**
 	 * Current state of traversal
@@ -670,8 +675,8 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsDefs acceptor) {
-        if (isBaseNode) {
-            isBaseNode = false;
+        if (isRootNode) {
+            isRootNode = false;
 
             for (TraversalState state : TraversalState.values()) {
                 traversalState = state;
@@ -948,8 +953,8 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsStmts stmts) {
-	    if (isBaseNode) {
-	        isBaseNode = false;
+	    if (isRootNode) {
+	        isRootNode = false;
 
             for (TraversalState state : TraversalState.values()) {
                 traversalState = state;
