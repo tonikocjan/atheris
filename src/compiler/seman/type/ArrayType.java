@@ -50,8 +50,9 @@ public class ArrayType extends Type implements ReferenceType {
 	public boolean sameStructureAs(Type type) {
 		if (type.isArrayType()) {
 			ArrayType listType = (ArrayType) type;
-			return (listType.type.sameStructureAs(this.type));
+			return sameStructureAs(listType.type);
 		}
+
 		return false;
 	}
 
@@ -77,7 +78,7 @@ public class ArrayType extends Type implements ReferenceType {
 
 	@Override
 	public String friendlyName() {
-		return type.toString();
+		return "[" + type.friendlyName() + "]";
 	}
 
 	@Override

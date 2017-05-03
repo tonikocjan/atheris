@@ -256,6 +256,7 @@ public abstract class Type {
 	public final static AtomType boolType = new AtomType(AtomTypeKind.LOG);
     public final static AtomType voidType = new AtomType(AtomTypeKind.VOID);
     public final static AtomType nilType = new AtomType(AtomTypeKind.NIL);
+    public static InterfaceType anyType;
 
     public final static AtomType[] atomTypes = new AtomType[] { Type.intType, Type.charType, Type.doubleType, Type.stringType, Type.boolType, Type.voidType };
 

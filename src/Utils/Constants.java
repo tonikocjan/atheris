@@ -10,5 +10,7 @@ public class Constants {
 
     public static final String ENTRY_POINT = "_main";
 
+    public static final String any = "Any";
+
     public static final int Byte = 4;
 }

@@ -1,5 +1,6 @@
 package compiler.seman.type;
 
+import Utils.Constants;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsInterfaceDef;
@@ -23,6 +24,11 @@ public class InterfaceType extends Type {
 
     @Override
     public boolean sameStructureAs(Type type) {
+        // any type can be assigned to Any
+        if (definition.getName().equals(Constants.any)) {
+            return true;
+        }
+
         if (!type.isObjectType()) {
             return false;
         }

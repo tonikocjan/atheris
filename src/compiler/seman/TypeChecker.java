@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 import Utils.Constants;
+import compiler.Position;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;
@@ -977,17 +978,31 @@ public class TypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsListExpr absListExpr) {
 		Vector<Type> vec = new Vector<>();
+
+		Type first = null;
+		boolean typesMatch = true;
+
 		for (AbsExpr e : absListExpr.expressions) {
 			e.accept(this);
+
 			Type t = SymbDesc.getType(e);
 
-			if (!vec.isEmpty() && !vec.firstElement().sameStructureAs(t))
-				Report.error(e.position, "Error, invalid expression type");
+			if (first == null) {
+			    first = t;
+            }
+			else if (!t.sameStructureAs(first)) {
+			    typesMatch = false;
+            }
 
 			vec.add(SymbDesc.getType(e));
 		}
 
-		SymbDesc.setType(absListExpr, new ArrayType(vec.firstElement(), vec.size()));
+		// if types don't match, cast to [Any]
+        if (!typesMatch) {
+		    first = Type.anyType;
+        }
+
+		SymbDesc.setType(absListExpr, new ArrayType(first, vec.size()));
 	}
 
 	@Override
@@ -999,8 +1014,7 @@ public class TypeChecker implements ASTVisitor {
 		}
 		funType.returnType.accept(this);
 		
-		SymbDesc.setType(funType, new FunctionType(parameters, 
-				SymbDesc.getType(funType.returnType), null));
+		SymbDesc.setType(funType, new FunctionType(parameters, SymbDesc.getType(funType.returnType), null));
 	}
 
 	@Override
@@ -1034,8 +1048,10 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsCaseStmt acceptor) {
-		for (AbsExpr e : acceptor.exprs)
-			e.accept(this);
+		for (AbsExpr e : acceptor.exprs) {
+            e.accept(this);
+        }
+
 		SymbTable.newScope();
 		acceptor.body.accept(this);
 		SymbTable.oldScope();
@@ -1300,6 +1316,12 @@ public class TypeChecker implements ASTVisitor {
     @Override
     public void visit(AbsInterfaceDef acceptor) {
         acceptor.definitions.accept(this);
-        SymbDesc.setType(acceptor, new InterfaceType(acceptor));
+
+        InterfaceType type = new InterfaceType(acceptor);
+        SymbDesc.setType(acceptor, type);
+
+        if (acceptor.getName().equals(Constants.any)) {
+            Type.anyType = type;
+        }
     }
 }
