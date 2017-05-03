@@ -50,7 +50,7 @@ public class ArrayType extends Type implements ReferenceType {
 	public boolean sameStructureAs(Type type) {
 		if (type.isArrayType()) {
 			ArrayType listType = (ArrayType) type;
-			return sameStructureAs(listType.type);
+			return this.type.sameStructureAs(listType.type);
 		}
 
 		return false;
@@ -67,8 +67,13 @@ public class ArrayType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public boolean canCastTo(Type t) {
-		return false;
+	public boolean canCastTo(Type type) {
+        if (type.isArrayType()) {
+            ArrayType listType = (ArrayType) type;
+            return this.type.canCastTo(listType.type);
+        }
+
+        return false;
 	}
 
 	@Override

@@ -88,8 +88,13 @@ public class TypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
-		SymbDesc.setType(acceptor, new ArrayType(SymbDesc.getType(acceptor.type), 
-				acceptor.count));
+
+		Type type = SymbDesc.getType(acceptor.type);
+		if (type.isCanType()) {
+		    type = ((CanType) type).childType;
+        }
+
+		SymbDesc.setType(acceptor, new ArrayType(type, acceptor.count));
 	}
 
 	@Override
@@ -354,10 +359,11 @@ public class TypeChecker implements ASTVisitor {
 				success = true;
 			}
 			
-			if (!success)
-				Report.error(acceptor.position, 
-						LanguageManager.localize("type_error_cannot_convert_type",
+			if (!success) {
+                Report.error(acceptor.position,
+                        LanguageManager.localize("type_error_cannot_convert_type",
                                 t2.friendlyName(), t1.friendlyName()));
+            }
 
 			assign = false;
 			return;
@@ -979,7 +985,7 @@ public class TypeChecker implements ASTVisitor {
 	public void visit(AbsListExpr absListExpr) {
 		Vector<Type> vec = new Vector<>();
 
-		Type first = null;
+		Type base = null;
 		boolean typesMatch = true;
 
 		for (AbsExpr e : absListExpr.expressions) {
@@ -987,11 +993,16 @@ public class TypeChecker implements ASTVisitor {
 
 			Type t = SymbDesc.getType(e);
 
-			if (first == null) {
-			    first = t;
+			if (base == null) {
+			    base = t;
             }
-			else if (!t.sameStructureAs(first)) {
-			    typesMatch = false;
+			else if (!t.sameStructureAs(base) && !t.canCastTo(base)) {
+			    if (base.canCastTo(t)) {
+                    base = t;
+                }
+                else {
+                    typesMatch = false;
+                }
             }
 
 			vec.add(SymbDesc.getType(e));
@@ -999,10 +1010,10 @@ public class TypeChecker implements ASTVisitor {
 
 		// if types don't match, cast to [Any]
         if (!typesMatch) {
-		    first = Type.anyType;
+		    base = Type.anyType;
         }
 
-		SymbDesc.setType(absListExpr, new ArrayType(first, vec.size()));
+		SymbDesc.setType(absListExpr, new ArrayType(base, vec.size()));
 	}
 
 	@Override

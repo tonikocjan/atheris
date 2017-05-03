@@ -227,10 +227,8 @@ public abstract class ObjectType extends Type {
      */
     @Override
     public boolean sameStructureAs(Type type) {
-        if (!type.isObjectType())
-            return false;
-
-        return descriptor == type.descriptor;
+        // nominal types
+        return type.friendlyName().equals(friendlyName());
     }
 
     /**
