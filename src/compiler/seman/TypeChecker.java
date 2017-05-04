@@ -17,10 +17,7 @@
 
 package compiler.seman;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Vector;
+import java.util.*;
 
 import Utils.Constants;
 import compiler.Report;
@@ -82,6 +79,11 @@ public class TypeChecker implements ASTVisitor {
      * True if assigning to variable, otherwise false.
 	 */
 	private boolean assign = false;
+
+    /**
+     *
+     */
+    private Stack<Type> lhsTypes = new Stack<>();
 
     /**
      *
@@ -297,14 +299,18 @@ public class TypeChecker implements ASTVisitor {
 	    assign = acceptor.oper == AbsBinExpr.ASSIGN;
 
 		acceptor.expr1.accept(this);
+        Type lhs = SymbDesc.getType(acceptor.expr1);
+
+		lhsTypes.push(lhs);
 		
 		if (acceptor.oper != AbsBinExpr.DOT)
 			acceptor.expr2.accept(this);
 
+        lhsTypes.pop();
+
         assign = false;
 
-		Type t1 = SymbDesc.getType(acceptor.expr1);
-		Type t2 = SymbDesc.getType(acceptor.expr2);
+		Type rhs = SymbDesc.getType(acceptor.expr2);
 
 		int oper = acceptor.oper;
 
@@ -312,72 +318,81 @@ public class TypeChecker implements ASTVisitor {
 		 * expr1[expr2]
 		 */
 		if (oper == AbsBinExpr.ARR) {
-			if (!t2.isBuiltinIntType())
+			if (!rhs.isBuiltinIntType())
 				Report.error(acceptor.expr2.position,
 						LanguageManager.localize("type_error_expected_int_for_subscript"));
 			/**
 			 * expr1 is of type ARR(n, t)
 			 */
-			if (t1.isArrayType()) {
-				SymbDesc.setType(acceptor, ((ArrayType) t1).type);
-			} else
-				Report.error(acceptor.expr1.position,
-						LanguageManager.localize("type_error_type_has_no_subscripts", 
-								t1.toString()));
-			return;
+			if (lhs.isArrayType()) {
+				SymbDesc.setType(acceptor, ((ArrayType) lhs).type);
+			}
+			else {
+                Report.error(acceptor.expr1.position,
+                        LanguageManager.localize("type_error_type_has_no_subscripts",
+                                lhs.toString()));
+            }
 		}
 
 		/**
 		 * expr1 = expr2
 		 */
-		if (oper == AbsBinExpr.ASSIGN) {
+		else if (oper == AbsBinExpr.ASSIGN) {
 		    boolean success = false;
-			
-			// type inference: if lhs doesn't have type, assign rhs type
-			if (t1 == null) {
-                SymbDesc.setType(acceptor, t2);
-				SymbDesc.setType(acceptor.expr1, t2);
-				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), t2);
-				return;
+
+            if (rhs.isArrayType()) {
+                System.out.println();
+            }
+
+            // type inference: if lhs doesn't have type, assign rhs type
+			if (lhs == null) {
+                SymbDesc.setType(acceptor, rhs);
+				SymbDesc.setType(acceptor.expr1, rhs);
+				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), rhs);
+
+				if (rhs.isArrayType() && ((ArrayType) rhs).type.sameStructureAs(Type.anyType)) {
+				    Report.warning(acceptor.expr2.position, "Implicitly inferred Any type");
+                }
+
+				success = true;
 			}
 			
 			// t1 and t2 are of same structure
-			if (t1.sameStructureAs(t2)) {
-				SymbDesc.setType(acceptor, t1);
+			else if (lhs.sameStructureAs(rhs)) {
+				SymbDesc.setType(acceptor, lhs);
 				success = true;
 			}
 			// t2 can be casted to t1
-			else if (t2.canCastTo(t1)) {
-				SymbDesc.setType(acceptor, t1);
-				SymbDesc.setType(acceptor.expr2, t2);
+			else if (rhs.canCastTo(lhs)) {
+				SymbDesc.setType(acceptor, lhs);
+				SymbDesc.setType(acceptor.expr2, rhs);
 				success = true;
 			}
 			// nil can be assigned to any pointer type
-			else if (t2.isBuiltinNilType() && t1.isReferenceType()) {
-				SymbDesc.setType(acceptor.expr2, t1);
-				SymbDesc.setType(acceptor, t1);
+			else if (rhs.isBuiltinNilType() && lhs.isReferenceType()) {
+				SymbDesc.setType(acceptor.expr2, lhs);
+				SymbDesc.setType(acceptor, lhs);
 				success = true;
 			}
 			// optionals
-			else if (t1.isOptionalType() && ((OptionalType) t1).childType.sameStructureAs(t2)) {
-				SymbDesc.setType(acceptor, t1);
+			else if (lhs.isOptionalType() && ((OptionalType) lhs).childType.sameStructureAs(rhs)) {
+				SymbDesc.setType(acceptor, lhs);
 				success = true;
 			}
 			
 			if (!success) {
                 Report.error(acceptor.position,
                         LanguageManager.localize("type_error_cannot_convert_type",
-                                t2.friendlyName(), t1.friendlyName()));
+                                rhs.friendlyName(), lhs.friendlyName()));
             }
 
 			assign = false;
-			return;
 		}
 
 		/**
 		 * identifier.identifier
 		 */
-		if (oper == AbsBinExpr.DOT) {
+		else if (oper == AbsBinExpr.DOT) {
             String memberName = null;
             if (acceptor.expr2 instanceof AbsVarNameExpr) {
                 memberName = ((AbsVarNameExpr) acceptor.expr2).name;
@@ -396,17 +411,17 @@ public class TypeChecker implements ASTVisitor {
 			 * Handle list.count
 			 */
 			// FIXME: - remove this in the future
-			if (t1.isArrayType()) {
+			if (lhs.isArrayType()) {
 				if (!memberName.equals("count"))
-                    Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    Report.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
 				SymbDesc.setType(acceptor, Type.intType);
 				return;
 			}
-            if (t1.isOptionalType()) {
-			    Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" not unwrapped");
+            if (lhs.isOptionalType()) {
+			    Report.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" not unwrapped");
             }
 
-			if (t1.isObjectType()) {
+			if (lhs.isObjectType()) {
 			    if (acceptor.expr2 instanceof AbsFunCall) {
 			        AbsFunCall fnCall = (AbsFunCall) acceptor.expr2;
 
@@ -417,15 +432,15 @@ public class TypeChecker implements ASTVisitor {
                     memberName = fnCall.getStringRepresentation();
                 }
 
-				if (!t1.containsMember(memberName)) {
+				if (!lhs.containsMember(memberName)) {
                     Report.error(acceptor.expr2.position,
                             LanguageManager.localize(
                                     "type_error_member_not_found",
-                                    t1.friendlyName(),
+                                    lhs.friendlyName(),
                                     memberName));
                 }
 				
-				AbsDef definition = t1.findMemberForName(memberName);
+				AbsDef definition = lhs.findMemberForName(memberName);
 				AbsDef objectDefinition = SymbDesc.getNameDef(acceptor.expr1);
 
 				// check for access control (if object's name is not "self")
@@ -445,71 +460,67 @@ public class TypeChecker implements ASTVisitor {
                     }
                 }
 	
-				Type memberType = ((ObjectType) t1).getMemberTypeForName(memberName);
+				Type memberType = ((ObjectType) lhs).getMemberTypeForName(memberName);
 				Type acceptorType = memberType.isFunctionType() ? ((FunctionType) memberType).resultType : memberType;
 
                 SymbDesc.setType(acceptor.expr2, memberType);
 				SymbDesc.setType(acceptor, acceptorType);
-
-				return;
 			}
 			
-			if (t1.isEnumType()) {
-				EnumType enumType = (EnumType) t1;
-				
-				if (enumType.selectedMember == null) {
-					if (!enumType.containsMember(memberName))
-						Report.error(acceptor.expr2.position, 
-								LanguageManager.localize("type_error_member_not_found", 
-										enumType.friendlyName(), 
-										memberName));
-					
-					AbsDef definition = enumType.findMemberForName(memberName);
-					
-					if (definition.isPrivate())
-						Report.error(acceptor.expr2.position,
+			else if (lhs.isEnumType()) {
+                EnumType enumType = (EnumType) lhs;
+
+                if (enumType.selectedMember == null) {
+                    if (!enumType.containsMember(memberName))
+                        Report.error(acceptor.expr2.position,
+                                LanguageManager.localize("type_error_member_not_found",
+                                        enumType.friendlyName(),
+                                        memberName));
+
+                    AbsDef definition = enumType.findMemberForName(memberName);
+
+                    if (definition.isPrivate())
+                        Report.error(acceptor.expr2.position,
                                 "Member '" + memberName + "' is inaccessible due to it's private protection level");
-					
-					SymbDesc.setNameDef(acceptor.expr2, definition);
-					SymbDesc.setNameDef(acceptor, definition);
-		
-					EnumType memberType = new EnumType(enumType, memberName);
-					
-					SymbDesc.setType(acceptor.expr2, memberType);
-					SymbDesc.setType(acceptor, memberType);
-				}
-				else {
-					ClassType memberType = enumType.getMemberTypeForName(enumType.selectedMember);
-					
-					if (!memberType.containsMember(memberName))
-						Report.error(acceptor.expr2.position, 
-								LanguageManager.localize("type_error_member_not_found", 
-										t1.toString(), 
-										memberName));
-					
-					Type memberRawValueType = memberType.getMemberTypeForName(memberName);
 
-					SymbDesc.setType(acceptor.expr2, memberRawValueType);
-					SymbDesc.setType(acceptor, memberRawValueType);
-				}
-				
-				return;
-			}
+                    SymbDesc.setNameDef(acceptor.expr2, definition);
+                    SymbDesc.setNameDef(acceptor, definition);
+
+                    EnumType memberType = new EnumType(enumType, memberName);
+
+                    SymbDesc.setType(acceptor.expr2, memberType);
+                    SymbDesc.setType(acceptor, memberType);
+                }
+                else {
+                    ClassType memberType = enumType.getMemberTypeForName(enumType.selectedMember);
+
+                    if (!memberType.containsMember(memberName))
+                        Report.error(acceptor.expr2.position,
+                                LanguageManager.localize("type_error_member_not_found",
+                                        lhs.toString(),
+                                        memberName));
+
+                    Type memberRawValueType = memberType.getMemberTypeForName(memberName);
+
+                    SymbDesc.setType(acceptor.expr2, memberRawValueType);
+                    SymbDesc.setType(acceptor, memberRawValueType);
+                }
+            }
 			
-			if (t1.isTupleType()) {
-				TupleType tupleType = (TupleType) t1;
+			else if (lhs.isTupleType()) {
+				TupleType tupleType = (TupleType) lhs;
 
 				SymbDesc.setType(acceptor.expr2, tupleType.typeForName(memberName));
 				SymbDesc.setType(acceptor, tupleType.typeForName(memberName));
 			}
 
-			if (t1.isCanType()) {
-			    CanType canType = (CanType) t1;
+			else if (lhs.isCanType()) {
+			    CanType canType = (CanType) lhs;
 
 			    if (!canType.containsStaticMember(memberName)) {
                     Report.error(acceptor.expr2.position,
                             LanguageManager.localize("type_error_member_not_found",
-                                    t1.friendlyName(),
+                                    lhs.friendlyName(),
                                     memberName));
                 }
 
@@ -534,11 +545,10 @@ public class TypeChecker implements ASTVisitor {
 
                 SymbDesc.setType(acceptor.expr2, memberType);
                 SymbDesc.setType(acceptor, acceptorType);
-                return;
             }
 
-            if (t1.isInterfaceType()) {
-			    InterfaceType interfaceType = (InterfaceType) t1;
+            else if (lhs.isInterfaceType()) {
+			    InterfaceType interfaceType = (InterfaceType) lhs;
 
                 if (acceptor.expr2 instanceof AbsFunCall) {
                     AbsFunCall fnCall = (AbsFunCall) acceptor.expr2;
@@ -552,124 +562,132 @@ public class TypeChecker implements ASTVisitor {
                     }
                 }
                 else {
-                    Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    Report.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
                 AbsDef def = interfaceType.findMemberForName(memberName);
 			    if (def == null) {
-                    Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    Report.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
 
                 FunctionType functionType = (FunctionType) SymbDesc.getType(def);
 
                 SymbDesc.setNameDef(acceptor.expr2, def);
                 SymbDesc.setType(acceptor.expr2, functionType);
-                return;
             }
-
-            Report.error(acceptor.position, "Value of type \"" + t1.friendlyName() + "\" has no member named \"" + memberName + "\"");
-			
-			return;
+            else {
+                Report.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+            }
 		}
 
         /**
          * reference type comparison to nil
          */
-        if (t1.isReferenceType() && t2.isBuiltinNilType()) {
+        else if (lhs.isReferenceType() && rhs.isBuiltinNilType()) {
             SymbDesc.setType(acceptor, Type.boolType);
-            return;
         }
 
         /**
          * expr1 is expr2
          */
-		if (oper == AbsBinExpr.IS) {
-		    if (!t1.isCanType() && t2.isCanType()) {
+		else if (oper == AbsBinExpr.IS) {
+		    if (!lhs.isCanType() && rhs.isCanType()) {
 		        SymbDesc.setType(acceptor, Type.boolType);
-		        return;
             }
         }
 
         /**
          * expr1 as expr2
          */
-        if (oper == AbsBinExpr.AS) {
-            if (t2.isCanType()) {
-                SymbDesc.setType(acceptor, ((CanType) t2).childType);
-                return;
+        else if (oper == AbsBinExpr.AS) {
+            if (rhs.isCanType()) {
+                SymbDesc.setType(acceptor, ((CanType) rhs).childType);
             }
         }
 
 		/**
 		 * expr1 and expr2 are of type Bool
 		 */
-		if (t1.isBuiltinBoolType() && t2.isBuiltinBoolType()) {
+		else if (lhs.isBuiltinBoolType() && rhs.isBuiltinBoolType()) {
 			// ==, !=, <=, >=, <, >, &, |
-			if (oper >= 0 && oper <= 7)
-				SymbDesc.setType(acceptor, Type.boolType);
-			else
-				Report.error(
-						acceptor.position,
-						"Numeric operations \"+\", \"-\", \"*\", \"/\" and \"%\" are undefined for type Bool");
+			if (oper >= 0 && oper <= 7) {
+                SymbDesc.setType(acceptor, Type.boolType);
+            }
+			else {
+                Report.error(
+                        acceptor.position,
+                        "Numeric operations \"+\", \"-\", \"*\", \"/\" and \"%\" are undefined for type Bool");
+            }
 		}
 		/**
 		 * expr1 and expr2 are of type Int
 		 */
-		else if (t1.isBuiltinIntType() && t2.isBuiltinIntType()) {
+		else if (lhs.isBuiltinIntType() && rhs.isBuiltinIntType()) {
 			// +, -, *, /, %
-			if (oper >= 8 && oper <= 12)
-				SymbDesc.setType(acceptor, Type.intType);
+			if (oper >= 8 && oper <= 12) {
+                SymbDesc.setType(acceptor, Type.intType);
+            }
 			// ==, !=, <=, >=, <, >
-			else if (oper >= 2 && oper <= 7)
-				SymbDesc.setType(acceptor, Type.boolType);
-			else
-				Report.error(acceptor.position,
-						"Logical operations \"&\" and \"|\" are undefined for type Int");
+			else if (oper >= 2 && oper <= 7) {
+                SymbDesc.setType(acceptor, Type.boolType);
+            }
+			else {
+                Report.error(acceptor.position,
+                        "Logical operations \"&\" and \"|\" are undefined for type Int");
+            }
 		}
 		/**
 		 * expr1 and expr2 are of type Double
 		 */
-		else if (t1.isBuiltinDoubleType() && t2.isBuiltinDoubleType()) {
+		else if (lhs.isBuiltinDoubleType() && rhs.isBuiltinDoubleType()) {
 			// +, -, *, /, %
-			if (oper >= 8 && oper <= 12)
-				SymbDesc.setType(acceptor, Type.doubleType);
+			if (oper >= 8 && oper <= 12) {
+                SymbDesc.setType(acceptor, Type.doubleType);
+            }
 			// ==, !=, <=, >=, <, >
-			else if (oper >= 2 && oper <= 7)
-				SymbDesc.setType(acceptor, Type.boolType);
-			else
-				Report.error(acceptor.position,
-						"Logical operations \"&\" and \"|\" are undefined for type Double");
+			else if (oper >= 2 && oper <= 7) {
+                SymbDesc.setType(acceptor, Type.boolType);
+            }
+			else {
+                Report.error(acceptor.position,
+                        "Logical operations \"&\" and \"|\" are undefined for type Double");
+            }
 		}
 		/**
 		 * expr1 or expr2 is Double and the other is Int (implicit cast to Double)
 		 */
 		// FIXME
-		else if (t1.isBuiltinDoubleType() && t2.isBuiltinIntType()
-				|| t1.isAtomType() && t2.isBuiltinDoubleType()) {
+		else if (lhs.isBuiltinDoubleType() && rhs.isBuiltinIntType()
+				|| lhs.isAtomType() && rhs.isBuiltinDoubleType()) {
 			// +, -, *, /, %
-			if (oper >= 8 && oper <= 12)
-				SymbDesc.setType(acceptor, Type.doubleType);
+			if (oper >= 8 && oper <= 12) {
+                SymbDesc.setType(acceptor, Type.doubleType);
+            }
 			// ==, !=, <=, >=, <, >
-			else if (oper >= 2 && oper <= 7)
-				SymbDesc.setType(acceptor, Type.boolType);
-			else
-				Report.error(acceptor.position,
-						"Logical operations \"&\" and \"|\" are undefined for type Double");
+			else if (oper >= 2 && oper <= 7) {
+                SymbDesc.setType(acceptor, Type.boolType);
+            }
+			else {
+                Report.error(acceptor.position,
+                        "Logical operations \"&\" and \"|\" are undefined for type Double");
+            }
 		}
 		
 		/**
 		 * Enumerations comparison.
 		 */
-		else if (t1.isEnumType() && t1.sameStructureAs(t2)) {
-			if (oper == AbsBinExpr.EQU)
-				SymbDesc.setType(acceptor, Type.boolType);
-			else
-				Report.error(acceptor.position,
-						"Operator cannot be applied to operands of type \"" +
-							t1.toString() + "\" and \"" + t2.toString() + "\"");
+		else if (lhs.isEnumType() && lhs.sameStructureAs(rhs)) {
+			if (oper == AbsBinExpr.EQU) {
+                SymbDesc.setType(acceptor, Type.boolType);
+            }
+			else {
+                Report.error(acceptor.position,
+                        "Operator cannot be applied to operands of type \"" +
+                                lhs.toString() + "\" and \"" + rhs.toString() + "\"");
+            }
 		}
 		else {
 			Report.error(acceptor.position, "No viable operation for types "
-					+ t1.friendlyName() + " and " + t2.friendlyName());
+					+ lhs.friendlyName() + " and " + rhs.friendlyName());
 		}
 	}
 
@@ -989,9 +1007,14 @@ public class TypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsListExpr absListExpr) {
 		Vector<Type> vec = new Vector<>();
-
 		Type base = null;
-		boolean typesMatch = true;
+
+		if (!lhsTypes.isEmpty()) {
+            base = lhsTypes.peek();
+            if (base != null && base.isArrayType()) {
+                base = ((ArrayType) base).type;
+            }
+        }
 
 		for (AbsExpr e : absListExpr.expressions) {
 			e.accept(this);
@@ -1001,22 +1024,18 @@ public class TypeChecker implements ASTVisitor {
 			if (base == null) {
 			    base = t;
             }
-			else if (!t.sameStructureAs(base) && !t.canCastTo(base)) {
-			    if (base.canCastTo(t)) {
+			else if (t.sameStructureAs(base) || t.canCastTo(base)) {}
+            else {
+                if (base.canCastTo(t)) {
                     base = t;
                 }
                 else {
-                    typesMatch = false;
+                    base = Type.anyType;
                 }
             }
 
 			vec.add(SymbDesc.getType(e));
 		}
-
-		// if types don't match, cast to [Any]
-        if (!typesMatch) {
-		    base = Type.anyType;
-        }
 
 		SymbDesc.setType(absListExpr, new ArrayType(base, vec.size()));
 	}

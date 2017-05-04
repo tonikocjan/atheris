@@ -96,6 +96,10 @@ public class AtomType extends ObjectType {
 
 	@Override
 	public boolean canCastTo(Type t) {
+	    if (super.canCastTo(t)) {
+	        return true;
+        }
+
 		if (!t.isAtomType()) return false;
 		
 		// int can be casted to double

@@ -238,22 +238,15 @@ public abstract class ObjectType extends Type {
      */
     @Override
     public boolean canCastTo(Type type) {
-        if (!type.isObjectType() || base == null) {
+        if (type.isInterfaceType()) {
+            return conformsTo((InterfaceType) type);
+        }
+
+        if (!type.isObjectType()) {
             return false;
         }
 
-        ObjectType baseClass = base;
-        int targetDescriptor = type.descriptor;
-
-        while (baseClass != null) {
-            if (targetDescriptor == baseClass.descriptor) {
-                return true;
-            }
-
-            baseClass = baseClass.base;
-        }
-
-        return false;
+        return isDescendantOf((ObjectType) type);
     }
 
     @Override
@@ -275,6 +268,23 @@ public abstract class ObjectType extends Type {
         }
 
         return definitions.get(name);
+    }
+
+    /**
+     * Check whether this type is descendant of baseType.
+     * @param baseType
+     * @return True or false
+     */
+    public boolean isDescendantOf(ObjectType baseType) {
+        if (base == null) {
+            return false;
+        }
+
+        if (base.getName().equals(baseType.getName())) {
+            return true;
+        }
+
+        return base.isDescendantOf(baseType);
     }
 
     /**

@@ -24,8 +24,12 @@ public class InterfaceType extends Type {
 
     @Override
     public boolean sameStructureAs(Type type) {
+        if (type.friendlyName().equals(friendlyName())) {
+            return true;
+        }
+
         // any type can be assigned to Any
-        if (definition.getName().equals(Constants.any)) {
+        if (friendlyName().equals(Constants.any)) {
             return true;
         }
 
