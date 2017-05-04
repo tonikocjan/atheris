@@ -154,6 +154,15 @@ public class TypeChecker implements ASTVisitor {
                 }
             }
 
+            for (AbsStmt stmt: acceptor.defaultConstructor.func.statements) {
+                AbsBinExpr initExpr = (AbsBinExpr) stmt;
+                initExpr.expr2.accept(this);
+                Type type = SymbDesc.getType(initExpr.expr2);
+
+                AbsVarDef definition = (AbsVarDef) acceptor.definitions.findDefinitionForName(((AbsVarNameExpr) ((AbsBinExpr)initExpr.expr1).expr2).name);
+                SymbDesc.setType(definition, type);
+            }
+
             resolveTypeOnly = true;
 
             for (AbsDef def : acceptor.definitions.definitions) {
@@ -787,10 +796,10 @@ public class TypeChecker implements ASTVisitor {
         SymbDesc.setType(acceptor, funType);
 
         if (!resolveTypeOnly){
-			acceptor.func.accept(this);
-
 			// check if return type matches
 			for (AbsStmt stmt : acceptor.func.statements) {
+			    stmt.accept(this);
+
 				if (stmt instanceof AbsReturnExpr) {
 					Type t = SymbDesc.getType(stmt);
 
