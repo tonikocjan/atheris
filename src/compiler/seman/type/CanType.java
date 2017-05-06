@@ -18,6 +18,7 @@
 package compiler.seman.type;
 
 import compiler.abstr.tree.def.AbsDef;
+import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsVarDef;
 
 import java.util.Iterator;
@@ -111,10 +112,17 @@ public class CanType extends Type {
         return staticNames.contains(name);
     }
 
-    public AbsDef findStaticMemberForName(String name) {
-        for (AbsDef def : staticDefinitions) {
-            if (def.getName().equals(name))
+    public AbsDef findStaticMemberForName(String memberName) {
+        Iterator<String> namesIterator = staticNames.iterator();
+        Iterator<AbsDef> defsIterator = staticDefinitions.iterator();
+
+        while (defsIterator.hasNext()) {
+            String name = namesIterator.next();
+            AbsDef def = defsIterator.next();
+
+            if (name.equals(memberName)) {
                 return def;
+            }
         }
 
         return null;

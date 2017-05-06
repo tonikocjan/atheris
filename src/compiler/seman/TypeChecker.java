@@ -88,6 +88,11 @@ public class TypeChecker implements ASTVisitor {
     /**
      *
      */
+    private Stack<CanType> declarationContext = new Stack<>();
+
+    /**
+     *
+     */
     private boolean resolveTypeOnly = false;
 
 
@@ -154,6 +159,7 @@ public class TypeChecker implements ASTVisitor {
                 }
             }
 
+            // type inference
             for (AbsStmt stmt: acceptor.defaultConstructor.func.statements) {
                 AbsBinExpr initExpr = (AbsBinExpr) stmt;
                 initExpr.expr2.accept(this);
@@ -238,15 +244,18 @@ public class TypeChecker implements ASTVisitor {
         else {
             resolveTypeOnly = false;
 
-            ObjectType objectType = (ObjectType) ((CanType) SymbDesc.getType(acceptor)).childType;
+            CanType staticType = (CanType) SymbDesc.getType(acceptor);
+            ObjectType objectType = (ObjectType) staticType.childType;
 	        CanType baseClass = objectType.baseClass;
+
+	        declarationContext.push(staticType);
 
             AbsFunDef baseClassDefaultConstructor = null;
             if (baseClass != null) {
                 baseClassDefaultConstructor = ((ClassType) baseClass.childType).classDefinition.defaultConstructor;
             }
 
-            // check if class type implements all methods in conforming interfaces
+            // check if all methods in conforming interfaces are implemented
             for (AbsType conformance : acceptor.conformances) {
                 InterfaceType interfaceType = (InterfaceType) SymbDesc.getType(conformance);
 
@@ -287,7 +296,27 @@ public class TypeChecker implements ASTVisitor {
                 }
 
                 def.accept(this);
+
+                // push constructors from nested class definition
+                if (def instanceof AbsClassDef) {
+                    CanType context = declarationContext.peek();
+                    if (context != null) {
+                        AbsClassDef classDef = (AbsClassDef) def;
+                        String className = classDef.name;
+                        classDef.name = context.childType.friendlyName() + "." + classDef.getName();
+
+                        for (AbsFunDef constructor: classDef.construstors) {
+                            context.addStaticMember(
+                                    constructor,
+                                    constructor.getStringRepresentation(className),
+                                    SymbDesc.getType(constructor));
+
+                        }
+                    }
+                }
             }
+
+            declarationContext.pop();
 
 //            objectType.debugPrint();
         }
@@ -526,6 +555,20 @@ public class TypeChecker implements ASTVisitor {
 			else if (lhs.isCanType()) {
 			    CanType canType = (CanType) lhs;
 
+                if (acceptor.expr2 instanceof AbsFunCall) {
+                    AbsDef def = canType.findMemberForName(((AbsFunCall) acceptor.expr2).name);
+
+                    if (def != null && def instanceof AbsClassDef) {
+                        AbsFunCall fnCall = (AbsFunCall) acceptor.expr2;
+
+                        // add implicit "self" argument to instance method
+                        AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.position, acceptor.expr1, Constants.selfParameterIdentifier);
+                        fnCall.addArgument(selfArg);
+
+                        memberName = fnCall.getStringRepresentation();
+                    }
+                }
+
 			    if (!canType.containsStaticMember(memberName)) {
                     Report.error(acceptor.expr2.position,
                             LanguageManager.localize("type_error_member_not_found",
@@ -534,9 +577,9 @@ public class TypeChecker implements ASTVisitor {
                 }
 
                 if (acceptor.expr2 instanceof AbsFunCall) {
-                    AbsFunCall funCall = (AbsFunCall) acceptor.expr2;
-                    for (AbsExpr arg: funCall.args)
+                    for (AbsExpr arg: ((AbsFunCall) acceptor.expr2).args) {
                         arg.accept(this);
+                    }
                 }
 
                 AbsDef definition = canType.findStaticMemberForName(memberName);

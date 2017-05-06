@@ -165,6 +165,7 @@ public class Main {
 			ImcDesc.clean();
 
 			System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
+            System.out.flush();
 
 //			Interpreter.printMemory();
 

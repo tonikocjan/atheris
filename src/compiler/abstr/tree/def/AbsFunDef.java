@@ -159,7 +159,7 @@ public class AbsFunDef extends AbsDef {
 	}
 	
 	/**
-	 * Get string representation of this function definition
+	 * Get string representation of this function definition.
 	 * @return
 	 */
 	public String getStringRepresentation() {
@@ -169,7 +169,7 @@ public class AbsFunDef extends AbsDef {
 	}
 
     /**
-     * Get
+     * Get string representation of this function definition using different name.
      * @param otherName
      * @return
      */
@@ -193,6 +193,9 @@ public class AbsFunDef extends AbsDef {
         return sb.toString();
     }
 
+    /**
+     *
+     * @param aSTVisitor
+     */
 	@Override public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
-	
 }

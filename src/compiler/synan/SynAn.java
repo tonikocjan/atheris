@@ -25,6 +25,7 @@ import Utils.Constants;
 import com.sun.org.apache.xpath.internal.operations.Mod;
 import compiler.Position;
 import compiler.Report;
+import compiler.abstr.Ast;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.*;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
@@ -605,25 +606,32 @@ public class SynAn {
             }
 
             AbsDef definition = parseDefinition();
-            definitions.add(definition);
 
-            if (definition instanceof AbsVarDef) {
-                if (symbol.token == TokenType.ASSIGN) {
-                    skip();
-                    dump("var_definition -> = expression");
+            if (definition instanceof AbsFunDef && ((AbsFunDef) definition).isConstructor) {
+                constructors.add((AbsFunDef) definition);
+            }
+            else {
+                definitions.add(definition);
 
-                    AbsVarNameExpr varNameExpr = new AbsVarNameExpr(definition.position, ((AbsVarDef) definition).name);
-                    AbsExpr valueExpr = parseExpression();
-                    AbsBinExpr dotExpr = new AbsBinExpr(
-                            new Position(definition.position, valueExpr.position), AbsBinExpr.DOT,
-                            new AbsVarNameExpr(definition.position, Constants.selfParameterIdentifier), varNameExpr);
-                    AbsBinExpr assignExpr = new AbsBinExpr(definition.position, AbsBinExpr.ASSIGN, dotExpr, valueExpr);
+                if (definition instanceof AbsVarDef) {
+                    if (symbol.token == TokenType.ASSIGN) {
+                        skip();
+                        dump("var_definition -> = expression");
 
-                    if (!definition.isStatic()) {
-                        defaultConstructor.add(assignExpr);
+                        AbsVarNameExpr varNameExpr = new AbsVarNameExpr(definition.position, ((AbsVarDef) definition).name);
+                        AbsExpr valueExpr = parseExpression();
+                        AbsBinExpr dotExpr = new AbsBinExpr(
+                                new Position(definition.position, valueExpr.position), AbsBinExpr.DOT,
+                                new AbsVarNameExpr(definition.position, Constants.selfParameterIdentifier), varNameExpr);
+                        AbsBinExpr assignExpr = new AbsBinExpr(definition.position, AbsBinExpr.ASSIGN, dotExpr, valueExpr);
+
+                        if (!definition.isStatic()) {
+                            defaultConstructor.add(assignExpr);
+                        }
                     }
                 }
             }
+
 
             if (symbol.token == TokenType.RBRACE) {
                 return new LinkedList[] { definitions, defaultConstructor, constructors };

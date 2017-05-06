@@ -33,7 +33,7 @@ public abstract class AbsDef extends AbsStmt {
 	/** 
 	 * Definition name.
 	 */
-	public final String name;
+	public String name;
 	
 	/**
 	 * Parent definition.
