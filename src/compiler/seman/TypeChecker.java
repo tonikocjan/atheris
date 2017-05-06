@@ -1146,7 +1146,7 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumDef acceptor) {
-        if (traversalState == TraversalState.extensions) return;
+        if (traversalState != TraversalState.extensions) return;
 
         AtomType enumRawValueType = null;
 		
@@ -1222,8 +1222,6 @@ public class TypeChecker implements ASTVisitor {
         LinkedList<String> names = new LinkedList<>();
         LinkedList<Type> types = new LinkedList<>();
 		LinkedList<AbsDef> definitions = new LinkedList<>();
-		
-		acceptor.name.accept(this);
 		
 		if (acceptor.value != null) {
 			acceptor.value.accept(this);

@@ -21,12 +21,7 @@ import java.util.LinkedList;
 import Utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
-import compiler.abstr.tree.AbsDefs;
-import compiler.abstr.tree.AbsExprs;
-import compiler.abstr.tree.AbsStmt;
-import compiler.abstr.tree.AbsStmts;
-import compiler.abstr.tree.AtomTypeKind;
-import compiler.abstr.tree.Condition;
+import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.*;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
 import compiler.abstr.tree.expr.AbsBinExpr;
@@ -102,6 +97,11 @@ public class NameChecker implements ASTVisitor {
                 AbsParDef parDef = new AbsParDef(funDef.position, Constants.selfParameterIdentifier,
                         new AbsAtomType(funDef.position, AtomTypeKind.NIL));
                 funDef.addParamater(parDef);
+            }
+
+            // nested class and enum definitions are always static
+            if (def instanceof AbsClassDef || def instanceof AbsEnumDef) {
+                def.setModifier(Modifier.isStatic);
             }
 
             def.accept(this);
