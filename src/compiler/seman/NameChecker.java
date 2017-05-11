@@ -100,7 +100,7 @@ public class NameChecker implements ASTVisitor {
             }
 
             // nested class and enum definitions are always static
-            if (def instanceof AbsClassDef || def instanceof AbsEnumDef) {
+            if (/*def instanceof AbsClassDef || */def instanceof AbsEnumDef) {
                 def.setModifier(Modifier.isStatic);
             }
 

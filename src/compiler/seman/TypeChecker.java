@@ -260,7 +260,7 @@ public class TypeChecker implements ASTVisitor {
                 InterfaceType interfaceType = (InterfaceType) SymbDesc.getType(conformance);
 
                 if (!objectType.conformsTo(interfaceType)) {
-                    Report.error(conformance.position, "Type \"" + objectType.friendlyName() + "\" does not conform to type \"" + interfaceType.friendlyName() + "\"");
+                    Report.error(conformance.position, "Type \"" + objectType.friendlyName() + "\" does not conform to interface \"" + interfaceType.friendlyName() + "\"");
                 }
             }
 
