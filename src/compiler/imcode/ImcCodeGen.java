@@ -565,13 +565,11 @@ public class ImcCodeGen implements ASTVisitor {
 		ImcSEQ statements = new ImcSEQ();
 		statements.stmts.add(new ImcMOVE(counter, new ImcCONST(0)));
 		statements.stmts.add(new ImcLABEL(l1));
-		statements.stmts.add(new ImcMOVE(iterator, new ImcMEM(add)));
-		statements.stmts.add(new ImcCJUMP(new ImcBINOP(ImcBINOP.LTH, counter,
-				hi), l2, l3));
+		statements.stmts.add(new ImcCJUMP(new ImcBINOP(ImcBINOP.LTH, counter, hi), l2, l3));
 		statements.stmts.add(new ImcLABEL(l2));
+        statements.stmts.add(new ImcMOVE(iterator, new ImcMEM(add)));
 		statements.stmts.add(bodyCode);
-		statements.stmts.add(new ImcMOVE(counter, new ImcBINOP(ImcBINOP.ADD,
-				counter, new ImcCONST(1))));
+		statements.stmts.add(new ImcMOVE(counter, new ImcBINOP(ImcBINOP.ADD, counter, new ImcCONST(1))));
 		statements.stmts.add(new ImcJUMP(l1));
 		statements.stmts.add(new ImcLABEL(l3));
 
