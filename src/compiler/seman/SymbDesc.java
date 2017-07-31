@@ -31,7 +31,7 @@ import compiler.seman.type.*;
 public class SymbDesc {
 
 	/** Nivo vidnosti. */
-	private static HashMap<AbsTree, Integer> scope = new HashMap<AbsTree, Integer>();
+	private static HashMap<AbsTree, Integer> scope = new HashMap<>();
 
 	/**
 	 * Doloci globino nivoja vidnosti za dano definicijo imena.
@@ -113,9 +113,8 @@ public class SymbDesc {
 
 	public static void clean() {
 		scope.clear();
-		scope = null;
 		type.clear();
-		type = null;
+        nameDef.clear();
 	}
 
 }

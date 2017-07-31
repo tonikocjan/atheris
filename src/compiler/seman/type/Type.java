@@ -40,7 +40,6 @@ public abstract class Type {
     /** Descriptor for this type (automatically assigned when new type is instantiated)  */
     public final int descriptor = getTypeDescriptor();
 
-
     // MARK: - Methods
 	/**
 	 * Check if types structurarily match.
@@ -248,14 +247,26 @@ public abstract class Type {
 	 */
 	public abstract String friendlyName();
 
+    // TODO: Bad design!!
+	public static void clean() {
+        intType = new AtomType(AtomTypeKind.INT);
+        charType = new AtomType(AtomTypeKind.CHR);
+        doubleType = new AtomType(AtomTypeKind.DOB);
+        stringType = new AtomType(AtomTypeKind.STR);
+        boolType = new AtomType(AtomTypeKind.LOG);
+        voidType = new AtomType(AtomTypeKind.VOID);
+        nilType = new AtomType(AtomTypeKind.NIL);
+    }
+
 	/// Static members
-	public final static AtomType intType = new AtomType(AtomTypeKind.INT);
-	public final static AtomType charType = new AtomType(AtomTypeKind.CHR);
-	public final static AtomType doubleType = new AtomType(AtomTypeKind.DOB);
-	public final static AtomType stringType = new AtomType(AtomTypeKind.STR);
-	public final static AtomType boolType = new AtomType(AtomTypeKind.LOG);
-    public final static AtomType voidType = new AtomType(AtomTypeKind.VOID);
-    public final static AtomType nilType = new AtomType(AtomTypeKind.NIL);
+    // TODO: Bad design; this variables should be final!
+	public static AtomType intType = new AtomType(AtomTypeKind.INT);
+	public static AtomType charType = new AtomType(AtomTypeKind.CHR);
+	public static AtomType doubleType = new AtomType(AtomTypeKind.DOB);
+	public static AtomType stringType = new AtomType(AtomTypeKind.STR);
+	public static AtomType boolType = new AtomType(AtomTypeKind.LOG);
+    public static AtomType voidType = new AtomType(AtomTypeKind.VOID);
+    public static AtomType nilType = new AtomType(AtomTypeKind.NIL);
     public static InterfaceType anyType;
 
     public final static AtomType[] atomTypes = new AtomType[] { Type.intType, Type.charType, Type.doubleType, Type.stringType, Type.boolType, Type.voidType };

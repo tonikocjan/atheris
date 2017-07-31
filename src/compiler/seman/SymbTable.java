@@ -127,6 +127,5 @@ public class SymbTable {
 	
 	public static void clean() {
 		mapping.clear();
-		mapping = null;
 	}
 }

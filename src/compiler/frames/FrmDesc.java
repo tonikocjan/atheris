@@ -99,9 +99,7 @@ public class FrmDesc {
      */
 	public static void clean() {
 		frames.clear();
-		frames = null;
         acceses.clear();
-        acceses = null;
 	}
 
 }

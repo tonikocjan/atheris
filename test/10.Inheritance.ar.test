@@ -1,0 +1,29 @@
+"C::a()"
+"B::a()"
+"A::foo()"
+"A::a()"
+"A::foo()"
+"C::a()"
+"A::foo()"
+"C::a()"
+"A::foo()"
+"B::a()"
+"A::foo()"
+1
+"B::b()"
+10
+"a"
+"This is a static function"
+-100
+"Danes je lep dan"
+10
+"Hello world"
+-300
+"A::a()"
+"ext::toString()"
+10
+"ext::toString(_:)"
+2000000
+30
+8
+10

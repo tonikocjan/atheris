@@ -47,6 +47,5 @@ public class ImcDesc {
 
 	public static void clean() {
 		imcMap.clear();
-		imcMap = null;
 	}
 }

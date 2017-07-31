@@ -280,7 +280,7 @@ public abstract class ObjectType extends Type {
             return false;
         }
 
-        if (base.getName().equals(baseType.getName())) {
+        if (base.friendlyName().equals(baseType.friendlyName())) {
             return true;
         }
 
@@ -299,14 +299,6 @@ public abstract class ObjectType extends Type {
         }
 
         return true;
-    }
-
-    /**
-     * Get name of this type.
-     * @return Classes name.
-     */
-    public String getName() {
-        return classDefinition.name;
     }
 
     @Override
