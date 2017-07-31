@@ -17,6 +17,7 @@
 
 package compiler;
 
+import Utils.Constants;
 import managers.LanguageManager;
 import compiler.lincode.CodeGenerator;
 import compiler.lexan.*;
@@ -27,6 +28,10 @@ import compiler.seman.*;
 import compiler.frames.*;
 import compiler.imcode.*;
 import compiler.interpreter.Interpreter;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 
 /**
  * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
@@ -87,6 +92,18 @@ public class Main {
 					}
 					continue;
 				}
+                if (args[argc].startsWith("--testing=")) {
+                    String bool = args[argc].substring("--testing=".length());
+                    if (bool.equals(Constants.trueKeyword)) {
+                        File outputFile = new File(sourceFileName + ".out");
+                        try {
+                            Interpreter.interpreterOutput = new PrintStream(outputFile);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    continue;
+                }
 				// Neznano stikalo.
 				Report.warning(LanguageManager.localize("error_unknown_switch"));
 			} else {
@@ -181,7 +198,5 @@ public class Main {
 
 		// Zapiranje datoteke z vmesnimi rezultati.
 		if (dumpPhases != null) Report.closeDumpFile();
-
-		System.exit(0);
 	}
 }

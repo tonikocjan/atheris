@@ -17,6 +17,7 @@
 
 package compiler.interpreter;
 
+import java.io.PrintStream;
 import java.util.*;
 
 import compiler.*;
@@ -29,6 +30,8 @@ public class Interpreter {
 	public static boolean debug = false;
 	public static boolean printMemory = false;
     public static boolean checkMemory = true;
+
+    public static PrintStream interpreterOutput = System.out;
 	
 	/*--- staticni del navideznega stroja ---*/
 	
@@ -215,7 +218,7 @@ public class Interpreter {
 			}
 
 			if (instr.label.name().equals("_print")) {
-				System.out.println(ldM(stackPointer + 4));
+				interpreterOutput.println(ldM(stackPointer + 4));
 				return 0;
 			}
 			if (instr.label.name().equals("_time")) {
