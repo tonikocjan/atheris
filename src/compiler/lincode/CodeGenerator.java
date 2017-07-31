@@ -83,8 +83,7 @@ public class CodeGenerator {
 				
 				CodeGenerator.insertCodeForLabel(fn.frame.label, fn);
 				
-				Interpreter.locations.put(((ImcCodeChunk) chnk).frame.label, 
-						Interpreter.heapPointer);
+				Interpreter.locations.put(((ImcCodeChunk) chnk).frame.label, Interpreter.heapPointer);
 				Interpreter.heapPointer += 4;
 
 				if (fn.frame.label.name().equals("__main__")) {

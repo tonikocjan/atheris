@@ -1,152 +1,152 @@
 CODE CHUNK: label=_hash
-  FRAME(hash: level=1,label=_hash,sizeLocs=0,sizeArgs=0,size=8,FP=T413,RV=T414)
+  FRAME(hash: level=1,label=_hash,sizeLocs=0,sizeArgs=0,size=8,FP=T532,RV=T533)
   SEQ
     PC [0]:     MOVE
-      TEMP name=T414
+      TEMP name=T533
       BINOP op=-
         MEM
           BINOP op=+
-            TEMP name=T413
+            TEMP name=T532
             CONST value=4
         BINOP op=*
           BINOP op=/
             MEM
               BINOP op=+
-                TEMP name=T413
+                TEMP name=T532
                 CONST value=4
             CONST value=12
           CONST value=12
-    PC [1]:     JUMP label=L144
-    PC [2]:     LABEL label=L144
+    PC [1]:     JUMP label=L166
+    PC [2]:     LABEL label=L166
 CODE CHUNK: label=_hash
-  FRAME(hash: level=1,label=_hash,sizeLocs=0,sizeArgs=0,size=8,FP=T415,RV=T416)
+  FRAME(hash: level=1,label=_hash,sizeLocs=0,sizeArgs=0,size=8,FP=T534,RV=T535)
   SEQ
     PC [0]:     MOVE
-      TEMP name=T416
+      TEMP name=T535
       CONST value=10
-    PC [1]:     JUMP label=L145
-    PC [2]:     LABEL label=L145
+    PC [1]:     JUMP label=L167
+    PC [2]:     LABEL label=L167
 CODE CHUNK: label=_print
-  FRAME(print: level=1,label=_print,sizeLocs=0,sizeArgs=0,size=8,FP=T417,RV=T418)
+  FRAME(print: level=1,label=_print,sizeLocs=0,sizeArgs=0,size=8,FP=T536,RV=T537)
   SEQ
     PC [0]:     MOVE
-      TEMP name=T418
+      TEMP name=T537
       CONST value=-555
-    PC [1]:     LABEL label=L146
+    PC [1]:     LABEL label=L168
 CODE CHUNK: label=_print
-  FRAME(print: level=1,label=_print,sizeLocs=0,sizeArgs=0,size=8,FP=T419,RV=T420)
+  FRAME(print: level=1,label=_print,sizeLocs=0,sizeArgs=0,size=8,FP=T538,RV=T539)
   SEQ
     PC [0]:     MOVE
-      TEMP name=T420
+      TEMP name=T539
       CONST value=-555
-    PC [1]:     LABEL label=L147
+    PC [1]:     LABEL label=L169
 CODE CHUNK: label=_mem
-  FRAME(mem: level=1,label=_mem,sizeLocs=0,sizeArgs=0,size=8,FP=T421,RV=T422)
+  FRAME(mem: level=1,label=_mem,sizeLocs=0,sizeArgs=0,size=8,FP=T540,RV=T541)
   SEQ
-    PC [0]:     LABEL label=L148
+    PC [0]:     LABEL label=L170
 DATA CHUNK: label=_x size=4
-DATA CHUNK: label=L154 size=4 .BYTE: "lorem ipsum"
-DATA CHUNK: label=L160 size=4 .BYTE: "ena, dva ali tri"
-DATA CHUNK: label=L163 size=4 .BYTE: "x = 10"
-DATA CHUNK: label=L166 size=4 .BYTE: "x = 11"
-DATA CHUNK: label=L167 size=4 .BYTE: "Ce ni breaka se izvedem tudi jaz"
+DATA CHUNK: label=L176 size=4 .BYTE: "lorem ipsum"
+DATA CHUNK: label=L182 size=4 .BYTE: "ena, dva ali tri"
+DATA CHUNK: label=L185 size=4 .BYTE: "x = 10"
+DATA CHUNK: label=L188 size=4 .BYTE: "x = 11"
+DATA CHUNK: label=L189 size=4 .BYTE: "Ce ni breaka se izvedem tudi jaz"
 DATA CHUNK: label=_i size=4
-DATA CHUNK: label=L176 size=24
+DATA CHUNK: label=L198 size=24
 CODE CHUNK: label=__main
-  FRAME(_main: level=0,label=__main,sizeLocs=0,sizeArgs=8,size=16,FP=T409,RV=T410)
+  FRAME(_main: level=0,label=__main,sizeLocs=0,sizeArgs=8,size=16,FP=T528,RV=T529)
   SEQ
     PC [0]:     MOVE
-      TEMP name=T410
+      TEMP name=T529
       CONST value=-555
     PC [1]:     MOVE
       MEM
         NAME label=_x
       CONST value=10
-    PC [2]:     CJUMP labels=L150,L180
+    PC [2]:     CJUMP labels=L172,L202
       BINOP op===
         MEM
           NAME label=_x
         CONST value=10
-    PC [3]:     LABEL label=L180
-    PC [4]:     JUMP label=L151
-    PC [5]:     LABEL label=L150
+    PC [3]:     LABEL label=L202
+    PC [4]:     JUMP label=L173
+    PC [5]:     LABEL label=L172
     PC [6]:     MOVE
-      TEMP name=T424
-      TEMP name=T409
+      TEMP name=T543
+      TEMP name=T528
     PC [7]:     MOVE
-      TEMP name=T425
+      TEMP name=T544
       CONST value=1
     PC [8]:     MOVE
-      TEMP name=T426
+      TEMP name=T545
       CALL label=_print
-        TEMP name=T424
-        TEMP name=T425
+        TEMP name=T543
+        TEMP name=T544
     PC [9]:     EXP
-      TEMP name=T426
-    PC [10]:     JUMP label=L149
-    PC [11]:     LABEL label=L151
-    PC [12]:     CJUMP labels=L152,L181
+      TEMP name=T545
+    PC [10]:     JUMP label=L171
+    PC [11]:     LABEL label=L173
+    PC [12]:     CJUMP labels=L174,L203
       BINOP op===
         MEM
           NAME label=_x
         CONST value=11
-    PC [13]:     LABEL label=L181
-    PC [14]:     JUMP label=L153
-    PC [15]:     LABEL label=L152
+    PC [13]:     LABEL label=L203
+    PC [14]:     JUMP label=L175
+    PC [15]:     LABEL label=L174
     PC [16]:     MOVE
-      TEMP name=T427
-      TEMP name=T409
+      TEMP name=T546
+      TEMP name=T528
     PC [17]:     MOVE
-      TEMP name=T428
+      TEMP name=T547
       CONST value=2
     PC [18]:     MOVE
-      TEMP name=T429
+      TEMP name=T548
       CALL label=_print
-        TEMP name=T427
-        TEMP name=T428
+        TEMP name=T546
+        TEMP name=T547
     PC [19]:     EXP
-      TEMP name=T429
-    PC [20]:     JUMP label=L149
-    PC [21]:     LABEL label=L153
-    PC [22]:     CJUMP labels=L155,L182
+      TEMP name=T548
+    PC [20]:     JUMP label=L171
+    PC [21]:     LABEL label=L175
+    PC [22]:     CJUMP labels=L177,L204
       BINOP op===
         MEM
           NAME label=_x
         CONST value=35
-    PC [23]:     LABEL label=L182
-    PC [24]:     JUMP label=L156
-    PC [25]:     LABEL label=L155
+    PC [23]:     LABEL label=L204
+    PC [24]:     JUMP label=L178
+    PC [25]:     LABEL label=L177
     PC [26]:     MOVE
-      TEMP name=T430
-      TEMP name=T409
+      TEMP name=T549
+      TEMP name=T528
     PC [27]:     MOVE
-      TEMP name=T431
+      TEMP name=T550
       MEM
-        NAME label=L154
+        NAME label=L176
     PC [28]:     MOVE
-      TEMP name=T432
+      TEMP name=T551
       CALL label=_print
-        TEMP name=T430
-        TEMP name=T431
+        TEMP name=T549
+        TEMP name=T550
     PC [29]:     EXP
-      TEMP name=T432
-    PC [30]:     JUMP label=L149
-    PC [31]:     LABEL label=L156
+      TEMP name=T551
+    PC [30]:     JUMP label=L171
+    PC [31]:     LABEL label=L178
     PC [32]:     MOVE
-      TEMP name=T433
-      TEMP name=T409
+      TEMP name=T552
+      TEMP name=T528
     PC [33]:     MOVE
-      TEMP name=T434
+      TEMP name=T553
       CONST value=33
     PC [34]:     MOVE
-      TEMP name=T435
+      TEMP name=T554
       CALL label=_print
-        TEMP name=T433
-        TEMP name=T434
+        TEMP name=T552
+        TEMP name=T553
     PC [35]:     EXP
-      TEMP name=T435
-    PC [36]:     LABEL label=L149
-    PC [37]:     CJUMP labels=L158,L183
+      TEMP name=T554
+    PC [36]:     LABEL label=L171
+    PC [37]:     CJUMP labels=L180,L205
       BINOP op=|
         BINOP op=|
           BINOP op===
@@ -161,101 +161,101 @@ CODE CHUNK: label=__main
           CONST value=3
           MEM
             NAME label=_x
-    PC [38]:     LABEL label=L183
-    PC [39]:     JUMP label=L159
-    PC [40]:     LABEL label=L158
+    PC [38]:     LABEL label=L205
+    PC [39]:     JUMP label=L181
+    PC [40]:     LABEL label=L180
     PC [41]:     MOVE
-      TEMP name=T436
-      TEMP name=T409
+      TEMP name=T555
+      TEMP name=T528
     PC [42]:     MOVE
-      TEMP name=T437
+      TEMP name=T556
       MEM
-        NAME label=L160
+        NAME label=L182
     PC [43]:     MOVE
-      TEMP name=T438
+      TEMP name=T557
       CALL label=_print
-        TEMP name=T436
-        TEMP name=T437
+        TEMP name=T555
+        TEMP name=T556
     PC [44]:     EXP
-      TEMP name=T438
-    PC [45]:     JUMP label=L157
-    PC [46]:     LABEL label=L159
-    PC [47]:     CJUMP labels=L161,L184
+      TEMP name=T557
+    PC [45]:     JUMP label=L179
+    PC [46]:     LABEL label=L181
+    PC [47]:     CJUMP labels=L183,L206
       BINOP op===
         CONST value=10
         MEM
           NAME label=_x
-    PC [48]:     LABEL label=L184
-    PC [49]:     JUMP label=L162
-    PC [50]:     LABEL label=L161
+    PC [48]:     LABEL label=L206
+    PC [49]:     JUMP label=L184
+    PC [50]:     LABEL label=L183
     PC [51]:     MOVE
-      TEMP name=T439
-      TEMP name=T409
+      TEMP name=T558
+      TEMP name=T528
     PC [52]:     MOVE
-      TEMP name=T440
+      TEMP name=T559
       MEM
-        NAME label=L163
+        NAME label=L185
     PC [53]:     MOVE
-      TEMP name=T441
+      TEMP name=T560
       CALL label=_print
-        TEMP name=T439
-        TEMP name=T440
+        TEMP name=T558
+        TEMP name=T559
     PC [54]:     EXP
-      TEMP name=T441
-    PC [55]:     LABEL label=L162
-    PC [56]:     CJUMP labels=L164,L185
+      TEMP name=T560
+    PC [55]:     LABEL label=L184
+    PC [56]:     CJUMP labels=L186,L207
       BINOP op===
         CONST value=11
         MEM
           NAME label=_x
-    PC [57]:     LABEL label=L185
-    PC [58]:     JUMP label=L165
-    PC [59]:     LABEL label=L164
+    PC [57]:     LABEL label=L207
+    PC [58]:     JUMP label=L187
+    PC [59]:     LABEL label=L186
     PC [60]:     MOVE
-      TEMP name=T442
-      TEMP name=T409
+      TEMP name=T561
+      TEMP name=T528
     PC [61]:     MOVE
-      TEMP name=T443
+      TEMP name=T562
       MEM
-        NAME label=L166
+        NAME label=L188
     PC [62]:     MOVE
-      TEMP name=T444
+      TEMP name=T563
       CALL label=_print
-        TEMP name=T442
-        TEMP name=T443
+        TEMP name=T561
+        TEMP name=T562
     PC [63]:     EXP
-      TEMP name=T444
-    PC [64]:     JUMP label=L157
-    PC [65]:     LABEL label=L165
+      TEMP name=T563
+    PC [64]:     JUMP label=L179
+    PC [65]:     LABEL label=L187
     PC [66]:     MOVE
-      TEMP name=T445
-      TEMP name=T409
+      TEMP name=T564
+      TEMP name=T528
     PC [67]:     MOVE
-      TEMP name=T446
+      TEMP name=T565
       MEM
-        NAME label=L167
+        NAME label=L189
     PC [68]:     MOVE
-      TEMP name=T447
+      TEMP name=T566
       CALL label=_print
-        TEMP name=T445
-        TEMP name=T446
+        TEMP name=T564
+        TEMP name=T565
     PC [69]:     EXP
-      TEMP name=T447
-    PC [70]:     LABEL label=L157
+      TEMP name=T566
+    PC [70]:     LABEL label=L179
     PC [71]:     MOVE
       MEM
         NAME label=_x
       CONST value=0
-    PC [72]:     LABEL label=L168
-    PC [73]:     CJUMP labels=L169,L186
+    PC [72]:     LABEL label=L190
+    PC [73]:     CJUMP labels=L191,L208
       BINOP op=<
         MEM
           NAME label=_x
         CONST value=100
-    PC [74]:     LABEL label=L186
-    PC [75]:     JUMP label=L170
-    PC [76]:     LABEL label=L169
-    PC [77]:     CJUMP labels=L172,L187
+    PC [74]:     LABEL label=L208
+    PC [75]:     JUMP label=L192
+    PC [76]:     LABEL label=L191
+    PC [77]:     CJUMP labels=L194,L209
       BINOP op===
         BINOP op=-
           MEM
@@ -267,9 +267,9 @@ CODE CHUNK: label=__main
               CONST value=2
             CONST value=2
         CONST value=0
-    PC [78]:     LABEL label=L187
-    PC [79]:     JUMP label=L173
-    PC [80]:     LABEL label=L172
+    PC [78]:     LABEL label=L209
+    PC [79]:     JUMP label=L195
+    PC [80]:     LABEL label=L194
     PC [81]:     MOVE
       MEM
         NAME label=_x
@@ -278,34 +278,34 @@ CODE CHUNK: label=__main
           NAME label=_x
         CONST value=5
     PC [82]:     MOVE
-      TEMP name=T448
-      TEMP name=T409
+      TEMP name=T567
+      TEMP name=T528
     PC [83]:     MOVE
-      TEMP name=T449
+      TEMP name=T568
       MEM
         NAME label=_x
     PC [84]:     MOVE
-      TEMP name=T450
+      TEMP name=T569
       CALL label=_print
-        TEMP name=T448
-        TEMP name=T449
+        TEMP name=T567
+        TEMP name=T568
     PC [85]:     EXP
-      TEMP name=T450
-    PC [86]:     JUMP label=L168
-    PC [87]:     JUMP label=L171
-    PC [88]:     LABEL label=L173
-    PC [89]:     CJUMP labels=L174,L188
+      TEMP name=T569
+    PC [86]:     JUMP label=L190
+    PC [87]:     JUMP label=L193
+    PC [88]:     LABEL label=L195
+    PC [89]:     CJUMP labels=L196,L210
       BINOP op===
         MEM
           NAME label=_x
         CONST value=50
-    PC [90]:     LABEL label=L188
-    PC [91]:     JUMP label=L175
-    PC [92]:     LABEL label=L174
-    PC [93]:     JUMP label=L170
-    PC [94]:     JUMP label=L171
-    PC [95]:     LABEL label=L175
-    PC [96]:     LABEL label=L171
+    PC [90]:     LABEL label=L210
+    PC [91]:     JUMP label=L197
+    PC [92]:     LABEL label=L196
+    PC [93]:     JUMP label=L192
+    PC [94]:     JUMP label=L193
+    PC [95]:     LABEL label=L197
+    PC [96]:     LABEL label=L193
     PC [97]:     MOVE
       MEM
         NAME label=_x
@@ -313,23 +313,23 @@ CODE CHUNK: label=__main
         MEM
           NAME label=_x
         CONST value=1
-    PC [98]:     JUMP label=L168
-    PC [99]:     LABEL label=L170
+    PC [98]:     JUMP label=L190
+    PC [99]:     LABEL label=L192
     PC [100]:     MOVE
-      TEMP name=T423
+      TEMP name=T542
       CONST value=0
-    PC [101]:     LABEL label=L177
-    PC [102]:     CJUMP labels=L178,L189
+    PC [101]:     LABEL label=L199
+    PC [102]:     CJUMP labels=L200,L211
       BINOP op=<
-        TEMP name=T423
+        TEMP name=T542
         CONST value=6
-    PC [103]:     LABEL label=L189
-    PC [104]:     JUMP label=L179
-    PC [105]:     LABEL label=L178
+    PC [103]:     LABEL label=L211
+    PC [104]:     JUMP label=L201
+    PC [105]:     LABEL label=L200
     PC [106]:     MOVE
       MEM
         BINOP op=+
-          NAME label=L176
+          NAME label=L198
           BINOP op=*
             CONST value=0
             CONST value=4
@@ -337,7 +337,7 @@ CODE CHUNK: label=__main
     PC [107]:     MOVE
       MEM
         BINOP op=+
-          NAME label=L176
+          NAME label=L198
           BINOP op=*
             CONST value=1
             CONST value=4
@@ -345,7 +345,7 @@ CODE CHUNK: label=__main
     PC [108]:     MOVE
       MEM
         BINOP op=+
-          NAME label=L176
+          NAME label=L198
           BINOP op=*
             CONST value=2
             CONST value=4
@@ -353,7 +353,7 @@ CODE CHUNK: label=__main
     PC [109]:     MOVE
       MEM
         BINOP op=+
-          NAME label=L176
+          NAME label=L198
           BINOP op=*
             CONST value=3
             CONST value=4
@@ -361,7 +361,7 @@ CODE CHUNK: label=__main
     PC [110]:     MOVE
       MEM
         BINOP op=+
-          NAME label=L176
+          NAME label=L198
           BINOP op=*
             CONST value=4
             CONST value=4
@@ -369,7 +369,7 @@ CODE CHUNK: label=__main
     PC [111]:     MOVE
       MEM
         BINOP op=+
-          NAME label=L176
+          NAME label=L198
           BINOP op=*
             CONST value=5
             CONST value=4
@@ -379,28 +379,28 @@ CODE CHUNK: label=__main
         NAME label=_i
       MEM
         BINOP op=+
-          NAME label=L176
+          NAME label=L198
           BINOP op=*
-            TEMP name=T423
+            TEMP name=T542
             CONST value=4
     PC [113]:     MOVE
-      TEMP name=T451
-      TEMP name=T409
+      TEMP name=T570
+      TEMP name=T528
     PC [114]:     MOVE
-      TEMP name=T452
+      TEMP name=T571
       MEM
         NAME label=_i
     PC [115]:     MOVE
-      TEMP name=T453
+      TEMP name=T572
       CALL label=_print
-        TEMP name=T451
-        TEMP name=T452
+        TEMP name=T570
+        TEMP name=T571
     PC [116]:     EXP
-      TEMP name=T453
+      TEMP name=T572
     PC [117]:     MOVE
-      TEMP name=T423
+      TEMP name=T542
       BINOP op=+
-        TEMP name=T423
+        TEMP name=T542
         CONST value=1
-    PC [118]:     JUMP label=L177
-    PC [119]:     LABEL label=L179
+    PC [118]:     JUMP label=L199
+    PC [119]:     LABEL label=L201

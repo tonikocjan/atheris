@@ -55,7 +55,7 @@ public class Interpreter {
 		if (debug) System.out.println(" [" + address + "] => " + value);
 		return value;
 	}
-	
+
 	public static int getFP() { return framePointer; }
 	
 	/** Velikost sklada */
@@ -85,8 +85,15 @@ public class Interpreter {
 		if (debug) System.out.println(" " + temp.name() + " => " + value);
 		return value;
 	}
-	
-	/**
+
+	// TODO: - Bad design!!
+    public static void clean() {
+        mems.clear();
+        locations.clear();
+        heapPointer = 4;
+    }
+
+    /**
 	 * Debug print memory
 	 */
 	public static void printMemory() {
@@ -258,15 +265,12 @@ public class Interpreter {
 			ImcCJUMP instr = (ImcCJUMP) instruction;
 			Object cond = execute(instr.cond);
 
-			if (cond instanceof Integer) {
-				if (((Integer) cond).intValue() != 0) {
-                    return instr.trueLabel;
-                }
-				else {
-                    return instr.falseLabel;
-                }
-			}
-			else Report.error("CJUMP: illegal condition type.");
+            if (((Integer) cond).intValue() != 0) {
+                return instr.trueLabel;
+            }
+            else {
+                return instr.falseLabel;
+            }
 		}
 		
 		if (instruction instanceof ImcCONST) {

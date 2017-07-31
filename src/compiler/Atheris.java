@@ -111,6 +111,8 @@ public class Atheris {
 
         Report.fileName = sourceFileName;
 
+        Interpreter.clean();
+
         // Izvajanje faz prevajanja.
         while (true) {
             // Leksikalna analiza.

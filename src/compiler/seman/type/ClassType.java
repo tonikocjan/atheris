@@ -133,7 +133,7 @@ public class ClassType extends ObjectType implements ReferenceType {
                 while (defIterator.hasNext()) {
                     AbsDef next = defIterator.next();
 
-                    if (next instanceof AbsFunDef) {
+                    if (!next.isStatic() && next instanceof AbsFunDef) {
                         current = (AbsFunDef) next;
                         return true;
                     }

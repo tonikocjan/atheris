@@ -56,8 +56,7 @@ public abstract class ObjectType extends Type {
      * @param types Type for each member.
      * @param baseClass Base class for this class type.
      */
-    public ObjectType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types,
-                      CanType baseClass, int reservedSize) {
+    public ObjectType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types, CanType baseClass, int reservedSize) {
         if (names.size() != types.size()) {
             Report.error("Internal error :: compiler.seman.type.ObjectType: "
                     + "names count not equal types count");

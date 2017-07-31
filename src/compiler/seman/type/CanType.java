@@ -99,8 +99,9 @@ public class CanType extends Type {
         int size = 0;
         while (defIterator.hasNext()) {
             Type t = typeIterator.next();
+            AbsDef def = defIterator.next();
 
-            if (defIterator.next() instanceof AbsVarDef) {
+            if (def instanceof AbsVarDef) {
                 size += t.size();
             }
         }

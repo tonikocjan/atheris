@@ -11,6 +11,9 @@
 "A::foo()"
 1
 "B::b()"
+"c"
+"b"
+"a"
 10
 "a"
 "This is a static function"
@@ -25,5 +28,8 @@
 "ext::toString(_:)"
 2000000
 30
+"This is A2's implementation of P1::p"
+"This is A2's implementation of P2::q"
+"This is B2's implementation of P1"
 8
 10
