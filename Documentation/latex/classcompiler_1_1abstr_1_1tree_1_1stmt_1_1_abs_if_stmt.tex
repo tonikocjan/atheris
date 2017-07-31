@@ -1,0 +1,71 @@
+\hypertarget{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt}{}\section{compiler.\+abstr.\+tree.\+stmt.\+Abs\+If\+Stmt Class Reference}
+\label{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt}\index{compiler.\+abstr.\+tree.\+stmt.\+Abs\+If\+Stmt@{compiler.\+abstr.\+tree.\+stmt.\+Abs\+If\+Stmt}}
+Inheritance diagram for compiler.\+abstr.\+tree.\+stmt.\+Abs\+If\+Stmt\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_af68c09d1f84a735be7de041251f44acc}{Abs\+If\+Stmt} (\hyperlink{classcompiler_1_1_position}{Position} pos, Vector$<$ \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_condition}{Condition} $>$ \hyperlink{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_ae0bcb1a3a7a2633718a6fae1e50c4d65}{conditions}, \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts}{Abs\+Stmts} \hyperlink{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_a067f9cb00ae72b23eccd8e81413a1865}{else\+Body})
+\item 
+\mbox{\Hypertarget{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_a61062e5b2f85d7a654825d142bb59bb5}\label{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_a61062e5b2f85d7a654825d142bb59bb5}} 
+void {\bfseries accept} (\hyperlink{interfacecompiler_1_1abstr_1_1_a_s_t_visitor}{A\+S\+T\+Visitor} a\+S\+T\+Visitor)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+final Vector$<$ \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_condition}{Condition} $>$ \hyperlink{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_ae0bcb1a3a7a2633718a6fae1e50c4d65}{conditions}
+\item 
+final \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts}{Abs\+Stmts} \hyperlink{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_a067f9cb00ae72b23eccd8e81413a1865}{else\+Body}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Conditional expression.
+
+\begin{DoxyAuthor}{Author}
+sliva 
+\end{DoxyAuthor}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_af68c09d1f84a735be7de041251f44acc}\label{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_af68c09d1f84a735be7de041251f44acc}} 
+\index{compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt@{compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt}!Abs\+If\+Stmt@{Abs\+If\+Stmt}}
+\index{Abs\+If\+Stmt@{Abs\+If\+Stmt}!compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt@{compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt}}
+\subsubsection{\texorpdfstring{Abs\+If\+Stmt()}{AbsIfStmt()}}
+{\footnotesize\ttfamily compiler.\+abstr.\+tree.\+stmt.\+Abs\+If\+Stmt.\+Abs\+If\+Stmt (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1_position}{Position}}]{pos,  }\item[{Vector$<$ \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_condition}{Condition} $>$}]{conditions,  }\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts}{Abs\+Stmts}}]{else\+Body }\end{DoxyParamCaption})}
+
+Create new conditional statement.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos} & \hyperlink{classcompiler_1_1_position}{Position} of this node. \\
+\hline
+{\em conditions} & If and else-\/if code. \\
+\hline
+{\em else\+Body} & Code to be executed when conditions fail. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_ae0bcb1a3a7a2633718a6fae1e50c4d65}\label{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_ae0bcb1a3a7a2633718a6fae1e50c4d65}} 
+\index{compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt@{compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt}!conditions@{conditions}}
+\index{conditions@{conditions}!compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt@{compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt}}
+\subsubsection{\texorpdfstring{conditions}{conditions}}
+{\footnotesize\ttfamily final Vector$<$\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_condition}{Condition}$>$ compiler.\+abstr.\+tree.\+stmt.\+Abs\+If\+Stmt.\+conditions}
+
+Vector holding all of the conditions for this if expression. \mbox{\Hypertarget{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_a067f9cb00ae72b23eccd8e81413a1865}\label{classcompiler_1_1abstr_1_1tree_1_1stmt_1_1_abs_if_stmt_a067f9cb00ae72b23eccd8e81413a1865}} 
+\index{compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt@{compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt}!else\+Body@{else\+Body}}
+\index{else\+Body@{else\+Body}!compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt@{compiler\+::abstr\+::tree\+::stmt\+::\+Abs\+If\+Stmt}}
+\subsubsection{\texorpdfstring{else\+Body}{elseBody}}
+{\footnotesize\ttfamily final \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts}{Abs\+Stmts} compiler.\+abstr.\+tree.\+stmt.\+Abs\+If\+Stmt.\+else\+Body}
+
+Code to be executed when all of the conditions fail. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/compiler/abstr/tree/stmt/Abs\+If\+Stmt.\+java\end{DoxyCompactItemize}

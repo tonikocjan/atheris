@@ -53,7 +53,7 @@ public abstract class Type {
 	/**
 	 * Check if this type can be casted to given type.
 	 * @param type Given type
-	 * @return True if this type can be casted to type t
+	 * @return True if this type can be casted to 'type'
 	 */
 	public abstract boolean canCastTo(Type type);
 	

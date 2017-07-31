@@ -1,0 +1,129 @@
+\hypertarget{classcompiler_1_1seman_1_1_symb_desc}{}\section{compiler.\+seman.\+Symb\+Desc Class Reference}
+\label{classcompiler_1_1seman_1_1_symb_desc}\index{compiler.\+seman.\+Symb\+Desc@{compiler.\+seman.\+Symb\+Desc}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{classcompiler_1_1seman_1_1_symb_desc_a76d9405731181538c620c3bd1e7e1c62}{set\+Scope} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree} node, int node\+Scope)
+\item 
+static Integer \hyperlink{classcompiler_1_1seman_1_1_symb_desc_ae48b37c9f25fad454342652fa331e472}{get\+Scope} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree} node)
+\item 
+static void \hyperlink{classcompiler_1_1seman_1_1_symb_desc_aeccc247afebdb4b5ee21b701ffbe026a}{set\+Name\+Def} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree} node, \hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def} def)
+\item 
+static \hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def} \hyperlink{classcompiler_1_1seman_1_1_symb_desc_af0e1200fe7e5f3ace19ed1d88dd92c9c}{get\+Name\+Def} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree} node)
+\item 
+static void \hyperlink{classcompiler_1_1seman_1_1_symb_desc_aba233cf3b5e66207203bfc7d42b8ae4b}{set\+Type} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree} node, \hyperlink{classcompiler_1_1seman_1_1type_1_1_type}{Type} typ)
+\item 
+static \hyperlink{classcompiler_1_1seman_1_1type_1_1_type}{Type} \hyperlink{classcompiler_1_1seman_1_1_symb_desc_a3c812018176730dd85b7bf8e35909786}{get\+Type} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree} node)
+\item 
+\mbox{\Hypertarget{classcompiler_1_1seman_1_1_symb_desc_a8ffc83d2f90182276753654fdffc11a0}\label{classcompiler_1_1seman_1_1_symb_desc_a8ffc83d2f90182276753654fdffc11a0}} 
+static void {\bfseries clean} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Opisi posameznih definicij.
+
+\begin{DoxyAuthor}{Author}
+sliva 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classcompiler_1_1seman_1_1_symb_desc_af0e1200fe7e5f3ace19ed1d88dd92c9c}\label{classcompiler_1_1seman_1_1_symb_desc_af0e1200fe7e5f3ace19ed1d88dd92c9c}} 
+\index{compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}!get\+Name\+Def@{get\+Name\+Def}}
+\index{get\+Name\+Def@{get\+Name\+Def}!compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}}
+\subsubsection{\texorpdfstring{get\+Name\+Def()}{getNameDef()}}
+{\footnotesize\ttfamily static \hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def} compiler.\+seman.\+Symb\+Desc.\+get\+Name\+Def (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree}}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Vrne definicijo imena, ki je povezano z vozliscem.
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & Vozlisce drevesa. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Definicija imena. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcompiler_1_1seman_1_1_symb_desc_ae48b37c9f25fad454342652fa331e472}\label{classcompiler_1_1seman_1_1_symb_desc_ae48b37c9f25fad454342652fa331e472}} 
+\index{compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}!get\+Scope@{get\+Scope}}
+\index{get\+Scope@{get\+Scope}!compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}}
+\subsubsection{\texorpdfstring{get\+Scope()}{getScope()}}
+{\footnotesize\ttfamily static Integer compiler.\+seman.\+Symb\+Desc.\+get\+Scope (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree}}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Vrne globino nivoja vidnosti za dano definicijo imena.
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & Vozlisce drevesa. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Globina nivoja vidnosti. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcompiler_1_1seman_1_1_symb_desc_a3c812018176730dd85b7bf8e35909786}\label{classcompiler_1_1seman_1_1_symb_desc_a3c812018176730dd85b7bf8e35909786}} 
+\index{compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}!get\+Type@{get\+Type}}
+\index{get\+Type@{get\+Type}!compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}}
+\subsubsection{\texorpdfstring{get\+Type()}{getType()}}
+{\footnotesize\ttfamily static \hyperlink{classcompiler_1_1seman_1_1type_1_1_type}{Type} compiler.\+seman.\+Symb\+Desc.\+get\+Type (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree}}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Vrne opis tipa, ki je povezano z vozliscem.
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & Vozlisce drevesa. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Opis tipa. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcompiler_1_1seman_1_1_symb_desc_aeccc247afebdb4b5ee21b701ffbe026a}\label{classcompiler_1_1seman_1_1_symb_desc_aeccc247afebdb4b5ee21b701ffbe026a}} 
+\index{compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}!set\+Name\+Def@{set\+Name\+Def}}
+\index{set\+Name\+Def@{set\+Name\+Def}!compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}}
+\subsubsection{\texorpdfstring{set\+Name\+Def()}{setNameDef()}}
+{\footnotesize\ttfamily static void compiler.\+seman.\+Symb\+Desc.\+set\+Name\+Def (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree}}]{node,  }\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def}}]{def }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Poveze vozlisce drevesa z definicijo imena.
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & Vozlisce drevesa. \\
+\hline
+{\em def} & Definicija imena. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classcompiler_1_1seman_1_1_symb_desc_a76d9405731181538c620c3bd1e7e1c62}\label{classcompiler_1_1seman_1_1_symb_desc_a76d9405731181538c620c3bd1e7e1c62}} 
+\index{compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}!set\+Scope@{set\+Scope}}
+\index{set\+Scope@{set\+Scope}!compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}}
+\subsubsection{\texorpdfstring{set\+Scope()}{setScope()}}
+{\footnotesize\ttfamily static void compiler.\+seman.\+Symb\+Desc.\+set\+Scope (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree}}]{node,  }\item[{int}]{node\+Scope }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Doloci globino nivoja vidnosti za dano definicijo imena.
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & Vozlisce drevesa. \\
+\hline
+{\em node\+Scope} & Globina nivoja vidnosti. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classcompiler_1_1seman_1_1_symb_desc_aba233cf3b5e66207203bfc7d42b8ae4b}\label{classcompiler_1_1seman_1_1_symb_desc_aba233cf3b5e66207203bfc7d42b8ae4b}} 
+\index{compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}!set\+Type@{set\+Type}}
+\index{set\+Type@{set\+Type}!compiler\+::seman\+::\+Symb\+Desc@{compiler\+::seman\+::\+Symb\+Desc}}
+\subsubsection{\texorpdfstring{set\+Type()}{setType()}}
+{\footnotesize\ttfamily static void compiler.\+seman.\+Symb\+Desc.\+set\+Type (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree}}]{node,  }\item[{\hyperlink{classcompiler_1_1seman_1_1type_1_1_type}{Type}}]{typ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Poveze vozlisce drevesa z opisom tipa.
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & Vozlisce drevesa. \\
+\hline
+{\em typ} & Opis tipa. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/compiler/seman/Symb\+Desc.\+java\end{DoxyCompactItemize}

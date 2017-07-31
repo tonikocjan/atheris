@@ -1423,8 +1423,7 @@ public class SynAn {
 					+ symbol.lexeme + "\", delete this token");
 		}
 
-		return new AbsBinExpr(new Position(e.position, expr.position), oper, e,
-				expr);
+		return new AbsBinExpr(new Position(e.position, expr.position), oper, e, expr);
 	}
 
 	private AbsExpr parseAddExpression() {

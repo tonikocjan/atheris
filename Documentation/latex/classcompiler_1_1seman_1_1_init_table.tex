@@ -1,0 +1,56 @@
+\hypertarget{classcompiler_1_1seman_1_1_init_table}{}\section{compiler.\+seman.\+Init\+Table Class Reference}
+\label{classcompiler_1_1seman_1_1_init_table}\index{compiler.\+seman.\+Init\+Table@{compiler.\+seman.\+Init\+Table}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{classcompiler_1_1seman_1_1_init_table_ab1bc216d1fafab32217ef254b68c9569}{initialize} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def} var)
+\item 
+static void \hyperlink{classcompiler_1_1seman_1_1_init_table_a77136e3337120c94621ca98e211672e0}{uninitialize} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def} var)
+\item 
+static boolean \hyperlink{classcompiler_1_1seman_1_1_init_table_af03875273105668a82c23c4da49e0858}{is\+Initialized} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def} var)
+\item 
+static void \hyperlink{classcompiler_1_1seman_1_1_init_table_aef306a1b29699a969e78a1092a8976f5}{new\+Scope} ()
+\item 
+static void \hyperlink{classcompiler_1_1seman_1_1_init_table_a1c39e093ff7b12c970174aec391c9c4c}{old\+Scope} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classcompiler_1_1seman_1_1_init_table_ab1bc216d1fafab32217ef254b68c9569}\label{classcompiler_1_1seman_1_1_init_table_ab1bc216d1fafab32217ef254b68c9569}} 
+\index{compiler\+::seman\+::\+Init\+Table@{compiler\+::seman\+::\+Init\+Table}!initialize@{initialize}}
+\index{initialize@{initialize}!compiler\+::seman\+::\+Init\+Table@{compiler\+::seman\+::\+Init\+Table}}
+\subsubsection{\texorpdfstring{initialize()}{initialize()}}
+{\footnotesize\ttfamily static void compiler.\+seman.\+Init\+Table.\+initialize (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def}}]{var }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Initialize variable. \mbox{\Hypertarget{classcompiler_1_1seman_1_1_init_table_af03875273105668a82c23c4da49e0858}\label{classcompiler_1_1seman_1_1_init_table_af03875273105668a82c23c4da49e0858}} 
+\index{compiler\+::seman\+::\+Init\+Table@{compiler\+::seman\+::\+Init\+Table}!is\+Initialized@{is\+Initialized}}
+\index{is\+Initialized@{is\+Initialized}!compiler\+::seman\+::\+Init\+Table@{compiler\+::seman\+::\+Init\+Table}}
+\subsubsection{\texorpdfstring{is\+Initialized()}{isInitialized()}}
+{\footnotesize\ttfamily static boolean compiler.\+seman.\+Init\+Table.\+is\+Initialized (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def}}]{var }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Check if variable is initialized \begin{DoxyReturn}{Returns}
+true if variable is initialized, otherwise false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcompiler_1_1seman_1_1_init_table_aef306a1b29699a969e78a1092a8976f5}\label{classcompiler_1_1seman_1_1_init_table_aef306a1b29699a969e78a1092a8976f5}} 
+\index{compiler\+::seman\+::\+Init\+Table@{compiler\+::seman\+::\+Init\+Table}!new\+Scope@{new\+Scope}}
+\index{new\+Scope@{new\+Scope}!compiler\+::seman\+::\+Init\+Table@{compiler\+::seman\+::\+Init\+Table}}
+\subsubsection{\texorpdfstring{new\+Scope()}{newScope()}}
+{\footnotesize\ttfamily static void compiler.\+seman.\+Init\+Table.\+new\+Scope (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+New initialization scope. \mbox{\Hypertarget{classcompiler_1_1seman_1_1_init_table_a1c39e093ff7b12c970174aec391c9c4c}\label{classcompiler_1_1seman_1_1_init_table_a1c39e093ff7b12c970174aec391c9c4c}} 
+\index{compiler\+::seman\+::\+Init\+Table@{compiler\+::seman\+::\+Init\+Table}!old\+Scope@{old\+Scope}}
+\index{old\+Scope@{old\+Scope}!compiler\+::seman\+::\+Init\+Table@{compiler\+::seman\+::\+Init\+Table}}
+\subsubsection{\texorpdfstring{old\+Scope()}{oldScope()}}
+{\footnotesize\ttfamily static void compiler.\+seman.\+Init\+Table.\+old\+Scope (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Old initialization scope. Remove all initializations in current scope and go to previous scope \mbox{\Hypertarget{classcompiler_1_1seman_1_1_init_table_a77136e3337120c94621ca98e211672e0}\label{classcompiler_1_1seman_1_1_init_table_a77136e3337120c94621ca98e211672e0}} 
+\index{compiler\+::seman\+::\+Init\+Table@{compiler\+::seman\+::\+Init\+Table}!uninitialize@{uninitialize}}
+\index{uninitialize@{uninitialize}!compiler\+::seman\+::\+Init\+Table@{compiler\+::seman\+::\+Init\+Table}}
+\subsubsection{\texorpdfstring{uninitialize()}{uninitialize()}}
+{\footnotesize\ttfamily static void compiler.\+seman.\+Init\+Table.\+uninitialize (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def}}]{var }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Unitialize variable. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/compiler/seman/Init\+Table.\+java\end{DoxyCompactItemize}

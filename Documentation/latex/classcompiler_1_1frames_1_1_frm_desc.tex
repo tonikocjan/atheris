@@ -1,0 +1,105 @@
+\hypertarget{classcompiler_1_1frames_1_1_frm_desc}{}\section{compiler.\+frames.\+Frm\+Desc Class Reference}
+\label{classcompiler_1_1frames_1_1_frm_desc}\index{compiler.\+frames.\+Frm\+Desc@{compiler.\+frames.\+Frm\+Desc}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{classcompiler_1_1frames_1_1_frm_desc_a28716d1f65fe0570d4bd8f10bc5368e7}{set\+Frame} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def} fun, \hyperlink{classcompiler_1_1frames_1_1_frm_frame}{Frm\+Frame} frame)
+\item 
+static \hyperlink{classcompiler_1_1frames_1_1_frm_frame}{Frm\+Frame} \hyperlink{classcompiler_1_1frames_1_1_frm_desc_a01656952662f7132eecf87da7fd7f2ec}{get\+Frame} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree} fun)
+\item 
+static void \hyperlink{classcompiler_1_1frames_1_1_frm_desc_a2c1d68dbff5ca39ab5ffaf4b098a2875}{set\+Access} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def} var, \hyperlink{interfacecompiler_1_1frames_1_1_frm_access}{Frm\+Access} access)
+\item 
+static \hyperlink{interfacecompiler_1_1frames_1_1_frm_access}{Frm\+Access} \hyperlink{classcompiler_1_1frames_1_1_frm_desc_a609f7edf099f5347df87b10678edbd50}{get\+Access} (\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def} var)
+\item 
+\mbox{\Hypertarget{classcompiler_1_1frames_1_1_frm_desc_a31bcc6d2a72adefc77120afbd7ceead2}\label{classcompiler_1_1frames_1_1_frm_desc_a31bcc6d2a72adefc77120afbd7ceead2}} 
+static void {\bfseries set\+Virtual\+Table} (\hyperlink{classcompiler_1_1seman_1_1type_1_1_class_type}{Class\+Type} class\+Type, \hyperlink{classcompiler_1_1frames_1_1_frm_virtual_table_access}{Frm\+Virtual\+Table\+Access} virtual\+Table)
+\item 
+\mbox{\Hypertarget{classcompiler_1_1frames_1_1_frm_desc_af8420dde8e6d97cbde4be96b7282c3ac}\label{classcompiler_1_1frames_1_1_frm_desc_af8420dde8e6d97cbde4be96b7282c3ac}} 
+static \hyperlink{classcompiler_1_1frames_1_1_frm_virtual_table_access}{Frm\+Virtual\+Table\+Access} {\bfseries get\+Virtual\+Table} (\hyperlink{classcompiler_1_1seman_1_1type_1_1_class_type}{Class\+Type} class\+Type)
+\item 
+static void \hyperlink{classcompiler_1_1frames_1_1_frm_desc_a59b6355f8d235a0c1d9b6293ece69850}{clean} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Shranjevanje klicnih zapisov.
+
+\begin{DoxyAuthor}{Author}
+sliva 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classcompiler_1_1frames_1_1_frm_desc_a59b6355f8d235a0c1d9b6293ece69850}\label{classcompiler_1_1frames_1_1_frm_desc_a59b6355f8d235a0c1d9b6293ece69850}} 
+\index{compiler\+::frames\+::\+Frm\+Desc@{compiler\+::frames\+::\+Frm\+Desc}!clean@{clean}}
+\index{clean@{clean}!compiler\+::frames\+::\+Frm\+Desc@{compiler\+::frames\+::\+Frm\+Desc}}
+\subsubsection{\texorpdfstring{clean()}{clean()}}
+{\footnotesize\ttfamily static void compiler.\+frames.\+Frm\+Desc.\+clean (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Cleanup. \mbox{\Hypertarget{classcompiler_1_1frames_1_1_frm_desc_a609f7edf099f5347df87b10678edbd50}\label{classcompiler_1_1frames_1_1_frm_desc_a609f7edf099f5347df87b10678edbd50}} 
+\index{compiler\+::frames\+::\+Frm\+Desc@{compiler\+::frames\+::\+Frm\+Desc}!get\+Access@{get\+Access}}
+\index{get\+Access@{get\+Access}!compiler\+::frames\+::\+Frm\+Desc@{compiler\+::frames\+::\+Frm\+Desc}}
+\subsubsection{\texorpdfstring{get\+Access()}{getAccess()}}
+{\footnotesize\ttfamily static \hyperlink{interfacecompiler_1_1frames_1_1_frm_access}{Frm\+Access} compiler.\+frames.\+Frm\+Desc.\+get\+Access (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def}}]{var }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Vrne opis dostopa do spremenljivke, parametra ali komponente.
+
+
+\begin{DoxyParams}{Parameters}
+{\em var} & Spremenljivka, parameter ali komponenta. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Opis dostopa. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcompiler_1_1frames_1_1_frm_desc_a01656952662f7132eecf87da7fd7f2ec}\label{classcompiler_1_1frames_1_1_frm_desc_a01656952662f7132eecf87da7fd7f2ec}} 
+\index{compiler\+::frames\+::\+Frm\+Desc@{compiler\+::frames\+::\+Frm\+Desc}!get\+Frame@{get\+Frame}}
+\index{get\+Frame@{get\+Frame}!compiler\+::frames\+::\+Frm\+Desc@{compiler\+::frames\+::\+Frm\+Desc}}
+\subsubsection{\texorpdfstring{get\+Frame()}{getFrame()}}
+{\footnotesize\ttfamily static \hyperlink{classcompiler_1_1frames_1_1_frm_frame}{Frm\+Frame} compiler.\+frames.\+Frm\+Desc.\+get\+Frame (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree}{Abs\+Tree}}]{fun }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Vrne klicni zapis funkcije.
+
+
+\begin{DoxyParams}{Parameters}
+{\em fun} & Funkcija. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Klicni zapis. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classcompiler_1_1frames_1_1_frm_desc_a2c1d68dbff5ca39ab5ffaf4b098a2875}\label{classcompiler_1_1frames_1_1_frm_desc_a2c1d68dbff5ca39ab5ffaf4b098a2875}} 
+\index{compiler\+::frames\+::\+Frm\+Desc@{compiler\+::frames\+::\+Frm\+Desc}!set\+Access@{set\+Access}}
+\index{set\+Access@{set\+Access}!compiler\+::frames\+::\+Frm\+Desc@{compiler\+::frames\+::\+Frm\+Desc}}
+\subsubsection{\texorpdfstring{set\+Access()}{setAccess()}}
+{\footnotesize\ttfamily static void compiler.\+frames.\+Frm\+Desc.\+set\+Access (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def}}]{var,  }\item[{\hyperlink{interfacecompiler_1_1frames_1_1_frm_access}{Frm\+Access}}]{access }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Poveze spremenljivko, parameter ali komponento z opisom dostopa.
+
+
+\begin{DoxyParams}{Parameters}
+{\em var} & Spremenljivka, parameter ali komponenta. \\
+\hline
+{\em access} & Opis dostopa. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classcompiler_1_1frames_1_1_frm_desc_a28716d1f65fe0570d4bd8f10bc5368e7}\label{classcompiler_1_1frames_1_1_frm_desc_a28716d1f65fe0570d4bd8f10bc5368e7}} 
+\index{compiler\+::frames\+::\+Frm\+Desc@{compiler\+::frames\+::\+Frm\+Desc}!set\+Frame@{set\+Frame}}
+\index{set\+Frame@{set\+Frame}!compiler\+::frames\+::\+Frm\+Desc@{compiler\+::frames\+::\+Frm\+Desc}}
+\subsubsection{\texorpdfstring{set\+Frame()}{setFrame()}}
+{\footnotesize\ttfamily static void compiler.\+frames.\+Frm\+Desc.\+set\+Frame (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def}}]{fun,  }\item[{\hyperlink{classcompiler_1_1frames_1_1_frm_frame}{Frm\+Frame}}]{frame }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Poveze funkcijo s klicnim zapisom.
+
+
+\begin{DoxyParams}{Parameters}
+{\em fun} & Funkcija. \\
+\hline
+{\em frame} & Klicni zapis. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/compiler/frames/Frm\+Desc.\+java\end{DoxyCompactItemize}

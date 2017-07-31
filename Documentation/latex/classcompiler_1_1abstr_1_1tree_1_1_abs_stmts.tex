@@ -1,0 +1,72 @@
+\hypertarget{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts}{}\section{compiler.\+abstr.\+tree.\+Abs\+Stmts Class Reference}
+\label{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts}\index{compiler.\+abstr.\+tree.\+Abs\+Stmts@{compiler.\+abstr.\+tree.\+Abs\+Stmts}}
+Inheritance diagram for compiler.\+abstr.\+tree.\+Abs\+Stmts\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts_ae15c4d33cbbe4c8211323b5c07499499}{Abs\+Stmts} (\hyperlink{classcompiler_1_1_position}{Position} \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree_a127a686d3a3f9ba470f36c6b3336caea}{position}, Linked\+List$<$ \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_stmt}{Abs\+Stmt} $>$ abs\+Stmts)
+\item 
+\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts_ad1be108e84442b930f22a7fe7e274e89}{Abs\+Stmts} (\hyperlink{classcompiler_1_1_position}{Position} \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_tree_a127a686d3a3f9ba470f36c6b3336caea}{position}, Linked\+List$<$ \hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def} $>$ defs, boolean ignore)
+\item 
+\mbox{\Hypertarget{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts_a8501756490b9e386904d927288c11874}\label{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts_a8501756490b9e386904d927288c11874}} 
+void {\bfseries accept} (\hyperlink{interfacecompiler_1_1abstr_1_1_a_s_t_visitor}{A\+S\+T\+Visitor} a\+S\+T\+Visitor)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+final Linked\+List$<$ \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_stmt}{Abs\+Stmt} $>$ \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts_acdb710e241c750ea503cb826b0de182a}{statements}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+List of statements. \begin{DoxyAuthor}{Author}
+toni kocjan 
+\end{DoxyAuthor}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts_ae15c4d33cbbe4c8211323b5c07499499}\label{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts_ae15c4d33cbbe4c8211323b5c07499499}} 
+\index{compiler\+::abstr\+::tree\+::\+Abs\+Stmts@{compiler\+::abstr\+::tree\+::\+Abs\+Stmts}!Abs\+Stmts@{Abs\+Stmts}}
+\index{Abs\+Stmts@{Abs\+Stmts}!compiler\+::abstr\+::tree\+::\+Abs\+Stmts@{compiler\+::abstr\+::tree\+::\+Abs\+Stmts}}
+\subsubsection{\texorpdfstring{Abs\+Stmts()}{AbsStmts()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily compiler.\+abstr.\+tree.\+Abs\+Stmts.\+Abs\+Stmts (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1_position}{Position}}]{position,  }\item[{Linked\+List$<$ \hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_stmt}{Abs\+Stmt} $>$}]{abs\+Stmts }\end{DoxyParamCaption})}
+
+Create new statements list. 
+\begin{DoxyParams}{Parameters}
+{\em position} & \hyperlink{classcompiler_1_1_position}{Position}. \\
+\hline
+{\em abs\+Stmts} & Statements. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts_ad1be108e84442b930f22a7fe7e274e89}\label{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts_ad1be108e84442b930f22a7fe7e274e89}} 
+\index{compiler\+::abstr\+::tree\+::\+Abs\+Stmts@{compiler\+::abstr\+::tree\+::\+Abs\+Stmts}!Abs\+Stmts@{Abs\+Stmts}}
+\index{Abs\+Stmts@{Abs\+Stmts}!compiler\+::abstr\+::tree\+::\+Abs\+Stmts@{compiler\+::abstr\+::tree\+::\+Abs\+Stmts}}
+\subsubsection{\texorpdfstring{Abs\+Stmts()}{AbsStmts()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily compiler.\+abstr.\+tree.\+Abs\+Stmts.\+Abs\+Stmts (\begin{DoxyParamCaption}\item[{\hyperlink{classcompiler_1_1_position}{Position}}]{position,  }\item[{Linked\+List$<$ \hyperlink{classcompiler_1_1abstr_1_1tree_1_1def_1_1_abs_def}{Abs\+Def} $>$}]{defs,  }\item[{boolean}]{ignore }\end{DoxyParamCaption})}
+
+Create new statements list. 
+\begin{DoxyParams}{Parameters}
+{\em position} & \hyperlink{classcompiler_1_1_position}{Position}. \\
+\hline
+{\em defs} & Definitions. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts_acdb710e241c750ea503cb826b0de182a}\label{classcompiler_1_1abstr_1_1tree_1_1_abs_stmts_acdb710e241c750ea503cb826b0de182a}} 
+\index{compiler\+::abstr\+::tree\+::\+Abs\+Stmts@{compiler\+::abstr\+::tree\+::\+Abs\+Stmts}!statements@{statements}}
+\index{statements@{statements}!compiler\+::abstr\+::tree\+::\+Abs\+Stmts@{compiler\+::abstr\+::tree\+::\+Abs\+Stmts}}
+\subsubsection{\texorpdfstring{statements}{statements}}
+{\footnotesize\ttfamily final Linked\+List$<$\hyperlink{classcompiler_1_1abstr_1_1tree_1_1_abs_stmt}{Abs\+Stmt}$>$ compiler.\+abstr.\+tree.\+Abs\+Stmts.\+statements}
+
+Statements. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/compiler/abstr/tree/Abs\+Stmts.\+java\end{DoxyCompactItemize}

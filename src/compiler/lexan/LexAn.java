@@ -31,8 +31,7 @@ import compiler.*;
 /**
  * Leksikalni analizator.
  * 
- * @author sliva
- * @implementation Toni Kocjan
+ * @author Toni Kocjan
  */
 public class LexAn {
 
@@ -181,13 +180,13 @@ public class LexAn {
 			 */
 			if (nxtCh == '/') {
 				nxtCh = file.read();
-				// if next character is not *, return DIV token
+				// if next character is not *, return division token
 				if (nxtCh != '*') {
 					dontRead = true;
 					return new Symbol(TokenType.DIV, "/", startRow, startCol,
 							startRow, startCol + 1);
 				}
-				// else skip characters until */
+				// else skip characters until '*/'
 				do {
 					nxtCh = file.read();
 					startCol++;
@@ -212,9 +211,9 @@ public class LexAn {
 			/**
 			 * Handle EOF.
 			 */
-			if (nxtCh == -1)
-				return new Symbol(TokenType.EOF, "$", startRow, startCol, startRow,
-						startCol);
+			if (nxtCh == -1) {
+                return new Symbol(TokenType.EOF, "$", startRow, startCol, startRow, startCol);
+            }
 
 			/**
 			 * Parse string.
@@ -245,8 +244,7 @@ public class LexAn {
 						}
 					}
 				}
-				// if last character of the word isn't single-quote, report
-				// error
+				// if last character of the word isn't double-quote, report error
 				if (!strClosed) {
 					Report.error(new Position(startRow, startCol, startRow,
 							startCol + word.length()),
@@ -305,15 +303,14 @@ public class LexAn {
 					nxtCh = file.read();
 
 					/**
-					 * Delemiters for identifier are: 
+					 * Delimiters for identifiers are:
 					 * - whitespaces 
 					 * - EOF
 					 * - operators 
 					 * - single-quote
 					 * - doouble-quote
 					 */
-					if (isOperator(nxtCh) != null || isWhiteSpace(nxtCh)
-							|| nxtCh == -1 || nxtCh == '\'') {
+					if (isOperator(nxtCh) != null || isWhiteSpace(nxtCh) || nxtCh == -1 || nxtCh == '\'') {
 						dontRead = true;
 						TokenType tokenType = TokenType.IDENTIFIER;
 
@@ -328,6 +325,7 @@ public class LexAn {
 						return new Symbol(tokenType, word.toString(), startRow,
 								startCol, startRow, startCol + word.length());
 					}
+
 					/**
 					 * If this is not legal identifier character, report error.
 					 */
