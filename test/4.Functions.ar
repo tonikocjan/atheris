@@ -1,0 +1,60 @@
+import stdlib
+
+# Deklaracija funkcij
+
+func test() {
+	print("ta funkcija nima nic argumentov in vraca Void")
+}
+
+# Funkcija z enim argumentom tipa Bool, ki vrača Double
+func foo(x: Bool) Double {
+	if x {
+		return 10.0
+	}
+	else {
+		return 50.0
+	}
+}
+
+test()
+print(foo(x: true))
+
+# Metode z istim imenom
+
+func metoda() {
+	print("metodaA")
+}
+
+func metoda(x: Int) {
+	print("metodaB")
+}
+
+func metoda(double: Double) {
+	print("metodaC")
+}
+
+func metoda(x: Int, y: Bool) {
+	print("metodaD")
+}
+
+metoda()
+metoda(x: 10)
+metoda(double: 1.5)
+metoda(x: 0, y: false)
+
+# ime argumenta je lahko sestavljeno iz dveh delov
+# iz labele argumenta ter imena parametra
+
+func cell(forRowAt index: Int) {
+	print(index)
+}
+
+# izven metode pa ime parametra
+cell(forRowAt: 3)
+
+# ime parametra je lahko tudi prazno
+func viewController(_ controller: Int) {
+	print(controller)
+}
+
+viewController(10)

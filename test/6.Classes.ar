@@ -1,0 +1,25 @@
+import stdlib
+
+class Static {
+	static func f1() {
+	}
+
+	static func f2() {
+	}
+}
+
+class Tmp {
+	func a() {
+		print("a")
+	}
+	func b() {
+		print("b")
+	}
+	func c() {
+		print("c")
+	}
+}
+
+Tmp().c()
+Tmp().b()
+Tmp().a()

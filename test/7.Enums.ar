@@ -1,0 +1,48 @@
+import stdlib
+
+# Enumeracije
+
+# deklaracija enumeracije
+enum Languages {
+	case Cpp
+	case Java
+	case ObjectiveC, Swift
+}
+
+let x: Languages = Languages.Cpp
+if x == Languages.Java {
+	print("Java")
+}
+else {
+	print("Some other language")
+}
+
+
+# Surove vrednosti enumeracije
+
+# enumeracija Languages nima surovih vrednosti
+
+# error:
+# print(x.rawValue)
+
+enum Days: Int {
+	case Monday, Tuesday
+	case Wednesday, Thursday = 10, Friday
+}
+
+print(Days.Monday.rawValue)
+print(Days.Tuesday.rawValue)
+print(Days.Wednesday.rawValue)
+print(Days.Thursday.rawValue)
+print(Days.Friday.rawValue)
+
+
+# če je tip String, je privzeta vrednost ime memberja
+enum CarBrands: String {
+	case Audi, Renault, VW="Volks Wagen"
+	case None="Izbrali niste nobene znamke"
+}
+
+print(CarBrands.Audi.rawValue)
+print(CarBrands.VW.rawValue)
+print(CarBrands.None.rawValue)

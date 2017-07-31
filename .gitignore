@@ -49,4 +49,5 @@ fabric.properties
 
 
 # Atheris
-*.ar
+*.log
+*.out

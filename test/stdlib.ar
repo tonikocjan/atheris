@@ -1,0 +1,28 @@
+
+interface Any {}
+
+interface Hashable {
+	func hash() Int
+}
+
+extension Int: Hashable {
+	func hash() Int {
+		return self % 12
+	}
+}
+
+extension String: Hashable {
+	func hash() Int {
+		return 10
+	}
+}
+
+# MARK: - Print
+func print() {
+}
+
+func print(_ any: Any) {
+}
+
+func mem(_ memory: Int) Int {	
+}

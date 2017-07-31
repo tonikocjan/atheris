@@ -1,0 +1,8 @@
+import stdlib
+
+func test() {
+	print(string: "test")
+}
+
+let x = test
+x()

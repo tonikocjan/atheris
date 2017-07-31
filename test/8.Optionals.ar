@@ -1,0 +1,21 @@
+import stdlib
+
+/*let x: Int? = nil
+let y: Int! = nil
+
+print(integer: x!)
+print(integer: y)*/
+
+
+class Point {
+	var x: Int = 0
+	var y: Int = 0
+
+	init(x: Int, y: Int) {
+		self.x = x
+		self.y = y
+	}
+}
+
+let point: Point!
+point?.x
