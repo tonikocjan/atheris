@@ -1,6 +1,6 @@
 package compiler.seman.type;
 
-import Utils.Constants;
+import utils.Constants;
 import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.def.AbsInterfaceDef;

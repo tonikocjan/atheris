@@ -1,6 +1,6 @@
 package compiler.abstr.tree.def;
 
-import Utils.Constants;
+import utils.Constants;
 import compiler.Position;
 import compiler.abstr.tree.AbsStmt;
 import compiler.abstr.tree.AbsStmts;

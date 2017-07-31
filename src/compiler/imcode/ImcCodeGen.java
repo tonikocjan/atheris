@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
 
-import Utils.Constants;
+import utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;

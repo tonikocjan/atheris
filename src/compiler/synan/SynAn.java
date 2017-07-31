@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Vector;
 
-import Utils.Constants;
+import utils.Constants;
 import compiler.Position;
 import compiler.Report;
 import compiler.abstr.tree.*;

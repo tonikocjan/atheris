@@ -18,7 +18,7 @@
 package compiler.seman;
 
 import java.util.LinkedList;
-import Utils.Constants;
+import utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;

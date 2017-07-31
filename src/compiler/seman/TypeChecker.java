@@ -19,7 +19,7 @@ package compiler.seman;
 
 import java.util.*;
 
-import Utils.Constants;
+import utils.Constants;
 import compiler.Report;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;

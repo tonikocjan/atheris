@@ -19,7 +19,7 @@ package compiler.frames;
 
 import java.util.LinkedList;
 
-import Utils.Constants;
+import utils.Constants;
 import compiler.abstr.ASTVisitor;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.*;
