@@ -54,17 +54,11 @@ public class Main {
 	 *            Parametri ukazne vrstice.
 	 */
 	public static void main(String[] args) {
-		/**
-		 * Load localization.
-		 */
 		LanguageManager.sharedManager.loadLocalization("Localize/en.lproj/Localizable.strings");
-		
-		/**
-		 * Start compiling.
-		 */
+
 		System.out.println(LanguageManager.localize("general_compiler_name"));
-		
-		// Pregled ukazne vrstice.
+
+		// TODO: - This should be separate method (separate class?)
 		for (int argc = 0; argc < args.length; argc++) {
 			if (args[argc].startsWith("--")) {
 				// Stikalo v ukazni vrstici.
@@ -103,11 +97,14 @@ public class Main {
 					Report.warning("Source file name '" + sourceFileName + "' ignored.");
 			}
 		}
-		if (sourceFileName == null)
-			Report.error(LanguageManager.localize("error_source_file_not_specified"));
 
-		// Odpiranje datoteke z vmesnimi rezultati.
-		if (dumpPhases != null) Report.openDumpFile(sourceFileName);
+		if (sourceFileName == null) {
+            Report.error(LanguageManager.localize("error_source_file_not_specified"));
+        }
+
+		if (dumpPhases != null) {
+            Report.openDumpFile(sourceFileName);
+        }
 		
 		Report.fileName = sourceFileName;
 
@@ -116,8 +113,7 @@ public class Main {
 			// Leksikalna analiza.
 			LexAn lexAn = new LexAn(sourceFileName, dumpPhases.contains("lexan"));
 			if (execPhase.equals("lexan")) {
-				while (lexAn.lexAn().token != TokenType.EOF) {
-				}
+				while (lexAn.nextSymbol().token != TokenType.EOF) {}
 				break;
 			}
 			

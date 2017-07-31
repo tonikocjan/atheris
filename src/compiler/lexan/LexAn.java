@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import Utils.Constants;
 import managers.LanguageManager;
 import compiler.*;
 
@@ -35,7 +36,9 @@ import compiler.*;
  */
 public class LexAn {
 
-	/** Ali se izpisujejo vmesni rezultati. */
+	/**
+     * Should dump intermediate results.
+     */
 	private boolean dump;
 
 	/**
@@ -44,7 +47,7 @@ public class LexAn {
 	private FileInputStream file = null;
 
 	/**
-	 * Buffer containg current word / symbol which is being processed.
+	 * Buffer containing current word / symbol which is being processed.
 	 */
 	private StringBuilder word = null;
 
@@ -52,6 +55,7 @@ public class LexAn {
 	 * Map containing all reserved keywords.
 	 */
 	private static Map<String, TokenType> keywordsMap = null;
+
 	/**
 	 * Reserved keywords.
 	 */
@@ -76,7 +80,7 @@ public class LexAn {
 	private int startCol = 1, startRow = 1;
 
 	/**
-	 * 
+	 * When true, don't read next character in the main loop.
 	 */
 	private boolean dontRead = false;
 
@@ -85,12 +89,12 @@ public class LexAn {
 	 */
 
 	/**
-	 * Ustvari nov leksikalni analizator.
+	 * Construct lexical analyser.
 	 * 
 	 * @param sourceFileName
-	 *            Ime izvorne datoteke.
+	 *            Source file path.
 	 * @param dump
-	 *            Ali se izpisujejo vmesni rezultati.
+	 *            Should dump intermediate results.
 	 */
 	public LexAn(String sourceFileName, boolean dump) {
 		this.dump = dump;
@@ -118,23 +122,24 @@ public class LexAn {
 	}
 
 	/**
-	 * Vrne naslednji simbol iz izvorne datoteke. Preden vrne simbol, ga izpise
-	 * v datoteko z vmesnimi rezultati.
-	 * 
+	 * Vrne naslednji simbol iz izvorne datoteke. Preden vrne simbol, ga izpis v datoteko z vmesnimi rezultati.
+	 * Parse and return next symbol from
+     *
 	 * @return Naslednji simbol iz izvorne datoteke.
 	 */
-	public Symbol lexAn() {
-		if (file == null)
-			return null;
+	public Symbol nextSymbol() {
+		if (file == null) {
+            return null;
+        }
 
 		try {
 			Symbol s = parseSymbol();
-			if (s == null)
-				s = new Symbol(TokenType.EOF, "$", startRow, startCol, startRow,
-						startCol + 1);
+
+			if (s == null) {
+                s = new Symbol(TokenType.EOF, "$", startRow, startCol, startRow, startCol + 1);
+            }
 
 			dump(s);
-
 			return s;
 
 		} catch (IOException e) {
@@ -145,8 +150,7 @@ public class LexAn {
 	}
 
 	/**
-	 * Parse next symbol in file. If symbol is not lexically correct, report
-	 * error.
+	 * Parse next symbol in file. If symbol is not lexically correct, report error.
 	 * 
 	 * @return next symbol in file or null, if error detected
 	 * @throws IOException
@@ -165,13 +169,7 @@ public class LexAn {
 			 * Skip characters after '#'
 			 */
 			if (nxtCh == '#') {
-				while (nxtCh != -1 && nxtCh != 10)
-					nxtCh = file.read();
-				
-				// skip all whitespaces
-				skipWhitespaces();
-				dontRead = true;
-				
+                parseSingleLineComment();
 				continue;
 			}
 			
@@ -179,32 +177,17 @@ public class LexAn {
 			 * Handle multi-line comments.
 			 */
 			if (nxtCh == '/') {
-				nxtCh = file.read();
-				// if next character is not *, return division token
-				if (nxtCh != '*') {
-					dontRead = true;
-					return new Symbol(TokenType.DIV, "/", startRow, startCol,
-							startRow, startCol + 1);
-				}
-				// else skip characters until '*/'
-				do {
-					nxtCh = file.read();
-					startCol++;
-					if (nxtCh == '*' && file.read() == '/') {
-						nxtCh = file.read();
-						startCol++;
-						break;
-					}
-					if (nxtCh == '\n') {
-						startRow++;
-						startCol = 1;
-					}
-				} while (true);
-				
-				// skip all whitespaces
-				skipWhitespaces();
-				dontRead = true;
-				
+                nxtCh = file.read();
+
+                if (nxtCh == '*') {
+                    parseMultiLineComment();
+                }
+                else {
+                    // if next character is not *, return division token
+                    dontRead = true;
+                    return new Symbol(TokenType.DIV, "/", startRow, startCol, startRow, startCol + 1);
+                }
+
 				continue;
 			}
 
@@ -219,121 +202,28 @@ public class LexAn {
 			 * Parse string.
 			 */
 			if (nxtCh == '\"') {
-				word.append((char) nxtCh);
-				boolean strClosed = false;
-				while (true) {
-					nxtCh = file.read();
-					if (nxtCh < 32 || nxtCh > 126) {
-						if (isWhiteSpace(nxtCh) || nxtCh == -1)
-							break;
-						Report.error(new Position(startRow, startCol, startRow,
-								startCol + word.length() + 1),
-								LanguageManager.localize("lexan_error_invalid_token_in_string_constant"));
-					}
-
-					word.append((char) nxtCh);
-
-					if (nxtCh == '\"') {
-						nxtCh = file.read();
-						if (nxtCh == '\"')
-							;
-						else {
-							dontRead = true;
-							strClosed = true;
-							break;
-						}
-					}
-				}
-				// if last character of the word isn't double-quote, report error
-				if (!strClosed) {
-					Report.error(new Position(startRow, startCol, startRow,
-							startCol + word.length()),
-							LanguageManager.localize("lexan_error_string_not_closed"));
-				}
-
-				return new Symbol(TokenType.STR_CONST, word.toString(), startRow,
-						startCol, startRow, startCol + word.length());
+                return parseString();
 			}
 
 			/**
 			 * Parse numeric const.
 			 */
 			if (isNumeric(nxtCh)) {
-				boolean didParseDouble = false;
-				while (true) {
-					while (isNumeric(nxtCh)) {
-						word.append((char) nxtCh);
-						nxtCh = file.read();
-					}
-					if (!didParseDouble && nxtCh == '.') {
-						didParseDouble = true;
-						word.append((char) nxtCh);
-						nxtCh = file.read();
-					} else
-						break;
-				}
-				dontRead = true;
-
-				TokenType t = didParseDouble ? TokenType.DOUBLE_CONST : TokenType.INT_CONST;
-				return new Symbol(t, word.toString(), startRow, startCol,
-						startRow, startCol + word.length());
+                return parseNumericConstant();
 			}
 
 			/**
 			 * Parse char const.
 			 */
 			if (nxtCh == '\'') {
-				nxtCh = file.read();
-				Symbol s = new Symbol(TokenType.CHAR_CONST, "" + (char) nxtCh,
-						startRow, startCol, startRow, startCol + 2);
-				nxtCh = file.read();
-				if (nxtCh != '\'')
-					Report.error(new Position(startRow, startCol, startRow,
-							startCol + word.length() + 1),
-							LanguageManager.localize("lexan_error_char_literal_not_closed"));
-				return s;
+                return parseCharConstant();
 			}
 
 			/**
 			 * Parse identifier.
 			 */
-			if (isLegalId(nxtCh)) {
-				while (true) {
-					word.append((char) nxtCh);
-					nxtCh = file.read();
-
-					/**
-					 * Delimiters for identifiers are:
-					 * - whitespaces 
-					 * - EOF
-					 * - operators 
-					 * - single-quote
-					 * - doouble-quote
-					 */
-					if (isOperator(nxtCh) != null || isWhiteSpace(nxtCh) || nxtCh == -1 || nxtCh == '\'') {
-						dontRead = true;
-						TokenType tokenType = TokenType.IDENTIFIER;
-
-						// Check if word is keyword
-						if (keywordsMap.containsKey(word.toString()))
-							tokenType = keywordsMap.get(word.toString());
-						// Check if word is log const
-						if (word.toString().equals("true")
-								|| word.toString().equals("false"))
-							tokenType = TokenType.LOG_CONST;
-
-						return new Symbol(tokenType, word.toString(), startRow,
-								startCol, startRow, startCol + word.length());
-					}
-
-					/**
-					 * If this is not legal identifier character, report error.
-					 */
-					if (!isLegalId(nxtCh))
-						Report.error(new Position(startRow, startCol, startRow,
-								startCol + word.length() + 1),
-								LanguageManager.localize("lexan_error_invalid_token", (char)nxtCh));
-				}
+			if (isLegalIdentifier(nxtCh)) {
+                return parseIdentifier();
 			}
 
 			/**
@@ -341,37 +231,7 @@ public class LexAn {
 			 */
 			Symbol op = isOperator(nxtCh);
 			if (op != null) {
-				/**
-				 * Handle newline
-				 */
-				if (op.token == TokenType.NEWLINE) {
-					// skip all whitespaces
-					skipWhitespaces();
-					
-					dontRead = true;
-					return op;
-				}
-				
-				/**
-				 * Also check if this character + next character is an operator.
-				 */
-				int tmpCh = file.read();
-				Symbol op2 = isOperator2(nxtCh, tmpCh);
-				if (op2 != null) {
-					startCol += 2;
-					return op2;
-				}
-
-				dontRead = true;
-				nxtCh = tmpCh;
-				startCol++;
-
-				if (op.token == TokenType.NEWLINE) {
-					startRow++;
-					startCol = 1;
-				}
-
-				return op;
+                return parseOperator(op);
 			}
 
 			/**
@@ -388,7 +248,6 @@ public class LexAn {
 				continue;
 			}
 
-
 			/**
 			 * Unknown character. Report error.
 			 */
@@ -397,6 +256,188 @@ public class LexAn {
 																	(char) nxtCh));
 		}
 	}
+
+
+    private void parseSingleLineComment() throws IOException {
+        while (nxtCh != -1 && nxtCh != 10) {
+            nxtCh = file.read();
+        }
+
+        skipWhitespaces();
+        dontRead = true;
+    }
+
+    private void parseMultiLineComment() throws IOException {
+        // else skip characters until '*/'
+        do {
+            nxtCh = file.read();
+            startCol++;
+            if (nxtCh == '*' && file.read() == '/') {
+                nxtCh = file.read();
+                startCol++;
+                break;
+            }
+            if (nxtCh == '\n') {
+                startRow++;
+                startCol = 1;
+            }
+        } while (true);
+
+        skipWhitespaces();
+        dontRead = true;
+    }
+
+    private Symbol parseString() throws IOException {
+        word.append((char) nxtCh);
+        boolean isStringClosed = false;
+
+        while (true) {
+            nxtCh = file.read();
+            if (nxtCh < 32 || nxtCh > 126) {
+                if (isWhiteSpace(nxtCh) || nxtCh == -1) {
+                    break;
+                }
+
+                Report.error(new Position(startRow, startCol, startRow, startCol + word.length() + 1),
+                        LanguageManager.localize("lexan_error_invalid_token_in_string_constant"));
+            }
+
+            word.append((char) nxtCh);
+
+            if (nxtCh == '\"') {
+                nxtCh = file.read();
+                if (nxtCh == '\"');
+                else {
+                    dontRead = true;
+                    isStringClosed = true;
+                    break;
+                }
+            }
+        }
+        // if last character of the word isn't double-quote, report error
+        if (!isStringClosed) {
+            Report.error(new Position(startRow, startCol, startRow,
+                            startCol + word.length()),
+                    LanguageManager.localize("lexan_error_string_not_closed"));
+        }
+
+        return new Symbol(TokenType.STR_CONST, word.toString(), startRow, startCol, startRow, startCol + word.length());
+    }
+
+    private Symbol parseNumericConstant() throws IOException {
+        boolean didParseDouble = false;
+
+        while (true) {
+            while (isNumeric(nxtCh)) {
+                word.append((char) nxtCh);
+                nxtCh = file.read();
+            }
+
+            if (!didParseDouble && nxtCh == '.') {
+                didParseDouble = true;
+                word.append((char) nxtCh);
+                nxtCh = file.read();
+
+                continue;
+            }
+
+            break;
+        }
+
+        dontRead = true;
+
+        TokenType t = didParseDouble ? TokenType.DOUBLE_CONST : TokenType.INT_CONST;
+        return new Symbol(t, word.toString(), startRow, startCol, startRow, startCol + word.length());
+    }
+
+    private Symbol parseCharConstant() throws IOException {
+        nxtCh = file.read();
+        Symbol s = new Symbol(TokenType.CHAR_CONST, "" + (char) nxtCh, startRow, startCol, startRow, startCol + 2);
+        nxtCh = file.read();
+
+        if (nxtCh != '\'') {
+            Report.error(new Position(startRow, startCol, startRow, startCol + word.length() + 1),
+                    LanguageManager.localize("lexan_error_char_literal_not_closed"));
+        }
+
+        return s;
+    }
+
+    private Symbol parseIdentifier() throws IOException {
+        while (true) {
+            word.append((char) nxtCh);
+            nxtCh = file.read();
+
+            /**
+             * Delimiters for identifiers are:
+             * - whitespaces
+             * - EOF
+             * - operators
+             * - single-quote
+             * - doouble-quote
+             */
+            if (isOperator(nxtCh) != null || isWhiteSpace(nxtCh) || nxtCh == -1 || nxtCh == '\'') {
+                dontRead = true;
+
+                TokenType tokenType = TokenType.IDENTIFIER;
+
+                // Check if word is keyword
+                if (keywordsMap.containsKey(word.toString())) {
+                    tokenType = keywordsMap.get(word.toString());
+                }
+
+                // Check if word is log const
+                if (word.toString().equals(Constants.trueKeyword) || word.toString().equals(Constants.falseKeyword)) {
+                    tokenType = TokenType.LOG_CONST;
+                }
+
+                return new Symbol(tokenType, word.toString(), startRow, startCol, startRow, startCol + word.length());
+            }
+
+            /**
+             * If this is not legal identifier character, report error.
+             */
+            if (!isLegalIdentifier(nxtCh)) {
+                Report.error(new Position(startRow, startCol, startRow, startCol + word.length() + 1),
+                        LanguageManager.localize("lexan_error_invalid_token", (char) nxtCh));
+            }
+        }
+    }
+
+    private Symbol parseOperator(Symbol op) throws IOException {
+        /**
+         * Handle newline
+         */
+        if (op.token == TokenType.NEWLINE) {
+            // skip all whitespaces
+            skipWhitespaces();
+
+            dontRead = true;
+            return op;
+        }
+
+        /**
+         * Also check if this character + next character is an operator.
+         */
+        int tmpCh = file.read();
+        Symbol op2 = isOperator2(nxtCh, tmpCh);
+
+        if (op2 != null) {
+            startCol += 2;
+            return op2;
+        }
+
+        dontRead = true;
+        nxtCh = tmpCh;
+        startCol++;
+
+        if (op.token == TokenType.NEWLINE) {
+            startRow++;
+            startCol = 1;
+        }
+
+        return op;
+    }
 
 	/**
 	 * Check if character is an operator.
@@ -541,10 +582,11 @@ public class LexAn {
 	 *            character to be checked
 	 * @return true if character is legal identifier character; false otherwise
 	 */
-	private boolean isLegalId(int ch) {
-		return isNumeric(nxtCh) || nxtCh == '_'
-				|| (nxtCh >= 'a' && nxtCh <= 'z')
-				|| (nxtCh >= 'A' && nxtCh <= 'Z');
+	private boolean isLegalIdentifier(int ch) {
+		return isNumeric(nxtCh) ||
+                nxtCh == '_' ||
+				(nxtCh >= 'a' && nxtCh <= 'z') ||
+				(nxtCh >= 'A' && nxtCh <= 'Z');
 	}
 	
 	private void skipWhitespaces() throws IOException {
@@ -554,8 +596,10 @@ public class LexAn {
 				startCol = 1;
 				startRow++;
 			}
-			else
-				startCol += nxtCh == 9 ? 4 : 1;
+			else {
+                startCol += nxtCh == 9 ? 4 : 1;
+            }
+
 			nxtCh = file.read();
 		}
 		while (isWhiteSpace(nxtCh));

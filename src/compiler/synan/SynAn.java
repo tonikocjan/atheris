@@ -22,10 +22,8 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 import Utils.Constants;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import compiler.Position;
 import compiler.Report;
-import compiler.abstr.Ast;
 import compiler.abstr.tree.*;
 import compiler.abstr.tree.def.*;
 import compiler.abstr.tree.expr.AbsAtomConstExpr;
@@ -86,7 +84,7 @@ public class SynAn {
 		this.lexAn = lexAn;
 		this.dump = dump;
 
-		this.symbol = this.lexAn.lexAn();
+		this.symbol = this.lexAn.nextSymbol();
 		this.previous = this.symbol;
 	}
 
@@ -2209,7 +2207,7 @@ public class SynAn {
 	 */
 	private Symbol skip() {
 		previous = symbol;
-		symbol = lexAn.lexAn();
+		symbol = lexAn.nextSymbol();
 		return symbol;
 	}
 

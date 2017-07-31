@@ -13,4 +13,7 @@ public class Constants {
     public static final String any = "Any";
 
     public static final int Byte = 4;
+
+    public static final String trueKeyword = "true";
+    public static final String falseKeyword = "false";
 }
