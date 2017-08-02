@@ -55,4 +55,8 @@ public class ImcCodeChunk extends ImcChunk {
 		if (lincode == null) imcode.dump(2); else lincode.dump(2);
 	}
 
+    @Override
+    public String name() {
+        return frame.toString();
+    }
 }

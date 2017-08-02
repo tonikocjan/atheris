@@ -29,4 +29,6 @@ public abstract class ImcChunk {
 	 */
 	public abstract void dump();
 
+	public abstract String name();
+
 }

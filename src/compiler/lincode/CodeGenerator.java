@@ -38,38 +38,6 @@ public class CodeGenerator {
 
     /**
      *
-     */
-	private static HashMap<FrmLabel, ImcCodeChunk> dict = new HashMap<>();
-
-    /**
-     *
-     * @param label
-     * @return
-     */
-	public static FrmFrame getFrameForLabel(FrmLabel label) {
-		return dict.get(label).frame;
-	}
-
-    /**
-     *
-     * @param label
-     * @return
-     */
-	public static ImcCode getCodeForLabel(FrmLabel label) {
-		return dict.get(label).lincode;
-	}
-
-    /**
-     *
-     * @param label
-     * @param code
-     */
-	public static void insertCodeForLabel(FrmLabel label, ImcCodeChunk code) {
-		dict.put(label, code);
-	}
-
-    /**
-     *
      * @param chunks
      * @return
      */
@@ -78,34 +46,21 @@ public class CodeGenerator {
 
 		for (ImcChunk chnk : chunks) {
 			if (chnk instanceof ImcCodeChunk) {
-				ImcCodeChunk fn = (ImcCodeChunk) chnk;
-				fn.lincode = fn.imcode.linear();
-				
-				CodeGenerator.insertCodeForLabel(fn.frame.label, fn);
-				
-				Interpreter.locations.put(((ImcCodeChunk) chnk).frame.label, Interpreter.heapPointer);
-				Interpreter.heapPointer += 4;
+                storeFunction((ImcCodeChunk) chnk);
 
-				if (fn.frame.label.name().equals("__main__")) {
-					mainFrame = fn;
-				}
+                if (chnk.name().equals("__main__")) {
+                    mainFrame = (ImcCodeChunk) chnk;
+                }
 			}
 			else {
 				ImcDataChunk data = (ImcDataChunk) chnk;
 				Interpreter.locations.put(data.label, Interpreter.heapPointer);
 
 				if (data instanceof ImcVirtualTableDataChunk) {
-				    loadVirtualTable((ImcVirtualTableDataChunk) data);
+				    storeVirtualTable((ImcVirtualTableDataChunk) data);
                 }
                 else {
-                    if (data.data != null) {
-                        Interpreter.stM(Interpreter.heapPointer, data.data);
-                    }
-                    else {
-                        Interpreter.stM(Interpreter.heapPointer, 0);
-                    }
-
-                    Interpreter.heapPointer += data.size;
+                    storeVariable(data);
                 }
 			}
 		}
@@ -113,7 +68,27 @@ public class CodeGenerator {
 		return mainFrame;
 	}
 
-	private static void loadVirtualTable(ImcVirtualTableDataChunk vtableChunk) {
+	private static void storeFunction(ImcCodeChunk fn) {
+        fn.lincode = fn.imcode.linear();
+
+        Interpreter.locations.put(fn.frame.label, Interpreter.heapPointer);
+        Interpreter.stM(Interpreter.heapPointer, fn);
+
+        Interpreter.heapPointer += 4;
+    }
+
+    private static void storeVariable(ImcDataChunk data) {
+        if (data.data == null) {
+            Interpreter.stM(Interpreter.heapPointer, 0);
+        }
+        else {
+            Interpreter.stM(Interpreter.heapPointer, data.data);
+        }
+
+        Interpreter.heapPointer += data.size;
+    }
+
+	private static void storeVirtualTable(ImcVirtualTableDataChunk vtableChunk) {
         ClassType type = vtableChunk.classType;
         CanType baseClass = type.baseClass;
 

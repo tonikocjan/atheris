@@ -88,7 +88,7 @@ public class TestAtheris {
             Path file2 = Paths.get(fileB);
 
             final long size;
-                size = Files.size(file1);
+            size = Files.size(file1);
 
             if (size != Files.size(file2))
                 return false;
@@ -101,7 +101,7 @@ public class TestAtheris {
                 // Compare byte-by-byte.
                 // Note that this can be sped up drastically by reading large chunks
                 // (e.g. 16 KBs) but care must be taken as InputStream.read(byte[])
-                // does not neccessarily read a whole array!
+                // does not necessarily read a whole array!
                 int data;
                 while ((data = is1.read()) != -1)
                     if (data != is2.read())

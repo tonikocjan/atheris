@@ -237,8 +237,10 @@ public class Interpreter {
 			if (instr.label.name().equals("_mem")) {
 			    return ldM((Integer) ldM(stackPointer + 4));
             }
-			
-			new Interpreter(CodeGenerator.getFrameForLabel(instr.label), (ImcSEQ) CodeGenerator.getCodeForLabel(instr.label));
+
+            Integer address = locations.get(instr.label);
+            ImcCodeChunk function = (ImcCodeChunk) ldM(address);
+			new Interpreter(function.frame, function.lincode);
 			return ldM(stackPointer);
 		}
 
@@ -257,7 +259,9 @@ public class Interpreter {
 
             FrmLabel label = (FrmLabel) ldM((Integer) ldT(instr.temp));
 
-            new Interpreter(CodeGenerator.getFrameForLabel(label), (ImcSEQ) CodeGenerator.getCodeForLabel(label));
+            Integer address = locations.get(label);
+            ImcCodeChunk function = (ImcCodeChunk) ldM(address);
+            new Interpreter(function.frame, function.lincode);
             return ldM(stackPointer);
         }
 		

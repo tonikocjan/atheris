@@ -53,4 +53,8 @@ public class ImcDataChunk extends ImcChunk {
 		Report.dump(0, "DATA CHUNK: label=" + label.name() + " size=" + size + tmp);
 	}
 
+    @Override
+    public String name() {
+        return label.name();
+    }
 }

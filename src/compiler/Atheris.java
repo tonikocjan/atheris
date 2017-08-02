@@ -106,6 +106,10 @@ public class Atheris {
         }
     }
 
+    /**
+     * Entry point of compiler execution.
+     * @param args
+     */
     public void compile(String[] args) {
         LanguageManager.sharedManager.loadLocalization("Localize/en.lproj/Localizable.strings");
         System.out.println(LanguageManager.localize("general_compiler_name"));

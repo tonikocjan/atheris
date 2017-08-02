@@ -326,6 +326,10 @@ public class ImcCodeGen implements ASTVisitor {
             ImcTEMP virtualTablePointer = new ImcTEMP(new FrmTemp());
             ImcTEMP result = new ImcTEMP(new FrmTemp());
 
+            // This is safe casting; if casting fails, object points to null
+            // swift equivalent would be 'as?'
+            // TODO: - Implement safe and non-safe casting (as? and as!)
+
             ImcSEQ statements = new ImcSEQ();
             statements.stmts.add(new ImcMOVE(virtualTablePointer, virtualTable));
             statements.stmts.add(new ImcLABEL(l1));
