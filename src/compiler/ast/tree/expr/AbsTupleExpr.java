@@ -17,6 +17,7 @@
 
 package compiler.ast.tree.expr;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import compiler.Position;
@@ -35,7 +36,7 @@ public class AbsTupleExpr extends AbsExpr {
 	 * @param pos
 	 * @param expressions
 	 */
-	public AbsTupleExpr(Position pos, LinkedList<AbsExpr> expressions) {
+	public AbsTupleExpr(Position pos, ArrayList<AbsExpr> expressions) {
 		super(pos);
 
 		this.expressions = new AbsExprs(position, expressions);

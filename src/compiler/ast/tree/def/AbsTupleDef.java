@@ -17,6 +17,7 @@
 
 package compiler.ast.tree.def;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import compiler.Position;
@@ -38,7 +39,7 @@ public class AbsTupleDef extends AbsTypeDef {
 	 * @param pos position
 	 * @param defs member definitions
 	 */
-	public AbsTupleDef(Position pos, LinkedList<AbsDef> defs) {
+	public AbsTupleDef(Position pos, ArrayList<AbsDef> defs) {
 		super(pos, "");
 
 		this.definitions = new AbsDefs(pos, defs);

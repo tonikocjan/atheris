@@ -33,7 +33,7 @@ import compiler.ast.tree.def.AbsVarDef;
 public class AbsDefs extends AbsTree {
 
 	/** Definitions. */
-	public final LinkedList<AbsDef> definitions;
+	public final ArrayList<AbsDef> definitions;
 
 	/**
 	 * Create new definitions list.
@@ -43,7 +43,7 @@ public class AbsDefs extends AbsTree {
 	 * @param defs
 	 *            Definitions.
 	 */
-	public AbsDefs(Position pos, LinkedList<AbsDef> defs) {
+	public AbsDefs(Position pos, ArrayList<AbsDef> defs) {
 		super(pos);
 		this.definitions = defs;
 	}
@@ -54,7 +54,7 @@ public class AbsDefs extends AbsTree {
      */
     public AbsDefs(Position pos) {
         super(pos);
-        this.definitions = new LinkedList<>();
+        this.definitions = new ArrayList<>();
     }
 
     /**

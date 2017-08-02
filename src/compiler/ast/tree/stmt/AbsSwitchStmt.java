@@ -17,6 +17,7 @@
 
 package compiler.ast.tree.stmt;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import compiler.Position;
@@ -35,7 +36,7 @@ public class AbsSwitchStmt extends AbsConditionalStmt {
 	/**
 	 * Cases.
 	 */
-	public final Vector<AbsCaseStmt> cases;
+	public final ArrayList<AbsCaseStmt> cases;
 	
 	/**
 	 * Default body code.
@@ -46,7 +47,7 @@ public class AbsSwitchStmt extends AbsConditionalStmt {
 	 * 
 	 * @param pos
 	 */
-	public AbsSwitchStmt(Position pos, AbsExpr subjectExpr, Vector<AbsCaseStmt> cases, 
+	public AbsSwitchStmt(Position pos, AbsExpr subjectExpr, ArrayList<AbsCaseStmt> cases,
 			AbsStmts defaultBody) {
 		super(pos);
 

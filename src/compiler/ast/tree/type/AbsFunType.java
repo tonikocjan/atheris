@@ -17,6 +17,7 @@
 
 package compiler.ast.tree.type;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import compiler.Position;
@@ -25,7 +26,7 @@ import compiler.ast.ASTVisitor;
 public class AbsFunType extends AbsType {
 	
 	/** Types of paramaters */
-	public final List<AbsType> parameterTypes;
+	public final ArrayList<AbsType> parameterTypes;
 	
 	/** Return type */
 	public final AbsType returnType;
@@ -36,7 +37,7 @@ public class AbsFunType extends AbsType {
      * @param parameters
      * @param returnType
      */
-	public AbsFunType(Position pos, List<AbsType> parameters, AbsType returnType) {
+	public AbsFunType(Position pos, ArrayList<AbsType> parameters, AbsType returnType) {
 		super(pos);
 		this.parameterTypes = parameters;
 		this.returnType = returnType;

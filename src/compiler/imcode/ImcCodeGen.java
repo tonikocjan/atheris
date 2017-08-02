@@ -609,7 +609,7 @@ public class ImcCodeGen implements ASTVisitor {
 
 		for (AbsExpr arg : acceptor.args) {
             // skip first ("self") argument if function is constructor
-            if (isConstructor && arg == acceptor.args.firstElement()) {
+            if (isConstructor && arg == acceptor.args.get(0)) {
                 ImcCONST noData = new ImcCONST(0);
                 fnCall.args.add(noData);
 

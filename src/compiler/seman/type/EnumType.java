@@ -149,7 +149,7 @@ public class EnumType extends Type implements ReferenceType {
 					sb.append(" - Raw value: " + ((AbsEnumMemberDef)def).value.value);
 			}
 			
-			if (def != enumDefinition.definitions.getLast())
+			if (def != enumDefinition.definitions.get(enumDefinition.definitions.size() - 1))
 				sb.append(", ");
 		}
 		sb.append(")");

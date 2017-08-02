@@ -21,6 +21,7 @@ import compiler.*;
 import compiler.ast.tree.AtomTypeKind;
 import compiler.ast.tree.def.AbsClassDef;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -45,7 +46,7 @@ public class AtomType extends ObjectType {
 	 * @param type Type kind.
 	 */
 	public AtomType(AtomTypeKind type) {
-	    super(new AbsClassDef(type.toString()), new LinkedList<>(), new LinkedList<>(), 0);
+	    super(new AbsClassDef(type.toString()), new ArrayList<>(), new ArrayList<>(), 0);
 	    this.staticType = new CanType(this);
 		this.type = type;
 	}

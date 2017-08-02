@@ -2,6 +2,7 @@ package compiler.seman.type;
 
 import compiler.ast.tree.def.AbsClassDef;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -16,7 +17,7 @@ public class StructType extends ObjectType implements ValueType {
      * @param names
      * @param types
      */
-    public StructType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types) {
+    public StructType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types) {
         super(definition, names, types, null, 0);
     }
 

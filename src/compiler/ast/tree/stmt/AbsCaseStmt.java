@@ -17,6 +17,7 @@
 
 package compiler.ast.tree.stmt;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import compiler.Position;
@@ -30,7 +31,7 @@ public class AbsCaseStmt extends AbsStmt {
 	/**
 	 * Expressions.
 	 */
-	public final LinkedList<AbsExpr> exprs;
+	public final ArrayList<AbsExpr> exprs;
 	
 	/**
 	 * Body to be executed if expression matches parent's subjectExpr.
@@ -41,7 +42,7 @@ public class AbsCaseStmt extends AbsStmt {
 	 * 
 	 * @param pos
 	 */
-	public AbsCaseStmt(Position pos, LinkedList<AbsExpr> exprs, AbsStmts body) {
+	public AbsCaseStmt(Position pos, ArrayList<AbsExpr> exprs, AbsStmts body) {
 		super(pos);
 		
 		this.exprs = exprs;

@@ -32,7 +32,7 @@ import compiler.ast.tree.type.AbsType;
 public class AbsFunDef extends AbsDef {
 
     /** Parameters. */
-	public final LinkedList<AbsParDef> pars;
+	public final ArrayList<AbsParDef> pars;
 
 	/** Return type. */
 	public final AbsType type;
@@ -57,8 +57,7 @@ public class AbsFunDef extends AbsDef {
 	 * @param bodyStatements
 	 *            Function code
 	 */
-	public AbsFunDef(Position pos, String name, 
-			LinkedList<AbsParDef> parameters, AbsType returnType, AbsStmts bodyStatements) {
+	public AbsFunDef(Position pos, String name, ArrayList<AbsParDef> parameters, AbsType returnType, AbsStmts bodyStatements) {
 		super(pos, name);
 		
 		this.pars = parameters;
@@ -83,8 +82,7 @@ public class AbsFunDef extends AbsDef {
      * @param isConstructor
      *            Is this function a constructor
      */
-    public AbsFunDef(Position pos, String name,
-                     LinkedList<AbsParDef> parameters, AbsType returnType, AbsStmts bodyStatements, boolean isConstructor) {
+    public AbsFunDef(Position pos, String name, ArrayList<AbsParDef> parameters, AbsType returnType, AbsStmts bodyStatements, boolean isConstructor) {
         super(pos, name);
 
         this.pars = parameters;
@@ -109,8 +107,7 @@ public class AbsFunDef extends AbsDef {
      * @param isConstructor
      *            Is this function a constructor
      */
-    public AbsFunDef(Position pos, String name,
-                     LinkedList<AbsParDef> parameters, AbsType returnType, AbsStmts bodyStatements, boolean isConstructor, boolean isOverriding) {
+    public AbsFunDef(Position pos, String name, ArrayList<AbsParDef> parameters, AbsType returnType, AbsStmts bodyStatements, boolean isConstructor, boolean isOverriding) {
         super(pos, name);
 
         this.pars = parameters;
@@ -128,7 +125,7 @@ public class AbsFunDef extends AbsDef {
 	 * Get parameters.
 	 * @return Parameters list.
 	 */
-	public LinkedList<AbsParDef> getParamaters() {
+	public ArrayList<AbsParDef> getParamaters() {
 		return pars;
 	}
 	
@@ -146,7 +143,7 @@ public class AbsFunDef extends AbsDef {
 	 * @param newPar Parameter to be added.
 	 */
 	public void addParamater(AbsParDef newPar) {
-		pars.addFirst(newPar);
+		pars.add(0, newPar);
 	}
 
 	/**

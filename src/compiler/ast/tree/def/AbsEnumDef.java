@@ -17,6 +17,7 @@
 
 package compiler.ast.tree.def;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import compiler.Position;
@@ -33,7 +34,7 @@ public class AbsEnumDef extends AbsTypeDef {
 	/**
 	 * Enumeration member definitions.
 	 */
-	public final LinkedList<AbsDef> definitions;
+	public final ArrayList<AbsDef> definitions;
 	
 	/**
 	 * Type of raw values.
@@ -48,8 +49,7 @@ public class AbsEnumDef extends AbsTypeDef {
 	 * @param definitions enum definitions
 	 * @param type type for each definitions' raw value
 	 */
-	public AbsEnumDef(Position pos, String name, 
-			LinkedList<AbsDef> definitions, AbsAtomType type) {
+	public AbsEnumDef(Position pos, String name, ArrayList<AbsDef> definitions, AbsAtomType type) {
 		super(pos, name);
 		
 		this.definitions = definitions;

@@ -112,12 +112,12 @@ public class TypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsClassDef acceptor) {
 	    if (traversalState == TraversalState.extensions) {
-            LinkedList<Type> types = new LinkedList<>();
-            LinkedList<String> names = new LinkedList<>();
+            ArrayList<Type> types = new ArrayList<>();
+            ArrayList<String> names = new ArrayList<>();
 
-            LinkedList<Type> staticTypes = new LinkedList<>();
-            LinkedList<String> staticNames = new LinkedList<>();
-            LinkedList<AbsDef> staticDefinitions = new LinkedList<>();
+            ArrayList<Type> staticTypes = new ArrayList<>();
+            ArrayList<String> staticNames = new ArrayList<>();
+            ArrayList<AbsDef> staticDefinitions = new ArrayList<>();
 
             CanType baseClass = null;
 
@@ -138,7 +138,7 @@ public class TypeChecker implements ASTVisitor {
                 }
 
                 if (type.isInterfaceType()) {
-                    acceptor.conformances.addFirst(acceptor.baseClass);
+                    acceptor.conformances.add(0, acceptor.baseClass);
                 }
                 else {
                     baseClass = (CanType) type;
@@ -1219,9 +1219,9 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsEnumMemberDef acceptor) {
-        LinkedList<String> names = new LinkedList<>();
-        LinkedList<Type> types = new LinkedList<>();
-		LinkedList<AbsDef> definitions = new LinkedList<>();
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<Type> types = new ArrayList<>();
+        ArrayList<AbsDef> definitions = new ArrayList<>();
 		
 		if (acceptor.value != null) {
 			acceptor.value.accept(this);
@@ -1231,8 +1231,7 @@ public class TypeChecker implements ASTVisitor {
 			definitions.add(new AbsVarDef(acceptor.position, "rawValue", new AbsAtomType(null, null)));
 		}
 		
-		AbsClassDef classDef = new AbsClassDef(acceptor.getName(), acceptor.position, 
-				 definitions, new LinkedList<>(), new LinkedList<>());
+		AbsClassDef classDef = new AbsClassDef(acceptor.getName(), acceptor.position, definitions, new ArrayList<>(), new ArrayList<>());
 		ClassType type = new ClassType(classDef, names, types);
 		SymbDesc.setType(acceptor, type);
 	}

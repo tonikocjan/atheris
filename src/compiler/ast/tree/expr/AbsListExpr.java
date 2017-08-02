@@ -17,6 +17,7 @@
 
 package compiler.ast.tree.expr;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import compiler.Position;
@@ -24,9 +25,9 @@ import compiler.ast.ASTVisitor;
 
 public class AbsListExpr extends AbsExpr {
 	
-	public final List<AbsExpr> expressions;
+	public final ArrayList<AbsExpr> expressions;
 
-	public AbsListExpr(Position pos, List<AbsExpr> expressions) {
+	public AbsListExpr(Position pos, ArrayList<AbsExpr> expressions) {
 		super(pos);
 		this.expressions = expressions;
 	}

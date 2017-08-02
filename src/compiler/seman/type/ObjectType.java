@@ -6,6 +6,7 @@ import compiler.ast.tree.def.AbsDef;
 import compiler.ast.tree.def.AbsVarDef;
 import compiler.ast.tree.type.AbsType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -23,8 +24,8 @@ public abstract class ObjectType extends Type {
     /**
      * Class member names and types.
      */
-    protected final LinkedList<String> memberNames;
-    protected final LinkedList<Type> memberTypes;
+    protected final ArrayList<String> memberNames;
+    protected final ArrayList<Type> memberTypes;
 
     /**
      * Mapping for definitions.
@@ -54,7 +55,7 @@ public abstract class ObjectType extends Type {
      * @param types Type for each member.
      * @param baseClass Base class for this class type.
      */
-    public ObjectType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types, CanType baseClass, int reservedSize) {
+    public ObjectType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass, int reservedSize) {
         if (names.size() != types.size()) {
             Report.error("Internal error :: compiler.seman.type.ObjectType: "
                     + "names count not equal types count");
@@ -84,7 +85,7 @@ public abstract class ObjectType extends Type {
      * @param names Name for each member.
      * @param types Type for each member.
      */
-    public ObjectType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types, int reservedSize) {
+    public ObjectType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types, int reservedSize) {
         this(definition, names, types, null, reservedSize);
     }
 

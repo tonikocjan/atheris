@@ -17,6 +17,7 @@
 
 package compiler.ast.tree.stmt;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import compiler.*;
@@ -35,7 +36,7 @@ public class AbsIfStmt extends AbsConditionalStmt {
 	/**
 	 * Vector holding all of the conditions for this if expression.
 	 */
-	public final Vector<Condition> conditions;
+	public final ArrayList<Condition> conditions;
 	
 	/**
 	 * Code to be executed when all of the conditions fail.
@@ -52,7 +53,7 @@ public class AbsIfStmt extends AbsConditionalStmt {
 	 * @param elseBody
 	 *            Code to be executed when conditions fail.
 	 */
-	public AbsIfStmt(Position pos, Vector<Condition> conditions, AbsStmts elseBody) {
+	public AbsIfStmt(Position pos, ArrayList<Condition> conditions, AbsStmts elseBody) {
 		super(pos);
 		this.conditions = conditions;
 		this.elseBody = elseBody;

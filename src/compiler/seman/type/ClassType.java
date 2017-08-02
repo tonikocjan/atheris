@@ -30,11 +30,11 @@ import utils.Constants;
  */
 public class ClassType extends ObjectType implements ReferenceType {
 
-    public ClassType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types, CanType baseClass) {
+    public ClassType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass) {
         super(definition, names, types, baseClass, 4);
     }
 
-    public ClassType(AbsClassDef definition, LinkedList<String> names, LinkedList<Type> types) {
+    public ClassType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types) {
         super(definition, names, types, null, 4);
     }
 

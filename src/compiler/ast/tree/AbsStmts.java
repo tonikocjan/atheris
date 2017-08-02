@@ -17,6 +17,7 @@
 
 package compiler.ast.tree;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ import compiler.ast.tree.def.AbsDef;
 public class AbsStmts extends AbsTree {
 
 	/** Statements. */
-	public final List<AbsStmt> statements;
+	public final ArrayList<AbsStmt> statements;
 	
 	/**
 	 * Create new statements list.
@@ -41,7 +42,7 @@ public class AbsStmts extends AbsTree {
 	 * @param absStmts
 	 * 			Statements.
 	 */
-	public AbsStmts(Position position, List<AbsStmt> absStmts) {
+	public AbsStmts(Position position, ArrayList<AbsStmt> absStmts) {
 		super(position);
 		this.statements = absStmts;
 	}
@@ -53,10 +54,10 @@ public class AbsStmts extends AbsTree {
      * @param defs
      * 			Definitions.
      */
-    public AbsStmts(Position position, List<AbsDef> defs, boolean ignore) {
+    public AbsStmts(Position position, ArrayList<AbsDef> defs, boolean ignore) {
         super(position);
 
-        this.statements = new LinkedList<>();
+        this.statements = new ArrayList<>();
         for (AbsDef def : defs) {
             this.statements.add(def);
         }

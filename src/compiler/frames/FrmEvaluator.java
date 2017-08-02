@@ -17,6 +17,7 @@
 
 package compiler.frames;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import utils.Constants;
@@ -63,9 +64,8 @@ public class FrmEvaluator implements ASTVisitor {
      *
      */
 	public FrmEvaluator() {
-		AbsFunDef _main = new AbsFunDef(null, Constants.ENTRY_POINT, new LinkedList<>(),
-				new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(null,
-						new LinkedList<>()));
+		AbsFunDef _main = new AbsFunDef(null, Constants.ENTRY_POINT, new ArrayList<>(),
+				new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(null, new ArrayList<>()));
 
 		entryPoint = new FrmFrame(_main, 0);
 		entryPoint.label = FrmLabel.newLabel(Constants.ENTRY_POINT);

@@ -17,6 +17,7 @@
 
 package compiler.seman;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import utils.Constants;
 import compiler.Report;
@@ -189,7 +190,7 @@ public class NameChecker implements ASTVisitor {
 
 		for (AbsExpr argExpr : acceptor.args) {
 		    // skip first ("self") argument if function is constructor
-            if (isConstructor && argExpr == acceptor.args.firstElement())
+            if (isConstructor && argExpr == acceptor.args.get(0))
                 continue;
 
             argExpr.accept(this);
@@ -309,7 +310,7 @@ public class NameChecker implements ASTVisitor {
 		synAn.parseStandardLibrary = acceptor.getName().equals(Constants.standardLibraryIdentifier);
 
 		AbsStmts source = (AbsStmts) synAn.parse();
-		LinkedList<AbsDef> definitions = new LinkedList<>();
+        ArrayList<AbsDef> definitions = new ArrayList<>();
 		
 		for (AbsStmt s : source.statements) {
 			// skip statements which are not definitions

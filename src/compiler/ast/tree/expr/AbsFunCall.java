@@ -33,7 +33,7 @@ public class AbsFunCall extends AbsExpr {
 	public final String name;
 	
 	/** Argumenti funkcije. */
-	public final Vector<AbsLabeledExpr> args;
+	public final ArrayList<AbsLabeledExpr> args;
 
 	/**
 	 * Ustvari nov opis klica funkcije.
@@ -45,7 +45,7 @@ public class AbsFunCall extends AbsExpr {
 	 * @param args
 	 *            Argumenti funkcije.
 	 */
-	public AbsFunCall(Position pos, String name, Vector<AbsLabeledExpr> args) {
+	public AbsFunCall(Position pos, String name, ArrayList<AbsLabeledExpr> args) {
 		super(pos);
 		
 		this.name = name;
@@ -77,7 +77,7 @@ public class AbsFunCall extends AbsExpr {
 	 * @param arg Argument to be added.
 	 */
 	public void addArgument(AbsLabeledExpr arg) {
-		args.insertElementAt(arg, 0);
+		args.add(0, arg);
 	}
 	
 	/**

@@ -17,7 +17,7 @@
 
 package compiler.ast.tree.def;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import compiler.Position;
 import compiler.ast.ASTVisitor;
@@ -36,7 +36,7 @@ public class AbsClassDef extends AbsTypeDef {
 	public final AbsDefs definitions;
 	
 	/** Constructors (initializers) */
-	public final LinkedList<AbsFunDef> construstors;
+	public final ArrayList<AbsFunDef> construstors;
 
 	/** Default constructor */
 	public final AbsFunDef defaultConstructor;
@@ -45,7 +45,7 @@ public class AbsClassDef extends AbsTypeDef {
 	public final AbsType baseClass;
 
 	/** Conforming interfaces. */
-	public final LinkedList<AbsType> conformances;
+	public final ArrayList<AbsType> conformances;
 
     /**
      *
@@ -53,16 +53,16 @@ public class AbsClassDef extends AbsTypeDef {
      */
 	public AbsClassDef(String name) {
 	    super(new Position(0, 0), name);
-	    this.construstors = new LinkedList<>();
-	    this.conformances = new LinkedList<>();
+	    this.construstors = new ArrayList<>();
+	    this.conformances = new ArrayList<>();
 	    this.baseClass = null;
-	    this.definitions = new AbsDefs(position, new LinkedList<>());
+	    this.definitions = new AbsDefs(position, new ArrayList<>());
 
         AbsFunDef constructor = new AbsFunDef(position,
                 name,
-                new LinkedList<>(),
+                new ArrayList<>(),
                 new AbsAtomType(position, AtomTypeKind.VOID),
-                new AbsStmts(position, new LinkedList<>()),
+                new AbsStmts(position, new ArrayList<>()),
                 true);
         constructor.setParentDefinition(this);
         this.defaultConstructor = constructor;
@@ -78,8 +78,8 @@ public class AbsClassDef extends AbsTypeDef {
      * @param defaultConstructor
      * @param constructors
      */
-    public AbsClassDef(String name, Position pos, AbsType baseClass, LinkedList<AbsType> conformances, LinkedList<AbsDef> definitions,
-                       LinkedList<AbsStmt> defaultConstructor, LinkedList<AbsFunDef> constructors) {
+    public AbsClassDef(String name, Position pos, AbsType baseClass, ArrayList<AbsType> conformances, ArrayList<AbsDef> definitions,
+                       ArrayList<AbsStmt> defaultConstructor, ArrayList<AbsFunDef> constructors) {
         super(pos, name);
         this.construstors = constructors;
         this.definitions = new AbsDefs(position, definitions);
@@ -97,7 +97,7 @@ public class AbsClassDef extends AbsTypeDef {
         // add default constructor
         AbsFunDef constructor = new AbsFunDef(pos,
                 constructorName,
-                new LinkedList<>(),
+                new ArrayList<>(),
                 new AbsAtomType(pos, AtomTypeKind.VOID),
                 new AbsStmts(pos, defaultConstructor),
                 true);
@@ -130,9 +130,9 @@ public class AbsClassDef extends AbsTypeDef {
      * @param defaultConstructor Initializing expressions for default constructor
      * @param constructors Other constructors
      */
-	public AbsClassDef(String name, Position pos, AbsType baseClass, LinkedList<AbsDef> definitions,
-                       LinkedList<AbsStmt> defaultConstructor, LinkedList<AbsFunDef> constructors) {
-        this(name, pos, baseClass, new LinkedList<>(), definitions, defaultConstructor, constructors);
+	public AbsClassDef(String name, Position pos, AbsType baseClass, ArrayList<AbsDef> definitions,
+                       ArrayList<AbsStmt> defaultConstructor, ArrayList<AbsFunDef> constructors) {
+        this(name, pos, baseClass, new ArrayList<>(), definitions, defaultConstructor, constructors);
 	}
 
     /**
@@ -143,9 +143,9 @@ public class AbsClassDef extends AbsTypeDef {
      * @param defaultConstructor
      * @param constructors
      */
-    public AbsClassDef(String name, Position pos, LinkedList<AbsDef> definitions,
-                       LinkedList<AbsStmt> defaultConstructor, LinkedList<AbsFunDef> constructors) {
-        this(name, pos, null, new LinkedList<>(), definitions, defaultConstructor, constructors);
+    public AbsClassDef(String name, Position pos, ArrayList<AbsDef> definitions,
+                       ArrayList<AbsStmt> defaultConstructor, ArrayList<AbsFunDef> constructors) {
+        this(name, pos, null, new ArrayList<>(), definitions, defaultConstructor, constructors);
     }
 
     /**

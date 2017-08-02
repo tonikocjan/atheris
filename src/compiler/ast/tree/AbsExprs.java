@@ -31,7 +31,7 @@ import compiler.ast.tree.expr.AbsExpr;
 public class AbsExprs extends AbsExpr {
 
 	/** Expresisons. */
-	public final LinkedList<AbsExpr> expressions;
+	public final ArrayList<AbsExpr> expressions;
 
 	/**
 	 * Create new expressions list.
@@ -41,7 +41,7 @@ public class AbsExprs extends AbsExpr {
 	 * @param exprs
 	 *            Expressions.
 	 */
-	public AbsExprs(Position pos, LinkedList<AbsExpr> exprs) {
+	public AbsExprs(Position pos, ArrayList<AbsExpr> exprs) {
 		super(pos);
 		
 		this.expressions = exprs;

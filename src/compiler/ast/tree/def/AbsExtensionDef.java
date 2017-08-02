@@ -5,6 +5,7 @@ import compiler.ast.ASTVisitor;
 import compiler.ast.tree.AbsDefs;
 import compiler.ast.tree.type.AbsType;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -23,14 +24,14 @@ public class AbsExtensionDef extends AbsTypeDef {
     public final AbsDefs definitions;
 
     /** Conforming interfaces. */
-    public final LinkedList<AbsType> conformances;
+    public final ArrayList<AbsType> conformances;
 
     /**
      *
      * @param pos
      * @param extendingType
      */
-    public AbsExtensionDef(Position pos, String name, AbsType extendingType, AbsDefs definitions, LinkedList<AbsType> conformances) {
+    public AbsExtensionDef(Position pos, String name, AbsType extendingType, AbsDefs definitions, ArrayList<AbsType> conformances) {
         super(pos, name);
 
         this.extendingType = extendingType;

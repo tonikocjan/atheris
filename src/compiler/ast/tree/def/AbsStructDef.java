@@ -10,6 +10,7 @@ import compiler.ast.tree.expr.AbsVarNameExpr;
 import compiler.ast.tree.type.AbsAtomType;
 import compiler.ast.tree.type.AbsType;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -26,12 +27,12 @@ public class AbsStructDef extends AbsClassDef {
      * @param defaultConstructor
      * @param constructors
      */
-    public AbsStructDef(String name, Position pos, AbsType baseClass, LinkedList<AbsDef> definitions, LinkedList<AbsStmt> defaultConstructor, LinkedList<AbsFunDef> constructors) {
+    public AbsStructDef(String name, Position pos, AbsType baseClass, ArrayList<AbsDef> definitions, ArrayList<AbsStmt> defaultConstructor, ArrayList<AbsFunDef> constructors) {
         super(name, pos, baseClass, definitions, defaultConstructor, constructors);
 
         // Create implicit constructor with all members
-        LinkedList<AbsParDef> pars = new LinkedList<>();
-        LinkedList<AbsStmt> stmts = new LinkedList<>();
+        ArrayList<AbsParDef> pars = new ArrayList<>();
+        ArrayList<AbsStmt> stmts = new ArrayList<>();
 
         for (AbsDef def : definitions) {
             if (def instanceof AbsVarDef) {
