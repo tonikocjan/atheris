@@ -19,7 +19,7 @@ package compiler.imcode;
 
 import java.util.HashMap;
 
-import compiler.abstr.tree.AbsTree;
+import compiler.ast.tree.AbsTree;
 
 public class ImcDesc {
 	/**

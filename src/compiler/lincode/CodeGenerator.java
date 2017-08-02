@@ -17,16 +17,11 @@
 
 package compiler.lincode;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import compiler.Report;
-import compiler.abstr.tree.def.AbsClassDef;
-import compiler.abstr.tree.def.AbsDef;
-import compiler.abstr.tree.def.AbsFunDef;
+import compiler.ast.tree.def.AbsFunDef;
 import compiler.frames.FrmDesc;
-import compiler.frames.FrmFrame;
 import compiler.frames.FrmLabel;
 import compiler.frames.FrmVirtualTableAccess;
 import compiler.imcode.*;

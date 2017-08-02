@@ -1,6 +1,6 @@
 package compiler.seman.type;
 
-import compiler.abstr.tree.def.AbsDef;
+import compiler.ast.tree.def.AbsDef;
 
 public class OptionalType extends Type implements ReferenceType {
 

@@ -1,9 +1,9 @@
 package compiler.seman.type;
 
 import utils.Constants;
-import compiler.abstr.tree.def.AbsDef;
-import compiler.abstr.tree.def.AbsFunDef;
-import compiler.abstr.tree.def.AbsInterfaceDef;
+import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AbsFunDef;
+import compiler.ast.tree.def.AbsInterfaceDef;
 
 
 /**

@@ -18,32 +18,32 @@
 package compiler.frames;
 
 import compiler.*;
-import compiler.abstr.*;
-import compiler.abstr.tree.*;
-import compiler.abstr.tree.def.*;
-import compiler.abstr.tree.expr.AbsAtomConstExpr;
-import compiler.abstr.tree.expr.AbsBinExpr;
-import compiler.abstr.tree.expr.AbsExpr;
-import compiler.abstr.tree.expr.AbsForceValueExpr;
-import compiler.abstr.tree.expr.AbsFunCall;
-import compiler.abstr.tree.expr.AbsLabeledExpr;
-import compiler.abstr.tree.expr.AbsListExpr;
-import compiler.abstr.tree.expr.AbsOptionalEvaluationExpr;
-import compiler.abstr.tree.expr.AbsReturnExpr;
-import compiler.abstr.tree.expr.AbsTupleExpr;
-import compiler.abstr.tree.expr.AbsUnExpr;
-import compiler.abstr.tree.expr.AbsVarNameExpr;
-import compiler.abstr.tree.stmt.AbsCaseStmt;
-import compiler.abstr.tree.stmt.AbsControlTransferStmt;
-import compiler.abstr.tree.stmt.AbsForStmt;
-import compiler.abstr.tree.stmt.AbsIfStmt;
-import compiler.abstr.tree.stmt.AbsSwitchStmt;
-import compiler.abstr.tree.stmt.AbsWhileStmt;
-import compiler.abstr.tree.type.AbsAtomType;
-import compiler.abstr.tree.type.AbsFunType;
-import compiler.abstr.tree.type.AbsListType;
-import compiler.abstr.tree.type.AbsOptionalType;
-import compiler.abstr.tree.type.AbsTypeName;
+import compiler.ast.*;
+import compiler.ast.tree.*;
+import compiler.ast.tree.def.*;
+import compiler.ast.tree.expr.AbsAtomConstExpr;
+import compiler.ast.tree.expr.AbsBinExpr;
+import compiler.ast.tree.expr.AbsExpr;
+import compiler.ast.tree.expr.AbsForceValueExpr;
+import compiler.ast.tree.expr.AbsFunCall;
+import compiler.ast.tree.expr.AbsLabeledExpr;
+import compiler.ast.tree.expr.AbsListExpr;
+import compiler.ast.tree.expr.AbsOptionalEvaluationExpr;
+import compiler.ast.tree.expr.AbsReturnExpr;
+import compiler.ast.tree.expr.AbsTupleExpr;
+import compiler.ast.tree.expr.AbsUnExpr;
+import compiler.ast.tree.expr.AbsVarNameExpr;
+import compiler.ast.tree.stmt.AbsCaseStmt;
+import compiler.ast.tree.stmt.AbsControlTransferStmt;
+import compiler.ast.tree.stmt.AbsForStmt;
+import compiler.ast.tree.stmt.AbsIfStmt;
+import compiler.ast.tree.stmt.AbsSwitchStmt;
+import compiler.ast.tree.stmt.AbsWhileStmt;
+import compiler.ast.tree.type.AbsAtomType;
+import compiler.ast.tree.type.AbsFunType;
+import compiler.ast.tree.type.AbsListType;
+import compiler.ast.tree.type.AbsOptionalType;
+import compiler.ast.tree.type.AbsTypeName;
 import compiler.seman.*;
 import compiler.seman.type.*;
 
@@ -149,7 +149,7 @@ public class Frames implements ASTVisitor {
                     + ": NULL");
             break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Frames.visit(AbsAtomConst)");
+			Report.error("Internal error :: compiler.ast.Frames.visit(AbsAtomConst)");
 		}
 		{
 			Type typ = SymbDesc.getType(atomConst);
@@ -189,7 +189,7 @@ public class Frames implements ASTVisitor {
                     + ": NIL");
             break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Frames.visit(AbsAtomType)");
+			Report.error("Internal error :: compiler.ast.Frames.visit(AbsAtomType)");
 		}
 		{
 			Type typ = SymbDesc.getType(atomType);
@@ -255,7 +255,7 @@ public class Frames implements ASTVisitor {
                 Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": As");
                 break;
             default:
-                Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
+                Report.error("Internal error :: compiler.ast.Abstr.visit(AbsBinExpr)");
         }
         {
             Type typ = SymbDesc.getType(binExpr);
@@ -444,7 +444,7 @@ public class Frames implements ASTVisitor {
 					+ ": VAL");
 			break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
+			Report.error("Internal error :: compiler.ast.Abstr.visit(AbsBinExpr)");
 		}
 		{
 			Type typ = SymbDesc.getType(unExpr);

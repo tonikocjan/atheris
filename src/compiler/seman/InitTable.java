@@ -22,8 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
-import compiler.abstr.tree.def.AbsDef;
-import compiler.abstr.tree.def.AbsVarDef;
+import compiler.ast.tree.def.AbsDef;
 
 public class InitTable {
 	

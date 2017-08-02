@@ -18,9 +18,8 @@
 package compiler.seman.type;
 
 import compiler.*;
-import compiler.abstr.tree.AtomTypeKind;
-import compiler.abstr.tree.def.AbsClassDef;
-import compiler.abstr.tree.def.AbsDef;
+import compiler.ast.tree.AtomTypeKind;
+import compiler.ast.tree.def.AbsClassDef;
 
 import java.util.LinkedList;
 

@@ -19,8 +19,8 @@ package compiler;
 
 import utils.ArgumentParser;
 import utils.Constants;
-import compiler.abstr.Ast;
-import compiler.abstr.tree.AbsTree;
+import compiler.ast.Ast;
+import compiler.ast.tree.AbsTree;
 import compiler.frames.Frames;
 import compiler.frames.FrmDesc;
 import compiler.frames.FrmEvaluator;

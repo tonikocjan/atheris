@@ -17,6 +17,7 @@
 
 package compiler.synan;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -24,33 +25,33 @@ import java.util.Vector;
 import utils.Constants;
 import compiler.Position;
 import compiler.Report;
-import compiler.abstr.tree.*;
-import compiler.abstr.tree.def.*;
-import compiler.abstr.tree.expr.AbsAtomConstExpr;
-import compiler.abstr.tree.expr.AbsBinExpr;
-import compiler.abstr.tree.expr.AbsExpr;
-import compiler.abstr.tree.expr.AbsForceValueExpr;
-import compiler.abstr.tree.expr.AbsFunCall;
-import compiler.abstr.tree.expr.AbsLabeledExpr;
-import compiler.abstr.tree.expr.AbsListExpr;
-import compiler.abstr.tree.expr.AbsOptionalEvaluationExpr;
-import compiler.abstr.tree.expr.AbsReturnExpr;
-import compiler.abstr.tree.expr.AbsTupleExpr;
-import compiler.abstr.tree.expr.AbsUnExpr;
-import compiler.abstr.tree.expr.AbsVarNameExpr;
-import compiler.abstr.tree.stmt.AbsCaseStmt;
-import compiler.abstr.tree.stmt.AbsConditionalStmt;
-import compiler.abstr.tree.stmt.AbsControlTransferStmt;
-import compiler.abstr.tree.stmt.AbsForStmt;
-import compiler.abstr.tree.stmt.AbsIfStmt;
-import compiler.abstr.tree.stmt.AbsSwitchStmt;
-import compiler.abstr.tree.stmt.AbsWhileStmt;
-import compiler.abstr.tree.type.AbsAtomType;
-import compiler.abstr.tree.type.AbsFunType;
-import compiler.abstr.tree.type.AbsListType;
-import compiler.abstr.tree.type.AbsOptionalType;
-import compiler.abstr.tree.type.AbsType;
-import compiler.abstr.tree.type.AbsTypeName;
+import compiler.ast.tree.*;
+import compiler.ast.tree.def.*;
+import compiler.ast.tree.expr.AbsAtomConstExpr;
+import compiler.ast.tree.expr.AbsBinExpr;
+import compiler.ast.tree.expr.AbsExpr;
+import compiler.ast.tree.expr.AbsForceValueExpr;
+import compiler.ast.tree.expr.AbsFunCall;
+import compiler.ast.tree.expr.AbsLabeledExpr;
+import compiler.ast.tree.expr.AbsListExpr;
+import compiler.ast.tree.expr.AbsOptionalEvaluationExpr;
+import compiler.ast.tree.expr.AbsReturnExpr;
+import compiler.ast.tree.expr.AbsTupleExpr;
+import compiler.ast.tree.expr.AbsUnExpr;
+import compiler.ast.tree.expr.AbsVarNameExpr;
+import compiler.ast.tree.stmt.AbsCaseStmt;
+import compiler.ast.tree.stmt.AbsConditionalStmt;
+import compiler.ast.tree.stmt.AbsControlTransferStmt;
+import compiler.ast.tree.stmt.AbsForStmt;
+import compiler.ast.tree.stmt.AbsIfStmt;
+import compiler.ast.tree.stmt.AbsSwitchStmt;
+import compiler.ast.tree.stmt.AbsWhileStmt;
+import compiler.ast.tree.type.AbsAtomType;
+import compiler.ast.tree.type.AbsFunType;
+import compiler.ast.tree.type.AbsListType;
+import compiler.ast.tree.type.AbsOptionalType;
+import compiler.ast.tree.type.AbsType;
+import compiler.ast.tree.type.AbsTypeName;
 import compiler.lexan.*;
 
 /**
@@ -124,24 +125,24 @@ public class SynAn {
 				absStmts.getLast().position), absStmts);
 	}
 
-	private Vector<AbsStmt> parseStatements_(AbsStmt prevStmt) {
+	private ArrayList<AbsStmt> parseStatements_(AbsStmt prevStmt) {
 		switch (symbol.token) {
 		case EOF:
 			dump("statements' -> $");
-			return new Vector<>();
+			return new ArrayList<>();
 		case RBRACE:
 			dump("statements' -> e");
-			return new Vector<>();
+			return new ArrayList<>();
 		case SEMIC:
 			skip();
 			if (symbol.token == TokenType.NEWLINE)
 				skip();
 
 			if (symbol.token == TokenType.EOF || symbol.token == TokenType.RBRACE)
-				return new Vector<AbsStmt>();
+				return new ArrayList<>();
 		case IDENTIFIER:
 			AbsStmt statement = parseStatement();
-			Vector<AbsStmt> absStmts = parseStatements_(statement);
+            ArrayList<AbsStmt> absStmts = parseStatements_(statement);
 			absStmts.add(0, statement);
 			return absStmts;
 		case NEWLINE:
@@ -149,7 +150,7 @@ public class SynAn {
 
 			if (symbol.token == TokenType.EOF || symbol.token == TokenType.RBRACE ||
 				symbol.token == TokenType.KW_CASE || symbol.token == TokenType.KW_DEFAULT)
-				return new Vector<AbsStmt>();
+				return new ArrayList<>();
 
 			statement = parseStatement();
 			absStmts = parseStatements_(statement);

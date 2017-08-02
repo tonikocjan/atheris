@@ -1,12 +1,10 @@
 package compiler.seman.type;
 
 import compiler.Report;
-import compiler.abstr.tree.def.AbsClassDef;
-import compiler.abstr.tree.def.AbsDef;
-import compiler.abstr.tree.def.AbsFunDef;
-import compiler.abstr.tree.def.AbsVarDef;
-import compiler.abstr.tree.type.AbsType;
-import compiler.abstr.tree.type.AbsTypeName;
+import compiler.ast.tree.def.AbsClassDef;
+import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AbsVarDef;
+import compiler.ast.tree.type.AbsType;
 
 import java.util.HashMap;
 import java.util.Iterator;

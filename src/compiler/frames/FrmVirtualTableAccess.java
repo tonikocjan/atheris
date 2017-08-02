@@ -1,6 +1,6 @@
 package compiler.frames;
 
-import compiler.abstr.tree.def.AbsClassDef;
+import compiler.ast.tree.def.AbsClassDef;
 
 /**
  * Created by toni on 06/04/2017.

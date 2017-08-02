@@ -20,7 +20,7 @@ package compiler.seman;
 import java.util.*;
 
 import compiler.*;
-import compiler.abstr.tree.def.AbsDef;
+import compiler.ast.tree.def.AbsDef;
 
 public class SymbTable {
 	

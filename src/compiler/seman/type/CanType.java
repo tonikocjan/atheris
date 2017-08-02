@@ -17,9 +17,8 @@
 
 package compiler.seman.type;
 
-import compiler.abstr.tree.def.AbsDef;
-import compiler.abstr.tree.def.AbsFunDef;
-import compiler.abstr.tree.def.AbsVarDef;
+import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AbsVarDef;
 
 import java.util.Iterator;
 import java.util.LinkedList;

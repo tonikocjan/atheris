@@ -19,8 +19,8 @@ package compiler.seman.type;
 
 import java.util.*;
 
-import compiler.abstr.tree.def.AbsDef;
-import compiler.abstr.tree.def.AbsFunDef;
+import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AbsFunDef;
 
 /**
  * Function type.

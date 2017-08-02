@@ -17,7 +17,7 @@
 
 package compiler.frames;
 
-import compiler.abstr.tree.def.AbsFunDef;
+import compiler.ast.tree.def.AbsFunDef;
 
 /**
  * Dostop do funkcije.

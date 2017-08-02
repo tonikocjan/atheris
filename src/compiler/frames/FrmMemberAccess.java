@@ -17,10 +17,8 @@
 
 package compiler.frames;
 
-import compiler.abstr.tree.def.AbsVarDef;
-import compiler.seman.type.ClassType;
+import compiler.ast.tree.def.AbsVarDef;
 import compiler.seman.type.ObjectType;
-import compiler.seman.type.Type;
 
 public class FrmMemberAccess implements FrmAccess {
 

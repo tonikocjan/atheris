@@ -21,8 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import compiler.abstr.tree.def.AbsDef;
-import compiler.abstr.tree.def.AbsTupleDef;
+import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AbsTupleDef;
 
 public class TupleType extends Type implements ReferenceType {
 	

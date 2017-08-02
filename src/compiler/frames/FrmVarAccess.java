@@ -17,7 +17,7 @@
 
 package compiler.frames;
 
-import compiler.abstr.tree.def.AbsVarDef;
+import compiler.ast.tree.def.AbsVarDef;
 
 /**
  * Dostop do globalne spremenljivke.

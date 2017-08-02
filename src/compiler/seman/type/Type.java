@@ -17,8 +17,8 @@
 
 package compiler.seman.type;
 
-import compiler.abstr.tree.AtomTypeKind;
-import compiler.abstr.tree.def.AbsDef;
+import compiler.ast.tree.AtomTypeKind;
+import compiler.ast.tree.def.AbsDef;
 
 /**
  * Data type description.

@@ -22,9 +22,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import compiler.Report;
-import compiler.abstr.tree.def.AbsDef;
-import compiler.abstr.tree.def.AbsEnumDef;
-import compiler.abstr.tree.def.AbsEnumMemberDef;
+import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AbsEnumDef;
+import compiler.ast.tree.def.AbsEnumMemberDef;
 
 /**
  * Enumeration type.

@@ -19,7 +19,7 @@ package compiler.frames;
 
 import java.util.*;
 
-import compiler.abstr.tree.def.AbsFunDef;
+import compiler.ast.tree.def.AbsFunDef;
 import utils.Constants;
 
 /**

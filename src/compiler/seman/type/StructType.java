@@ -1,6 +1,6 @@
 package compiler.seman.type;
 
-import compiler.abstr.tree.def.AbsClassDef;
+import compiler.ast.tree.def.AbsClassDef;
 
 import java.util.Iterator;
 import java.util.LinkedList;
