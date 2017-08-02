@@ -33,6 +33,7 @@ import compiler.imcode.*;
 import compiler.interpreter.Interpreter;
 import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
+import utils.Constants;
 
 public class CodeGenerator {
 
@@ -74,7 +75,7 @@ public class CodeGenerator {
         Interpreter.locations.put(fn.frame.label, Interpreter.heapPointer);
         Interpreter.stM(Interpreter.heapPointer, fn);
 
-        Interpreter.heapPointer += 4;
+        Interpreter.heapPointer += Constants.Byte;
     }
 
     private void storeVariable(ImcDataChunk data) {
@@ -99,14 +100,16 @@ public class CodeGenerator {
         }
 
         Interpreter.stM(Interpreter.heapPointer, type.descriptor);
-        Interpreter.stM(Interpreter.heapPointer + 4, baseClassVirtualTablePointer);
-        Interpreter.heapPointer += 8;
+        Interpreter.heapPointer += Constants.Byte;
+        Interpreter.stM(Interpreter.heapPointer, baseClassVirtualTablePointer);
+        Interpreter.heapPointer += Constants.Byte;
 
-        for (Iterator<FrmLabel> it = generateVirtualTableForClass(type); it.hasNext(); ) {
+        Iterator<FrmLabel> virtualTableIterator = generateVirtualTableForClass(type);
+        for (Iterator<FrmLabel> it = virtualTableIterator; it.hasNext(); ) {
             FrmLabel label = it.next();
 
             Interpreter.stM(Interpreter.heapPointer, label);
-            Interpreter.heapPointer += 4;
+            Interpreter.heapPointer += Constants.Byte;
         }
     }
 

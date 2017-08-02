@@ -20,6 +20,7 @@ package compiler.frames;
 import java.util.*;
 
 import compiler.abstr.tree.def.AbsFunDef;
+import utils.Constants;
 
 /**
  * Klicni zapis funkcije.
@@ -82,8 +83,8 @@ public class FrmFrame {
 		this.label = (level == 1 ? FrmLabel.newLabel(fun.name) : FrmLabel.newLabel());
 		this.endLabel = FrmLabel.newLabel();
 		this.numPars = 0;
-		this.sizePars = 4;
-		this.locVars = new LinkedList<FrmLocAccess> ();
+		this.sizePars = Constants.Byte;
+		this.locVars = new LinkedList<>();
 		this.sizeLocs = 0;
 		this.sizeFPRA = 8;
 		this.sizeTmps = 0;

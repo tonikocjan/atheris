@@ -18,6 +18,7 @@
 package compiler.abstr.tree;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import compiler.Position;
 import compiler.abstr.ASTVisitor;
@@ -31,7 +32,7 @@ import compiler.abstr.tree.def.AbsDef;
 public class AbsStmts extends AbsTree {
 
 	/** Statements. */
-	public final LinkedList<AbsStmt> statements;
+	public final List<AbsStmt> statements;
 	
 	/**
 	 * Create new statements list.
@@ -40,7 +41,7 @@ public class AbsStmts extends AbsTree {
 	 * @param absStmts
 	 * 			Statements.
 	 */
-	public AbsStmts(Position position, LinkedList<AbsStmt> absStmts) {
+	public AbsStmts(Position position, List<AbsStmt> absStmts) {
 		super(position);
 		this.statements = absStmts;
 	}
@@ -52,7 +53,7 @@ public class AbsStmts extends AbsTree {
      * @param defs
      * 			Definitions.
      */
-    public AbsStmts(Position position, LinkedList<AbsDef> defs, boolean ignore) {
+    public AbsStmts(Position position, List<AbsDef> defs, boolean ignore) {
         super(position);
 
         this.statements = new LinkedList<>();

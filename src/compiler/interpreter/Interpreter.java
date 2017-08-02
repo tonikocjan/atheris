@@ -24,6 +24,7 @@ import compiler.*;
 import compiler.frames.*;
 import compiler.imcode.*;
 import compiler.lincode.CodeGenerator;
+import utils.Constants;
 
 public class Interpreter {
 
@@ -90,7 +91,7 @@ public class Interpreter {
     public static void clean() {
         mems.clear();
         locations.clear();
-        heapPointer = 4;
+        heapPointer = Constants.Byte;
     }
 
     /**
@@ -99,7 +100,7 @@ public class Interpreter {
 	public static void printMemory() {
 	    int address = 0;
 		for (int i = 0; i < mems.size(); i++, address += 1) {
-		    if (address > STACK_SIZE + 4)
+		    if (address > STACK_SIZE + Constants.Byte)
 		        Report.error("Memory overflow");
 
 		    Object value = mems.get(address);
@@ -217,25 +218,25 @@ public class Interpreter {
 
 			stM(stackPointer, execute(instr.args.getFirst()));
 			
-			offset += 4;
+			offset += Constants.Byte;
 			
 			for (int i = 1; i < instr.args.size(); i++) {
 				stM(stackPointer + offset, execute(instr.args.get(i)));
-				offset += 4;
+				offset += Constants.Byte;
 			}
 
 			if (instr.label.name().equals("_print")) {
-				interpreterOutput.println(ldM(stackPointer + 4));
+				interpreterOutput.println(ldM(stackPointer + Constants.Byte));
 				return 0;
 			}
 			if (instr.label.name().equals("_time")) {
 				return (int) System.currentTimeMillis();
 			}
 			if (instr.label.name().equals("_rand")) {
-				return new Random().nextInt((Integer)ldM(stackPointer + 4));
+				return new Random().nextInt((Integer)ldM(stackPointer + Constants.Byte));
 			}
 			if (instr.label.name().equals("_mem")) {
-			    return ldM((Integer) ldM(stackPointer + 4));
+			    return ldM((Integer) ldM(stackPointer + Constants.Byte));
             }
 
             Integer address = locations.get(instr.label);
@@ -250,11 +251,11 @@ public class Interpreter {
 
             stM(stackPointer, execute(instr.args.getFirst()));
 
-            offset += 4;
+            offset += Constants.Byte;
 
             for (int i = 1; i < instr.args.size(); i++) {
                 stM(stackPointer + offset, execute(instr.args.get(i)));
-                offset += 4;
+                offset += Constants.Byte;
             }
 
             FrmLabel label = (FrmLabel) ldM((Integer) ldT(instr.temp));

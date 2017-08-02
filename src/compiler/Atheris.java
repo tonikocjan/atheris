@@ -111,6 +111,8 @@ public class Atheris {
      * @param args
      */
     public ImcCodeChunk compile(String[] args) {
+        Long startTime = System.currentTimeMillis();
+
         LanguageManager.sharedManager.loadLocalization("Localize/en.lproj/Localizable.strings");
         System.out.println(LanguageManager.localize("general_compiler_name"));
 
@@ -184,8 +186,7 @@ public class Atheris {
             ImcDesc.clean();
             Type.clean();
 
-            System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
-            System.out.flush();
+            compilationTime(startTime);
 
             // Izvajanje linearizirane vmesne kode
             if (execPhase.equals("interpret")) break;
@@ -199,16 +200,19 @@ public class Atheris {
     }
 
     public void execute(ImcCodeChunk mainCodeChunk) {
-        if (mainCodeChunk == null) {
-            Report.error("Fatal error, main not found!");
-        }
+        System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
 
-        Interpreter.stM(Interpreter.getFP() + 4, 0);
+        Interpreter.stM(Interpreter.getFP() + Constants.Byte, 0);
         new Interpreter(mainCodeChunk.frame, mainCodeChunk.lincode);
     }
 
     public void exit() {
         // Zapiranje datoteke z vmesnimi rezultati.
         if (dumpPhases != null) Report.closeDumpFile();
+    }
+
+    private void compilationTime(Long startTime) {
+        Long deltaTime = System.currentTimeMillis() - startTime;
+        System.out.println(String.format("Compiled in: %dms", deltaTime));
     }
 }

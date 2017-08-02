@@ -24,6 +24,7 @@ import compiler.abstr.tree.def.AbsDef;
 import compiler.abstr.tree.def.AbsFunDef;
 import compiler.abstr.tree.type.AbsType;
 import compiler.abstr.tree.type.AbsTypeName;
+import utils.Constants;
 
 /**
  * Class type. 
@@ -97,7 +98,7 @@ public class ClassType extends ObjectType implements ReferenceType {
 
         for (Type type : memberTypes) {
             if (type instanceof FunctionType) {
-                size += 4;
+                size += Constants.Byte;
             }
         }
 
