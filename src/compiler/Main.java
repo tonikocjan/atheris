@@ -17,6 +17,8 @@
 
 package compiler;
 
+import compiler.imcode.ImcCodeChunk;
+
 /**
  * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
  * 
@@ -31,7 +33,12 @@ public class Main {
 	 *            Parametri ukazne vrstice.
 	 */
 	public static void main(String[] args) {
-        new Atheris().compile(args);
+        Atheris atheris = new Atheris();
+
+        ImcCodeChunk code = atheris.compile(args);
+        atheris.execute(code);
+
+        atheris.exit();
 	}
 
 }

@@ -41,7 +41,7 @@ public class CodeGenerator {
      * @param chunks
      * @return
      */
-	public static ImcCodeChunk linearize(LinkedList<ImcChunk> chunks) {
+	public ImcCodeChunk linearize(LinkedList<ImcChunk> chunks) {
 		ImcCodeChunk mainFrame = null;
 
 		for (ImcChunk chnk : chunks) {
@@ -68,7 +68,7 @@ public class CodeGenerator {
 		return mainFrame;
 	}
 
-	private static void storeFunction(ImcCodeChunk fn) {
+	private void storeFunction(ImcCodeChunk fn) {
         fn.lincode = fn.imcode.linear();
 
         Interpreter.locations.put(fn.frame.label, Interpreter.heapPointer);
@@ -77,7 +77,7 @@ public class CodeGenerator {
         Interpreter.heapPointer += 4;
     }
 
-    private static void storeVariable(ImcDataChunk data) {
+    private void storeVariable(ImcDataChunk data) {
         if (data.data == null) {
             Interpreter.stM(Interpreter.heapPointer, 0);
         }
@@ -88,7 +88,7 @@ public class CodeGenerator {
         Interpreter.heapPointer += data.size;
     }
 
-	private static void storeVirtualTable(ImcVirtualTableDataChunk vtableChunk) {
+	private void storeVirtualTable(ImcVirtualTableDataChunk vtableChunk) {
         ClassType type = vtableChunk.classType;
         CanType baseClass = type.baseClass;
 
@@ -110,7 +110,7 @@ public class CodeGenerator {
         }
     }
 
-    private static Iterator<FrmLabel> generateVirtualTableForClass(ClassType classType) {
+    private Iterator<FrmLabel> generateVirtualTableForClass(ClassType classType) {
         return new Iterator<FrmLabel>() {
 
             Iterator<AbsFunDef> iter = classType.generateVirtualTable();

@@ -110,7 +110,7 @@ public class Atheris {
      * Entry point of compiler execution.
      * @param args
      */
-    public void compile(String[] args) {
+    public ImcCodeChunk compile(String[] args) {
         LanguageManager.sharedManager.loadLocalization("Localize/en.lproj/Localizable.strings");
         System.out.println(LanguageManager.localize("general_compiler_name"));
 
@@ -127,6 +127,7 @@ public class Atheris {
         Report.fileName = sourceFileName;
 
         Interpreter.clean();
+        ImcCodeChunk mainCodeChunk = null;
 
         // Izvajanje faz prevajanja.
         while (true) {
@@ -162,17 +163,19 @@ public class Atheris {
             frames.dump(source);
             if (execPhase.equals("frames")) break;
 
-            // Vmesna koda.
-            ImCode imcode = new ImCode(dumpPhases.contains("imcode"));
+            // Generiranje vmesne kode.
             ImcCodeGen imcodegen = new ImcCodeGen(frmEval.entryPoint);
             source.accept(imcodegen);
+
+            // Linearizacija vmesne kode.
+            mainCodeChunk = new CodeGenerator().linearize(imcodegen.chunks);
+            if (mainCodeChunk == null) {
+                mainCodeChunk = imcodegen.entryPointCode;
+            }
+
+            ImCode imcode = new ImCode(dumpPhases.contains("imcode"));
             imcode.dump(imcodegen.chunks);
             if (execPhase.equals("imcode")) break;
-
-            // Linearizacija vmesne kode
-            ImcCodeChunk mainFrame = CodeGenerator.linearize(imcodegen.chunks);
-            imcode = new ImCode(dumpPhases.contains("interpret"));
-            imcode.dump(imcodegen.chunks);
 
             // clean-up
             SymbTable.clean();
@@ -184,15 +187,7 @@ public class Atheris {
             System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
             System.out.flush();
 
-//			Interpreter.printMemory();
-
             // Izvajanje linearizirane vmesne kode
-            Interpreter.stM(Interpreter.getFP() + 4, 0);
-            if (mainFrame != null)
-                new Interpreter(mainFrame.frame, mainFrame.imcode.linear());
-            else
-                new Interpreter(frmEval.entryPoint, imcodegen.entryPointCode.lincode);
-
             if (execPhase.equals("interpret")) break;
 
             // Neznana faza prevajanja.
@@ -200,6 +195,19 @@ public class Atheris {
                 Report.warning(LanguageManager.localize("error_uknown_phase", execPhase));
         }
 
+        return mainCodeChunk;
+    }
+
+    public void execute(ImcCodeChunk mainCodeChunk) {
+        if (mainCodeChunk == null) {
+            Report.error("Fatal error, main not found!");
+        }
+
+        Interpreter.stM(Interpreter.getFP() + 4, 0);
+        new Interpreter(mainCodeChunk.frame, mainCodeChunk.lincode);
+    }
+
+    public void exit() {
         // Zapiranje datoteke z vmesnimi rezultati.
         if (dumpPhases != null) Report.closeDumpFile();
     }

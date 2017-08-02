@@ -77,7 +77,7 @@ public class TestAtheris {
         args[1] = "--phase=interpret";
         args[2] = "--testing=true";
 
-        new Atheris().compile(args);
+        Main.main(args);
 
         assertTrue(compareFiles(args[0] + ".out", args[0] + ".test"));
     }

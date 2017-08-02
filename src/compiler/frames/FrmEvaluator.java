@@ -64,14 +64,14 @@ public class FrmEvaluator implements ASTVisitor {
      */
 	public FrmEvaluator() {
 		AbsFunDef _main = new AbsFunDef(null, Constants.ENTRY_POINT, new LinkedList<>(),
-				new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(null, 
+				new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(null,
 						new LinkedList<>()));
 
 		entryPoint = new FrmFrame(_main, 0);
 		entryPoint.label = FrmLabel.newLabel(Constants.ENTRY_POINT);
 		entryPoint.sizePars = 0;
 		entryPoint.numPars = 0;
-		
+
 		currentFrame = entryPoint;
 	}
 
