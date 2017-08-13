@@ -22,29 +22,12 @@ import compiler.ast.tree.AtomTypeKind;
 import compiler.ast.tree.def.AbsClassDef;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-/**
- * Built-in types.
- * 
- * @author toni
- */
 public class AtomType extends ObjectType {
 
-	/**
-	 * Type kind.
-	 */
 	public final AtomTypeKind type;
-
-    /**
-     * Static parent type.
-     */
     public final CanType staticType;
 
-	/**
-	 * Create new Atom type.
-	 * @param type Type kind.
-	 */
 	public AtomType(AtomTypeKind type) {
 	    super(new AbsClassDef(type.toString()), new ArrayList<>(), new ArrayList<>(), 0);
 	    this.staticType = new CanType(this);
@@ -71,12 +54,12 @@ public class AtomType extends ObjectType {
 		case CHR: return "Char";
 		case NIL: return "Nil";
 		}
-		Report.error("Internal error :: compiler.seman.type.SemAtomType.toString()");
+		Logger.error("Internal error :: compiler.seman.type.SemAtomType.toString()");
 		return "";
 	}
 
 	@Override
-	public int size() {
+	public int sizeInBytes() {
 		switch (type) {
 		case LOG:
 		case INT:
@@ -90,13 +73,13 @@ public class AtomType extends ObjectType {
 		case DOB:
 			return 8;
 		}
-		Report.error("Internal error :: compiler.seman.type.SemAtomType.size()");
+		Logger.error("Internal error :: compiler.seman.type.SemAtomType.sizeInBytes()");
 		return 0;
 	}
 
 	@Override
-	public boolean canCastTo(Type t) {
-	    if (super.canCastTo(t)) {
+	public boolean canBeCastedToType(Type t) {
+	    if (super.canBeCastedToType(t)) {
 	        return true;
         }
 

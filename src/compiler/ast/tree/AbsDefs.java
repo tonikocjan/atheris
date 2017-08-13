@@ -58,7 +58,7 @@ public class AbsDefs extends AbsTree {
     }
 
     /**
-	 * Find definition for given name.
+	 * Find definition for given getName.
 	 * @param name Name of the definition
 	 * @return Definition if found, otherwise null
 	 */

@@ -41,7 +41,7 @@ public class ImcTEMP extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "TEMP name=" + temp.name());
+		Logger.dump(indent, "TEMP getName=" + temp.getName());
 	}
 
 	@Override

@@ -84,7 +84,7 @@ public class ImcBINOP extends ImcExpr {
             case ASSIGN : op = "="; break;
             case IS: op = "IS"; break;
 		}
-		Report.dump(indent, "BINOP op=" + op);
+		Logger.dump(indent, "BINOP op=" + op);
 		limc.dump(indent + 2);
 		rimc.dump(indent + 2);
 	}

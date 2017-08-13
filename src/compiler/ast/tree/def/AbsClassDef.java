@@ -41,7 +41,7 @@ public class AbsClassDef extends AbsTypeDef {
 	/** Default constructor */
 	public final AbsFunDef defaultConstructor;
 
-	/** Base class type name (null if no base class) */
+	/** Base class type getName (null if no base class) */
 	public final AbsType baseClass;
 
 	/** Conforming interfaces. */
@@ -124,7 +124,7 @@ public class AbsClassDef extends AbsTypeDef {
 
     /**
      * * Create new class definition.
-     * @param name Definition's name
+     * @param name Definition's getName
      * @param pos Position in file
      * @param definitions Member definitions
      * @param defaultConstructor Initializing expressions for default constructor

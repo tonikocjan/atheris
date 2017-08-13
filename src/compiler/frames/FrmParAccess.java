@@ -19,38 +19,21 @@ package compiler.frames;
 
 import compiler.ast.tree.def.AbsParDef;
 
-/**
- * Dostop do argumenta funkcije.
- * 
- * @author sliva
- */
-public class FrmParAccess implements FrmAccess {
+public class FrmParAccess extends FrmAccess {
 
-	/** Opis argumenta.  */
-	public AbsParDef par;
-
-	/** Klicni zapis funkcije, v kateri je parameter deklariran.  */
+	public AbsParDef parameterDefinition;
 	public FrmFrame frame;
+	public int framePointerOffset;
 
-	/** Odmik od FPja.  */
-	public int offset;
-
-
-	/**
-	 * Create new paramater access.
-	 * @param par Parameter definition
-	 * @param frame Frame
-	 * @param offset Offset from FP
-	 */
 	public FrmParAccess(AbsParDef par, FrmFrame frame, int offset) {
-		this.par = par;
+		this.parameterDefinition = par;
 		this.frame = frame;
-		this.offset = offset;
+		this.framePointerOffset = offset;
 	}
 
 	@Override
 	public String toString() {
-		return "PAR(" + par.name + ": offset=" + offset + ")";
+		return "PAR(" + parameterDefinition.name + ": framePointerOffset=" + framePointerOffset + ")";
 	}
 	
 }

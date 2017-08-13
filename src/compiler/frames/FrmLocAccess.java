@@ -19,42 +19,23 @@
 package compiler.frames;
 
 import compiler.ast.tree.def.AbsVarDef;
-import compiler.seman.*;
 import compiler.seman.type.*;
 
-/**
- * Dostop do lokalne spremenljivke.
- * 
- * @author sliva
- */
-public class FrmLocAccess implements FrmAccess {
+public class FrmLocAccess extends FrmAccess {
 
-	/** Opis spremenljivke.  */
-	public final AbsVarDef var;
-
-	/** Klicni zapis funkcije, v kateri je spremenljivka deklarirana.  */
+	public final AbsVarDef variableDefinition;
 	public final FrmFrame frame;
+	public final int framePointerOffset;
 
-	/** Odmik od FPja.  */
-	public final int offset;
-
-	/** Ustvari nov dostop do lokalne spremenljivke.
-	 * 
-	 * @param var Lokalna spremenljivka.
-	 * @param frame Klicni zapis.
-	 */
-	public FrmLocAccess(AbsVarDef var, FrmFrame frame) {
-		this.var = var;
+	public FrmLocAccess(AbsVarDef variableDefinition, FrmFrame frame, Type type) {
+		this.variableDefinition = variableDefinition;
 		this.frame = frame;
-		
-		Type type = SymbDesc.getType(this.var);
-		this.offset = 0 - frame.sizeLocs - type.size();
-		frame.sizeLocs = frame.sizeLocs + type.size();
+		this.framePointerOffset = 0 - frame.blockSizeForLocalVariables - type.sizeInBytes();
+		frame.blockSizeForLocalVariables = frame.blockSizeForLocalVariables + type.sizeInBytes();
 	}
 
 	@Override
 	public String toString() {
-		return "LOC(" + var.name + ": offset=" + offset + ")";
+		return "LOC(" + variableDefinition.name + ": framePointerOffset=" + framePointerOffset + ")";
 	}
-	
 }

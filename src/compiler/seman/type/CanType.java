@@ -56,13 +56,13 @@ public class CanType extends Type {
 	}
 
 	@Override
-	public boolean canCastTo(Type t) {
+	public boolean canBeCastedToType(Type t) {
 		return false;
 	}
 
 	@Override
-	public int size() {
-		return childType.size();
+	public int sizeInBytes() {
+		return childType.sizeInBytes();
 	}
 
 	@Override
@@ -81,8 +81,8 @@ public class CanType extends Type {
 	}
 
 	@Override
-	public AbsDef findMemberForName(String name) {
-		return childType.findMemberForName(name);
+	public AbsDef findMemberDefinitionForName(String name) {
+		return childType.findMemberDefinitionForName(name);
 	}
 
 	public void addStaticDefinition(AbsDef def, String name, Type type) {
@@ -101,7 +101,7 @@ public class CanType extends Type {
             AbsDef def = defIterator.next();
 
             if (def instanceof AbsVarDef) {
-                size += t.size();
+                size += t.sizeInBytes();
             }
         }
 
@@ -144,7 +144,7 @@ public class CanType extends Type {
             }
 
             if (name.equals(namesIterator.next())) break;
-            offset += typesIterator.next().size();
+            offset += typesIterator.next().sizeInBytes();
         }
 
         return offset;
@@ -171,7 +171,7 @@ public class CanType extends Type {
     /**
      * Get type for member.
      * @param name Name of the member.
-     * @return Type of the member (or null if member with such name doesn't exist).
+     * @return Type of the member (or null if member with such getName doesn't exist).
      */
     public Type getStaticMemberTypeForName(String name) {
         Iterator<String> namesIterator = staticNames.iterator();

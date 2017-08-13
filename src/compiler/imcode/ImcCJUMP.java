@@ -51,7 +51,7 @@ public class ImcCJUMP extends ImcStmt {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "CJUMP labels=" + trueLabel.name() + "," + falseLabel.name());
+		Logger.dump(indent, "CJUMP labels=" + trueLabel.getName() + "," + falseLabel.getName());
 		cond.dump(indent + 2);
 	}
 
@@ -59,7 +59,7 @@ public class ImcCJUMP extends ImcStmt {
 	public ImcSEQ linear() {
 		ImcSEQ lin = new ImcSEQ();
 		ImcESEQ linCond = cond.linear();
-		FrmLabel newFalseLabel = FrmLabel.newLabel();
+		FrmLabel newFalseLabel = FrmLabel.newAnonymousLabel();
 		lin.stmts.addAll(((ImcSEQ)linCond.stmt).stmts);
 		lin.stmts.add(new ImcCJUMP(linCond.expr, trueLabel, newFalseLabel));
 		lin.stmts.add(new ImcLABEL(newFalseLabel));

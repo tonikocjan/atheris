@@ -21,31 +21,15 @@ import java.util.HashMap;
 
 import compiler.ast.tree.AbsTree;
 
-public class ImcDesc {
-	/**
-	 * 
-	 */
-	public static HashMap<AbsTree, ImcCode> imcMap = new HashMap<>();
-	
-	/**
-	 * 
-	 * @param node
-	 * @param imc
-	 */
-	public static void setImcCode(AbsTree node, ImcCode imc) {
-		imcMap.put(node, imc);
-	}
-	
-	/**
-	 * 
-	 * @param node
-	 * @return
-	 */
-	public static ImcCode getImcCode(AbsTree node) {
-		return imcMap.get(node);
+public class ImcDescription implements ImcDescriptionMap {
+
+	public HashMap<AbsTree, ImcCode> intermidiateCode = new HashMap<>();
+
+	public void setImcCode(AbsTree node, ImcCode imc) {
+		intermidiateCode.put(node, imc);
 	}
 
-	public static void clean() {
-		imcMap.clear();
+	public ImcCode getImcCode(AbsTree node) {
+		return intermidiateCode.get(node);
 	}
 }

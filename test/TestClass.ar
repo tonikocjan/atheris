@@ -1,0 +1,15 @@
+import stdlib
+
+class A {
+
+	func a() {
+		print("A::a()")
+	}
+
+	func foo() {
+		print("A::foo()")	
+	}
+}
+
+let a = A()
+a.a()

@@ -41,7 +41,7 @@ public class ImcNAME extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "NAME label=" + label.name());
+		Logger.dump(indent, "NAME entryLabel=" + label.getName());
 	}
 
 	@Override

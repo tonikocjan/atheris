@@ -17,25 +17,20 @@
 
 package compiler;
 
+import compiler.frames.FrameDescriptionMap;
+import compiler.imcode.*;
+import compiler.seman.*;
 import utils.ArgumentParser;
 import utils.Constants;
 import compiler.ast.Ast;
 import compiler.ast.tree.AbsTree;
-import compiler.frames.Frames;
-import compiler.frames.FrmDesc;
+import compiler.frames.PrintAstVisitor;
+import compiler.frames.FrameDescription;
 import compiler.frames.FrmEvaluator;
-import compiler.imcode.ImCode;
-import compiler.imcode.ImcCodeChunk;
-import compiler.imcode.ImcCodeGen;
-import compiler.imcode.ImcDesc;
 import compiler.interpreter.Interpreter;
 import compiler.lexan.LexAn;
 import compiler.lexan.TokenType;
 import compiler.lincode.CodeGenerator;
-import compiler.seman.NameChecker;
-import compiler.seman.SymbDesc;
-import compiler.seman.SymbTable;
-import compiler.seman.TypeChecker;
 import compiler.seman.type.Type;
 import compiler.synan.SynAn;
 import managers.LanguageManager;
@@ -46,22 +41,13 @@ import java.io.PrintStream;
 
 public class Atheris {
 
-    /** Ime izvorne datoteke. */
     private String sourceFileName;
-
-    /** Seznam vseh faz prevajalnika. */
     private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|interpret)";
-
-    /** Doloca zadnjo fazo prevajanja, ki se bo se izvedla. */
     private String execPhase = "interpret";
-
-    /** Doloca faze, v katerih se bodo izpisali vmesni rezultati. */
     private String dumpPhases = "interpret";
 
-    /**
-     * Parse arguments.
-     * @param args
-     */
+    private ImcCodeChunk compiledCode;
+
     private void parseArguments(String[] args) {
         ArgumentParser parser = new ArgumentParser(args);
 
@@ -75,7 +61,7 @@ public class Atheris {
                 dumpPhases = phase;
             }
             else {
-                Report.warning(LanguageManager.localize("error_uknown_phase", phase));
+                Logger.warning(LanguageManager.localize("error_uknown_phase", phase));
             }
         }
 
@@ -90,7 +76,7 @@ public class Atheris {
                 Interpreter.STACK_SIZE = Integer.parseInt(size);
             }
             catch(Exception e) {
-                Report.warning(LanguageManager.localize("error_invalid_stack_size_parameter"));
+                Logger.warning(LanguageManager.localize("error_invalid_stack_size_parameter"));
             }
         }
 
@@ -106,11 +92,7 @@ public class Atheris {
         }
     }
 
-    /**
-     * Entry point of compiler execution.
-     * @param args
-     */
-    public ImcCodeChunk compile(String[] args) {
+    public Atheris compile(String[] args) {
         Long startTime = System.currentTimeMillis();
 
         LanguageManager.sharedManager.loadLocalization("Localize/en.lproj/Localizable.strings");
@@ -119,17 +101,22 @@ public class Atheris {
         parseArguments(args);
 
         if (sourceFileName == null) {
-            Report.error(LanguageManager.localize("error_source_file_not_specified"));
+            Logger.error(LanguageManager.localize("error_source_file_not_specified"));
         }
 
         if (dumpPhases != null) {
-            Report.openDumpFile(sourceFileName);
+            Logger.openDumpFile(sourceFileName);
         }
 
-        Report.fileName = sourceFileName;
+        Logger.fileName = sourceFileName;
 
         Interpreter.clean();
         ImcCodeChunk mainCodeChunk = null;
+
+        SymbolDescriptionMap symbolDescription = new SymbolDescription();
+        SymbolTableMap symbolTable = new SymbolTable(symbolDescription);
+        FrameDescriptionMap frameDescription = new FrameDescription();
+        ImcDescriptionMap imcDescription = new ImcDescription();
 
         // Izvajanje faz prevajanja.
         while (true) {
@@ -151,26 +138,26 @@ public class Atheris {
             if (execPhase.equals("ast")) break;
 
             // Semanticna analiza.
-            Frames semAn = new Frames(dumpPhases.contains("seman"));
-            source.accept(new NameChecker());
-            source.accept(new TypeChecker());
+            PrintAstVisitor semAn = new PrintAstVisitor(dumpPhases.contains("seman"), symbolTable, symbolDescription, frameDescription);
+            source.accept(new NameChecker(symbolTable, symbolDescription));
+            source.accept(new TypeChecker(symbolTable, symbolDescription));
             semAn.dump(source);
 //			source.accept(new InitializationChecker());
             if (execPhase.equals("seman")) break;
 
             // Klicni zapisi.
-            Frames frames = new Frames(dumpPhases.contains("frames"));
-            FrmEvaluator frmEval = new FrmEvaluator();
+            PrintAstVisitor frames = new PrintAstVisitor(dumpPhases.contains("frames"), symbolTable, symbolDescription, frameDescription);
+            FrmEvaluator frmEval = new FrmEvaluator(symbolTable, symbolDescription, frameDescription);
             source.accept(frmEval);
             frames.dump(source);
             if (execPhase.equals("frames")) break;
 
             // Generiranje vmesne kode.
-            ImcCodeGen imcodegen = new ImcCodeGen(frmEval.entryPoint);
+            ImcCodeGen imcodegen = new ImcCodeGen(frmEval.entryPoint, symbolTable, symbolDescription, frameDescription, imcDescription);
             source.accept(imcodegen);
 
             // Linearizacija vmesne kode.
-            mainCodeChunk = new CodeGenerator().linearize(imcodegen.chunks);
+            mainCodeChunk = new CodeGenerator(frameDescription).linearize(imcodegen.chunks);
             if (mainCodeChunk == null) {
                 mainCodeChunk = imcodegen.entryPointCode;
             }
@@ -180,10 +167,6 @@ public class Atheris {
             if (execPhase.equals("imcode")) break;
 
             // clean-up
-            SymbTable.clean();
-            SymbDesc.clean();
-            FrmDesc.clean();
-            ImcDesc.clean();
             Type.clean();
 
             compilationTime(startTime);
@@ -193,22 +176,27 @@ public class Atheris {
 
             // Neznana faza prevajanja.
             if (!execPhase.equals(""))
-                Report.warning(LanguageManager.localize("error_uknown_phase", execPhase));
+                Logger.warning(LanguageManager.localize("error_uknown_phase", execPhase));
         }
 
-        return mainCodeChunk;
+        this.compiledCode = mainCodeChunk;
+
+        return this;
     }
 
-    public void execute(ImcCodeChunk mainCodeChunk) {
+    public Atheris execute() {
+        if (compiledCode == null) Logger.error("Compile source code first!");
+
         System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
 
         Interpreter.stM(Interpreter.getFP() + Constants.Byte, 0);
-        new Interpreter(mainCodeChunk.frame, mainCodeChunk.lincode);
+        new Interpreter(compiledCode.frame, compiledCode.lincode);
+
+        return this;
     }
 
     public void exit() {
-        // Zapiranje datoteke z vmesnimi rezultati.
-        if (dumpPhases != null) Report.closeDumpFile();
+        if (dumpPhases != null) Logger.closeDumpFile();
     }
 
     private void compilationTime(Long startTime) {

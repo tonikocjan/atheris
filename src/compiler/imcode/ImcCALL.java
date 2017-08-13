@@ -47,7 +47,7 @@ public class ImcCALL extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "CALL label=" + label.name());
+		Logger.dump(indent, "CALL entryLabel=" + label.getName());
 		Iterator<ImcExpr> args = this.args.iterator();
 
 		while (args.hasNext()) {

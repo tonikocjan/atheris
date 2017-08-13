@@ -44,7 +44,7 @@ public class ImcMOVE extends ImcStmt {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "MOVE");
+		Logger.dump(indent, "MOVE");
 		dst.dump(indent + 2);
 		src.dump(indent + 2);
 	}

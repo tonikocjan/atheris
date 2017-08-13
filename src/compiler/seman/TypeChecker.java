@@ -19,8 +19,8 @@ package compiler.seman;
 
 import java.util.*;
 
+import compiler.Logger;
 import utils.Constants;
-import compiler.Report;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.*;
 import compiler.ast.tree.def.*;
@@ -58,60 +58,39 @@ import managers.LanguageManager;
  */
 public class TypeChecker implements ASTVisitor {
 
-    /**
-     * Traversal states.
-     */
-	private enum TraversalState {
-		extensions, normal
-	}
-
-    /**
-     * True if AST node is root node.
-     */
-	private boolean isRootNode = true;
-
-	/**
-	 * Current state of traversal
-	 */
-	private TraversalState traversalState = TraversalState.extensions;
-
-	/**
-     * True if assigning to variable, otherwise false.
-	 */
-	private boolean assign = false;
-
-    /**
-     *
-     */
+    private SymbolTableMap symbolTable;
+    private SymbolDescriptionMap symbolDescription;
+    private TraversalStates traversalState = TraversalStates.extensions;
+    private boolean isRootNode = true;
+    private boolean assigningToVariable = false;
     private Stack<Type> lhsTypes = new Stack<>();
-
-    /**
-     *
-     */
     private Stack<CanType> declarationContext = new Stack<>();
-
-    /**
-     *
-     */
     private boolean resolveTypeOnly = false;
 
+    private enum TraversalStates {
+        extensions, normal
+    }
 
-	// MARK: - Methods
+    public TypeChecker(SymbolTableMap symbolTable, SymbolDescriptionMap symbolDescription) {
+        this.symbolTable = symbolTable;
+        this.symbolDescription = symbolDescription;
+    }
+
 	@Override
 	public void visit(AbsListType acceptor) {
 		acceptor.type.accept(this);
 
-		Type type = SymbDesc.getType(acceptor.type);
+		Type type = symbolDescription.getTypeForAstNode(acceptor.type);
 		if (type.isCanType()) {
 		    type = ((CanType) type).childType;
         }
 
-		SymbDesc.setType(acceptor, new ArrayType(type, acceptor.count));
+		symbolDescription.setTypeForAstNode(acceptor, new ArrayType(type, acceptor.count));
 	}
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-	    if (traversalState == TraversalState.extensions) {
+	    if (traversalState == TraversalStates.extensions) {
             ArrayList<Type> types = new ArrayList<>();
             ArrayList<String> names = new ArrayList<>();
 
@@ -125,15 +104,15 @@ public class TypeChecker implements ASTVisitor {
             if (acceptor.baseClass != null) {
                 acceptor.baseClass.accept(this);
 
-                Type type = SymbDesc.getType(acceptor.baseClass);
+                Type type = symbolDescription.getTypeForAstNode(acceptor.baseClass);
 
                 if (acceptor instanceof AbsStructDef) {
                     // only classes are allowed to inherit
-                    Report.error("Structs are not allowed to inherit");
+                    Logger.error("Structs are not allowed to inherit");
                 }
 
                 if (!type.isInterfaceType() && (!type.isCanType() || !((CanType) type).childType.isClassType())) {
-                    Report.error(acceptor.baseClass.position,
+                    Logger.error(acceptor.baseClass.position,
                             "Inheritance from non-class type \"" + type.friendlyName() + "\" is not allowed");
                 }
 
@@ -149,12 +128,12 @@ public class TypeChecker implements ASTVisitor {
             for (AbsType conformance : acceptor.conformances) {
                 conformance.accept(this);
 
-                if (!SymbDesc.getType(conformance).isInterfaceType()) {
+                if (!symbolDescription.getTypeForAstNode(conformance).isInterfaceType()) {
                     if (baseClass != null) {
-                        Report.error(conformance.position, "Multiple inheritance is not allowed");
+                        Logger.error(conformance.position, "Multiple inheritance is not allowed");
                     }
                     else {
-                        Report.error(conformance.position, "Super class must appear first in inheritance clause");
+                        Logger.error(conformance.position, "Super class must appear first in inheritance clause");
                     }
                 }
             }
@@ -163,36 +142,36 @@ public class TypeChecker implements ASTVisitor {
             for (AbsStmt stmt: acceptor.defaultConstructor.func.statements) {
                 AbsBinExpr initExpr = (AbsBinExpr) stmt;
                 initExpr.expr2.accept(this);
-                Type type = SymbDesc.getType(initExpr.expr2);
+                Type type = symbolDescription.getTypeForAstNode(initExpr.expr2);
 
                 AbsVarDef definition = (AbsVarDef) acceptor.definitions.findDefinitionForName(((AbsVarNameExpr) ((AbsBinExpr)initExpr.expr1).expr2).name);
-                SymbDesc.setType(definition, type);
+                symbolDescription.setTypeForAstNode(definition, type);
             }
 
             resolveTypeOnly = true;
 
             for (AbsDef def : acceptor.definitions.definitions) {
                 if (names.contains(def.getName())) {
-                    Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+                    Logger.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
                 }
                 else if (baseClass != null) {
                     // check whether inheritance (overriding) is legal
                     if (def.isOverriding()) {
-                        AbsDef baseDefinition = baseClass.childType.findMemberForName(def.getName());
+                        AbsDef baseDefinition = baseClass.childType.findMemberDefinitionForName(def.getName());
 
                         if (baseDefinition == null || baseDefinition.isStatic()) {
-                            Report.error(def.position, "Method does not override any method from it's super class");
+                            Logger.error(def.position, "Method does not override any method from it's super class");
                         }
                         else if (baseDefinition.isFinal()) {
-                            Report.error(def.position, "Cannot override \"final\" instance method");
+                            Logger.error(def.position, "Cannot override \"final\" instance method");
                         }
                     }
                     else if (baseClass.containsMember(def.getName())) {
-                        Report.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+                        Logger.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
                     }
                 }
                 else if (def.isOverriding()) {
-                    Report.error(def.position, "Method does not override any method from it's super class");
+                    Logger.error(def.position, "Method does not override any method from it's super class");
                 }
 
                 def.accept(this);
@@ -214,10 +193,10 @@ public class TypeChecker implements ASTVisitor {
                 def.accept(this);
 
                 if (def.isStatic()) {
-                    staticTypes.add(SymbDesc.getType(def));
+                    staticTypes.add(symbolDescription.getTypeForAstNode(def));
                 }
                 else {
-                    types.add(SymbDesc.getType(def));
+                    types.add(symbolDescription.getTypeForAstNode(def));
                 }
             }
 
@@ -230,7 +209,7 @@ public class TypeChecker implements ASTVisitor {
             }
 
             CanType canType = new CanType(type);
-            SymbDesc.setType(acceptor, canType);
+            symbolDescription.setTypeForAstNode(acceptor, canType);
 
             // add static member definitions to canType
             Iterator<String> namesIterator = staticNames.iterator();
@@ -244,7 +223,7 @@ public class TypeChecker implements ASTVisitor {
         else {
             resolveTypeOnly = false;
 
-            CanType staticType = (CanType) SymbDesc.getType(acceptor);
+            CanType staticType = (CanType) symbolDescription.getTypeForAstNode(acceptor);
             ObjectType objectType = (ObjectType) staticType.childType;
 	        CanType baseClass = objectType.baseClass;
 
@@ -257,10 +236,10 @@ public class TypeChecker implements ASTVisitor {
 
             // check if all methods in conforming interfaces are implemented
             for (AbsType conformance : acceptor.conformances) {
-                InterfaceType interfaceType = (InterfaceType) SymbDesc.getType(conformance);
+                InterfaceType interfaceType = (InterfaceType) symbolDescription.getTypeForAstNode(conformance);
 
                 if (!objectType.conformsTo(interfaceType)) {
-                    Report.error(conformance.position, "Type \"" + objectType.friendlyName() + "\" does not conform to interface \"" + interfaceType.friendlyName() + "\"");
+                    Logger.error(conformance.position, "Type \"" + objectType.friendlyName() + "\" does not conform to interface \"" + interfaceType.friendlyName() + "\"");
                 }
             }
 
@@ -269,8 +248,8 @@ public class TypeChecker implements ASTVisitor {
                 AbsParDef selfParDef = constructor.getParameterForIndex(0);
                 selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
 
-                SymbDesc.setNameDef(selfParDef.type, acceptor);
-                SymbDesc.setType(selfParDef, objectType);
+                symbolDescription.setDefinitionForAstNode(selfParDef.type, acceptor);
+                symbolDescription.setTypeForAstNode(selfParDef, objectType);
 
                 // append base classes' initialization code
                 if (baseClassDefaultConstructor != null) {
@@ -279,10 +258,10 @@ public class TypeChecker implements ASTVisitor {
 
                 constructor.accept(this);
 
-                FunctionType funType = (FunctionType) SymbDesc.getType(constructor);
+                FunctionType funType = (FunctionType) symbolDescription.getTypeForAstNode(constructor);
                 funType.resultType = objectType;
 
-                SymbDesc.setType(constructor, funType);
+                symbolDescription.setTypeForAstNode(constructor, funType);
             }
 
             for (AbsDef def : acceptor.definitions.definitions) {
@@ -292,7 +271,7 @@ public class TypeChecker implements ASTVisitor {
                     AbsParDef selfParDef = funDef.getParameterForIndex(0);
                     selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
 
-                    SymbDesc.setNameDef(selfParDef.type, acceptor);
+                    symbolDescription.setDefinitionForAstNode(selfParDef.type, acceptor);
                 }
 
                 def.accept(this);
@@ -309,7 +288,7 @@ public class TypeChecker implements ASTVisitor {
                             context.addStaticMember(
                                     constructor,
                                     constructor.getStringRepresentation(className),
-                                    SymbDesc.getType(constructor));
+                                    symbolDescription.getTypeForAstNode(constructor));
 
                         }
                     }
@@ -324,20 +303,20 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsAtomConstExpr acceptor) {
-		SymbDesc.setType(acceptor, Type.atomType(acceptor.type));
+		symbolDescription.setTypeForAstNode(acceptor, Type.atomType(acceptor.type));
 	}
 
 	@Override
 	public void visit(AbsAtomType acceptor) {
-		SymbDesc.setType(acceptor, Type.atomType(acceptor.type));
+		symbolDescription.setTypeForAstNode(acceptor, Type.atomType(acceptor.type));
 	}
 
 	@Override
 	public void visit(AbsBinExpr acceptor) {
-	    assign = acceptor.oper == AbsBinExpr.ASSIGN;
+	    assigningToVariable = acceptor.oper == AbsBinExpr.ASSIGN;
 
 		acceptor.expr1.accept(this);
-        Type lhs = SymbDesc.getType(acceptor.expr1);
+        Type lhs = symbolDescription.getTypeForAstNode(acceptor.expr1);
 
 		lhsTypes.push(lhs);
 		
@@ -346,9 +325,9 @@ public class TypeChecker implements ASTVisitor {
 
         lhsTypes.pop();
 
-        assign = false;
+        assigningToVariable = false;
 
-		Type rhs = SymbDesc.getType(acceptor.expr2);
+		Type rhs = symbolDescription.getTypeForAstNode(acceptor.expr2);
 
 		int oper = acceptor.oper;
 
@@ -357,16 +336,16 @@ public class TypeChecker implements ASTVisitor {
 		 */
 		if (oper == AbsBinExpr.ARR) {
 			if (!rhs.isBuiltinIntType())
-				Report.error(acceptor.expr2.position,
+				Logger.error(acceptor.expr2.position,
 						LanguageManager.localize("type_error_expected_int_for_subscript"));
 			/**
 			 * expr1 is of type ARR(n, t)
 			 */
 			if (lhs.isArrayType()) {
-				SymbDesc.setType(acceptor, ((ArrayType) lhs).type);
+				symbolDescription.setTypeForAstNode(acceptor, ((ArrayType) lhs).type);
 			}
 			else {
-                Report.error(acceptor.expr1.position,
+                Logger.error(acceptor.expr1.position,
                         LanguageManager.localize("type_error_type_has_no_subscripts",
                                 lhs.toString()));
             }
@@ -382,14 +361,14 @@ public class TypeChecker implements ASTVisitor {
                 System.out.println();
             }
 
-            // type inference: if lhs doesn't have type, assign rhs type
+            // type inference: if lhs doesn't have type, assigningToVariable rhs type
 			if (lhs == null) {
-                SymbDesc.setType(acceptor, rhs);
-				SymbDesc.setType(acceptor.expr1, rhs);
-				SymbDesc.setType(SymbDesc.getNameDef(acceptor.expr1), rhs);
+                symbolDescription.setTypeForAstNode(acceptor, rhs);
+				symbolDescription.setTypeForAstNode(acceptor.expr1, rhs);
+				symbolDescription.setTypeForAstNode(symbolDescription.getDefinitionForAstNode(acceptor.expr1), rhs);
 
 				if (rhs.isArrayType() && ((ArrayType) rhs).type.sameStructureAs(Type.anyType)) {
-				    Report.warning(acceptor.expr2.position, "Implicitly inferred Any type");
+				    Logger.warning(acceptor.expr2.position, "Implicitly inferred Any type");
                 }
 
 				success = true;
@@ -397,34 +376,34 @@ public class TypeChecker implements ASTVisitor {
 			
 			// t1 and t2 are of same structure
 			else if (lhs.sameStructureAs(rhs)) {
-				SymbDesc.setType(acceptor, lhs);
+				symbolDescription.setTypeForAstNode(acceptor, lhs);
 				success = true;
 			}
 			// t2 can be casted to t1
-			else if (rhs.canCastTo(lhs)) {
-				SymbDesc.setType(acceptor, lhs);
-				SymbDesc.setType(acceptor.expr2, rhs);
+			else if (rhs.canBeCastedToType(lhs)) {
+				symbolDescription.setTypeForAstNode(acceptor, lhs);
+				symbolDescription.setTypeForAstNode(acceptor.expr2, rhs);
 				success = true;
 			}
 			// nil can be assigned to any pointer type
 			else if (rhs.isBuiltinNilType() && lhs.isReferenceType()) {
-				SymbDesc.setType(acceptor.expr2, lhs);
-				SymbDesc.setType(acceptor, lhs);
+				symbolDescription.setTypeForAstNode(acceptor.expr2, lhs);
+				symbolDescription.setTypeForAstNode(acceptor, lhs);
 				success = true;
 			}
 			// optionals
 			else if (lhs.isOptionalType() && ((OptionalType) lhs).childType.sameStructureAs(rhs)) {
-				SymbDesc.setType(acceptor, lhs);
+				symbolDescription.setTypeForAstNode(acceptor, lhs);
 				success = true;
 			}
 			
 			if (!success) {
-                Report.error(acceptor.position,
+                Logger.error(acceptor.position,
                         LanguageManager.localize("type_error_cannot_convert_type",
                                 rhs.friendlyName(), lhs.friendlyName()));
             }
 
-			assign = false;
+			assigningToVariable = false;
 		}
 
 		/**
@@ -442,7 +421,7 @@ public class TypeChecker implements ASTVisitor {
                 memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
             }
             else if (acceptor.expr2 instanceof AbsBinExpr) {
-                Report.error(acceptor.position, "Not yet supported");
+                Logger.error(acceptor.position, "Not yet supported");
             }
 
 			/**
@@ -451,12 +430,12 @@ public class TypeChecker implements ASTVisitor {
 			// FIXME: - remove this in the future
 			if (lhs.isArrayType()) {
 				if (!memberName.equals("count"))
-                    Report.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
-				SymbDesc.setType(acceptor, Type.intType);
+                    Logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+				symbolDescription.setTypeForAstNode(acceptor, Type.intType);
 				return;
 			}
             if (lhs.isOptionalType()) {
-			    Report.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" not unwrapped");
+			    Logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" not unwrapped");
             }
 
 			if (lhs.isObjectType()) {
@@ -471,26 +450,26 @@ public class TypeChecker implements ASTVisitor {
                 }
 
 				if (!lhs.containsMember(memberName)) {
-                    Report.error(acceptor.expr2.position,
+                    Logger.error(acceptor.expr2.position,
                             LanguageManager.localize(
                                     "type_error_member_not_found",
                                     lhs.friendlyName(),
                                     memberName));
                 }
 				
-				AbsDef definition = lhs.findMemberForName(memberName);
-				AbsDef objectDefinition = SymbDesc.getNameDef(acceptor.expr1);
+				AbsDef definition = lhs.findMemberDefinitionForName(memberName);
+				AbsDef objectDefinition = symbolDescription.getDefinitionForAstNode(acceptor.expr1);
 
-				// check for access control (if object's name is not "self")
+				// check for access control (if object's getName is not "self")
                 if (!objectDefinition.name.equals(Constants.selfParameterIdentifier)) {
                     if (definition.isPrivate()) {
-                        Report.error(acceptor.expr2.position,
-                                "Member '" + memberName + "' is inaccessible due to it's private protection level");
+                        Logger.error(acceptor.expr2.position,
+                                "Member '" + memberName + "' is inaccessible due to it's private protection staticLevel");
                     }
                 }
 				
-				SymbDesc.setNameDef(acceptor.expr2, definition);
-				SymbDesc.setNameDef(acceptor, definition);
+				symbolDescription.setDefinitionForAstNode(acceptor.expr2, definition);
+				symbolDescription.setDefinitionForAstNode(acceptor, definition);
 
 				if (acceptor.expr2 instanceof AbsFunCall) {
                     for (AbsExpr arg: ((AbsFunCall) acceptor.expr2).args) {
@@ -501,8 +480,8 @@ public class TypeChecker implements ASTVisitor {
 				Type memberType = ((ObjectType) lhs).getMemberTypeForName(memberName);
 				Type acceptorType = memberType.isFunctionType() ? ((FunctionType) memberType).resultType : memberType;
 
-                SymbDesc.setType(acceptor.expr2, memberType);
-				SymbDesc.setType(acceptor, acceptorType);
+                symbolDescription.setTypeForAstNode(acceptor.expr2, memberType);
+				symbolDescription.setTypeForAstNode(acceptor, acceptorType);
 			}
 			
 			else if (lhs.isEnumType()) {
@@ -510,53 +489,53 @@ public class TypeChecker implements ASTVisitor {
 
                 if (enumType.selectedMember == null) {
                     if (!enumType.containsMember(memberName))
-                        Report.error(acceptor.expr2.position,
+                        Logger.error(acceptor.expr2.position,
                                 LanguageManager.localize("type_error_member_not_found",
                                         enumType.friendlyName(),
                                         memberName));
 
-                    AbsDef definition = enumType.findMemberForName(memberName);
+                    AbsDef definition = enumType.findMemberDefinitionForName(memberName);
 
                     if (definition.isPrivate())
-                        Report.error(acceptor.expr2.position,
-                                "Member '" + memberName + "' is inaccessible due to it's private protection level");
+                        Logger.error(acceptor.expr2.position,
+                                "Member '" + memberName + "' is inaccessible due to it's private protection staticLevel");
 
-                    SymbDesc.setNameDef(acceptor.expr2, definition);
-                    SymbDesc.setNameDef(acceptor, definition);
+                    symbolDescription.setDefinitionForAstNode(acceptor.expr2, definition);
+                    symbolDescription.setDefinitionForAstNode(acceptor, definition);
 
                     EnumType memberType = new EnumType(enumType, memberName);
 
-                    SymbDesc.setType(acceptor.expr2, memberType);
-                    SymbDesc.setType(acceptor, memberType);
+                    symbolDescription.setTypeForAstNode(acceptor.expr2, memberType);
+                    symbolDescription.setTypeForAstNode(acceptor, memberType);
                 }
                 else {
                     ClassType memberType = enumType.getMemberTypeForName(enumType.selectedMember);
 
                     if (!memberType.containsMember(memberName))
-                        Report.error(acceptor.expr2.position,
+                        Logger.error(acceptor.expr2.position,
                                 LanguageManager.localize("type_error_member_not_found",
                                         lhs.toString(),
                                         memberName));
 
                     Type memberRawValueType = memberType.getMemberTypeForName(memberName);
 
-                    SymbDesc.setType(acceptor.expr2, memberRawValueType);
-                    SymbDesc.setType(acceptor, memberRawValueType);
+                    symbolDescription.setTypeForAstNode(acceptor.expr2, memberRawValueType);
+                    symbolDescription.setTypeForAstNode(acceptor, memberRawValueType);
                 }
             }
 			
 			else if (lhs.isTupleType()) {
 				TupleType tupleType = (TupleType) lhs;
 
-				SymbDesc.setType(acceptor.expr2, tupleType.typeForName(memberName));
-				SymbDesc.setType(acceptor, tupleType.typeForName(memberName));
+				symbolDescription.setTypeForAstNode(acceptor.expr2, tupleType.typeForName(memberName));
+				symbolDescription.setTypeForAstNode(acceptor, tupleType.typeForName(memberName));
 			}
 
 			else if (lhs.isCanType()) {
 			    CanType canType = (CanType) lhs;
 
                 if (acceptor.expr2 instanceof AbsFunCall) {
-                    AbsDef def = canType.findMemberForName(((AbsFunCall) acceptor.expr2).name);
+                    AbsDef def = canType.findMemberDefinitionForName(((AbsFunCall) acceptor.expr2).name);
 
                     if (def != null && def instanceof AbsClassDef) {
                         AbsFunCall fnCall = (AbsFunCall) acceptor.expr2;
@@ -570,7 +549,7 @@ public class TypeChecker implements ASTVisitor {
                 }
 
 			    if (!canType.containsStaticMember(memberName)) {
-                    Report.error(acceptor.expr2.position,
+                    Logger.error(acceptor.expr2.position,
                             LanguageManager.localize("type_error_member_not_found",
                                     lhs.friendlyName(),
                                     memberName));
@@ -585,18 +564,18 @@ public class TypeChecker implements ASTVisitor {
                 AbsDef definition = canType.findStaticMemberForName(memberName);
 
                 if (definition.isPrivate()) {
-                    Report.error(acceptor.expr2.position,
-                            "Member '" + memberName + "' is inaccessible due to it's private protection level");
+                    Logger.error(acceptor.expr2.position,
+                            "Member '" + memberName + "' is inaccessible due to it's private protection staticLevel");
                 }
 
-                SymbDesc.setNameDef(acceptor.expr2, definition);
-                SymbDesc.setNameDef(acceptor, definition);
+                symbolDescription.setDefinitionForAstNode(acceptor.expr2, definition);
+                symbolDescription.setDefinitionForAstNode(acceptor, definition);
 
                 Type memberType = canType.getStaticMemberTypeForName(memberName);
                 Type acceptorType = memberType.isFunctionType() ? ((FunctionType) memberType).resultType : memberType;
 
-                SymbDesc.setType(acceptor.expr2, memberType);
-                SymbDesc.setType(acceptor, acceptorType);
+                symbolDescription.setTypeForAstNode(acceptor.expr2, memberType);
+                symbolDescription.setTypeForAstNode(acceptor, acceptorType);
             }
 
             else if (lhs.isInterfaceType()) {
@@ -614,20 +593,20 @@ public class TypeChecker implements ASTVisitor {
                     }
                 }
                 else {
-                    Report.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    Logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
-                AbsDef def = interfaceType.findMemberForName(memberName);
+                AbsDef def = interfaceType.findMemberDefinitionForName(memberName);
 			    if (def == null) {
-                    Report.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    Logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
 
-                FunctionType functionType = (FunctionType) SymbDesc.getType(def);
+                FunctionType functionType = (FunctionType) symbolDescription.getTypeForAstNode(def);
 
-                SymbDesc.setNameDef(acceptor.expr2, def);
-                SymbDesc.setType(acceptor.expr2, functionType);
+                symbolDescription.setDefinitionForAstNode(acceptor.expr2, def);
+                symbolDescription.setTypeForAstNode(acceptor.expr2, functionType);
             }
             else {
-                Report.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                Logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
             }
 		}
 
@@ -635,7 +614,7 @@ public class TypeChecker implements ASTVisitor {
          * reference type comparison to nil
          */
         else if (lhs.isReferenceType() && rhs.isBuiltinNilType()) {
-            SymbDesc.setType(acceptor, Type.boolType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
         }
 
         /**
@@ -643,7 +622,7 @@ public class TypeChecker implements ASTVisitor {
          */
 		else if (oper == AbsBinExpr.IS) {
 		    if (!lhs.isCanType() && rhs.isCanType()) {
-		        SymbDesc.setType(acceptor, Type.boolType);
+		        symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
         }
 
@@ -652,7 +631,7 @@ public class TypeChecker implements ASTVisitor {
          */
         else if (oper == AbsBinExpr.AS) {
             if (rhs.isCanType()) {
-                SymbDesc.setType(acceptor, ((CanType) rhs).childType);
+                symbolDescription.setTypeForAstNode(acceptor, ((CanType) rhs).childType);
             }
         }
 
@@ -662,10 +641,10 @@ public class TypeChecker implements ASTVisitor {
 		else if (lhs.isBuiltinBoolType() && rhs.isBuiltinBoolType()) {
 			// ==, !=, <=, >=, <, >, &, |
 			if (oper >= 0 && oper <= 7) {
-                SymbDesc.setType(acceptor, Type.boolType);
+                symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
 			else {
-                Report.error(
+                Logger.error(
                         acceptor.position,
                         "Numeric operations \"+\", \"-\", \"*\", \"/\" and \"%\" are undefined for type Bool");
             }
@@ -676,14 +655,14 @@ public class TypeChecker implements ASTVisitor {
 		else if (lhs.isBuiltinIntType() && rhs.isBuiltinIntType()) {
 			// +, -, *, /, %
 			if (oper >= 8 && oper <= 12) {
-                SymbDesc.setType(acceptor, Type.intType);
+                symbolDescription.setTypeForAstNode(acceptor, Type.intType);
             }
 			// ==, !=, <=, >=, <, >
 			else if (oper >= 2 && oper <= 7) {
-                SymbDesc.setType(acceptor, Type.boolType);
+                symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
 			else {
-                Report.error(acceptor.position,
+                Logger.error(acceptor.position,
                         "Logical operations \"&\" and \"|\" are undefined for type Int");
             }
 		}
@@ -693,14 +672,14 @@ public class TypeChecker implements ASTVisitor {
 		else if (lhs.isBuiltinDoubleType() && rhs.isBuiltinDoubleType()) {
 			// +, -, *, /, %
 			if (oper >= 8 && oper <= 12) {
-                SymbDesc.setType(acceptor, Type.doubleType);
+                symbolDescription.setTypeForAstNode(acceptor, Type.doubleType);
             }
 			// ==, !=, <=, >=, <, >
 			else if (oper >= 2 && oper <= 7) {
-                SymbDesc.setType(acceptor, Type.boolType);
+                symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
 			else {
-                Report.error(acceptor.position,
+                Logger.error(acceptor.position,
                         "Logical operations \"&\" and \"|\" are undefined for type Double");
             }
 		}
@@ -711,14 +690,14 @@ public class TypeChecker implements ASTVisitor {
 		else if (lhs.isBuiltinDoubleType() && rhs.isBuiltinIntType() || lhs.isAtomType() && rhs.isBuiltinDoubleType()) {
 			// +, -, *, /, %
 			if (oper >= 8 && oper <= 12) {
-                SymbDesc.setType(acceptor, Type.doubleType);
+                symbolDescription.setTypeForAstNode(acceptor, Type.doubleType);
             }
 			// ==, !=, <=, >=, <, >
 			else if (oper >= 2 && oper <= 7) {
-                SymbDesc.setType(acceptor, Type.boolType);
+                symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
 			else {
-                Report.error(acceptor.position,
+                Logger.error(acceptor.position,
                         "Logical operations \"&\" and \"|\" are undefined for type Double");
             }
 		}
@@ -728,15 +707,15 @@ public class TypeChecker implements ASTVisitor {
 		 */
 		else if (lhs.isEnumType() && lhs.sameStructureAs(rhs)) {
 			if (oper == AbsBinExpr.EQU) {
-                SymbDesc.setType(acceptor, Type.boolType);
+                symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
 			else {
-                Report.error(acceptor.position,
+                Logger.error(acceptor.position,
                         "Operator cannot be applied to operands of type \"" + lhs.toString() + "\" and \"" + rhs.toString() + "\"");
             }
 		}
 		else {
-			Report.error(acceptor.position, "No viable operation for types " + lhs.friendlyName() + " and " + rhs.friendlyName());
+			Logger.error(acceptor.position, "No viable operation for types " + lhs.friendlyName() + " and " + rhs.friendlyName());
 		}
 	}
 
@@ -745,7 +724,7 @@ public class TypeChecker implements ASTVisitor {
         if (isRootNode) {
             isRootNode = false;
 
-            for (TraversalState state : TraversalState.values()) {
+            for (TraversalStates state : TraversalStates.values()) {
                 traversalState = state;
 
                 for (AbsDef s : acceptor.definitions) {
@@ -756,8 +735,8 @@ public class TypeChecker implements ASTVisitor {
             // TODO: - Issue with tests
 //            for (AtomType atomType: Type.atomTypes) {
 //                for (AbsType conformance : atomType.classDefinition.conformances) {
-//                    if (!atomType.conformsTo((InterfaceType) SymbDesc.getType(conformance))) {
-//                        Report.error(conformance.position, "Type \"" + atomType.friendlyName() + "\" does not conform to interface \"" + conformance.getName() + "\"");
+//                    if (!atomType.conformsTo((InterfaceType) symbolDescription.getTypeForAstNode(conformance))) {
+//                        Logger.error(conformance.position, "Type \"" + atomType.friendlyName() + "\" does not conform to interface \"" + conformance.getName() + "\"");
 //                    }
 //                }
 //            }
@@ -772,7 +751,7 @@ public class TypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsExprs acceptor) {
 		if (acceptor.expressions.isEmpty()) {
-            SymbDesc.setType(acceptor, Type.voidType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
         }
 		else {
 			for (AbsExpr e : acceptor.expressions) {
@@ -784,10 +763,10 @@ public class TypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsForStmt acceptor) {
 		acceptor.collection.accept(this);
-		Type type = ((ArrayType)SymbDesc.getType(acceptor.collection)).type;
+		Type type = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor.collection)).type;
 
-		SymbDesc.setType(SymbDesc.getNameDef(acceptor.iterator), type);
-		SymbDesc.setType(acceptor, Type.voidType);
+		symbolDescription.setTypeForAstNode(symbolDescription.getDefinitionForAstNode(acceptor.iterator), type);
+		symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
 		
 		acceptor.iterator.accept(this);
 		acceptor.body.accept(this);
@@ -795,10 +774,10 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-		AbsFunDef definition = (AbsFunDef) SymbTable.fnd(acceptor.getStringRepresentation());
-		FunctionType funType = (FunctionType) SymbDesc.getType(definition);
+		AbsFunDef definition = (AbsFunDef) symbolTable.findDefinitionForName(acceptor.getStringRepresentation());
+		FunctionType funType = (FunctionType) symbolDescription.getTypeForAstNode(definition);
 
-		SymbDesc.setType(acceptor, funType.resultType);
+		symbolDescription.setTypeForAstNode(acceptor, funType.resultType);
 		boolean isConstructor = definition.isConstructor;
 
 		for (int i = 0; i < acceptor.numArgs(); i++) {
@@ -806,18 +785,18 @@ public class TypeChecker implements ASTVisitor {
 
             // skip first ("self") argument if function is constructor
             if (isConstructor && i == 0) {
-                SymbDesc.setType(arg, funType.resultType);
+                symbolDescription.setTypeForAstNode(arg, funType.resultType);
                 continue;
             }
 
 			arg.accept(this);
 
-			Type argType = SymbDesc.getType(arg);
+			Type argType = symbolDescription.getTypeForAstNode(arg);
 
             if (argType == null) return;
 
 			if (!(funType.getParType(i).sameStructureAs(argType))) {
-				Report.error(arg.position, "Cannot assign value of type \"" +
+				Logger.error(arg.position, "Cannot assigningToVariable value of type \"" +
                         argType.friendlyName() + "\" to type \"" + funType.getParType(i).friendlyName() + "\"");
 			}
 		}
@@ -829,14 +808,14 @@ public class TypeChecker implements ASTVisitor {
 
         for (AbsParDef par : acceptor.getParamaters()) {
             par.accept(this);
-            parameters.add(SymbDesc.getType(par));
+            parameters.add(symbolDescription.getTypeForAstNode(par));
         }
 
         acceptor.type.accept(this);
-        Type returnType = SymbDesc.getType(acceptor.type);
+        Type returnType = symbolDescription.getTypeForAstNode(acceptor.type);
 
         FunctionType funType = new FunctionType(parameters, returnType, acceptor);
-        SymbDesc.setType(acceptor, funType);
+        symbolDescription.setTypeForAstNode(acceptor, funType);
 
         if (!resolveTypeOnly){
 			// check if return type matches
@@ -844,10 +823,10 @@ public class TypeChecker implements ASTVisitor {
 			    stmt.accept(this);
 
 				if (stmt instanceof AbsReturnExpr) {
-					Type t = SymbDesc.getType(stmt);
+					Type t = symbolDescription.getTypeForAstNode(stmt);
 
 					if (!t.sameStructureAs(funType.resultType)) {
-                        Report.error(stmt.position,
+                        Logger.error(stmt.position,
                                 "Return type doesn't match, expected \""
                                         + funType.resultType.friendlyName()
                                         + "\", got \""
@@ -865,10 +844,10 @@ public class TypeChecker implements ASTVisitor {
 			c.cond.accept(this);
 			c.body.accept(this);
 			
-			if (SymbDesc.getType(c.cond).sameStructureAs(Type.boolType))
-				SymbDesc.setType(acceptor, Type.voidType);
+			if (symbolDescription.getTypeForAstNode(c.cond).sameStructureAs(Type.boolType))
+				symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
 			else
-				Report.error(c.cond.position,
+				Logger.error(c.cond.position,
 						"Condition must be of type Bool");
 		}
 
@@ -881,66 +860,66 @@ public class TypeChecker implements ASTVisitor {
 	public void visit(AbsParDef acceptor) {
 		acceptor.type.accept(this);
 		
-		Type type = SymbDesc.getType(acceptor.type);
+		Type type = symbolDescription.getTypeForAstNode(acceptor.type);
 		if (type.isCanType())
 			type = ((CanType) type).childType;
 
-		SymbDesc.setType(acceptor, type);
+		symbolDescription.setTypeForAstNode(acceptor, type);
 	}
 
 	@Override
 	public void visit(AbsTypeName acceptor) {
         if (acceptor.name.equals("Int")) {
-            SymbDesc.setType(acceptor, Type.intType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.intType);
             return;
         }
         if (acceptor.name.equals("Double")) {
-            SymbDesc.setType(acceptor, Type.doubleType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.doubleType);
             return;
         }
         if (acceptor.name.equals("String")) {
-            SymbDesc.setType(acceptor, Type.stringType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.stringType);
             return;
         }
         if (acceptor.name.equals("Char")) {
-            SymbDesc.setType(acceptor, Type.charType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.charType);
             return;
         }
         if (acceptor.name.equals("Void")) {
-            SymbDesc.setType(acceptor, Type.voidType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
             return;
         }
 
-		AbsDef definition = SymbDesc.getNameDef(acceptor);
+		AbsDef definition = symbolDescription.getDefinitionForAstNode(acceptor);
 		
 		if (!(definition instanceof AbsTypeDef))
-			Report.error(acceptor.position, "Use of undeclared type \'" + definition.name + "\'");
+			Logger.error(acceptor.position, "Use of undeclared type \'" + definition.name + "\'");
 
-		Type type = SymbDesc.getType(definition);
+		Type type = symbolDescription.getTypeForAstNode(definition);
 
 		if (type == null)
-			Report.error(acceptor.position, "Type \"" + acceptor.name
+			Logger.error(acceptor.position, "Type \"" + acceptor.name
 					+ "\" is undefined");
 
-		SymbDesc.setType(acceptor, type);
+		symbolDescription.setTypeForAstNode(acceptor, type);
 	}
 
 	@Override
 	public void visit(AbsUnExpr acceptor) {
 		acceptor.expr.accept(this);
-		Type type = SymbDesc.getType(acceptor.expr);
+		Type type = symbolDescription.getTypeForAstNode(acceptor.expr);
 
 		if (acceptor.oper == AbsUnExpr.NOT) {
 			if (type.sameStructureAs(Type.boolType))
-				SymbDesc.setType(acceptor, Type.boolType);
+				symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
 			else
-				Report.error(acceptor.position,
+				Logger.error(acceptor.position,
 						"Operator \"!\" is not defined for type " + type);
 		} else if (acceptor.oper == AbsUnExpr.ADD || acceptor.oper == AbsUnExpr.SUB) {
-			if (type.isBuiltinIntType() || type.canCastTo(Type.intType))
-				SymbDesc.setType(acceptor, type);
+			if (type.isBuiltinIntType() || type.canBeCastedToType(Type.intType))
+				symbolDescription.setTypeForAstNode(acceptor, type);
 			else
-				Report.error(acceptor.position,
+				Logger.error(acceptor.position,
 						"Operators \"+\" and \"-\" are not defined for type "
 								+ type);
 		}
@@ -951,40 +930,40 @@ public class TypeChecker implements ASTVisitor {
         if (acceptor.type != null) {
 			acceptor.type.accept(this);
 
-			Type type = SymbDesc.getType(acceptor.type);
+			Type type = symbolDescription.getTypeForAstNode(acceptor.type);
 			if (type.isCanType())
 				type = ((CanType) type).childType;
 			
-			SymbDesc.setType(acceptor, type);
+			symbolDescription.setTypeForAstNode(acceptor, type);
 		}
 	}
 
 	@Override
 	public void visit(AbsVarNameExpr acceptor) {
         if (acceptor.name.equals("Int")) {
-            SymbDesc.setType(acceptor, Type.intType.staticType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.intType.staticType);
             return;
         }
         if (acceptor.name.equals("Double")) {
-            SymbDesc.setType(acceptor, Type.doubleType.staticType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.doubleType.staticType);
             return;
         }
         if (acceptor.name.equals("String")) {
-            SymbDesc.setType(acceptor, Type.stringType.staticType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.stringType.staticType);
             return;
         }
         if (acceptor.name.equals("Char")) {
-            SymbDesc.setType(acceptor, Type.charType.staticType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.charType.staticType);
             return;
         }
         if (acceptor.name.equals("Void")) {
-            SymbDesc.setType(acceptor, Type.voidType.staticType);
+            symbolDescription.setTypeForAstNode(acceptor, Type.voidType.staticType);
             return;
         }
 
-        Type type = SymbDesc.getType(SymbDesc.getNameDef(acceptor));
+        Type type = symbolDescription.getTypeForAstNode(symbolDescription.getDefinitionForAstNode(acceptor));
 
-        if (!assign && type.isOptionalType()) {
+        if (!assigningToVariable && type.isOptionalType()) {
             OptionalType optionalType = (OptionalType) type;
 
             // implicitly force forced OptionalTyped
@@ -993,7 +972,7 @@ public class TypeChecker implements ASTVisitor {
             }
         }
 
-		SymbDesc.setType(acceptor, type);
+		symbolDescription.setTypeForAstNode(acceptor, type);
 	}
 
 	@Override
@@ -1001,23 +980,24 @@ public class TypeChecker implements ASTVisitor {
 		acceptor.cond.accept(this);
 		acceptor.body.accept(this);
 
-		if (SymbDesc.getType(acceptor.cond).sameStructureAs(Type.boolType)) {
-            SymbDesc.setType(acceptor, Type.voidType);
+		if (symbolDescription.getTypeForAstNode(acceptor.cond).sameStructureAs(Type.boolType)) {
+            symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
         }
 		else {
-            Report.error(acceptor.cond.position, "Condition must be typed as Boolean");
+            Logger.error(acceptor.cond.position, "Condition must be typed as Boolean");
         }
 	}
 
 	@Override
 	public void visit(AbsImportDef importDef) {
-	    if (traversalState == TraversalState.extensions) {
-            String tmp = Report.fileName;
-            Report.fileName = importDef.getName();
+	    if (traversalState == TraversalStates.extensions) {
+            String currentFile = Logger.fileName;
 
-            importDef.imports.accept(new TypeChecker());
+            Logger.fileName = importDef.getName();
 
-            Report.fileName = tmp;
+            importDef.imports.accept(new TypeChecker(symbolTable, symbolDescription));
+
+            Logger.fileName = currentFile;
         }
 	}
 
@@ -1026,11 +1006,11 @@ public class TypeChecker implements ASTVisitor {
 	    if (isRootNode) {
 	        isRootNode = false;
 
-            for (TraversalState state : TraversalState.values()) {
+            for (TraversalStates state : TraversalStates.values()) {
                 traversalState = state;
 
                 for (AbsStmt s : stmts.statements) {
-                    if (traversalState == TraversalState.extensions && !(s instanceof AbsDef))
+                    if (traversalState == TraversalStates.extensions && !(s instanceof AbsDef))
                         continue;
 
                     s.accept(this);
@@ -1049,10 +1029,10 @@ public class TypeChecker implements ASTVisitor {
 		if (returnExpr.expr != null) {
 			returnExpr.expr.accept(this);
 
-			SymbDesc.setType(returnExpr, SymbDesc.getType(returnExpr.expr));
+			symbolDescription.setTypeForAstNode(returnExpr, symbolDescription.getTypeForAstNode(returnExpr.expr));
 		}
 		else {
-            SymbDesc.setType(returnExpr, Type.voidType);
+            symbolDescription.setTypeForAstNode(returnExpr, Type.voidType);
         }
 	}
 
@@ -1071,14 +1051,14 @@ public class TypeChecker implements ASTVisitor {
 		for (AbsExpr e : absListExpr.expressions) {
 			e.accept(this);
 
-			Type t = SymbDesc.getType(e);
+			Type t = symbolDescription.getTypeForAstNode(e);
 
 			if (base == null) {
 			    base = t;
             }
-			else if (t.sameStructureAs(base) || t.canCastTo(base)) {}
+			else if (t.sameStructureAs(base) || t.canBeCastedToType(base)) {}
             else {
-                if (base.canCastTo(t)) {
+                if (base.canBeCastedToType(t)) {
                     base = t;
                 }
                 else {
@@ -1086,10 +1066,10 @@ public class TypeChecker implements ASTVisitor {
                 }
             }
 
-			vec.add(SymbDesc.getType(e));
+			vec.add(symbolDescription.getTypeForAstNode(e));
 		}
 
-		SymbDesc.setType(absListExpr, new ArrayType(base, vec.size()));
+		symbolDescription.setTypeForAstNode(absListExpr, new ArrayType(base, vec.size()));
 	}
 
 	@Override
@@ -1097,11 +1077,11 @@ public class TypeChecker implements ASTVisitor {
 		Vector<Type> parameters = new Vector<>();
 		for (AbsType t : funType.parameterTypes) {
 			t.accept(this);
-			parameters.add(SymbDesc.getType(t));
+			parameters.add(symbolDescription.getTypeForAstNode(t));
 		}
 		funType.returnType.accept(this);
 		
-		SymbDesc.setType(funType, new FunctionType(parameters, SymbDesc.getType(funType.returnType), null));
+		symbolDescription.setTypeForAstNode(funType, new FunctionType(parameters, symbolDescription.getTypeForAstNode(funType.returnType), null));
 	}
 
 	@Override
@@ -1113,14 +1093,14 @@ public class TypeChecker implements ASTVisitor {
 	public void visit(AbsSwitchStmt switchStmt) {
 		switchStmt.subjectExpr.accept(this);
 		
-		Type switchType = SymbDesc.getType(switchStmt.subjectExpr);
+		Type switchType = symbolDescription.getTypeForAstNode(switchStmt.subjectExpr);
 		
 		for (AbsCaseStmt singleCase : switchStmt.cases) {
 			singleCase.accept(this);
 			for (AbsExpr e : singleCase.exprs) {
-				Type caseType = SymbDesc.getType(e);
+				Type caseType = symbolDescription.getTypeForAstNode(e);
 				if (!caseType.sameStructureAs(switchType))
-					Report.error(e.position, 
+					Logger.error(e.position,
 							"Expression of type \"" + caseType.toString() + 
 							"\" cannot match values of type \"" + switchType.toString() +"\"");
 			}
@@ -1130,7 +1110,7 @@ public class TypeChecker implements ASTVisitor {
             switchStmt.defaultBody.accept(this);
         }
 		
-		SymbDesc.setType(switchStmt, Type.voidType);
+		symbolDescription.setTypeForAstNode(switchStmt, Type.voidType);
 	}
 
 	@Override
@@ -1139,20 +1119,20 @@ public class TypeChecker implements ASTVisitor {
             e.accept(this);
         }
 
-		SymbTable.newScope();
+        symbolTable.newScope();
 		acceptor.body.accept(this);
-		SymbTable.oldScope();
+        symbolTable.oldScope();
 	}
 
 	@Override
 	public void visit(AbsEnumDef acceptor) {
-        if (traversalState != TraversalState.extensions) return;
+        if (traversalState != TraversalStates.extensions) return;
 
         AtomType enumRawValueType = null;
 		
 		if (acceptor.type != null) {
 			acceptor.type.accept(this);
-			enumRawValueType = (AtomType) SymbDesc.getType(acceptor.type);
+			enumRawValueType = (AtomType) symbolDescription.getTypeForAstNode(acceptor.type);
 		}
 		
 		String previousValue = null;
@@ -1167,7 +1147,7 @@ public class TypeChecker implements ASTVisitor {
 				
 				if (enumRawValueType != null && enumMemberDef.value == null) {
 					if (!enumRawValueType.isBuiltinStringType() && !enumRawValueType.isBuiltinIntType())
-						Report.error(enumMemberDef.position, 
+						Logger.error(enumMemberDef.position,
 								"Enum members require explicit raw values when "
 								+ "the raw type is not Int or String literal");
 					
@@ -1189,20 +1169,20 @@ public class TypeChecker implements ASTVisitor {
 				}
 
 				def.accept(this);
-				ClassType defType = (ClassType) SymbDesc.getType(def);
+				ClassType defType = (ClassType) symbolDescription.getTypeForAstNode(def);
 				
 				if (defType.containsMember("rawValue")) {
 					Type rawValueType = defType.getMemberTypeForName("rawValue");
 					
 					if (enumRawValueType == null)
-						Report.error(enumMemberDef.value.position, 
+						Logger.error(enumMemberDef.value.position,
 								"Enum member cannot have a raw value "
 								+ "if the enum doesn't have a raw type");
 					
 					
 					if (!rawValueType.sameStructureAs(enumRawValueType))
-						Report.error(enumMemberDef.value.position, 
-								"Cannot assign value of type \"" +
+						Logger.error(enumMemberDef.value.position,
+								"Cannot assigningToVariable value of type \"" +
 								rawValueType.toString() + "\" to type \"" + 
 								enumRawValueType.toString() + "\"");
 
@@ -1210,11 +1190,11 @@ public class TypeChecker implements ASTVisitor {
 				}
 			}
 
-			types.add((ClassType) SymbDesc.getType(def));
+			types.add((ClassType) symbolDescription.getTypeForAstNode(def));
 			names.add(def.getName());
 		}
 
-		SymbDesc.setType(acceptor, new EnumType(acceptor, names, types));
+		symbolDescription.setTypeForAstNode(acceptor, new EnumType(acceptor, names, types));
 	}
 
 	@Override
@@ -1227,18 +1207,18 @@ public class TypeChecker implements ASTVisitor {
 			acceptor.value.accept(this);
 			
 			names.add("rawValue");
-			types.add(SymbDesc.getType(acceptor.value));
+			types.add(symbolDescription.getTypeForAstNode(acceptor.value));
 			definitions.add(new AbsVarDef(acceptor.position, "rawValue", new AbsAtomType(null, null)));
 		}
 		
 		AbsClassDef classDef = new AbsClassDef(acceptor.getName(), acceptor.position, definitions, new ArrayList<>(), new ArrayList<>());
 		ClassType type = new ClassType(classDef, names, types);
-		SymbDesc.setType(acceptor, type);
+		symbolDescription.setTypeForAstNode(acceptor, type);
 	}
 
 	@Override
 	public void visit(AbsTupleDef acceptor) {
-        if (traversalState == TraversalState.extensions) return;
+        if (traversalState == TraversalStates.extensions) return;
 
         LinkedList<Type> types = new LinkedList<>();
 		LinkedList<String> names = new LinkedList<>();
@@ -1247,19 +1227,19 @@ public class TypeChecker implements ASTVisitor {
 			def.accept(this);
 			
 			names.add(def.getName());
-			types.add(SymbDesc.getType(def));
+			types.add(symbolDescription.getTypeForAstNode(def));
 		}
 		
 		TupleType tupleType = new TupleType(acceptor, types, names);
-		SymbDesc.setType(acceptor, tupleType);
+		symbolDescription.setTypeForAstNode(acceptor, tupleType);
 	}
 
 	@Override
 	public void visit(AbsLabeledExpr acceptor) {
 		acceptor.expr.accept(this);
 		
-		Type exprType = SymbDesc.getType(acceptor.expr);
-		SymbDesc.setType(acceptor, exprType);
+		Type exprType = symbolDescription.getTypeForAstNode(acceptor.expr);
+		symbolDescription.setTypeForAstNode(acceptor, exprType);
 	}
 
 	@Override
@@ -1272,64 +1252,64 @@ public class TypeChecker implements ASTVisitor {
 		for (AbsExpr e : acceptor.expressions.expressions) {
 			AbsLabeledExpr labeledExpr = (AbsLabeledExpr) e;
 			
-			types.add(SymbDesc.getType(labeledExpr));
+			types.add(symbolDescription.getTypeForAstNode(labeledExpr));
 			names.add(labeledExpr.name);
 		}
 
 		// TODO:
         Type type = types.size() == 1 ? new TupleType(types, names) : new TupleType(types, names);
-		SymbDesc.setType(acceptor, type);
+		symbolDescription.setTypeForAstNode(acceptor, type);
 	}
 
 	@Override
 	public void visit(AbsOptionalType acceptor) {
 		acceptor.childType.accept(this);
 		
-		Type childType = SymbDesc.getType(acceptor.childType);
+		Type childType = symbolDescription.getTypeForAstNode(acceptor.childType);
 		if (childType.isCanType()) {
 		    childType = ((CanType) childType).childType;
         }
 
-		SymbDesc.setType(acceptor, new OptionalType(childType, acceptor.isForced));
+		symbolDescription.setTypeForAstNode(acceptor, new OptionalType(childType, acceptor.isForced));
 	}
 
 	@Override
 	public void visit(AbsOptionalEvaluationExpr acceptor) {
 		acceptor.subExpr.accept(this);
 
-		Type childType = SymbDesc.getType(acceptor.subExpr);
+		Type childType = symbolDescription.getTypeForAstNode(acceptor.subExpr);
         if (childType.isCanType()) {
             childType = ((CanType) childType).childType;
         }
 
-		SymbDesc.setType(acceptor, new OptionalType(childType, false));
+		symbolDescription.setTypeForAstNode(acceptor, new OptionalType(childType, false));
 	}
 
 	@Override
 	public void visit(AbsForceValueExpr acceptor) {
 		acceptor.subExpr.accept(this);
 
-		Type type = SymbDesc.getType(acceptor.subExpr);
+		Type type = symbolDescription.getTypeForAstNode(acceptor.subExpr);
 		
 		if (type.isOptionalType()) {
-            SymbDesc.setType(acceptor, ((OptionalType) type).childType);
+            symbolDescription.setTypeForAstNode(acceptor, ((OptionalType) type).childType);
         }
 		else {
-            Report.error(acceptor.position,
+            Logger.error(acceptor.position,
                     "Cannot unwrap value of non-optional type '" + type.toString() + "'");
         }
 	}
 
     @Override
     public void visit(AbsExtensionDef acceptor) {
-	    if (traversalState == TraversalState.extensions) {
+	    if (traversalState == TraversalStates.extensions) {
             acceptor.extendingType.accept(this);
 
             for (AbsType conformance: acceptor.conformances) {
                 conformance.accept(this);
             }
 
-            Type type = SymbDesc.getType(acceptor.extendingType);
+            Type type = symbolDescription.getTypeForAstNode(acceptor.extendingType);
             boolean isAtomType = false;
 
             if (type.isAtomType()) {
@@ -1338,10 +1318,10 @@ public class TypeChecker implements ASTVisitor {
                 isAtomType = true;
             }
 
-            SymbDesc.setType(acceptor, type);
+            symbolDescription.setTypeForAstNode(acceptor, type);
 
             if (!type.isCanType() || !((CanType) type).childType.isObjectType()) {
-                Report.error(acceptor.position, "Only classes can be extended (for now)");
+                Logger.error(acceptor.position, "Only classes can be extended (for now)");
             }
 
             ObjectType extendingType = (ObjectType) ((CanType) type).childType;
@@ -1357,23 +1337,23 @@ public class TypeChecker implements ASTVisitor {
                 def.accept(this);
 
                 String memberName = def.getName();
-                Type memberType = SymbDesc.getType(def);
+                Type memberType = symbolDescription.getTypeForAstNode(def);
 
                 if (def.isStatic()) {
                     if (!((CanType) type).addStaticMember(def, memberName, memberType)) {
-                        Report.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
+                        Logger.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
                     }
                 }
                 else {
                     if (!extendingType.addMember(def, memberName, memberType)) {
-                        Report.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
+                        Logger.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
                     }
                 }
             }
 
             for (AbsType conformance : acceptor.conformances) {
                 if (!extendingType.addConformance(conformance)) {
-                    Report.error(conformance.position, "Redundant conformance \"" + conformance.getName() + "\"");
+                    Logger.error(conformance.position, "Redundant conformance \"" + conformance.getName() + "\"");
                 }
             }
 
@@ -1388,7 +1368,7 @@ public class TypeChecker implements ASTVisitor {
                         AbsParDef selfParDef = funDef.getParameterForIndex(0);
                         selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.getName());
 
-                        SymbDesc.setNameDef(selfParDef.type, acceptor);
+                        symbolDescription.setDefinitionForAstNode(selfParDef.type, acceptor);
                     }
                 }
 
@@ -1402,7 +1382,7 @@ public class TypeChecker implements ASTVisitor {
         acceptor.definitions.accept(this);
 
         InterfaceType type = new InterfaceType(acceptor);
-        SymbDesc.setType(acceptor, type);
+        symbolDescription.setTypeForAstNode(acceptor, type);
 
         // TODO: - Bad design!!!!
         if (acceptor.getName().equals(Constants.any)) {

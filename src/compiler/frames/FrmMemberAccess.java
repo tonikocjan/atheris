@@ -20,34 +20,22 @@ package compiler.frames;
 import compiler.ast.tree.def.AbsVarDef;
 import compiler.seman.type.ObjectType;
 
-public class FrmMemberAccess implements FrmAccess {
+public class FrmMemberAccess extends FrmAccess {
 
-	/**
-	 * Member definition.
-	 */
-	private final AbsVarDef memberDef;
-
-	/**
-	 * Parent type.
-	 */
+	private final AbsVarDef memberDefinition;
     private final ObjectType parentType;
 
-    /**
-     *
-     * @param memberDef
-     * @param parentType
-     */
-	public FrmMemberAccess(AbsVarDef memberDef, ObjectType parentType) {
-		this.memberDef = memberDef;
+	public FrmMemberAccess(AbsVarDef memberDefinition, ObjectType parentType) {
+		this.memberDefinition = memberDefinition;
 		this.parentType = parentType;
 	}
 	
 	public int offsetForMember() {
-		return parentType.offsetForMember(memberDef.getName());
+		return parentType.offsetForMember(memberDefinition.getName());
 	}
 
 	@Override
 	public String toString() {
-		return "Member (" + memberDef.name + ", offset: " + offsetForMember() + ")";
+		return "Member (" + memberDefinition.name + ", framePointerOffset: " + offsetForMember() + ")";
 	}
 }

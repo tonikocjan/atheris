@@ -6,40 +6,20 @@ import compiler.seman.type.CanType;
 /**
  *
  */
-public class FrmStaticAccess implements FrmAccess {
+public class FrmStaticAccess extends FrmAccess {
 
-    /**
-     * Member definition.
-     */
-    private final AbsVarDef staticMember;
-
-    /**
-     * Parent type.
-     */
+    private final AbsVarDef staticMemberDefinition;
     private final CanType parentType;
 
-    /**
-     *
-     * @param staticMember
-     * @param parentType
-     */
     public FrmStaticAccess(AbsVarDef staticMember, CanType parentType) {
-        this.staticMember = staticMember;
+        this.staticMemberDefinition = staticMember;
         this.parentType = parentType;
     }
 
-    /**
-     *
-     * @return
-     */
-    public int offset() {
-        return parentType.offsetForStaticMember(staticMember.getName());
+    public int offsetForStaticMember() {
+        return parentType.offsetForStaticMember(staticMemberDefinition.getName());
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String toString() {
         return "Todo";

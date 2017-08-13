@@ -23,29 +23,14 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class LanguageManager {
-	
-	/**
-	 * Singleton.
-	 */
+
 	public static LanguageManager sharedManager = new LanguageManager();
-	
-	/**
-	 * Private default constructor.
-	 */
+    private HashMap<String, String> translationMapping = new HashMap<>();
+
 	private LanguageManager() { }
-	
-	/**
-	 * Map storing localized strings.
-	 */
-	private HashMap<String, String> strings = new HashMap<>();
-	
-	/**
-	 * Load localization
-	 * @param file file to parse
-	 * @return success
-	 */
-	public boolean loadLocalization(String file) {
-		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+
+	public boolean loadLocalization(String fileName) {
+		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 		    String line;
 		    while ((line = br.readLine()) != null) {
 		    	if (line.length() == 0) continue;
@@ -60,7 +45,7 @@ public class LanguageManager {
 		    	String key = tmp[0].substring(1, tmp[0].indexOf('"', 1));
 		    	String value = tmp[1].substring(1, tmp[1].length() - 2);
 		    	
-		    	strings.put(key, value);
+		    	translationMapping.put(key, value);
 		    }
 		    return true;
 		} catch (IOException e) {
@@ -68,35 +53,19 @@ public class LanguageManager {
 			return false;
 		}
 	}
-	
-	/**
-	 * Get localized string for key
-	 * @param key
-	 * @return
-	 */
+
 	public String localizedStringForKey(String key) {
-		if (strings.containsKey(key)) 
-			return strings.get(key);
+		if (translationMapping.containsKey(key))
+			return translationMapping.get(key);
 		return key;
 	}
-	
-	/**
-	 * 
-	 * @param key
-	 * @param args
-	 * @return
-	 */
+
 	public String localizedStringForKey(String key, Object... args) {
-		if (strings.containsKey(key))
-			return String.format(strings.get(key), args);
+		if (translationMapping.containsKey(key))
+			return String.format(translationMapping.get(key), args);
 		return key;
 	}
-	
-	/**
-	 * 
-	 * @param key
-	 * @return
-	 */
+
 	public static String localize(String key) {
 		return sharedManager.localizedStringForKey(key);
 	}

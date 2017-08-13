@@ -40,7 +40,7 @@ public class ImcCONST extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "CONST value=" + value.toString());
+		Logger.dump(indent, "CONST value=" + value.toString());
 	}
 
 	@Override

@@ -37,7 +37,7 @@ public class ImcJUMP extends ImcStmt {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "JUMP label=" + label.name());
+		Logger.dump(indent, "JUMP entryLabel=" + label.getName());
 	}
 
 	@Override

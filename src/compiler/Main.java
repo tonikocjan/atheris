@@ -17,23 +17,13 @@
 
 package compiler;
 
-/**
- * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
- * 
- * @author Toni Kocjan
- */
 public class Main {
 
-	/**
-	 * Metoda, ki izvede celotni proces prevajanja.
-	 * 
-	 * @param args
-	 *            Parametri ukazne vrstice.
-	 */
 	public static void main(String[] args) {
-        Atheris atheris = new Atheris();
-        atheris.execute(atheris.compile(args));
-        atheris.exit();
+        new Atheris()
+                .compile(args)
+                .execute()
+                .exit();
 	}
 
 }

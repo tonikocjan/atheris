@@ -50,11 +50,11 @@ public class ImcDataChunk extends ImcChunk {
 	@Override
 	public void dump() {
 		String tmp =  data == null ? "" : " .BYTE: " + data;
-		Report.dump(0, "DATA CHUNK: label=" + label.name() + " size=" + size + tmp);
+		Logger.dump(0, "DATA CHUNK: entryLabel=" + label.getName() + " sizeInBytes=" + size + tmp);
 	}
 
     @Override
     public String name() {
-        return label.name();
+        return label.getName();
     }
 }

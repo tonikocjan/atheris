@@ -42,7 +42,7 @@ public class AbsEnumMemberDef extends AbsDef {
 	/**
 	 * Create new enum definition.
 	 * @param pos Position
-	 * @param name Variable name
+	 * @param name Variable getName
 	 * @param value Raw value
 	 */
 	public AbsEnumMemberDef(Position pos, AbsVarNameExpr name, AbsAtomConstExpr value) {

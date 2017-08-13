@@ -40,7 +40,7 @@ public class ImcRETURN extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "RETURN");
+		Logger.dump(indent, "RETURN");
 		if (expr != null) expr.dump(indent + 2);
 	}
 

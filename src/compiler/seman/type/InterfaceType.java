@@ -42,12 +42,12 @@ public class InterfaceType extends Type {
     }
 
     @Override
-    public boolean canCastTo(Type type) {
+    public boolean canBeCastedToType(Type type) {
         return false;
     }
 
     @Override
-    public int size() {
+    public int sizeInBytes() {
         return 0;
     }
 
@@ -62,7 +62,7 @@ public class InterfaceType extends Type {
     }
 
     @Override
-    public AbsDef findMemberForName(String name) {
+    public AbsDef findMemberDefinitionForName(String name) {
         for (AbsDef def : definition.definitions.definitions) {
             if (((AbsFunDef) def).getStringRepresentation().equals(name))
                 return def;

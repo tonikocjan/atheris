@@ -1,7 +1,6 @@
 package compiler.imcode;
 
-import compiler.Report;
-import compiler.frames.FrmLabel;
+import compiler.Logger;
 import compiler.frames.FrmTemp;
 
 import java.util.Iterator;
@@ -29,7 +28,7 @@ public class ImcMethodCALL extends ImcExpr {
 
     @Override
     public void dump(int indent) {
-        Report.dump(indent, "METHOD CALL temp=" + temp.name());
+        Logger.dump(indent, "METHOD CALL temp=" + temp.getName());
         Iterator<ImcExpr> args = this.args.iterator();
 
         while (args.hasNext()) {

@@ -31,7 +31,7 @@ import java.util.HashSet;
 public abstract class AbsDef extends AbsStmt {
 
 	/** 
-	 * Definition name.
+	 * Definition getName.
 	 */
 	public String name;
 	
@@ -111,8 +111,8 @@ public abstract class AbsDef extends AbsStmt {
 	}
 	
 	/**
-	 * Get name of the definition.
-	 * @return name
+	 * Get getName of the definition.
+	 * @return getName
 	 */
 	public String getName() {
 		return name;

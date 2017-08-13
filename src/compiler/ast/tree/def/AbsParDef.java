@@ -32,11 +32,11 @@ public class AbsParDef extends AbsDef {
 	public AbsType type;
 
 	/**
-	 * Each function parameter has both an argument label and a parameter name.
-	 * The argument label is used when calling the function; each argument is written in
-	 * the function call with its argument label before it.
-	 * The parameter name is used in the implementation of the function.
-	 * By default, parameters use their parameter name as their argument label.
+	 * Each function parameter has both an argument entryLabel and a parameter getName.
+	 * The argument entryLabel is used when calling the function; each argument is written in
+	 * the function call with its argument entryLabel before it.
+	 * The parameter getName is used in the implementation of the function.
+	 * By default, parameters use their parameter getName as their argument entryLabel.
 	 */
 	public final String argumentLabel;
 
@@ -48,7 +48,7 @@ public class AbsParDef extends AbsDef {
 	 * @param name
 	 *            Parameter Name.
 	 * @param argumentLabel
-	 * 			  Argument label.
+	 * 			  Argument entryLabel.
 	 * @param type
 	 *            Type.
 	 */

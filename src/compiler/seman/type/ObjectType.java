@@ -1,6 +1,6 @@
 package compiler.seman.type;
 
-import compiler.Report;
+import compiler.Logger;
 import compiler.ast.tree.def.AbsClassDef;
 import compiler.ast.tree.def.AbsDef;
 import compiler.ast.tree.def.AbsVarDef;
@@ -9,7 +9,6 @@ import compiler.ast.tree.type.AbsType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * Object type.
@@ -38,7 +37,7 @@ public abstract class ObjectType extends Type {
     protected final int size;
 
     /**
-     * Inital offset of all members (space used for type descriptor).
+     * Inital framePointerOffset of all members (space used for type descriptor).
      */
     protected final int reservedSize;
 
@@ -57,7 +56,7 @@ public abstract class ObjectType extends Type {
      */
     public ObjectType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass, int reservedSize) {
         if (names.size() != types.size()) {
-            Report.error("Internal error :: compiler.seman.type.ObjectType: "
+            Logger.error("Internal error :: compiler.seman.type.ObjectType: "
                     + "names count not equal types count");
         }
 
@@ -66,7 +65,7 @@ public abstract class ObjectType extends Type {
             definitions.put(names.get(i), definition.definitions.definitions.get(i));
 
             if (definition.definitions.definitions.get(i) instanceof AbsVarDef) {
-                size += types.get(i).size();
+                size += types.get(i).sizeInBytes();
             }
         }
 
@@ -129,7 +128,7 @@ public abstract class ObjectType extends Type {
     /**
      * Get type for member.
      * @param name Name of the member.
-     * @return Type of the member (or null if member with such name doesn't exist).
+     * @return Type of the member (or null if member with such getName doesn't exist).
      */
     public Type getMemberTypeForName(String name) {
         // first check in base class
@@ -151,9 +150,9 @@ public abstract class ObjectType extends Type {
     }
 
     /**
-     * Calculate offset for member.
-     * @param name member name
-     * @return offset of that member
+     * Calculate framePointerOffset for member.
+     * @param name member getName
+     * @return framePointerOffset of that member
      */
     public int offsetForMember(String name) {
         int offset = reservedSize;
@@ -162,7 +161,7 @@ public abstract class ObjectType extends Type {
         if (base != null) {
             offset = base.offsetForMember(name);
 
-            if (offset < base.size())
+            if (offset < base.sizeInBytes())
                 return offset;
         }
 
@@ -180,7 +179,7 @@ public abstract class ObjectType extends Type {
             }
 
             if (name.equals(namesIterator.next())) break;
-            offset += typesIterator.next().size();
+            offset += typesIterator.next().sizeInBytes();
         }
 
         return offset;
@@ -191,11 +190,11 @@ public abstract class ObjectType extends Type {
      * @return
      */
     @Override
-    public int size() {
+    public int sizeInBytes() {
         int size = this.size;
 
         if (base != null) {
-            size += base.size() - reservedSize;
+            size += base.sizeInBytes() - reservedSize;
         }
 
         return size;
@@ -203,7 +202,7 @@ public abstract class ObjectType extends Type {
 
     /**
      *
-     * @param name Member name
+     * @param name Member getName
      * @return
      */
     @Override
@@ -235,7 +234,7 @@ public abstract class ObjectType extends Type {
      * @return
      */
     @Override
-    public boolean canCastTo(Type type) {
+    public boolean canBeCastedToType(Type type) {
         if (type.isInterfaceType()) {
             return conformsTo((InterfaceType) type);
         }
@@ -248,7 +247,7 @@ public abstract class ObjectType extends Type {
     }
 
     @Override
-    public AbsDef findMemberForName(String name) {
+    public AbsDef findMemberDefinitionForName(String name) {
         return findMemberForName(name, true);
     }
 
@@ -260,7 +259,7 @@ public abstract class ObjectType extends Type {
      */
     public AbsDef findMemberForName(String name, boolean fromBase) {
         if (fromBase && base != null) {
-            AbsDef member = base.findMemberForName(name);
+            AbsDef member = base.findMemberDefinitionForName(name);
 
             if (member != null) return member;
         }
@@ -292,7 +291,7 @@ public abstract class ObjectType extends Type {
      */
     public boolean conformsTo(InterfaceType interfaceType) {
         for (AbsDef def: interfaceType.definition.definitions.definitions) {
-            AbsDef member = findMemberForName(def.getName());
+            AbsDef member = findMemberDefinitionForName(def.getName());
             if (member == null) return false;
         }
 
@@ -312,7 +311,7 @@ public abstract class ObjectType extends Type {
             base.debugPrint();
         }
 
-        System.out.println(friendlyName() + " - size: " + size());
+        System.out.println(friendlyName() + " - sizeInBytes: " + sizeInBytes());
 
         Iterator<String> namesIterator = memberNames.iterator();
         Iterator<Type> typesIterator = memberTypes.iterator();

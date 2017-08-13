@@ -78,9 +78,9 @@ public enum TokenType {
 	
 	/** Token type: kljucna beseda else.  */					KW_ELSE,
 	/** Token type: kljucna beseda for.  */						KW_FOR,
-	/** Token type: kljucna beseda fun.  */						KW_FUN,
+	/** Token type: kljucna beseda functionDefinition.  */						KW_FUN,
 	/** Token type: kljucna beseda if.  */						KW_IF,
-	/** Token type: kljucna beseda var.  */						KW_VAR,
+	/** Token type: kljucna beseda variableDefinition.  */						KW_VAR,
 	/** Token type: kljucna beseda while.  */					KW_WHILE,
 	/** Token type: keyword struct.  */							KW_STRUCT,
 	/** Token type: keyword import.  */ 						KW_IMPORT,

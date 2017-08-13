@@ -1,6 +1,6 @@
 package compiler.imcode;
 
-import compiler.Report;
+import compiler.Logger;
 import compiler.frames.FrmLabel;
 import compiler.seman.type.ClassType;
 
@@ -25,6 +25,6 @@ public class ImcVirtualTableDataChunk extends ImcDataChunk {
     @Override
     public void dump() {
         String tmp =  data == null ? "" : " .BYTE: " + data;
-        Report.dump(0, "VTABLE CHUNK: label=" + label.name() + " size=" + size + tmp);
+        Logger.dump(0, "VTABLE CHUNK: entryLabel=" + label.getName() + " sizeInBytes=" + size + tmp);
     }
 }

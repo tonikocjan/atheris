@@ -30,13 +30,13 @@ public class OptionalType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public boolean canCastTo(Type t) {
+	public boolean canBeCastedToType(Type t) {
 		return childType.sameStructureAs(t);
 	}
 
 	@Override
-	public int size() {
-		return childType.size();
+	public int sizeInBytes() {
+		return childType.sizeInBytes();
 	}
 
 	@Override
@@ -45,8 +45,8 @@ public class OptionalType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public AbsDef findMemberForName(String name) {
-		return childType.findMemberForName(name);
+	public AbsDef findMemberDefinitionForName(String name) {
+		return childType.findMemberDefinitionForName(name);
 	}
 
 	@Override

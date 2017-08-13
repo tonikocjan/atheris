@@ -17,11 +17,41 @@
 
 package compiler.frames;
 
-/**
- * Opis dostopa do spremenljivke.
- * 
- * @author sliva
- */
-public interface FrmAccess {
-    String toString();
+import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AbsVarDef;
+import compiler.seman.type.CanType;
+import compiler.seman.type.ObjectType;
+import compiler.seman.type.Type;
+
+public abstract class FrmAccess {
+
+    public static FrmAccess createAccess(AbsVarDef acceptor,
+                                         Type acceptorType,
+                                         AbsDef parentDefinition,
+                                         Type parentType,
+                                         boolean isGlobal,
+                                         FrmFrame currentFrame) {
+        FrmAccess access;
+
+        if (parentDefinition != null && parentType.isCanType()) {
+            if (acceptor.isStatic()) {
+                access = new FrmStaticAccess(acceptor, (CanType) parentType);
+            }
+            else {
+                access = new FrmMemberAccess(acceptor, (ObjectType) ((CanType) parentType).childType);
+            }
+        }
+        else if (isGlobal) {
+            access = new FrmVarAccess(acceptor);
+        }
+        else {
+            access = new FrmLocAccess(
+                    acceptor,
+                    currentFrame,
+                    acceptorType);
+        }
+
+        return access;
+    }
+
 }

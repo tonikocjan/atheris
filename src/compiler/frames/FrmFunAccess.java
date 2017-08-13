@@ -19,31 +19,18 @@ package compiler.frames;
 
 import compiler.ast.tree.def.AbsFunDef;
 
-/**
- * Dostop do funkcije.
- * 
- * @author toni
- */
-public class FrmFunAccess implements FrmAccess {
+public class FrmFunAccess extends FrmAccess {
 
-	/** Opis funkcije.  */
-	public final AbsFunDef fun;
-
-	/** Labela funkcije.  */
+	public final AbsFunDef functionDefinition;
 	public final FrmLabel label;
 
-	/**
-	 * Ustvari nov dostop do funkcije.
-	 * 
-	 * @param var Funkcija.
-	 */
-	public FrmFunAccess(AbsFunDef fun) {
-		this.fun = fun;
-		label = FrmLabel.newLabel(fun.name);
+	public FrmFunAccess(AbsFunDef functionDefinition) {
+		this.functionDefinition = functionDefinition;
+		label = FrmLabel.newNamedLabel(functionDefinition.name);
 	}
 
 	@Override
 	public String toString() {
-		return "FUN(" + fun.name + ": label=" + label.name() + ")";
+		return "FUN(" + functionDefinition.name + ": entryLabel=" + label.getName() + ")";
 	}
 }

@@ -114,17 +114,17 @@ public class FunctionType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public int size() {
+	public int sizeInBytes() {
 		int size = 4;
 
 		for (Type t : parameterTypes)
-			size += t.size();
+			size += t.sizeInBytes();
 		
-		return Math.max(resultType.size(), size);
+		return Math.max(resultType.sizeInBytes(), size);
 	}
 
 	@Override
-	public boolean canCastTo(Type t) {
+	public boolean canBeCastedToType(Type t) {
 		return false;
 	}
 
@@ -134,7 +134,7 @@ public class FunctionType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public AbsDef findMemberForName(String name) {
+	public AbsDef findMemberDefinitionForName(String name) {
 		return null;
 	}
 

@@ -49,7 +49,7 @@ public class ImCode {
 	 */
 	public void dump(LinkedList<ImcChunk> chunks) {
 		if (! dump) return;
-		if (Report.dumpFile() == null) return;
+		if (Logger.dumpFile() == null) return;
 		for (int chunk = 0; chunk < chunks.size(); chunk++)
 			chunks.get(chunk).dump();
 	}

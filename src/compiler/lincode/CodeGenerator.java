@@ -21,7 +21,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import compiler.ast.tree.def.AbsFunDef;
-import compiler.frames.FrmDesc;
+import compiler.frames.FrameDescription;
+import compiler.frames.FrameDescriptionMap;
 import compiler.frames.FrmLabel;
 import compiler.frames.FrmVirtualTableAccess;
 import compiler.imcode.*;
@@ -32,11 +33,12 @@ import utils.Constants;
 
 public class CodeGenerator {
 
-    /**
-     *
-     * @param chunks
-     * @return
-     */
+    private FrameDescriptionMap frameDescription;
+
+    public CodeGenerator(FrameDescriptionMap frameDescription) {
+        this.frameDescription = frameDescription;
+    }
+
 	public ImcCodeChunk linearize(LinkedList<ImcChunk> chunks) {
 		ImcCodeChunk mainFrame = null;
 
@@ -67,7 +69,7 @@ public class CodeGenerator {
 	private void storeFunction(ImcCodeChunk fn) {
         fn.lincode = fn.imcode.linear();
 
-        Interpreter.locations.put(fn.frame.label, Interpreter.heapPointer);
+        Interpreter.locations.put(fn.frame.entryLabel, Interpreter.heapPointer);
         Interpreter.stM(Interpreter.heapPointer, fn);
 
         Interpreter.heapPointer += Constants.Byte;
@@ -90,7 +92,7 @@ public class CodeGenerator {
 
         int baseClassVirtualTablePointer = 0;
         if (baseClass != null) {
-            FrmVirtualTableAccess baseVirtualTable = FrmDesc.getVirtualTable((ClassType) baseClass.childType);
+            FrmVirtualTableAccess baseVirtualTable = frameDescription.getVirtualTable((ClassType) baseClass.childType);
             baseClassVirtualTablePointer = baseVirtualTable.location;
         }
 
@@ -120,7 +122,7 @@ public class CodeGenerator {
 
             @Override
             public FrmLabel next() {
-                return FrmDesc.getFrame(iter.next()).label;
+                return frameDescription.getFrame(iter.next()).entryLabel;
             }
         };
     }

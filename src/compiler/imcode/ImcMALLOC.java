@@ -17,7 +17,7 @@
 
 package compiler.imcode;
 
-import compiler.Report;
+import compiler.Logger;
 
 public class ImcMALLOC extends ImcExpr {
 
@@ -30,7 +30,7 @@ public class ImcMALLOC extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "MALLOC size: " + size + " BYTES");
+		Logger.dump(indent, "MALLOC sizeInBytes: " + size + " BYTES");
 	}
 
 	@Override

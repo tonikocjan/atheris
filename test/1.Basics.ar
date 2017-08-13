@@ -4,7 +4,7 @@ import stdlib
 
 # Spremenljivka tipa Int
 var x: Int
- # Konstanta tipa Int
+# Konstanta tipa Int
 let y: Int
 
 # Podpičja na koncu niso obvezna, lahko pa jih vseeno pišemo (Java / C++ kompatibilnost :))

@@ -62,15 +62,15 @@ public class ArrayType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public int size() {
-		return count * type.size();
+	public int sizeInBytes() {
+		return count * type.sizeInBytes();
 	}
 
 	@Override
-	public boolean canCastTo(Type type) {
+	public boolean canBeCastedToType(Type type) {
         if (type.isArrayType()) {
             ArrayType listType = (ArrayType) type;
-            return this.type.canCastTo(listType.type);
+            return this.type.canBeCastedToType(listType.type);
         }
 
         return false;
@@ -87,7 +87,7 @@ public class ArrayType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public AbsDef findMemberForName(String name) {
+	public AbsDef findMemberDefinitionForName(String name) {
 		return null;
 	}
 }

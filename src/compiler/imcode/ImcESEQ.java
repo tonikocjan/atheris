@@ -45,7 +45,7 @@ public class ImcESEQ extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "ESEQ");
+		Logger.dump(indent, "ESEQ");
 		stmt.dump(indent + 2);
 		expr.dump(indent + 2);
 	}

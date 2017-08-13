@@ -40,7 +40,7 @@ public class ImcMEM extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "MEM");
+		Logger.dump(indent, "MEM");
 		expr.dump(indent + 2);
 	}
 

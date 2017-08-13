@@ -40,7 +40,7 @@ public class ImcEXP extends ImcStmt {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "EXP");
+		Logger.dump(indent, "EXP");
 		expr.dump(indent + 2);
 	}
 

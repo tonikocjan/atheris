@@ -23,7 +23,6 @@ import java.util.*;
 import compiler.*;
 import compiler.frames.*;
 import compiler.imcode.*;
-import compiler.lincode.CodeGenerator;
 import utils.Constants;
 
 public class Interpreter {
@@ -34,7 +33,7 @@ public class Interpreter {
 
     public static PrintStream interpreterOutput = System.out;
 	
-	/*--- staticni del navideznega stroja ---*/
+	/*--- staticni removeDefinitionFromCurrentScope navideznega stroja ---*/
 	
 	/** Pomnilnik navideznega stroja. */
 	public static HashMap<Integer, Object> mems = new HashMap<>();
@@ -45,7 +44,7 @@ public class Interpreter {
 	
 	public static void stM(int address, Object value) {
 	    if (checkMemory && value == null)
-	        Report.error("Storing null is illegal");
+	        Logger.error("Storing null is illegal");
 		if (debug) System.out.println(" [" + address + "] <= " + value);
 
 		mems.put(address, value);
@@ -68,22 +67,22 @@ public class Interpreter {
 	/** Kazalec na dno klicnega zapisa. */
 	private static int stackPointer = STACK_SIZE;
 	
-	/*--- dinamicni del navideznega stroja ---*/
+	/*--- dinamicni removeDefinitionFromCurrentScope navideznega stroja ---*/
 	
 	/** Zacasne spremenljivke (`registri') navideznega stroja. */
 	public HashMap<FrmTemp, Object> temps = new HashMap<>();
 		
 	public void stT(FrmTemp temp, Object value) {
         if (checkMemory && value == null)
-            Report.error("Storing null is illegal");
-		if (debug) System.out.println(" " + temp.name() + " <= " + value);
+            Logger.error("Storing null is illegal");
+		if (debug) System.out.println(" " + temp.getName() + " <= " + value);
 		temps.put(temp, value);
 	}
 
 	public Object ldT(FrmTemp temp) {
 		Object value = temps.get(temp);
 
-		if (debug) System.out.println(" " + temp.name() + " => " + value);
+		if (debug) System.out.println(" " + temp.getName() + " => " + value);
 		return value;
 	}
 
@@ -101,7 +100,7 @@ public class Interpreter {
 	    int address = 0;
 		for (int i = 0; i < mems.size(); i++, address += 1) {
 		    if (address > STACK_SIZE + Constants.Byte)
-		        Report.error("Memory overflow");
+		        Logger.error("Memory overflow");
 
 		    Object value = mems.get(address);
 		    if (value == null) {
@@ -116,16 +115,16 @@ public class Interpreter {
 
 	public Interpreter(FrmFrame frame, ImcSEQ code) {
 		if (debug) {
-			System.out.println("[START OF " + frame.label.name() + "]");
+			System.out.println("[START OF " + frame.entryLabel.getName() + "]");
 		}
 
-		stM(stackPointer - frame.sizeLocs - 4, framePointer);
+		stM(stackPointer - frame.blockSizeForLocalVariables - 4, framePointer);
 		framePointer = stackPointer;
 		stT(frame.FP, framePointer);
 		stackPointer = stackPointer - frame.size();
 
 		if (stackPointer < 0) {
-			Report.error("Error, stack overflow");
+			Logger.error("Error, stack overflow");
 		}
 
 		if (debug) {
@@ -141,7 +140,7 @@ public class Interpreter {
 			if (result instanceof FrmLabel) {
 				for (pc = 0; pc < code.stmts.size(); pc++) {
 					instruction = code.stmts.get(pc);
-					if ((instruction instanceof ImcLABEL) && (((ImcLABEL) instruction).label.name().equals(((FrmLabel) result).name())))
+					if ((instruction instanceof ImcLABEL) && (((ImcLABEL) instruction).label.getName().equals(((FrmLabel) result).getName())))
 						break;
 				}
 			}
@@ -149,13 +148,13 @@ public class Interpreter {
 				pc++;
 
 			if (printMemory) {
-				System.out.println(frame.label.name() + ": " + pc);
+				System.out.println(frame.entryLabel.getName() + ": " + pc);
 				printMemory();
 				System.out.println();
 			}
 		}
 
-		framePointer = (Integer) ldM(framePointer - frame.sizeLocs - 4);
+		framePointer = (Integer) ldM(framePointer - frame.blockSizeForLocalVariables - 4);
 		stackPointer = stackPointer + frame.size();
 		if (debug) {
 			System.out.println("[FP=" + framePointer + "]");
@@ -168,7 +167,7 @@ public class Interpreter {
 		}
 
 		if (debug) {
-			System.out.println("[END OF " + frame.label.name() + "]");
+			System.out.println("[END OF " + frame.entryLabel.getName() + "]");
 		}
 	}
 	
@@ -208,7 +207,7 @@ public class Interpreter {
 			case ImcBINOP.MOD:
 				return (((Integer) fstSubValue).intValue() % ((Integer) sndSubValue).intValue());
 			}
-			Report.error("Internal error.");
+			Logger.error("Internal error.");
 			return null;
 		}
 		
@@ -225,17 +224,17 @@ public class Interpreter {
 				offset += Constants.Byte;
 			}
 
-			if (instr.label.name().equals("_print")) {
+			if (instr.label.getName().equals("_print")) {
 				interpreterOutput.println(ldM(stackPointer + Constants.Byte));
 				return 0;
 			}
-			if (instr.label.name().equals("_time")) {
+			if (instr.label.getName().equals("_time")) {
 				return (int) System.currentTimeMillis();
 			}
-			if (instr.label.name().equals("_rand")) {
+			if (instr.label.getName().equals("_rand")) {
 				return new Random().nextInt((Integer)ldM(stackPointer + Constants.Byte));
 			}
-			if (instr.label.name().equals("_mem")) {
+			if (instr.label.getName().equals("_mem")) {
 			    return ldM((Integer) ldM(stackPointer + Constants.Byte));
             }
 
@@ -300,7 +299,7 @@ public class Interpreter {
 			ImcMEM instr = (ImcMEM) instruction;
 			Integer address = (Integer) execute(instr.expr);
 			if (address == 0)
-				Report.error("Null pointer exception");
+				Logger.error("Null pointer exception");
 			return ldM(address);
 		}
 		
@@ -332,8 +331,8 @@ public class Interpreter {
 		if (instruction instanceof ImcNAME) {
 			ImcNAME instr = (ImcNAME) instruction;
 
-			if (instr.label.name().equals("FP")) return framePointer;
-			if (instr.label.name().equals("SP")) return stackPointer;
+			if (instr.label.getName().equals("FP")) return framePointer;
+			if (instr.label.getName().equals("SP")) return stackPointer;
 
 			return locations.get(instr.label);
 		}

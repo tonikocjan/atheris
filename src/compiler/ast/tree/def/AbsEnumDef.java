@@ -45,7 +45,7 @@ public class AbsEnumDef extends AbsTypeDef {
 	/**
 	 * Construct enum definition.
 	 * @param pos position
-	 * @param name name
+	 * @param name getName
 	 * @param definitions enum definitions
 	 * @param type type for each definitions' raw value
 	 */

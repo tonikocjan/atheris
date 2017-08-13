@@ -18,9 +18,9 @@
 package compiler.seman;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+
+import compiler.Logger;
 import utils.Constants;
-import compiler.Report;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.*;
 import compiler.ast.tree.def.*;
@@ -51,12 +51,15 @@ import compiler.ast.tree.type.AbsTypeName;
 import compiler.lexan.LexAn;
 import compiler.synan.SynAn;
 
-/**
- * Preverjanje in razresevanje imen (razen imen komponent).
- * 
- * @author Toni Kocjan
- */
 public class NameChecker implements ASTVisitor {
+    
+    private SymbolTableMap symbolTable;
+    private SymbolDescriptionMap symbolDescription;
+    
+    public NameChecker(SymbolTableMap symbolTable, SymbolDescriptionMap symbolDescription) {
+        this.symbolTable = symbolTable;
+        this.symbolDescription = symbolDescription;
+    }
 
 	@Override
 	public void visit(AbsListType acceptor) {
@@ -66,9 +69,9 @@ public class NameChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsClassDef acceptor) {
         try {
-            SymbTable.ins(acceptor.getName(), acceptor);
+            symbolTable.insertDefinitionOnCurrentScope(acceptor.getName(), acceptor);
         } catch (SemIllegalInsertException e) {
-            Report.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName() + "\'");
+            Logger.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName() + "\'");
         }
 
         if (acceptor.baseClass != null) {
@@ -88,7 +91,7 @@ public class NameChecker implements ASTVisitor {
             constructor.accept(this);
         }
 
-        SymbTable.newScope();
+        symbolTable.newScope();
 
         for (AbsDef def : acceptor.definitions.definitions) {
             if (def instanceof AbsFunDef && !def.isStatic()) {
@@ -108,7 +111,7 @@ public class NameChecker implements ASTVisitor {
             def.accept(this);
         }
 
-        SymbTable.oldScope();
+        symbolTable.oldScope();
     }
 
 	@Override
@@ -145,30 +148,30 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AbsForStmt acceptor) {
-		SymbTable.newScope();
+		symbolTable.newScope();
 
 		AbsVarDef var = new AbsVarDef(
 				acceptor.iterator.position, acceptor.iterator.name, null, false);
 		try {
-			SymbTable.ins(acceptor.iterator.name, var);
-			SymbDesc.setNameDef(acceptor.iterator, var);
+			symbolTable.insertDefinitionOnCurrentScope(acceptor.iterator.name, var);
+			symbolDescription.setDefinitionForAstNode(acceptor.iterator, var);
 		} catch (SemIllegalInsertException e) {
-			Report.error("Error @ NameChecker::AbsFor");
+			Logger.error("Error @ NameChecker::AbsFor");
 		}
 		acceptor.iterator.accept(this);
 		acceptor.collection.accept(this);
 
 		acceptor.body.accept(this);
-		SymbTable.oldScope();
+		symbolTable.oldScope();
 	}
 
 	@Override
 	public void visit(AbsFunCall acceptor) {
-        AbsFunDef definition = (AbsFunDef) SymbDesc.getNameDef(acceptor);
+        AbsFunDef definition = (AbsFunDef) symbolDescription.getDefinitionForAstNode(acceptor);
 
         if (definition == null) {
             String funCallIdentifier = acceptor.getStringRepresentation();
-            definition = (AbsFunDef) SymbTable.fnd(funCallIdentifier);
+            definition = (AbsFunDef) symbolTable.findDefinitionForName(funCallIdentifier);
 
             if (definition == null) {
                 // handle implicit "self" argument for constructors
@@ -177,16 +180,16 @@ public class NameChecker implements ASTVisitor {
 
                 acceptor.addArgument(selfArg);
 
-                definition = (AbsFunDef) SymbTable.fnd(acceptor.getStringRepresentation());
+                definition = (AbsFunDef) symbolTable.findDefinitionForName(acceptor.getStringRepresentation());
             }
 
             if (definition == null) {
-                Report.error(acceptor.position, "Method " + funCallIdentifier + " is undefined");
+                Logger.error(acceptor.position, "Method " + funCallIdentifier + " is undefined");
             }
         }
 
         boolean isConstructor = definition.isConstructor;
-		SymbDesc.setNameDef(acceptor, definition);
+		symbolDescription.setDefinitionForAstNode(acceptor, definition);
 
 		for (AbsExpr argExpr : acceptor.args) {
 		    // skip first ("self") argument if function is constructor
@@ -200,12 +203,12 @@ public class NameChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsFunDef acceptor) {
 		try {
-			SymbTable.ins(acceptor.getStringRepresentation(), acceptor);
+			symbolTable.insertDefinitionOnCurrentScope(acceptor.getStringRepresentation(), acceptor);
 		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Invalid redeclaration of \"" + acceptor.getStringRepresentation() + "\"");
+			Logger.error(acceptor.position, "Invalid redeclaration of \"" + acceptor.getStringRepresentation() + "\"");
 		}
 		
-		SymbTable.newScope();
+		symbolTable.newScope();
 
 		for (AbsParDef par : acceptor.getParamaters())
 			par.accept(this);
@@ -213,7 +216,7 @@ public class NameChecker implements ASTVisitor {
 		acceptor.type.accept(this);
 		acceptor.func.accept(this);
 
-		SymbTable.oldScope();
+		symbolTable.oldScope();
 	}
 
 	@Override
@@ -221,37 +224,37 @@ public class NameChecker implements ASTVisitor {
 		for (Condition c : acceptor.conditions) {
 			c.cond.accept(this);
 
-			SymbTable.newScope();
+			symbolTable.newScope();
 			c.body.accept(this);
-			SymbTable.oldScope();
+			symbolTable.oldScope();
 		}
 
 		if (acceptor.elseBody != null) {
-			SymbTable.newScope();
+			symbolTable.newScope();
 			acceptor.elseBody.accept(this);
-			SymbTable.oldScope();
+			symbolTable.oldScope();
 		}
 	}
 
 	@Override
 	public void visit(AbsParDef acceptor) {
 		try {
-			SymbTable.ins(acceptor.name, acceptor);
+			symbolTable.insertDefinitionOnCurrentScope(acceptor.name, acceptor);
 		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Duplicate parameter \"" + acceptor.name + "\"");
+			Logger.error(acceptor.position, "Duplicate parameter \"" + acceptor.name + "\"");
 		}
 		acceptor.type.accept(this);
 	}
 
 	@Override
 	public void visit(AbsTypeName acceptor) {
-		AbsDef definition = SymbTable.fnd(acceptor.name);
+		AbsDef definition = symbolTable.findDefinitionForName(acceptor.name);
 
 		if (definition == null) {
-            Report.error(acceptor.position, "Type \"" + acceptor.name + "\" is undefined");
+            Logger.error(acceptor.position, "Type \"" + acceptor.name + "\" is undefined");
         }
 
-		SymbDesc.setNameDef(acceptor, definition);
+		symbolDescription.setDefinitionForAstNode(acceptor, definition);
 	}
 
 	@Override
@@ -262,11 +265,11 @@ public class NameChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsVarDef acceptor) {
 		try {
-			SymbTable.ins(acceptor.name, acceptor);
+			symbolTable.insertDefinitionOnCurrentScope(acceptor.name, acceptor);
 			if (acceptor.type != null)
 				acceptor.type.accept(this);
 		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Duplicate variable \"" + acceptor.name + "\"");
+			Logger.error(acceptor.position, "Duplicate variable \"" + acceptor.name + "\"");
 		}
 	}
 
@@ -278,31 +281,31 @@ public class NameChecker implements ASTVisitor {
         if (acceptor.name.equals("Char")) return;
         if (acceptor.name.equals("Void")) return;
 
-        if (SymbDesc.getNameDef(acceptor) != null) {
+        if (symbolDescription.getDefinitionForAstNode(acceptor) != null) {
             return;
         }
 
-		AbsDef definition = SymbTable.fnd(acceptor.name);
+		AbsDef definition = symbolTable.findDefinitionForName(acceptor.name);
 		
 		if (definition == null)
-			Report.error(acceptor.position, "Use of unresolved indentifier \"" + acceptor.name + "\"");
+			Logger.error(acceptor.position, "Use of unresolved indentifier \"" + acceptor.name + "\"");
 
-		SymbDesc.setNameDef(acceptor, definition);
+		symbolDescription.setDefinitionForAstNode(acceptor, definition);
 	}
 
 	@Override
 	public void visit(AbsWhileStmt acceptor) {
 		acceptor.cond.accept(this);
 
-		SymbTable.newScope();
+		symbolTable.newScope();
 		acceptor.body.accept(this);
-		SymbTable.oldScope();
+		symbolTable.oldScope();
 	}
 
 	@Override
 	public void visit(AbsImportDef acceptor) {
-		String tmp = Report.fileName;
-		Report.fileName = acceptor.getName();
+		String tmp = Logger.fileName;
+		Logger.fileName = acceptor.getName();
 
 		// parse the file
 		// FIXME: - Hardcoded location
@@ -334,7 +337,7 @@ public class NameChecker implements ASTVisitor {
 		acceptor.imports = new AbsDefs(source.position, definitions);
 		acceptor.imports.accept(this);
 
-		Report.fileName = tmp;
+		Logger.fileName = tmp;
 	}
 
 	@Override
@@ -376,9 +379,9 @@ public class NameChecker implements ASTVisitor {
 			singleCase.accept(this);
 		
 		if (switchStmt.defaultBody != null) {
-			SymbTable.newScope();
+			symbolTable.newScope();
 			switchStmt.defaultBody.accept(this);
-			SymbTable.oldScope();
+			symbolTable.oldScope();
 		}
 	}
 
@@ -386,35 +389,35 @@ public class NameChecker implements ASTVisitor {
 	public void visit(AbsCaseStmt acceptor) {
 		for (AbsExpr e : acceptor.exprs)
 			e.accept(this);
-		SymbTable.newScope();
+		symbolTable.newScope();
 		acceptor.body.accept(this);
-		SymbTable.oldScope();
+		symbolTable.oldScope();
 	}
 
 	@Override
 	public void visit(AbsEnumDef acceptor) {
 		try {
-			SymbTable.ins(acceptor.name, acceptor);
+			symbolTable.insertDefinitionOnCurrentScope(acceptor.name, acceptor);
 		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Invalid redeclaration of \'" + 
+			Logger.error(acceptor.position, "Invalid redeclaration of \'" +
 					acceptor.name + "\'");
 		}
 
 		if (acceptor.type != null)
 			acceptor.type.accept(this);
 
-		SymbTable.newScope();
+		symbolTable.newScope();
 		for (AbsDef def : acceptor.definitions)
 			def.accept(this);
-		SymbTable.oldScope();
+		symbolTable.oldScope();
 	}
 
 	@Override
 	public void visit(AbsEnumMemberDef acceptor) {
 		try {
-			SymbTable.ins(acceptor.name.name, acceptor);
+			symbolTable.insertDefinitionOnCurrentScope(acceptor.name.name, acceptor);
 		} catch (SemIllegalInsertException e) {
-			Report.error(acceptor.position, "Invalid redeclaration of \'" + 
+			Logger.error(acceptor.position, "Invalid redeclaration of \'" +
 					acceptor.name.name + "\'");
 		}
 
@@ -445,14 +448,14 @@ public class NameChecker implements ASTVisitor {
 	public void visit(AbsOptionalEvaluationExpr acceptor) {
 		acceptor.subExpr.accept(this);
 
-        SymbDesc.setNameDef(acceptor, SymbDesc.getNameDef(acceptor.subExpr));
+        symbolDescription.setDefinitionForAstNode(acceptor, symbolDescription.getDefinitionForAstNode(acceptor.subExpr));
 	}
 
 	@Override
 	public void visit(AbsForceValueExpr acceptor) {
 		acceptor.subExpr.accept(this);
 
-		SymbDesc.setNameDef(acceptor, SymbDesc.getNameDef(acceptor.subExpr));
+		symbolDescription.setDefinitionForAstNode(acceptor, symbolDescription.getDefinitionForAstNode(acceptor.subExpr));
 	}
 
     @Override
@@ -463,7 +466,7 @@ public class NameChecker implements ASTVisitor {
             conformance.accept(this);
         }
 
-        SymbTable.newScope();
+        symbolTable.newScope();
 	    for (AbsDef def : acceptor.definitions.definitions) {
             if (def instanceof AbsFunDef) {
                 if (!def.isStatic()) {
@@ -478,20 +481,20 @@ public class NameChecker implements ASTVisitor {
                 }
             }
             else {
-                Report.error(def.position, "Only function definitions are allowed in extensions");
+                Logger.error(def.position, "Only function definitions are allowed in extensions");
             }
 
             def.accept(this);
         }
-        SymbTable.oldScope();
+        symbolTable.oldScope();
     }
 
     @Override
     public void visit(AbsInterfaceDef acceptor) {
         try {
-            SymbTable.ins(acceptor.getName(), acceptor);
+            symbolTable.insertDefinitionOnCurrentScope(acceptor.getName(), acceptor);
         } catch (SemIllegalInsertException e) {
-            Report.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName() + "\'");
+            Logger.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName() + "\'");
         }
 
         for (AbsDef def : acceptor.definitions.definitions) {

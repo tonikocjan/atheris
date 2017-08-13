@@ -41,7 +41,7 @@ public class ImcLABEL extends ImcStmt {
 
 	@Override
 	public void dump(int indent) {
-		Report.dump(indent, "LABEL label=" + label.name());
+		Logger.dump(indent, "LABEL entryLabel=" + label.getName());
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class ImcLABEL extends ImcStmt {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ImcLABEL) {
-			return ((ImcLABEL)obj).label.name().equals(label.name());
+			return ((ImcLABEL)obj).label.getName().equals(label.getName());
 		}
 		return false;
 	}

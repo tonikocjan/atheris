@@ -21,8 +21,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
 
+import compiler.seman.SymbolDescriptionMap;
+import compiler.seman.SymbolTableMap;
 import utils.Constants;
-import compiler.Report;
+import compiler.Logger;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.*;
 import compiler.ast.tree.def.*;
@@ -50,51 +52,31 @@ import compiler.ast.tree.type.AbsListType;
 import compiler.ast.tree.type.AbsOptionalType;
 import compiler.ast.tree.type.AbsTypeName;
 import compiler.frames.*;
-import compiler.seman.SymbDesc;
 import compiler.seman.type.*;
 
 public class ImcCodeGen implements ASTVisitor {
 
-	/**
-	 * Data and code chunks.
-	 */
-	public LinkedList<ImcChunk> chunks;
-	private int virtualTableCount = 0;
-	
-	/**
-	 * Code to be executed at the beginning of execution.
-	 */
-	public ImcCodeChunk entryPointCode = null;
-	
-	///
-	
-	/**
-	 * Frame stack (used for return expr). 
-	 */
-	private Stack<FrmFrame> frameStack = new Stack<>();
-	
-	/**
-	 *  Labels for control transfer (break and continue) statements.
-	 */
-	private Stack<FrmLabel> startLabelStack = new Stack<>();
-	private Stack<FrmLabel> endLabelStack = new Stack<>();
+    private int virtualTableCount = 0;
+    private int currentFunctionScope = 0;
+    public ImcCodeChunk entryPointCode = null;
+    public LinkedList<ImcChunk> chunks;
+    private Stack<FrmFrame> returnExprFrameStack = new Stack<>();
+    private Stack<FrmLabel> controlTransferStartLabelStack = new Stack<>();
+    private Stack<FrmLabel> controlTransferEndLabelStack = new Stack<>();
+    private Stack<ImcExpr> switchSubjectExprs = new Stack<>();
+    
+    private SymbolTableMap symbolTable;
+    private SymbolDescriptionMap symbolDescription;
+    private FrameDescriptionMap frameDescription;
+    private ImcDescriptionMap imcDescription;
 
-	/**
-	 * Current function scope.
-	 * If scope equals zero, code being generated is entry point code.
-	 */
-	private int scope = 0;
-	
-	/**
-	 * Switch stmt subject expr stack 
-	 */
-	private Stack<ImcExpr> switchSubjectExprs = new Stack<>();
-	
-	///
-
-	public ImcCodeGen(FrmFrame entryPoint) {
-		frameStack.add(entryPoint);
+	public ImcCodeGen(FrmFrame entryPoint, SymbolTableMap symbolTable, SymbolDescriptionMap symbolDescription, FrameDescriptionMap frameDescription, ImcDescriptionMap imcDescription) {
+		returnExprFrameStack.add(entryPoint);
 		chunks = new LinkedList<>();
+        this.symbolTable = symbolTable;
+        this.symbolDescription = symbolDescription;
+        this.frameDescription = frameDescription;
+        this.imcDescription = imcDescription;
 	}
 
 	@Override
@@ -104,8 +86,8 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-        CanType type = (CanType) SymbDesc.getType(acceptor);
-        FrmVirtualTableAccess virtualTableAccess = (FrmVirtualTableAccess) FrmDesc.getAccess(acceptor);
+        CanType type = (CanType) symbolDescription.getTypeForAstNode(acceptor);
+        FrmVirtualTableAccess virtualTableAccess = (FrmVirtualTableAccess) frameDescription.getAccess(acceptor);
 
         Integer virtualTablePointer = null;
 
@@ -119,7 +101,7 @@ public class ImcCodeGen implements ASTVisitor {
 
                 chunks.add(virtualTableCount++,
                         new ImcVirtualTableDataChunk(
-                            FrmLabel.newLabel(type.friendlyName()),
+                            FrmLabel.newNamedLabel(type.friendlyName()),
                             virtualTableAccess.size,
                             (ClassType) type.childType));
             }
@@ -128,15 +110,15 @@ public class ImcCodeGen implements ASTVisitor {
 		acceptor.definitions.accept(this);
 
 		ObjectType objectType = (ObjectType) type.childType;
-		int size = objectType.size();
+		int size = objectType.sizeInBytes();
 
         for (AbsFunDef constructor : acceptor.construstors) {
-            FrmFrame constructorFrame = FrmDesc.getFrame(constructor);
+            FrmFrame constructorFrame = frameDescription.getFrame(constructor);
 
-            frameStack.push(constructorFrame);
+            returnExprFrameStack.push(constructorFrame);
             constructor.func.accept(this);
 
-            ImcSEQ constructorCode = (ImcSEQ) ImcDesc.getImcCode(constructor.func);
+            ImcSEQ constructorCode = (ImcSEQ) imcDescription.getImcCode(constructor.func);
 
             // allocate memory for new object
             ImcTEMP framePointer = new ImcTEMP(constructorFrame.FP);
@@ -154,40 +136,40 @@ public class ImcCodeGen implements ASTVisitor {
             // return new object
             constructorCode.stmts.add(new ImcMOVE(new ImcTEMP(constructorFrame.RV), location));
 
-            ImcDesc.setImcCode(constructor, constructorCode);
+            imcDescription.setImcCode(constructor, constructorCode);
             chunks.add(new ImcCodeChunk(constructorFrame, constructorCode));
 
-            constructorCode.stmts.add(new ImcLABEL(frameStack.peek().endLabel));
-            frameStack.pop();
+            constructorCode.stmts.add(new ImcLABEL(returnExprFrameStack.peek().endLabel));
+            returnExprFrameStack.pop();
         }
 	}
 
 	@Override
 	public void visit(AbsAtomConstExpr acceptor) {
 		if (acceptor.type == AtomTypeKind.INT) {
-            ImcDesc.setImcCode(acceptor,
+            imcDescription.setImcCode(acceptor,
                     new ImcCONST(Integer.parseInt(acceptor.value)));
         }
 		else if (acceptor.type == AtomTypeKind.LOG) {
-            ImcDesc.setImcCode(acceptor,
+            imcDescription.setImcCode(acceptor,
                     new ImcCONST(acceptor.value.equals("true") ? 1 : 0));
         }
 		else if (acceptor.type == AtomTypeKind.STR) {
-			FrmLabel l = FrmLabel.newLabel();
+			FrmLabel l = FrmLabel.newAnonymousLabel();
 			ImcDataChunk str = new ImcDataChunk(l, 4);
 			str.data = acceptor.value;
 			chunks.add(str);
-			ImcDesc.setImcCode(acceptor, new ImcMEM(new ImcNAME(l)));
+			imcDescription.setImcCode(acceptor, new ImcMEM(new ImcNAME(l)));
 		}
 		else if (acceptor.type == AtomTypeKind.CHR) {
-			ImcDesc.setImcCode(acceptor, new ImcCONST(acceptor.value.charAt(0)));
+			imcDescription.setImcCode(acceptor, new ImcCONST(acceptor.value.charAt(0)));
 		}
 		else if (acceptor.type == AtomTypeKind.DOB) {
-			ImcDesc.setImcCode(acceptor,
+			imcDescription.setImcCode(acceptor,
 					new ImcCONST(Double.parseDouble(acceptor.value)));
 		}
 		else if (acceptor.type == AtomTypeKind.NIL) {
-			ImcDesc.setImcCode(acceptor, new ImcCONST(0));
+			imcDescription.setImcCode(acceptor, new ImcCONST(0));
 		}
 	}
 
@@ -201,8 +183,8 @@ public class ImcCodeGen implements ASTVisitor {
 		acceptor.expr1.accept(this);
 		acceptor.expr2.accept(this);
 
-		ImcCode c1 = ImcDesc.getImcCode(acceptor.expr1);
-		ImcCode c2 = ImcDesc.getImcCode(acceptor.expr2);
+		ImcCode c1 = imcDescription.getImcCode(acceptor.expr1);
+		ImcCode c2 = imcDescription.getImcCode(acceptor.expr2);
 
 		ImcExpr e1;
 		ImcExpr e2;
@@ -220,10 +202,10 @@ public class ImcCodeGen implements ASTVisitor {
             code = new ImcBINOP(acceptor.oper, e1, e2);
         }
 		else if (acceptor.oper == AbsBinExpr.ASSIGN) {
-		    Type expressionType = SymbDesc.getType(acceptor.expr1);
+		    Type expressionType = symbolDescription.getTypeForAstNode(acceptor.expr1);
 
 		    if (expressionType.isStructType()) {
-		        if (acceptor.expr2 instanceof AbsFunCall && ((AbsFunDef) SymbDesc.getNameDef(acceptor.expr2)).isConstructor) {
+		        if (acceptor.expr2 instanceof AbsFunCall && ((AbsFunDef) symbolDescription.getDefinitionForAstNode(acceptor.expr2)).isConstructor) {
                     code = new ImcMOVE(e1, e2);
                 }
 		        else {
@@ -255,7 +237,7 @@ public class ImcCodeGen implements ASTVisitor {
                         ImcMOVE move = new ImcMOVE(dst, src);
                         copyCode.stmts.add(move);
 
-                        offset += t.size();
+                        offset += t.sizeInBytes();
                     }
 
                     code = copyCode;
@@ -266,19 +248,19 @@ public class ImcCodeGen implements ASTVisitor {
             }
         }
         else if (acceptor.oper == AbsBinExpr.IS) {
-		    Type type = SymbDesc.getType(acceptor.expr2);
+		    Type type = symbolDescription.getTypeForAstNode(acceptor.expr2);
 		    if (type.isCanType()) type = ((CanType) type).childType;
 
             int dstDescriptor = type.descriptor;
 
-            FrmLabel l1 = FrmLabel.newLabel(),
-                     l2 = FrmLabel.newLabel(),
-                     l3 = FrmLabel.newLabel(),
-                     l4 = FrmLabel.newLabel(),
-                     l5 = FrmLabel.newLabel();
+            FrmLabel l1 = FrmLabel.newAnonymousLabel(),
+                     l2 = FrmLabel.newAnonymousLabel(),
+                     l3 = FrmLabel.newAnonymousLabel(),
+                     l4 = FrmLabel.newAnonymousLabel(),
+                     l5 = FrmLabel.newAnonymousLabel();
 
-            startLabelStack.push(l1);
-            endLabelStack.push(l3);
+            controlTransferStartLabelStack.push(l1);
+            controlTransferEndLabelStack.push(l3);
 
             ImcMEM virtualTable = new ImcMEM(e1);
 
@@ -300,26 +282,26 @@ public class ImcCodeGen implements ASTVisitor {
             statements.stmts.add(new ImcJUMP(l1));
             statements.stmts.add(new ImcLABEL(l3));
 
-            startLabelStack.pop();
-            endLabelStack.pop();
+            controlTransferStartLabelStack.pop();
+            controlTransferEndLabelStack.pop();
 
             code = new ImcESEQ(statements, new ImcBINOP(ImcBINOP.EQU, result, new ImcCONST(1)));
         }
         else if (acceptor.oper == AbsBinExpr.AS) {
-            Type type = SymbDesc.getType(acceptor.expr2);
+            Type type = symbolDescription.getTypeForAstNode(acceptor.expr2);
             if (type.isCanType()) type = ((CanType) type).childType;
 
             int dstDescriptor = type.descriptor;
 
-            FrmLabel l1 = FrmLabel.newLabel(),
-                     l2 = FrmLabel.newLabel(),
-                     l3 = FrmLabel.newLabel(),
-                     l4 = FrmLabel.newLabel(),
-                     l5 = FrmLabel.newLabel(),
-                     l6 = FrmLabel.newLabel();
+            FrmLabel l1 = FrmLabel.newAnonymousLabel(),
+                     l2 = FrmLabel.newAnonymousLabel(),
+                     l3 = FrmLabel.newAnonymousLabel(),
+                     l4 = FrmLabel.newAnonymousLabel(),
+                     l5 = FrmLabel.newAnonymousLabel(),
+                     l6 = FrmLabel.newAnonymousLabel();
 
-            startLabelStack.push(l1);
-            endLabelStack.push(l3);
+            controlTransferStartLabelStack.push(l1);
+            controlTransferEndLabelStack.push(l3);
 
             ImcMEM virtualTable = new ImcMEM(e1);
 
@@ -346,15 +328,15 @@ public class ImcCodeGen implements ASTVisitor {
             statements.stmts.add(new ImcMOVE(result, new ImcCONST(0)));
             statements.stmts.add(new ImcLABEL(l3));
 
-            startLabelStack.pop();
-            endLabelStack.pop();
+            controlTransferStartLabelStack.pop();
+            controlTransferEndLabelStack.pop();
 
             code = new ImcESEQ(statements, result);
         }
 		else if (acceptor.oper == AbsBinExpr.ARR) {
 		    // TODO: -
-			ArrayType type = (ArrayType) SymbDesc.getType(acceptor.expr1);
-			int size = type.type.size();
+			ArrayType type = (ArrayType) symbolDescription.getTypeForAstNode(acceptor.expr1);
+			int size = type.type.sizeInBytes();
 			
 			code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcBINOP(
 					ImcBINOP.MUL, e2, new ImcCONST(size))));
@@ -366,7 +348,7 @@ public class ImcCodeGen implements ASTVisitor {
 			code = sub;
 		} 
 		else if (acceptor.oper == AbsBinExpr.DOT) {
-			Type t = SymbDesc.getType(acceptor.expr1);
+			Type t = symbolDescription.getTypeForAstNode(acceptor.expr1);
 			
 			String memberName;
 			if (acceptor.expr2 instanceof AbsVarNameExpr)
@@ -382,8 +364,8 @@ public class ImcCodeGen implements ASTVisitor {
 			if (t.isEnumType()) {
 				EnumType enumType = (EnumType) t;
 				if (enumType.selectedMember != null) {
-					AbsDef memberDef = enumType.findMemberForName(enumType.selectedMember);
-					code = ImcDesc.getImcCode(memberDef);
+					AbsDef memberDef = enumType.findMemberDefinitionForName(enumType.selectedMember);
+					code = imcDescription.getImcCode(memberDef);
 				}
 				else {
                     code = new ImcCONST(enumType.memberOffsetForName(memberName));
@@ -396,7 +378,7 @@ public class ImcCodeGen implements ASTVisitor {
 			else if (t.isObjectType()) {
 				// member access code
 				if (acceptor.expr2 instanceof AbsFunCall) {
-                    boolean isDynamic = SymbDesc.getNameDef(acceptor.expr2).isDynamic();
+                    boolean isDynamic = symbolDescription.getDefinitionForAstNode(acceptor.expr2).isDynamic();
 
                     if (isDynamic) {
                         // dynamic dispatch
@@ -505,7 +487,7 @@ public class ImcCodeGen implements ASTVisitor {
             }
 		}
 
-		ImcDesc.setImcCode(acceptor, code);
+		imcDescription.setImcCode(acceptor, code);
 	}
 
 	@Override
@@ -517,7 +499,7 @@ public class ImcCodeGen implements ASTVisitor {
 	@Override
 	public void visit(AbsExprs acceptor) {
 		if (acceptor.expressions.size() == 0) {
-			ImcDesc.setImcCode(acceptor, new ImcCONST(0));
+			imcDescription.setImcCode(acceptor, new ImcCONST(0));
 			return;
 		}
 
@@ -526,7 +508,7 @@ public class ImcCodeGen implements ASTVisitor {
 		for (AbsExpr e : acceptor.expressions) {
 			e.accept(this);
 
-			ImcCode code = ImcDesc.getImcCode(e);
+			ImcCode code = imcDescription.getImcCode(e);
 			if (code instanceof ImcStmt) {
                 statements.stmts.add((ImcStmt) code);
             }
@@ -535,19 +517,19 @@ public class ImcCodeGen implements ASTVisitor {
             }
 		}
 
-		ImcDesc.setImcCode(acceptor, statements);
+		imcDescription.setImcCode(acceptor, statements);
 	}
 
 	@Override
 	public void visit(AbsForStmt acceptor) {
-		SymbDesc.getNameDef(acceptor.iterator).accept(this);
+		symbolDescription.getDefinitionForAstNode(acceptor.iterator).accept(this);
 
 		acceptor.iterator.accept(this);
 		acceptor.collection.accept(this);
 		acceptor.body.accept(this);
 
-		ImcSEQ bodyCode = (ImcSEQ) ImcDesc.getImcCode(acceptor.body);
-		Type type = SymbDesc.getType(acceptor.collection);
+		ImcSEQ bodyCode = (ImcSEQ) imcDescription.getImcCode(acceptor.body);
+		Type type = symbolDescription.getTypeForAstNode(acceptor.collection);
 		int count = 0;
 		
 		if (type.isArrayType()) {
@@ -555,16 +537,16 @@ public class ImcCodeGen implements ASTVisitor {
 			type = ((ArrayType) type).type;
 		}
 
-		ImcExpr size = new ImcCONST(type.size());
+		ImcExpr size = new ImcCONST(type.sizeInBytes());
 		ImcExpr hi = new ImcCONST(count);
 		ImcTEMP counter = new ImcTEMP(new FrmTemp());
-		ImcExpr iterator = (ImcExpr) ImcDesc.getImcCode(acceptor.iterator);
-		ImcExpr collection = (ImcExpr) ImcDesc.getImcCode(acceptor.collection);
+		ImcExpr iterator = (ImcExpr) imcDescription.getImcCode(acceptor.iterator);
+		ImcExpr collection = (ImcExpr) imcDescription.getImcCode(acceptor.collection);
 
 		ImcBINOP mul = new ImcBINOP(ImcBINOP.MUL, counter, size);
 		ImcBINOP add = new ImcBINOP(ImcBINOP.ADD, collection, mul);
 
-		FrmLabel l1 = FrmLabel.newLabel(), l2 = FrmLabel.newLabel(), l3 = FrmLabel.newLabel();
+		FrmLabel l1 = FrmLabel.newAnonymousLabel(), l2 = FrmLabel.newAnonymousLabel(), l3 = FrmLabel.newAnonymousLabel();
 
 		ImcSEQ statements = new ImcSEQ();
 		statements.stmts.add(new ImcMOVE(counter, new ImcCONST(0)));
@@ -577,7 +559,7 @@ public class ImcCodeGen implements ASTVisitor {
 		statements.stmts.add(new ImcJUMP(l1));
 		statements.stmts.add(new ImcLABEL(l3));
 
-		ImcDesc.setImcCode(acceptor, statements);
+		imcDescription.setImcCode(acceptor, statements);
 	}
 
 	@Override
@@ -585,16 +567,16 @@ public class ImcCodeGen implements ASTVisitor {
 		for (AbsLabeledExpr arg: acceptor.args)
 			arg.accept(this);
 
-		FrmFrame frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
-		ImcCALL fnCall = new ImcCALL(frame.label);
+		FrmFrame frame = frameDescription.getFrame(symbolDescription.getDefinitionForAstNode(acceptor));
+		ImcCALL fnCall = new ImcCALL(frame.entryLabel);
 
-		int diff = frameStack.peek().level - frame.level;
+		int diff = returnExprFrameStack.peek().staticLevel - frame.staticLevel;
 
 		if (diff == 0) {
             fnCall.args.add(new ImcCONST(0xFFAAFF));
         }
 		else {
-			ImcExpr staticLink = new ImcTEMP(frameStack.peek().FP);
+			ImcExpr staticLink = new ImcTEMP(returnExprFrameStack.peek().FP);
 
 			if (diff > 0) {
                 for (int i = 0; i < diff + 1; i++) {
@@ -605,7 +587,7 @@ public class ImcCodeGen implements ASTVisitor {
 			fnCall.args.add(staticLink);
 		}
 
-		boolean isConstructor = ((AbsFunDef) SymbDesc.getNameDef(acceptor)).isConstructor;
+		boolean isConstructor = ((AbsFunDef) symbolDescription.getDefinitionForAstNode(acceptor)).isConstructor;
 
 		for (AbsExpr arg : acceptor.args) {
             // skip first ("self") argument if function is constructor
@@ -616,45 +598,45 @@ public class ImcCodeGen implements ASTVisitor {
                 continue;
             }
 
-			ImcExpr argExpression = (ImcExpr) ImcDesc.getImcCode(arg);
+			ImcExpr argExpression = (ImcExpr) imcDescription.getImcCode(arg);
 			fnCall.args.add(argExpression);
 		}
 
-		ImcDesc.setImcCode(acceptor, fnCall);
+		imcDescription.setImcCode(acceptor, fnCall);
 	}
 
 	@Override
 	public void visit(AbsFunDef acceptor) {
-	    Type resultType = ((FunctionType) SymbDesc.getType(acceptor)).resultType;
-		frameStack.push(FrmDesc.getFrame(acceptor));
+	    Type resultType = ((FunctionType) symbolDescription.getTypeForAstNode(acceptor)).resultType;
+		returnExprFrameStack.push(frameDescription.getFrame(acceptor));
 
 		acceptor.func.accept(this);
 		
-		ImcSEQ code = (ImcSEQ) ImcDesc.getImcCode(acceptor.func);
-		code.stmts.add(new ImcLABEL(frameStack.peek().endLabel));
+		ImcSEQ code = (ImcSEQ) imcDescription.getImcCode(acceptor.func);
+		code.stmts.add(new ImcLABEL(returnExprFrameStack.peek().endLabel));
 
 		if (resultType.isVoidType()) {
-		    code.stmts.addFirst(new ImcMOVE(new ImcTEMP(frameStack.peek().RV), new ImcCONST(-555)));
+		    code.stmts.addFirst(new ImcMOVE(new ImcTEMP(returnExprFrameStack.peek().RV), new ImcCONST(-555)));
         }
 
-		chunks.add(new ImcCodeChunk(frameStack.peek(), code));
+		chunks.add(new ImcCodeChunk(returnExprFrameStack.peek(), code));
 		
-		frameStack.pop();
+		returnExprFrameStack.pop();
 	}
 
 	@Override
 	public void visit(AbsIfStmt acceptor) {
 		ImcSEQ statements = new ImcSEQ();
-		FrmLabel endLabel = FrmLabel.newLabel();
+		FrmLabel endLabel = FrmLabel.newAnonymousLabel();
 
 		for (Condition c : acceptor.conditions) {
 			c.cond.accept(this);
 			c.body.accept(this);
 
-			ImcExpr cond = (ImcExpr) ImcDesc.getImcCode(c.cond);
-			ImcStmt body = (ImcStmt) ImcDesc.getImcCode(c.body);
+			ImcExpr cond = (ImcExpr) imcDescription.getImcCode(c.cond);
+			ImcStmt body = (ImcStmt) imcDescription.getImcCode(c.body);
 
-			FrmLabel l1 = FrmLabel.newLabel(), l2 = FrmLabel.newLabel();
+			FrmLabel l1 = FrmLabel.newAnonymousLabel(), l2 = FrmLabel.newAnonymousLabel();
 	
 			statements.stmts.add(new ImcCJUMP(cond, l1, l2));
 			statements.stmts.add(new ImcLABEL(l1));
@@ -666,12 +648,12 @@ public class ImcCodeGen implements ASTVisitor {
 		if (acceptor.elseBody != null) {
 			acceptor.elseBody.accept(this);	
 			
-			ImcStmt body = (ImcStmt) ImcDesc.getImcCode(acceptor.elseBody);
+			ImcStmt body = (ImcStmt) imcDescription.getImcCode(acceptor.elseBody);
 			statements.stmts.add(body);
 		}
 
 		statements.stmts.add(new ImcLABEL(endLabel));
-		ImcDesc.setImcCode(acceptor, statements);
+		imcDescription.setImcCode(acceptor, statements);
 	}
 
 	@Override
@@ -688,34 +670,34 @@ public class ImcCodeGen implements ASTVisitor {
 	public void visit(AbsUnExpr acceptor) {
 		acceptor.expr.accept(this);
 
-		ImcCode expr = ImcDesc.getImcCode(acceptor.expr);
+		ImcCode expr = imcDescription.getImcCode(acceptor.expr);
 
 		if (acceptor.oper == AbsUnExpr.SUB) {
-			ImcDesc.setImcCode(acceptor, new ImcBINOP(ImcBINOP.SUB,
+			imcDescription.setImcCode(acceptor, new ImcBINOP(ImcBINOP.SUB,
 					new ImcCONST(0), (ImcExpr) expr));
 		} else if (acceptor.oper == AbsUnExpr.NOT) {
 			ImcBINOP mul = new ImcBINOP(ImcBINOP.MUL, (ImcExpr) expr,
 					new ImcCONST(1));
 			ImcBINOP not = new ImcBINOP(ImcBINOP.ADD, mul, new ImcCONST(1));
-			ImcDesc.setImcCode(acceptor, not);
+			imcDescription.setImcCode(acceptor, not);
 		} else if (acceptor.oper == AbsUnExpr.MEM) {
 			if (expr instanceof ImcStmt)
-				Report.error(acceptor.position, "Error");
-			ImcDesc.setImcCode(acceptor, ((ImcMEM) expr).expr);
+				Logger.error(acceptor.position, "Error");
+			imcDescription.setImcCode(acceptor, ((ImcMEM) expr).expr);
 		} else if (acceptor.oper == AbsUnExpr.VAL) {
 			if (expr instanceof ImcStmt)
-				Report.error(acceptor.position, "Error");
-			ImcDesc.setImcCode(acceptor, new ImcMEM((ImcExpr) expr));
+				Logger.error(acceptor.position, "Error");
+			imcDescription.setImcCode(acceptor, new ImcMEM((ImcExpr) expr));
 		} else
-			ImcDesc.setImcCode(acceptor, expr);
+			imcDescription.setImcCode(acceptor, expr);
 	}
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		FrmAccess access = FrmDesc.getAccess(acceptor);
-		Type varType = SymbDesc.getType(acceptor);
+		FrmAccess access = frameDescription.getAccess(acceptor);
+		Type varType = symbolDescription.getTypeForAstNode(acceptor);
 		
-		int size = varType.size();
+		int size = varType.sizeInBytes();
 		if (varType.isReferenceType())
 			size = 4;
 
@@ -725,9 +707,9 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarNameExpr acceptor) {
-		AbsDef nameDefinition = SymbDesc.getNameDef(acceptor);
+		AbsDef nameDefinition = symbolDescription.getDefinitionForAstNode(acceptor);
 		
-		FrmAccess access = FrmDesc.getAccess(nameDefinition);
+		FrmAccess access = frameDescription.getAccess(nameDefinition);
 		if (access == null) return;
 		
 		ImcExpr expr = null;
@@ -737,14 +719,14 @@ public class ImcCodeGen implements ASTVisitor {
         }
 		else if (access instanceof FrmLocAccess) {
 			FrmLocAccess loc = (FrmLocAccess) access;
-			int diff = frameStack.peek().level - loc.frame.level;
+			int diff = returnExprFrameStack.peek().staticLevel - loc.frame.staticLevel;
 
-			ImcExpr fp = new ImcTEMP(frameStack.peek().FP);
+			ImcExpr fp = new ImcTEMP(returnExprFrameStack.peek().FP);
 			for (int i = 0; i < diff; i++)
 				fp = new ImcMEM(fp);
 
 			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, fp, new ImcCONST(
-					loc.offset)));
+					loc.framePointerOffset)));
 		} 
 		else if (access instanceof FrmMemberAccess) {
 			FrmMemberAccess member = (FrmMemberAccess) access;
@@ -752,17 +734,17 @@ public class ImcCodeGen implements ASTVisitor {
 		}
         else if (access instanceof FrmStaticAccess) {
             FrmStaticAccess staticAccess = (FrmStaticAccess) access;
-            expr = new ImcCONST(staticAccess.offset());
+            expr = new ImcCONST(staticAccess.offsetForStaticMember());
         }
 		else if (access instanceof FrmParAccess) {
 			FrmParAccess loc = (FrmParAccess) access;
-			int diff = frameStack.peek().level - loc.frame.level;
+			int diff = returnExprFrameStack.peek().staticLevel - loc.frame.staticLevel;
 
-			ImcExpr fp = new ImcTEMP(frameStack.peek().FP);
+			ImcExpr fp = new ImcTEMP(returnExprFrameStack.peek().FP);
 			for (int i = 0; i < diff; i++)
 				fp = new ImcMEM(fp);
 
-			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, fp, new ImcCONST(loc.offset)));
+			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, fp, new ImcCONST(loc.framePointerOffset)));
 		} 
 		else if (access instanceof FrmFunAccess) {
             expr = new ImcNAME(((FrmFunAccess) access).label);
@@ -772,22 +754,22 @@ public class ImcCodeGen implements ASTVisitor {
             expr = new ImcNAME(virtualAccess.label);
         }
 
-		ImcDesc.setImcCode(acceptor, expr);
+		imcDescription.setImcCode(acceptor, expr);
 	}
 
 	@Override
 	public void visit(AbsWhileStmt acceptor) {
-		FrmLabel l1 = FrmLabel.newLabel(), 
-				 l2 = FrmLabel.newLabel(), 
-				 l3 = FrmLabel.newLabel();
-		startLabelStack.push(l1);
-		endLabelStack.push(l3);
+		FrmLabel l1 = FrmLabel.newAnonymousLabel(),
+				 l2 = FrmLabel.newAnonymousLabel(),
+				 l3 = FrmLabel.newAnonymousLabel();
+		controlTransferStartLabelStack.push(l1);
+		controlTransferEndLabelStack.push(l3);
 		
 		acceptor.cond.accept(this);
 		acceptor.body.accept(this);
 		
-		ImcSEQ body = (ImcSEQ) ImcDesc.getImcCode(acceptor.body);
-		ImcExpr cond = (ImcExpr) ImcDesc.getImcCode(acceptor.cond);
+		ImcSEQ body = (ImcSEQ) imcDescription.getImcCode(acceptor.body);
+		ImcExpr cond = (ImcExpr) imcDescription.getImcCode(acceptor.cond);
 		
 		ImcSEQ statements = new ImcSEQ();
 		statements.stmts.add(new ImcLABEL(l1));
@@ -797,9 +779,9 @@ public class ImcCodeGen implements ASTVisitor {
 		statements.stmts.add(new ImcJUMP(l1));
 		statements.stmts.add(new ImcLABEL(l3));
 
-		ImcDesc.setImcCode(acceptor, statements);
-		startLabelStack.pop();
-		endLabelStack.pop();
+		imcDescription.setImcCode(acceptor, statements);
+		controlTransferStartLabelStack.pop();
+		controlTransferEndLabelStack.pop();
 	}
 
 	@Override
@@ -809,12 +791,12 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AbsStmts acceptor) {
-		scope++;
+		currentFunctionScope++;
 		ImcSEQ seq = new ImcSEQ();
 		for (AbsStmt stmt : acceptor.statements) {
 			stmt.accept(this);
 
-			ImcCode code = ImcDesc.getImcCode(stmt);
+			ImcCode code = imcDescription.getImcCode(stmt);
 			if (code != null) {
 				ImcStmt s = null;
 
@@ -826,12 +808,12 @@ public class ImcCodeGen implements ASTVisitor {
 				seq.stmts.add(s);
 			}
 		}
-		ImcDesc.setImcCode(acceptor, seq);
+		imcDescription.setImcCode(acceptor, seq);
 
-		scope--;
-		if (scope == 0) {
-            seq.stmts.addFirst(new ImcMOVE(new ImcTEMP(frameStack.peek().RV), new ImcCONST(-555)));
-			entryPointCode = new ImcCodeChunk(frameStack.peek(), seq);
+		currentFunctionScope--;
+		if (currentFunctionScope == 0) {
+            seq.stmts.addFirst(new ImcMOVE(new ImcTEMP(returnExprFrameStack.peek().RV), new ImcCONST(-555)));
+			entryPointCode = new ImcCodeChunk(returnExprFrameStack.peek(), seq);
 			chunks.add(entryPointCode);
 		}
 	}
@@ -839,26 +821,27 @@ public class ImcCodeGen implements ASTVisitor {
 	@Override
 	public void visit(AbsReturnExpr acceptor) {
 		ImcSEQ seq = new ImcSEQ();
-		ImcTEMP rv = new ImcTEMP(frameStack.peek().RV);
+		ImcTEMP rv = new ImcTEMP(returnExprFrameStack.peek().RV);
 
 		if (acceptor.expr != null) {
 			acceptor.expr.accept(this);
 
-			seq.stmts.add(new ImcMOVE(rv, (ImcExpr) ImcDesc
-					.getImcCode(acceptor.expr)));
-		} else
-			ImcDesc.setImcCode(acceptor, new ImcRETURN(null));
+			seq.stmts.add(new ImcMOVE(rv, (ImcExpr) imcDescription.getImcCode(acceptor.expr)));
+		}
+		else {
+            imcDescription.setImcCode(acceptor, new ImcRETURN(null));
+        }
 
-		seq.stmts.add(new ImcJUMP(frameStack.peek().endLabel));
-		ImcDesc.setImcCode(acceptor, seq);
+		seq.stmts.add(new ImcJUMP(returnExprFrameStack.peek().endLabel));
+		imcDescription.setImcCode(acceptor, seq);
 	}
 
 	@Override
 	public void visit(AbsListExpr acceptor) {
-		int size = ((ArrayType) SymbDesc.getType(acceptor)).count;
-		int elSize = ((ArrayType) SymbDesc.getType(acceptor)).type.size();
+		int size = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor)).count;
+		int elSize = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor)).type.sizeInBytes();
 
-		FrmLabel label = FrmLabel.newLabel();
+		FrmLabel label = FrmLabel.newAnonymousLabel();
 		ImcDataChunk chunk = new ImcDataChunk(label, size * elSize);
 		ImcSEQ seq = new ImcSEQ();
 
@@ -866,7 +849,7 @@ public class ImcCodeGen implements ASTVisitor {
 		for (AbsExpr e : acceptor.expressions) {
 			e.accept(this);
 
-			ImcCode code = ImcDesc.getImcCode(e);
+			ImcCode code = imcDescription.getImcCode(e);
 			ImcExpr expr;
 			if (code instanceof ImcEXP)
 				expr = ((ImcEXP) code).expr;
@@ -881,7 +864,7 @@ public class ImcCodeGen implements ASTVisitor {
 		}
 
 		chunks.add(chunk);
-		ImcDesc.setImcCode(acceptor, new ImcESEQ(seq, new ImcNAME(label)));
+		imcDescription.setImcCode(acceptor, new ImcESEQ(seq, new ImcNAME(label)));
 	}
 
 	@Override
@@ -892,14 +875,16 @@ public class ImcCodeGen implements ASTVisitor {
 	@Override
 	public void visit(AbsControlTransferStmt acceptor) {
 		if (acceptor.control == ControlTransferKind.Continue) {
-			if (!startLabelStack.isEmpty()) 
-				// Jump to continue label (beginning of the loop)
-				ImcDesc.setImcCode(acceptor, new ImcJUMP(startLabelStack.peek()));
+			if (!controlTransferStartLabelStack.isEmpty()) {
+                // Jump to continue entryLabel (beginning of the loop)
+                imcDescription.setImcCode(acceptor, new ImcJUMP(controlTransferStartLabelStack.peek()));
+            }
 		}
 		else {
-			if (!endLabelStack.isEmpty())
-				// Jump to break label
-				ImcDesc.setImcCode(acceptor, new ImcJUMP(endLabelStack.peek()));
+			if (!controlTransferEndLabelStack.isEmpty()) {
+                // Jump to break entryLabel
+                imcDescription.setImcCode(acceptor, new ImcJUMP(controlTransferEndLabelStack.peek()));
+            }
 		}
 	}
 
@@ -909,25 +894,25 @@ public class ImcCodeGen implements ASTVisitor {
 
 		ImcSEQ switchCode = new ImcSEQ();
 		
-		ImcExpr subjectExpr = (ImcExpr) ImcDesc.getImcCode(acceptor.subjectExpr);
+		ImcExpr subjectExpr = (ImcExpr) imcDescription.getImcCode(acceptor.subjectExpr);
 		switchSubjectExprs.push(subjectExpr);
 		
-		FrmLabel endLabel = FrmLabel.newLabel();
-		endLabelStack.push(endLabel);
+		FrmLabel endLabel = FrmLabel.newAnonymousLabel();
+		controlTransferEndLabelStack.push(endLabel);
 		
 		for (AbsCaseStmt singleCase : acceptor.cases) {
 			singleCase.accept(this);
-			switchCode.stmts.add((ImcStmt) ImcDesc.getImcCode(singleCase));
+			switchCode.stmts.add((ImcStmt) imcDescription.getImcCode(singleCase));
 		}
 		
 		if (acceptor.defaultBody != null) {
 			acceptor.defaultBody.accept(this);
-			switchCode.stmts.add((ImcStmt) ImcDesc.getImcCode(acceptor.defaultBody));
+			switchCode.stmts.add((ImcStmt) imcDescription.getImcCode(acceptor.defaultBody));
 		}
 		
 		switchCode.stmts.add(new ImcLABEL(endLabel));
-		endLabelStack.pop();
-		ImcDesc.setImcCode(acceptor, switchCode);
+		controlTransferEndLabelStack.pop();
+		imcDescription.setImcCode(acceptor, switchCode);
 	}
 
 	@Override
@@ -936,7 +921,7 @@ public class ImcCodeGen implements ASTVisitor {
 		
 		for (AbsExpr e : acceptor.exprs) {
 			e.accept(this);
-			ImcExpr expr = (ImcExpr) ImcDesc.getImcCode(e);
+			ImcExpr expr = (ImcExpr) imcDescription.getImcCode(e);
 			ImcExpr cond = new ImcBINOP(ImcBINOP.EQU, expr, switchSubjectExprs.peek());
 			
 			if (caseCondition == null)
@@ -945,11 +930,11 @@ public class ImcCodeGen implements ASTVisitor {
 				caseCondition = new ImcBINOP(ImcBINOP.OR, caseCondition, cond);
 		}
 
-		FrmLabel startLabel = FrmLabel.newLabel();
-		FrmLabel endLabel = FrmLabel.newLabel();
+		FrmLabel startLabel = FrmLabel.newAnonymousLabel();
+		FrmLabel endLabel = FrmLabel.newAnonymousLabel();
 		
 		acceptor.body.accept(this);
-		ImcStmt body = (ImcStmt) ImcDesc.getImcCode(acceptor.body);
+		ImcStmt body = (ImcStmt) imcDescription.getImcCode(acceptor.body);
 		
 		ImcSEQ caseCode = new ImcSEQ();
 		caseCode.stmts.add(new ImcCJUMP(caseCondition, startLabel, endLabel));
@@ -957,7 +942,7 @@ public class ImcCodeGen implements ASTVisitor {
 		caseCode.stmts.add(body);
 		caseCode.stmts.add(new ImcLABEL(endLabel));
 		
-		ImcDesc.setImcCode(acceptor, caseCode);
+		imcDescription.setImcCode(acceptor, caseCode);
 	}
 
 	@Override
@@ -972,25 +957,25 @@ public class ImcCodeGen implements ASTVisitor {
 	public void visit(AbsEnumMemberDef acceptor) {
 		if (acceptor.value != null) {
 			acceptor.value.accept(this);
-			ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(acceptor.value));
+			imcDescription.setImcCode(acceptor, imcDescription.getImcCode(acceptor.value));
 		}
 	}
 
 	@Override
 	public void visit(AbsTupleDef acceptor) {
-		// TODO Auto-generated method stub
+        ///
 	}
 
 	@Override
 	public void visit(AbsLabeledExpr acceptor) {
 		acceptor.expr.accept(this);
-		ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(acceptor.expr));
+		imcDescription.setImcCode(acceptor, imcDescription.getImcCode(acceptor.expr));
 	}
 
 	@Override
 	public void visit(AbsTupleExpr acceptor) {
-		TupleType tupleType = (TupleType) SymbDesc.getType(acceptor);
-		int size = tupleType.size();
+		TupleType tupleType = (TupleType) symbolDescription.getTypeForAstNode(acceptor);
+		int size = tupleType.sizeInBytes();
 
 		ImcSEQ seq = new ImcSEQ();
 		ImcTEMP location = new ImcTEMP(new FrmTemp());
@@ -1000,14 +985,14 @@ public class ImcCodeGen implements ASTVisitor {
 			e.accept(this);
 			
 			int memberOffset = tupleType.offsetOf(((AbsLabeledExpr) e).name);
-			ImcExpr exprCode = (ImcExpr) ImcDesc.getImcCode(e);
+			ImcExpr exprCode = (ImcExpr) imcDescription.getImcCode(e);
 			ImcExpr dst = new ImcMEM(
 					new ImcBINOP(ImcBINOP.ADD, location, new ImcCONST(memberOffset)));
 			ImcMOVE move = new ImcMOVE(dst, exprCode);
 			seq.stmts.add(move);
 		}
 		
-		ImcDesc.setImcCode(acceptor, new ImcESEQ(seq, location));
+		imcDescription.setImcCode(acceptor, new ImcESEQ(seq, location));
 	}
 
 	@Override
@@ -1019,14 +1004,14 @@ public class ImcCodeGen implements ASTVisitor {
 	public void visit(AbsOptionalEvaluationExpr acceptor) {
 		acceptor.subExpr.accept(this);
 		
-		ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(acceptor.subExpr));
+		imcDescription.setImcCode(acceptor, imcDescription.getImcCode(acceptor.subExpr));
 	}
 
 	@Override
 	public void visit(AbsForceValueExpr acceptor) {
 		acceptor.subExpr.accept(this);
 
-		ImcDesc.setImcCode(acceptor, ImcDesc.getImcCode(acceptor.subExpr));
+		imcDescription.setImcCode(acceptor, imcDescription.getImcCode(acceptor.subExpr));
 	}
 
     @Override
@@ -1037,6 +1022,6 @@ public class ImcCodeGen implements ASTVisitor {
 
     @Override
     public void visit(AbsInterfaceDef absInterfaceDef) {
-
+        ///
     }
 }

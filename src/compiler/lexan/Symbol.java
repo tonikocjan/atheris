@@ -159,7 +159,7 @@ public class Symbol {
         case KW_OVERRIDE    : tokenName = "OVERRIDE"; break;
 		
 		default:
-			Report.error("Internal error: token=" + token + " in compiler.lexan.Symbol.toString().");
+			Logger.error("Internal error: token=" + token + " in compiler.lexan.Symbol.toString().");
 		}
 		return tokenName + ":" + lexeme;
 	}

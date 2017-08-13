@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import compiler.Report;
+import compiler.Logger;
 import compiler.ast.tree.def.AbsDef;
 import compiler.ast.tree.def.AbsEnumDef;
 import compiler.ast.tree.def.AbsEnumMemberDef;
@@ -59,7 +59,7 @@ public class EnumType extends Type implements ReferenceType {
 	public EnumType(AbsEnumDef definition, 
 			ArrayList<String> names, ArrayList<ClassType> types) {
 		if (names.size() != types.size())
-			Report.error("Internal error :: compiler.seman.type.EnumType: "
+			Logger.error("Internal error :: compiler.seman.type.EnumType: "
 					+ "names count not equal types count");
 		
 		this.enumDefinition = definition;
@@ -88,7 +88,7 @@ public class EnumType extends Type implements ReferenceType {
 	/**
 	 * Get type for member.
 	 * @param name Name of member.
-	 * @return Type of found member (null if member with such name doesn't exist).
+	 * @return Type of found member (null if member with such getName doesn't exist).
 	 */
 	public ClassType getMemberTypeForName(String name) {
 		return members.get(name);
@@ -109,7 +109,7 @@ public class EnumType extends Type implements ReferenceType {
 	}
 	
 	@Override
-	public AbsDef findMemberForName(String name) {
+	public AbsDef findMemberDefinitionForName(String name) {
 		for (AbsDef def : enumDefinition.definitions) {
 			String definitionsName = def.getName();
 			
@@ -157,12 +157,12 @@ public class EnumType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public int size() {
+	public int sizeInBytes() {
 		return 4;
 	}
 
 	@Override
-	public boolean canCastTo(Type t) {
+	public boolean canBeCastedToType(Type t) {
 		return false;
 	}
 

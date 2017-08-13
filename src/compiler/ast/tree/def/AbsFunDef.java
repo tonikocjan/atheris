@@ -49,7 +49,7 @@ public class AbsFunDef extends AbsDef {
 	 * @param pos
 	 *            Position
 	 * @param name
-	 *            Function name
+	 *            Function getName
 	 * @param parameters
 	 *            Parameter list
 	 * @param returnType
@@ -72,7 +72,7 @@ public class AbsFunDef extends AbsDef {
      * @param pos
      *            Position
      * @param name
-     *            Function name
+     *            Function getName
      * @param parameters
      *            Parameter list
      * @param returnType
@@ -97,7 +97,7 @@ public class AbsFunDef extends AbsDef {
      * @param pos
      *            Position
      * @param name
-     *            Function name
+     *            Function getName
      * @param parameters
      *            Parameter list
      * @param returnType
@@ -165,7 +165,7 @@ public class AbsFunDef extends AbsDef {
 	}
 
     /**
-     * Get string representation of this function definition using different name.
+     * Get string representation of this function definition using different getName.
      * @param otherName
      * @return
      */
@@ -176,7 +176,7 @@ public class AbsFunDef extends AbsDef {
     /**
      * Get string representation of this function definition.
      * @param name Name of the function
-     * @return String representation, i.e.: func name(x: Int, y: Double) Int ==> name(x:y:)
+     * @return String representation, i.e.: func getName(x: Int, y: Double) Int ==> getName(x:y:)
      */
     private String stringRepresentation(String name) {
         StringBuilder sb = new StringBuilder(name);

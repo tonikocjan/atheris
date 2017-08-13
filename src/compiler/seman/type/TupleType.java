@@ -51,7 +51,7 @@ public class TupleType extends Type implements ReferenceType {
 		
 		for (int i = 0; i < names.size(); i++) {
 			members.put(names.get(i), types.get(i));
-			size += types.get(i).size();
+			size += types.get(i).sizeInBytes();
 		}
 		
 		this.definition = null;
@@ -69,7 +69,7 @@ public class TupleType extends Type implements ReferenceType {
 		
 		for (int i = 0; i < names.size(); i++) {
 			members.put(names.get(i), types.get(i));
-			size += types.get(i).size();
+			size += types.get(i).sizeInBytes();
 		}
 		
 		this.definition = definition;
@@ -77,7 +77,7 @@ public class TupleType extends Type implements ReferenceType {
 	}
 
 	/**
-	 * Get type for given name.
+	 * Get type for given getName.
 	 * @param name
 	 * @return
 	 */
@@ -86,16 +86,16 @@ public class TupleType extends Type implements ReferenceType {
 	}
 	
 	/**
-	 * Calculate offset for member.
-	 * @param name member name
-	 * @return offset of that member
+	 * Calculate framePointerOffset for member.
+	 * @param name member getName
+	 * @return framePointerOffset of that member
 	 */
 	public int offsetOf(String name) {
 		int offset = 0;
 		
 		for (Map.Entry<String, Type> entry : members.entrySet()) {
 			if (name.equals(entry.getKey())) break;
-			offset += entry.getValue().size();
+			offset += entry.getValue().sizeInBytes();
 		}
 		
 		return offset;
@@ -121,12 +121,12 @@ public class TupleType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public boolean canCastTo(Type t) {
+	public boolean canBeCastedToType(Type t) {
 		return false;
 	}
 
 	@Override
-	public int size() {
+	public int sizeInBytes() {
 		return size;
 	}
 
@@ -156,7 +156,7 @@ public class TupleType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public AbsDef findMemberForName(String name) {
+	public AbsDef findMemberDefinitionForName(String name) {
 		return null;
 	}
 

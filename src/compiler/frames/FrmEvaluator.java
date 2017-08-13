@@ -18,8 +18,9 @@
 package compiler.frames;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
+import compiler.seman.SymbolDescriptionMap;
+import compiler.seman.SymbolTableMap;
 import utils.Constants;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.*;
@@ -47,33 +48,36 @@ import compiler.ast.tree.type.AbsFunType;
 import compiler.ast.tree.type.AbsListType;
 import compiler.ast.tree.type.AbsOptionalType;
 import compiler.ast.tree.type.AbsTypeName;
-import compiler.seman.SymbDesc;
 import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
-import compiler.seman.type.ObjectType;
 import compiler.seman.type.Type;
 
 public class FrmEvaluator implements ASTVisitor {
-
+    
+    public FrmFrame entryPoint = null;
     private Type parentType = null;
     private FrmFrame currentFrame = null;
-    public FrmFrame entryPoint = null;
 	private int currentLevel = 1;
+	
+	private FrameDescriptionMap frameDescription;
+    private SymbolTableMap symbolTable;
+    private SymbolDescriptionMap symbolDescription;
 
-    /**
-     *
-     */
-	public FrmEvaluator() {
-		AbsFunDef _main = new AbsFunDef(null, Constants.ENTRY_POINT, new ArrayList<>(),
-				new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(null, new ArrayList<>()));
+    public FrmEvaluator(SymbolTableMap symbolTable, SymbolDescriptionMap symbolDescription, FrameDescriptionMap frameDescription) {
+        this.symbolTable = symbolTable;
+        this.symbolDescription = symbolDescription;
+        this.frameDescription = frameDescription;
 
-		entryPoint = new FrmFrame(_main, 0);
-		entryPoint.label = FrmLabel.newLabel(Constants.ENTRY_POINT);
-		entryPoint.sizePars = 0;
-		entryPoint.numPars = 0;
+        AbsFunDef _main = new AbsFunDef(null, Constants.ENTRY_POINT, new ArrayList<>(),
+                new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(null, new ArrayList<>()));
 
-		currentFrame = entryPoint;
-	}
+        entryPoint = new FrmFrame(_main, 0);
+        entryPoint.entryLabel = FrmLabel.newNamedLabel(Constants.ENTRY_POINT);
+        entryPoint.parametersSize = 0;
+        entryPoint.parameterCount = 0;
+
+        currentFrame = entryPoint;
+    }
 
 	@Override
 	public void visit(AbsListType acceptor) {
@@ -82,8 +86,8 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsClassDef acceptor) {
-        Type tmp = parentType;
-        parentType = SymbDesc.getType(acceptor);
+        Type currentParentType = parentType;
+        parentType = symbolDescription.getTypeForAstNode(acceptor);
 
         if (((CanType) parentType).childType.isClassType()) {
             ClassType classType = (ClassType) ((CanType) parentType).childType;
@@ -91,8 +95,8 @@ public class FrmEvaluator implements ASTVisitor {
             FrmVirtualTableAccess virtualTableAccess = new FrmVirtualTableAccess(
                     acceptor,
                     classType.virtualTableSize() + Constants.Byte*2);
-            FrmDesc.setAccess(acceptor, virtualTableAccess);
-            FrmDesc.setVirtualTable(classType, virtualTableAccess);
+            frameDescription.setAccess(acceptor, virtualTableAccess);
+            frameDescription.setVirtualTable(classType, virtualTableAccess);
         }
 
 		acceptor.definitions.accept(this);
@@ -101,7 +105,7 @@ public class FrmEvaluator implements ASTVisitor {
 			c.accept(this);
 		}
 		
-		parentType = tmp;
+		parentType = currentParentType;
 	}
 
 	@Override
@@ -134,7 +138,7 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsForStmt acceptor) {
-		SymbDesc.getNameDef(acceptor.iterator).accept(this);
+		symbolDescription.getDefinitionForAstNode(acceptor.iterator).accept(this);
 
 		acceptor.iterator.accept(this);
 		acceptor.collection.accept(this);
@@ -146,8 +150,8 @@ public class FrmEvaluator implements ASTVisitor {
 		int parSize = 4;
 
 		for (AbsExpr arg: acceptor.args) {
-            Type argType = SymbDesc.getType(arg);
-            int size = argType.isReferenceType() ? 4 : argType.size(); // FIXME: -
+            Type argType = symbolDescription.getTypeForAstNode(arg);
+            int size = argType.isReferenceType() ? 4 : argType.sizeInBytes(); // FIXME: -
 
             parSize += size;
         }
@@ -159,13 +163,13 @@ public class FrmEvaluator implements ASTVisitor {
 	public void visit(AbsFunDef acceptor) {
 		FrmFrame frame = new FrmFrame(acceptor, currentLevel);
 
-		FrmDesc.setFrame(acceptor, frame);
-		FrmDesc.setAccess(acceptor, new FrmFunAccess(acceptor));
+		frameDescription.setFrame(acceptor, frame);
+		frameDescription.setAccess(acceptor, new FrmFunAccess(acceptor));
 
 		FrmFrame tmp = currentFrame;
 		currentFrame = frame;
 
-		frame.numPars = acceptor.pars.size();
+		frame.parameterCount = acceptor.pars.size();
 
 		for (AbsParDef par : acceptor.pars) {
             par.accept(this);
@@ -193,12 +197,12 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsParDef acceptor) {
-		FrmDesc.setAccess(acceptor, new FrmParAccess(acceptor, currentFrame, currentFrame.sizePars));
+		frameDescription.setAccess(acceptor, new FrmParAccess(acceptor, currentFrame, currentFrame.parametersSize));
 		
-		Type type = SymbDesc.getType(acceptor);
-		int size = type.isObjectType() ? 4 : type.size(); // FIXME: -
+		Type type = symbolDescription.getTypeForAstNode(acceptor);
+		int size = type.isObjectType() ? 4 : type.sizeInBytes(); // FIXME: -
 		
-		currentFrame.sizePars += size;
+		currentFrame.parametersSize += size;
 	}
 
 	@Override
@@ -213,24 +217,17 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AbsVarDef acceptor) {
-		if (acceptor.getParentDefinition() != null && SymbDesc.getType(acceptor.getParentDefinition()).isCanType()) {
-		    if (acceptor.isStatic()) {
-                // static access
-                FrmDesc.setAccess(acceptor, new FrmStaticAccess(acceptor, (CanType) parentType));
-            }
-            else {
-                // member access
-                FrmDesc.setAccess(acceptor, new FrmMemberAccess(acceptor, (ObjectType) ((CanType) parentType).childType));
-            }
-        }
-		else if (currentFrame.label.name().equals("_" + Constants.ENTRY_POINT)) {
-            // var access
-            FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
-        }
-		else {
-            // local function access
-            FrmDesc.setAccess(acceptor, new FrmLocAccess(acceptor, currentFrame));
-        }
+        AbsDef parentDefinition = acceptor.getParentDefinition();
+        Type parentDefinitionType = symbolDescription.getTypeForAstNode(parentDefinition);
+        boolean isGlobal = currentFrame.entryLabel.getName().equals("_" + Constants.ENTRY_POINT);
+
+        frameDescription.setAccess(acceptor, FrmAccess.createAccess(
+                acceptor,
+                symbolDescription.getTypeForAstNode(acceptor),
+                parentDefinition,
+                parentDefinitionType,
+                isGlobal,
+                currentFrame));
 	}
 
 	@Override

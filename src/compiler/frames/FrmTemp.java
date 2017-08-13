@@ -17,38 +17,21 @@
 
 package compiler.frames;
 
-/**
- * Opis zacasne spremenljivke v programu.
- * 
- * @author sliva
- */
 public class FrmTemp {
 
-	/** Stevec zacasnih spremenljivk.  */
-	private static int count = 0;
+    private static int temporaryVariableCount = 0;
+    private int identifier;
 
-	/** Ime te zacasne spremenljivke.  */
-	private int num;
+    public FrmTemp() {
+        identifier = temporaryVariableCount++;
+    }
 
-	/**
-	 * Ustvari novo zacasno spremenljivko.
-	 */
-	public FrmTemp() {
-		num = count++;
-	}
+    public String getName() {
+        return "T" + identifier;
+    }
 
-	/**
-	 * Vrne ime zacasne spremenljivke.
-	 * 
-	 * @return Ime zacasne spremenljivke.
-	 */
-	public String name() {
-		return "T" + num;
-	}
-
-	@Override
-	public boolean equals(Object t) {
-		return num == ((FrmTemp)t).num;
-	}
-
+    @Override
+    public boolean equals(Object t) {
+        return identifier == ((FrmTemp) t).identifier;
+    }
 }
