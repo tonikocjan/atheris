@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import compiler.Position;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.*;
+import compiler.ast.tree.enums.AtomTypeKind;
 import compiler.ast.tree.type.AstAtomType;
 import compiler.ast.tree.type.AstType;
 

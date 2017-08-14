@@ -19,6 +19,7 @@ package compiler.frames;
 
 import java.util.ArrayList;
 
+import compiler.ast.tree.enums.AtomTypeKind;
 import compiler.ast.tree.expr.*;
 import compiler.ast.tree.stmt.*;
 import compiler.ast.tree.type.*;

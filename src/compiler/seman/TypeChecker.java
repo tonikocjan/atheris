@@ -20,6 +20,8 @@ package compiler.seman;
 import java.util.*;
 
 import compiler.Logger;
+import compiler.ast.tree.enums.AtomTypeKind;
+import compiler.ast.tree.enums.DefinitionModifier;
 import compiler.ast.tree.expr.*;
 import compiler.ast.tree.stmt.*;
 import compiler.ast.tree.type.*;
@@ -135,7 +137,7 @@ public class TypeChecker implements ASTVisitor {
                 else if (baseClass != null) {
                     // check whether inheritance (overriding) is legal
                     if (def.isOverriding()) {
-                        AstDefinition baseDefinition = baseClass.childType.findMemberDefinitionForName(def.getName());
+                        AstDefinition baseDefinition = baseClass.childType.findMemberDefinitionWithName(def.getName());
 
                         if (baseDefinition == null || baseDefinition.isStatic()) {
                             Logger.error(def.position, "Method does not override any method from it's super class");
@@ -435,7 +437,7 @@ public class TypeChecker implements ASTVisitor {
                                     memberName));
                 }
 				
-				AstDefinition definition = lhs.findMemberDefinitionForName(memberName);
+				AstDefinition definition = lhs.findMemberDefinitionWithName(memberName);
 				AstDefinition objectDefinition = symbolDescription.getDefinitionForAstNode(acceptor.expr1);
 
 				// check for access control (if object's getName is not "self")
@@ -455,7 +457,7 @@ public class TypeChecker implements ASTVisitor {
                     }
                 }
 	
-				Type memberType = ((ObjectType) lhs).getMemberTypeForName(memberName);
+				Type memberType = ((ObjectType) lhs).getTypeOfMemberWithName(memberName);
 				Type acceptorType = memberType.isFunctionType() ? ((FunctionType) memberType).resultType : memberType;
 
                 symbolDescription.setTypeForAstNode(acceptor.expr2, memberType);
@@ -472,7 +474,7 @@ public class TypeChecker implements ASTVisitor {
                                         enumType.friendlyName(),
                                         memberName));
 
-                    AstDefinition definition = enumType.findMemberDefinitionForName(memberName);
+                    AstDefinition definition = enumType.findMemberDefinitionWithName(memberName);
 
                     if (definition.isPrivate())
                         Logger.error(acceptor.expr2.position,
@@ -495,7 +497,7 @@ public class TypeChecker implements ASTVisitor {
                                         lhs.toString(),
                                         memberName));
 
-                    Type memberRawValueType = memberType.getMemberTypeForName(memberName);
+                    Type memberRawValueType = memberType.getTypeOfMemberWithName(memberName);
 
                     symbolDescription.setTypeForAstNode(acceptor.expr2, memberRawValueType);
                     symbolDescription.setTypeForAstNode(acceptor, memberRawValueType);
@@ -513,7 +515,7 @@ public class TypeChecker implements ASTVisitor {
 			    CanType canType = (CanType) lhs;
 
                 if (acceptor.expr2 instanceof AstFunctionCallExpression) {
-                    AstDefinition def = canType.findMemberDefinitionForName(((AstFunctionCallExpression) acceptor.expr2).name);
+                    AstDefinition def = canType.findMemberDefinitionWithName(((AstFunctionCallExpression) acceptor.expr2).name);
 
                     if (def != null && def instanceof AstClassDefinition) {
                         AstFunctionCallExpression fnCall = (AstFunctionCallExpression) acceptor.expr2;
@@ -573,7 +575,7 @@ public class TypeChecker implements ASTVisitor {
                 else {
                     Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
-                AstDefinition def = interfaceType.findMemberDefinitionForName(memberName);
+                AstDefinition def = interfaceType.findMemberDefinitionWithName(memberName);
 			    if (def == null) {
                     Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
@@ -773,9 +775,9 @@ public class TypeChecker implements ASTVisitor {
 
             if (argType == null) return;
 
-			if (!(funType.getParType(i).sameStructureAs(argType))) {
+			if (!(funType.getTypeForParameterAtIndex(i).sameStructureAs(argType))) {
 				Logger.error(arg.position, "Cannot assigningToVariable value of memberType \"" +
-                        argType.friendlyName() + "\" to memberType \"" + funType.getParType(i).friendlyName() + "\"");
+                        argType.friendlyName() + "\" to memberType \"" + funType.getTypeForParameterAtIndex(i).friendlyName() + "\"");
 			}
 		}
 	}
@@ -1150,12 +1152,12 @@ public class TypeChecker implements ASTVisitor {
 				ClassType defType = (ClassType) symbolDescription.getTypeForAstNode(def);
 				
 				if (defType.containsMember("rawValue")) {
-					Type rawValueType = defType.getMemberTypeForName("rawValue");
+					Type rawValueType = defType.getTypeOfMemberWithName("rawValue");
 					
 					if (enumRawValueType == null)
 						Logger.error(enumMemberDef.value.position,
 								"Enum member cannot have a raw value "
-								+ "if the enum doesn't have a raw memberType");
+								+ "if the enums doesn't have a raw memberType");
 					
 					
 					if (!rawValueType.sameStructureAs(enumRawValueType))

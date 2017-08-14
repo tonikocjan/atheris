@@ -31,7 +31,7 @@ public class FrmMemberAccess extends FrmAccess {
 	}
 	
 	public int offsetForMember() {
-		return parentType.offsetForMember(memberDefinition.getName());
+		return parentType.getOffsetOfMemberWithName(memberDefinition.getName());
 	}
 
 	@Override

@@ -19,7 +19,7 @@ package compiler.ast.tree.expr;
 
 import compiler.*;
 import compiler.ast.*;
-import compiler.ast.tree.AtomTypeKind;
+import compiler.ast.tree.enums.AtomTypeKind;
 
 public class AstAtomConstExpression extends AstExpression {
 

@@ -117,7 +117,7 @@ public class ClassType extends ObjectType implements ReferenceType {
                 if (finalBaseIterator != null && finalBaseIterator.hasNext()) {
                     current = finalBaseIterator.next();
 
-                    AstDefinition member = findMemberForName(current.getName(), false);
+                    AstDefinition member = findMemberDefinitionWithName(current.getName(), false);
                     if (member != null) {
                         current = (AstFunctionDefinition) member;
                     }

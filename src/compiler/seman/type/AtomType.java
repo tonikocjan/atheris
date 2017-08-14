@@ -18,7 +18,7 @@
 package compiler.seman.type;
 
 import compiler.*;
-import compiler.ast.tree.AtomTypeKind;
+import compiler.ast.tree.enums.AtomTypeKind;
 import compiler.ast.tree.def.AstClassDefinition;
 
 import java.util.ArrayList;

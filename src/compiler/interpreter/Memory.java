@@ -15,7 +15,6 @@ public class Memory {
     public final HashMap<FrmLabel, Integer> labelToAddressMapping = new HashMap<>();
     public final HashMap<FrmTemp, Object> registers = new HashMap<>();
 
-
     public void stM(int address, Object value) {
         if (checkMemory && value == null)
             Logger.error("Storing null is illegal");

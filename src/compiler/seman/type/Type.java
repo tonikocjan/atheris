@@ -17,7 +17,7 @@
 
 package compiler.seman.type;
 
-import compiler.ast.tree.AtomTypeKind;
+import compiler.ast.tree.enums.AtomTypeKind;
 import compiler.ast.tree.def.AstDefinition;
 
 /**
@@ -42,7 +42,7 @@ public abstract class Type {
 
 	public abstract boolean containsMember(String name);
 
-	public abstract AstDefinition findMemberDefinitionForName(String name);
+	public abstract AstDefinition findMemberDefinitionWithName(String name);
 
 	public abstract String toString();
 

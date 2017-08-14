@@ -4,22 +4,14 @@ import compiler.ast.tree.def.AstDefinition;
 
 public class OptionalType extends Type implements ReferenceType {
 
-        /** Child memberType */
 	public final Type childType;
-
-    /** Is implicitly forced */
     public final boolean isForced;
 
-    /**
-	 * 
-	 * @param childType
-	 */
 	public OptionalType(Type childType, boolean isForced) {
 		this.childType = childType;
 		this.isForced = isForced;
 	}
 
-	
 	@Override
 	public boolean sameStructureAs(Type type) {
 		if (type.isOptionalType()) {
@@ -45,8 +37,8 @@ public class OptionalType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public AstDefinition findMemberDefinitionForName(String name) {
-		return childType.findMemberDefinitionForName(name);
+	public AstDefinition findMemberDefinitionWithName(String name) {
+		return childType.findMemberDefinitionWithName(name);
 	}
 
 	@Override

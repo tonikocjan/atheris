@@ -26,6 +26,7 @@ public class LanguageManager {
 
 	public static LanguageManager sharedManager = new LanguageManager();
     private HashMap<String, String> translationMapping = new HashMap<>();
+    private String delimiter = " = ";
 
 	private LanguageManager() { }
 
@@ -33,19 +34,10 @@ public class LanguageManager {
 		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
 		    String line;
 		    while ((line = br.readLine()) != null) {
-		    	if (line.length() == 0) continue;
-		    	if (line.startsWith("/*")) continue;
-		    	
-		    	String[] tmp = line.split(" = ");
-		    	
-		    	if (tmp.length < 2) return false;
-		    	if (tmp[0].length() < 2) return false;
-		    	if (tmp[1].length() < 3) return false;
-		    	
-		    	String key = tmp[0].substring(1, tmp[0].indexOf('"', 1));
-		    	String value = tmp[1].substring(1, tmp[1].length() - 2);
-		    	
-		    	translationMapping.put(key, value);
+		    	if (line.isEmpty()) continue;
+		    	if (isComment(line)) continue;
+
+                parseLine(line);
 		    }
 		    return true;
 		} catch (IOException e) {
@@ -53,6 +45,28 @@ public class LanguageManager {
 			return false;
 		}
 	}
+
+	private void parseLine(String line) {
+        String[] splittedString = line.split(delimiter);
+
+        if (!isLegal(splittedString)) return;
+
+        String key = splittedString[0].substring(1, splittedString[0].indexOf('"', 1));
+        String value = splittedString[1].substring(1, splittedString[1].length() - 2);
+
+        translationMapping.put(key, value);
+    }
+
+	private boolean isComment(String line) {
+	    return line.startsWith("/*");
+    }
+
+    private boolean isLegal(String[] splitted) {
+        if (splitted.length < 2) return false;
+        if (splitted[0].length() < 2) return false;
+        if (splitted[1].length() < 3) return false;
+        return true;
+    }
 
 	public String localizedStringForKey(String key) {
 		if (translationMapping.containsKey(key))

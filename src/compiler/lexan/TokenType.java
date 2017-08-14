@@ -96,7 +96,7 @@ public enum TokenType {
 	/** Token memberType: keyword switch.  */ 						KW_SWITCH,
 	/** Token memberType: keyword case.  */ 							KW_CASE,
 	/** Token memberType: keyword default.  */ 						KW_DEFAULT,
-	/** Token memberType: keyword enum.  */ 							KW_ENUM,
+	/** Token memberType: keyword enums.  */ 							KW_ENUM,
     /** Token memberType: keyword init.  */ 							KW_INIT,
     /** Token memberType: keyword is.  */ 							KW_IS,
     /** Token memberType: keyword override.  */ 						KW_OVERRIDE,

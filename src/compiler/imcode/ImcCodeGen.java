@@ -19,6 +19,8 @@ package compiler.imcode;
 
 import java.util.*;
 
+import compiler.ast.tree.enums.AtomTypeKind;
+import compiler.ast.tree.enums.ControlTransferKind;
 import compiler.ast.tree.expr.*;
 import compiler.ast.tree.stmt.*;
 import compiler.ast.tree.type.*;
@@ -346,7 +348,7 @@ public class ImcCodeGen implements ASTVisitor {
 			if (t.isEnumType()) {
 				EnumType enumType = (EnumType) t;
 				if (enumType.selectedMember != null) {
-					AstDefinition memberDef = enumType.findMemberDefinitionForName(enumType.selectedMember);
+					AstDefinition memberDef = enumType.findMemberDefinitionWithName(enumType.selectedMember);
 					code = imcDescription.getImcCode(memberDef);
 				}
 				else {

@@ -22,63 +22,24 @@ import java.util.*;
 import compiler.ast.tree.def.AstDefinition;
 import compiler.ast.tree.def.AstFunctionDefinition;
 
-/**
- * Function memberType.
- * 
- * @author toni
- */
 public class FunctionType extends Type implements ReferenceType {
 
-	/** 
-	 * Parameter types. 
-	 */
-	public final Vector<Type> parameterTypes;
-
-	/** 
-	 * Result memberType.
-	 */
+	public final List<Type> parameterTypes;
 	public Type resultType;
-
-	/**
-	 * Function definition.
-	 */
 	public final AstFunctionDefinition functionDefinition;
 
-	/**
-	 * Create new function memberType.
-	 * 
-	 * @param parTypes
-	 *            Parameter types.
-	 * @param resultType
-	 *            Result memberType.
-	 * @param definition
-	 * 			  Function definition.
-	 */
 	public FunctionType(Vector<Type> parTypes, Type resultType, AstFunctionDefinition definition) {
 		this.parameterTypes = parTypes;
 		this.resultType = resultType;
 		this.functionDefinition = definition;
 	}
 
-	/**
-	 * Get parameter elementCount.
-	 * 
-	 * @return Parameter elementCount.
-	 */
 	public int getParamaterCount() {
 		return parameterTypes.size();
 	}
 
-	/**
-	 * Get parameter memberType at given index.
-	 * 
-	 * @param index
-	 *            Indeks of parameter.
-	 * @return 
-	 * 			  Parameter memberType.
-	 */
-	public Type getParType(int index) {
-		return parameterTypes.elementAt(index);
+	public Type getTypeForParameterAtIndex(int index) {
+		return parameterTypes.get(index);
 	}
 
 	@Override
@@ -88,7 +49,7 @@ public class FunctionType extends Type implements ReferenceType {
 			if (this.getParamaterCount() != funType.getParamaterCount())
 				return false;
 			for (int par = 0; par < getParamaterCount(); par++)
-				if (!this.getParType(par).sameStructureAs(funType.getParType(par)))
+				if (!this.getTypeForParameterAtIndex(par).sameStructureAs(funType.getTypeForParameterAtIndex(par)))
 					return false;
 			if (!this.resultType.sameStructureAs(funType.resultType))
 				return false;
@@ -102,7 +63,7 @@ public class FunctionType extends Type implements ReferenceType {
 		String str = "";
 		str += "(";
 		for (Type t : parameterTypes)
-			str += t.friendlyName() + (t == parameterTypes.lastElement() ? "" : ",") ;
+			str += t.friendlyName() + (t == parameterTypes.get(getParamaterCount() - 1) ? "" : ",") ;
 		String res = resultType == null ? "?" : resultType.toString();
 		str += ") -> " + res;
 		return str;
@@ -134,7 +95,7 @@ public class FunctionType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public AstDefinition findMemberDefinitionForName(String name) {
+	public AstDefinition findMemberDefinitionWithName(String name) {
 		return null;
 	}
 

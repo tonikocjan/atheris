@@ -19,7 +19,7 @@ package compiler.ast.tree.stmt;
 
 import compiler.Position;
 import compiler.ast.ASTVisitor;
-import compiler.ast.tree.ControlTransferKind;
+import compiler.ast.tree.enums.ControlTransferKind;
 
 public class AstControlTransferStatement extends AstConditionalStatement {
 

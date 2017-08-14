@@ -10,50 +10,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-/**
- * Object memberType.
- */
 public abstract class ObjectType extends Type {
 
-    /**
-     * Class definition.
-     */
     public final AstClassDefinition classDefinition;
-
-    /**
-     * Class member names and types.
-     */
     protected final ArrayList<String> memberNames;
     protected final ArrayList<Type> memberTypes;
-
-    /**
-     * Mapping for memberDefinitions.
-     */
     protected final HashMap<String, AstDefinition> definitions = new HashMap<>();
-
-    /**
-     * Sum of sizes of all members.
-     */
     protected final int size;
-
-    /**
-     * Inital framePointerOffset of all members (space used for memberType descriptor).
-     */
     protected final int reservedSize;
-
-    /**
-     * Base class (null if no base class).
-     */
     public final CanType baseClass;
     protected final ObjectType base;
 
-    /**
-     * Create new class memberType.
-     * @param definition Class definition.
-     * @param names Name for each member.
-     * @param types Type for each member.
-     * @param baseClass Base class for this class memberType.
-     */
     public ObjectType(AstClassDefinition definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass, int reservedSize) {
         if (names.size() != types.size()) {
             Logger.error("Internal error :: compiler.seman.memberType.ObjectType: "
@@ -78,23 +45,10 @@ public abstract class ObjectType extends Type {
         this.reservedSize = reservedSize;
     }
 
-    /**
-     * Create new class memberType.
-     * @param definition Class definition.
-     * @param names Name for each member.
-     * @param types Type for each member.
-     */
     public ObjectType(AstClassDefinition definition, ArrayList<String> names, ArrayList<Type> types, int reservedSize) {
         this(definition, names, types, null, reservedSize);
     }
 
-    /**
-     *
-     * @param definition
-     * @param memberName
-     * @param memberType
-     * @return
-     */
     public boolean addMember(AstDefinition definition, String memberName, Type memberType) {
         if (definitions.containsKey(memberName)) {
             return false;
@@ -109,11 +63,6 @@ public abstract class ObjectType extends Type {
         return true;
     }
 
-    /**
-     *
-     * @param conformance
-     * @return
-     */
     public boolean addConformance(AstType conformance) {
         for (AstType c : classDefinition.conformances) {
             if (c.getName().equals(conformance.getName())) return false;
@@ -123,17 +72,10 @@ public abstract class ObjectType extends Type {
         return true;
     }
 
-    /////////
-
-    /**
-     * Get memberType for member.
-     * @param name Name of the member.
-     * @return Type of the member (or null if member with such getName doesn't exist).
-     */
-    public Type getMemberTypeForName(String name) {
+    public Type getTypeOfMemberWithName(String name) {
         // first check in base class
         if (baseClass != null) {
-            Type type = base.getMemberTypeForName(name);
+            Type type = base.getTypeOfMemberWithName(name);
 
             if (type != null) {
                 return type;
@@ -149,17 +91,12 @@ public abstract class ObjectType extends Type {
         return null;
     }
 
-    /**
-     * Calculate framePointerOffset for member.
-     * @param name member getName
-     * @return framePointerOffset of that member
-     */
-    public int offsetForMember(String name) {
+    public int getOffsetOfMemberWithName(String name) {
         int offset = reservedSize;
 
         // first check in base class
         if (base != null) {
-            offset = base.offsetForMember(name);
+            offset = base.getOffsetOfMemberWithName(name);
 
             if (offset < base.sizeInBytes())
                 return offset;
@@ -185,10 +122,6 @@ public abstract class ObjectType extends Type {
         return offset;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public int sizeInBytes() {
         int size = this.size;
@@ -200,11 +133,6 @@ public abstract class ObjectType extends Type {
         return size;
     }
 
-    /**
-     *
-     * @param name Member getName
-     * @return
-     */
     @Override
     public boolean containsMember(String name) {
         // first check in base class
@@ -217,22 +145,12 @@ public abstract class ObjectType extends Type {
         return memberNames.contains(name);
     }
 
-    /**
-     *
-     * @param type Given memberType.
-     * @return
-     */
     @Override
     public boolean sameStructureAs(Type type) {
         // nominal types
         return type.friendlyName().equals(friendlyName());
     }
 
-    /**
-     *
-     * @param type Given memberType
-     * @return
-     */
     @Override
     public boolean canBeCastedToType(Type type) {
         if (type.isInterfaceType()) {
@@ -247,19 +165,13 @@ public abstract class ObjectType extends Type {
     }
 
     @Override
-    public AstDefinition findMemberDefinitionForName(String name) {
-        return findMemberForName(name, true);
+    public AstDefinition findMemberDefinitionWithName(String name) {
+        return findMemberDefinitionWithName(name, true);
     }
 
-    /**
-     *
-     * @param name
-     * @param fromBase
-     * @return
-     */
-    public AstDefinition findMemberForName(String name, boolean fromBase) {
+    public AstDefinition findMemberDefinitionWithName(String name, boolean fromBase) {
         if (fromBase && base != null) {
-            AstDefinition member = base.findMemberDefinitionForName(name);
+            AstDefinition member = base.findMemberDefinitionWithName(name);
 
             if (member != null) return member;
         }
@@ -267,11 +179,6 @@ public abstract class ObjectType extends Type {
         return definitions.get(name);
     }
 
-    /**
-     * Check whether this memberType is descendant of baseType.
-     * @param baseType
-     * @return True or false
-     */
     public boolean isDescendantOf(ObjectType baseType) {
         if (base == null) {
             return false;
@@ -284,50 +191,15 @@ public abstract class ObjectType extends Type {
         return base.isDescendantOf(baseType);
     }
 
-    /**
-     * Check whether this memberType conforms to interface, i.e. implements all of it's methods.
-     * @param interfaceType
-     * @return
-     */
     public boolean conformsTo(InterfaceType interfaceType) {
         for (AstDefinition def: interfaceType.definition.definitions.definitions) {
-            AstDefinition member = findMemberDefinitionForName(def.getName());
+            AstDefinition member = findMemberDefinitionWithName(def.getName());
             if (member == null) return false;
         }
 
         return true;
     }
 
-    @Override
-    public String friendlyName() {
-        return classDefinition.name;
-    }
-
-    /**
-     *
-     */
-    public void debugPrint() {
-        if (base != null) {
-            base.debugPrint();
-        }
-
-        System.out.println(friendlyName() + " - sizeInBytes: " + sizeInBytes());
-
-        Iterator<String> namesIterator = memberNames.iterator();
-        Iterator<Type> typesIterator = memberTypes.iterator();
-
-        while (namesIterator.hasNext()) {
-            String name = namesIterator.next();
-            System.out.println("  " + name + ": " + typesIterator.next().friendlyName());
-            System.out.println("    Offset: " + offsetForMember(name));
-        }
-    }
-
-    /**
-     *
-     * @param type
-     * @return
-     */
     public boolean isConformingTo(InterfaceType type) {
         if (base != null && base.isConformingTo(type)) {
             return true;
@@ -342,18 +214,32 @@ public abstract class ObjectType extends Type {
         return false;
     }
 
-    /**
-     *
-     * @return
-     */
+    @Override
+    public String friendlyName() {
+        return classDefinition.name;
+    }
+
+    public void debugPrint() {
+        if (base != null) {
+            base.debugPrint();
+        }
+
+        System.out.println(friendlyName() + " - sizeInBytes: " + sizeInBytes());
+
+        Iterator<String> namesIterator = memberNames.iterator();
+        Iterator<Type> typesIterator = memberTypes.iterator();
+
+        while (namesIterator.hasNext()) {
+            String name = namesIterator.next();
+            System.out.println("  " + name + ": " + typesIterator.next().friendlyName());
+            System.out.println("    Offset: " + getOffsetOfMemberWithName(name));
+        }
+    }
+
     public Iterator<Type> getTypes() {
         return memberTypes.iterator();
     }
 
-    /**
-     *
-     * @return
-     */
     public Iterator<String> getNames() {
         return memberNames.iterator();
     }

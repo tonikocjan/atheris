@@ -19,7 +19,7 @@ package compiler.ast.tree.def;
 
 import compiler.*;
 import compiler.ast.tree.AstStatement;
-import compiler.ast.tree.DefinitionModifier;
+import compiler.ast.tree.enums.DefinitionModifier;
 
 import java.util.HashSet;
 

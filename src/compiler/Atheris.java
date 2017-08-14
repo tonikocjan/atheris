@@ -45,7 +45,6 @@ public class Atheris {
     private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|interpret)";
     private String execPhase = "interpret";
     private String dumpPhases = "interpret";
-
     private Memory memory = new Memory();
     private ImcCodeChunk compiledCode;
 

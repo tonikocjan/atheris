@@ -5,19 +5,10 @@ import compiler.ast.tree.def.AstInterfaceDefinition;
 import utils.Constants;
 import compiler.ast.tree.def.AstFunctionDefinition;
 
-
-/**
- *
- */
 public class InterfaceType extends Type {
 
-    /** Definition. */
     public final AstInterfaceDefinition definition;
 
-    /**
-     * Create new interface memberType.
-     * @param definition
-     */
     public InterfaceType(AstInterfaceDefinition definition) {
         this.definition = definition;
     }
@@ -62,7 +53,7 @@ public class InterfaceType extends Type {
     }
 
     @Override
-    public AstDefinition findMemberDefinitionForName(String name) {
+    public AstDefinition findMemberDefinitionWithName(String name) {
         for (AstDefinition def : definition.definitions.definitions) {
             if (((AstFunctionDefinition) def).getStringRepresentation().equals(name))
                 return def;

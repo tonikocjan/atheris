@@ -1,4 +1,4 @@
-package compiler.ast.tree;
+package compiler.ast.tree.enums;
 
 
 public enum DefinitionModifier {

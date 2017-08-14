@@ -20,6 +20,8 @@ package compiler.seman;
 import java.util.ArrayList;
 
 import compiler.Logger;
+import compiler.ast.tree.enums.AtomTypeKind;
+import compiler.ast.tree.enums.DefinitionModifier;
 import compiler.ast.tree.expr.*;
 import compiler.ast.tree.stmt.*;
 import compiler.ast.tree.type.*;
@@ -86,7 +88,7 @@ public class NameChecker implements ASTVisitor {
                 funDef.addParamater(parDef);
             }
 
-            // nested class and enum memberDefinitions are always static
+            // nested class and enums memberDefinitions are always static
             if (/*def instanceof AstClassDefinition || */def instanceof AstEnumDefinition) {
                 def.setModifier(DefinitionModifier.isStatic);
             }

@@ -23,11 +23,6 @@ import compiler.ast.tree.def.AstVariableDefinition;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-/**
- * This memberType is used for representing class definition, enum definition, ... .
- * @author toni
- *
- */
 // TODO: What should this memberType be called?
 public class CanType extends Type {
 
@@ -76,8 +71,8 @@ public class CanType extends Type {
 	}
 
 	@Override
-	public AstDefinition findMemberDefinitionForName(String name) {
-		return childType.findMemberDefinitionForName(name);
+	public AstDefinition findMemberDefinitionWithName(String name) {
+		return childType.findMemberDefinitionWithName(name);
 	}
 
 	public void addStaticDefinition(AstDefinition def, String name, Type type) {

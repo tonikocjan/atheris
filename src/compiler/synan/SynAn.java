@@ -22,6 +22,9 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import compiler.Logger;
+import compiler.ast.tree.enums.AtomTypeKind;
+import compiler.ast.tree.enums.ControlTransferKind;
+import compiler.ast.tree.enums.DefinitionModifier;
 import compiler.ast.tree.expr.*;
 import compiler.ast.tree.stmt.*;
 import compiler.ast.tree.type.*;
@@ -762,7 +765,7 @@ public class SynAn {
 					getNextSymbol();
 					if (symbol.getTokenType() != TokenType.IDENTIFIER)
 						Logger.error(symbol.getPosition(), "Expected idenfitifer "
-								+ "after comma in enum member definition");
+								+ "after comma in enums member definition");
 					definitions.add(parseEnumCaseDefinition());
 				}
 			}
@@ -795,7 +798,7 @@ public class SynAn {
 
 			AstExpression value = parseExpression();
 			if (!(value instanceof AstAtomConstExpression))
-				Logger.error(value.position, "Raw value for enum definition must be literal");
+				Logger.error(value.position, "Raw value for enums definition must be literal");
 
 			Position definitionPos = new Position(name.position, value.position);
 			return new AstEnumMemberDefinition(definitionPos, name, (AstAtomConstExpression) value);

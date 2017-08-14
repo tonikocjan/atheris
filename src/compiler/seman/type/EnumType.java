@@ -75,7 +75,7 @@ public class EnumType extends Type implements ReferenceType {
 	}
 	
 	@Override
-	public AstDefinition findMemberDefinitionForName(String name) {
+	public AstDefinition findMemberDefinitionWithName(String name) {
 		for (AstDefinition def : enumDefinition.definitions) {
 			String definitionsName = def.getName();
 			

@@ -15,8 +15,9 @@
  *
  */
 
-package compiler.ast.tree;
+package compiler.ast.tree.enums;
 
-public enum AtomTypeKind {
-	LOG, INT, STR, DOB, CHR, VOID, NIL
+public enum ControlTransferKind {
+	Continue,
+	Break
 }

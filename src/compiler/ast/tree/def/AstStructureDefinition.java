@@ -7,7 +7,7 @@ import compiler.ast.tree.expr.AstVariableNameExpression;
 import compiler.ast.tree.type.AstType;
 import utils.Constants;
 import compiler.Position;
-import compiler.ast.tree.AtomTypeKind;
+import compiler.ast.tree.enums.AtomTypeKind;
 import compiler.ast.tree.type.AstAtomType;
 
 import java.util.ArrayList;
