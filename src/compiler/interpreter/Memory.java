@@ -11,9 +11,9 @@ import static compiler.interpreter.Interpreter.debug;
 
 public class Memory {
 
-    public HashMap<Integer, Object> memory = new HashMap<>();
-    public HashMap<FrmLabel, Integer> labelToAddressMapping = new HashMap<>();
-    public HashMap<FrmTemp, Object> registers = new HashMap<>();
+    public final HashMap<Integer, Object> memory = new HashMap<>();
+    public final HashMap<FrmLabel, Integer> labelToAddressMapping = new HashMap<>();
+    public final HashMap<FrmTemp, Object> registers = new HashMap<>();
 
 
     public void stM(int address, Object value) {

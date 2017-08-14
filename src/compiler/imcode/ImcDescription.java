@@ -19,17 +19,17 @@ package compiler.imcode;
 
 import java.util.HashMap;
 
-import compiler.ast.tree.AbsTree;
+import compiler.ast.tree.AstNode;
 
 public class ImcDescription implements ImcDescriptionMap {
 
-	public HashMap<AbsTree, ImcCode> intermidiateCode = new HashMap<>();
+	public HashMap<AstNode, ImcCode> intermidiateCode = new HashMap<>();
 
-	public void setImcCode(AbsTree node, ImcCode imc) {
+	public void setImcCode(AstNode node, ImcCode imc) {
 		intermidiateCode.put(node, imc);
 	}
 
-	public ImcCode getImcCode(AbsTree node) {
+	public ImcCode getImcCode(AstNode node) {
 		return intermidiateCode.get(node);
 	}
 }

@@ -1,17 +1,17 @@
 package compiler.frames;
 
-import compiler.ast.tree.def.AbsClassDef;
+import compiler.ast.tree.def.AstClassDefinition;
 
 public class FrmVirtualTableAccess extends FrmAccess  {
 
     private static int heapOffset = 4;
 
-    public final AbsClassDef classDef;
+    public final AstClassDefinition classDef;
     public final int size;
     public final int location;
     public final FrmLabel label;
 
-    public FrmVirtualTableAccess(AbsClassDef classDef, int size) {
+    public FrmVirtualTableAccess(AstClassDefinition classDef, int size) {
         this.classDef = classDef;
         this.size = size;
         this.location = heapOffset;

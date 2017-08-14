@@ -20,28 +20,28 @@ package compiler.frames;
 import java.util.*;
 
 import compiler.ast.tree.*;
-import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AstDefinition;
 import compiler.seman.type.ClassType;
 
 public class FrameDescription implements FrameDescriptionMap {
 
-	private HashMap<AbsDef, FrmFrame> frames = new HashMap<>();
-    private HashMap <AbsDef, FrmAccess> acceses = new HashMap<>();
+	private HashMap<AstDefinition, FrmFrame> frames = new HashMap<>();
+    private HashMap <AstDefinition, FrmAccess> acceses = new HashMap<>();
     private HashMap<ClassType, FrmVirtualTableAccess> virtualTables = new HashMap<>();
 
-	public void setFrame(AbsDef fun, FrmFrame frame) {
+	public void setFrame(AstDefinition fun, FrmFrame frame) {
 		frames.put(fun, frame);
 	}
 
-	public FrmFrame getFrame(AbsTree fun) {
+	public FrmFrame getFrame(AstNode fun) {
 		return frames.get(fun);
 	}
 
-	public void setAccess(AbsDef var, FrmAccess access) {
+	public void setAccess(AstDefinition var, FrmAccess access) {
 		acceses.put(var, access);
 	}
 
-	public FrmAccess getAccess(AbsDef var) {
+	public FrmAccess getAccess(AstDefinition var) {
 		return acceses.get(var);
 	}
 

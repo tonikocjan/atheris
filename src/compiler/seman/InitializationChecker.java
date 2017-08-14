@@ -20,35 +20,35 @@
 //
 //import compiler.Logger;
 //import compiler.ast.ASTVisitor;
-//import compiler.ast.tree.AbsDefs;
-//import compiler.ast.tree.AbsExprs;
+//import compiler.ast.tree.AstDefinitions;
+//import compiler.ast.tree.AstExpressions;
 //import compiler.ast.tree.AbsStmt;
-//import compiler.ast.tree.AbsStmts;
+//import compiler.ast.tree.AstStatements;
 //import compiler.ast.tree.Condition;
 //import compiler.ast.tree.def.*;
-//import compiler.ast.tree.expr.AbsAtomConstExpr;
-//import compiler.ast.tree.expr.AbsBinExpr;
-//import compiler.ast.tree.expr.AbsExpr;
-//import compiler.ast.tree.expr.AbsForceValueExpr;
-//import compiler.ast.tree.expr.AbsFunCall;
-//import compiler.ast.tree.expr.AbsLabeledExpr;
-//import compiler.ast.tree.expr.AbsListExpr;
-//import compiler.ast.tree.expr.AbsOptionalEvaluationExpr;
-//import compiler.ast.tree.expr.AbsReturnExpr;
-//import compiler.ast.tree.expr.AbsTupleExpr;
-//import compiler.ast.tree.expr.AbsUnExpr;
-//import compiler.ast.tree.expr.AbsVarNameExpr;
+//import compiler.ast.tree.expr.AstAtomConstExpression;
+//import compiler.ast.tree.expr.AstBinaryExpression;
+//import compiler.ast.tree.expr.AstExpression;
+//import compiler.ast.tree.expr.AstForceValueExpression;
+//import compiler.ast.tree.expr.AstFunctionCallExpression;
+//import compiler.ast.tree.expr.AstLabeledExpr;
+//import compiler.ast.tree.expr.AstListExpr;
+//import compiler.ast.tree.expr.AstOptionalEvaluationExpression;
+//import compiler.ast.tree.expr.AstReturnExpression;
+//import compiler.ast.tree.expr.AstTupleExpression;
+//import compiler.ast.tree.expr.AstUnaryExpression;
+//import compiler.ast.tree.expr.AstVariableNameExpression;
 //import compiler.ast.tree.stmt.AbsCaseStmt;
-//import compiler.ast.tree.stmt.AbsControlTransferStmt;
-//import compiler.ast.tree.stmt.AbsForStmt;
-//import compiler.ast.tree.stmt.AbsIfStmt;
-//import compiler.ast.tree.stmt.AbsSwitchStmt;
-//import compiler.ast.tree.stmt.AbsWhileStmt;
-//import compiler.ast.tree.memberType.AbsAtomType;
-//import compiler.ast.tree.memberType.AbsFunType;
-//import compiler.ast.tree.memberType.AbsListType;
-//import compiler.ast.tree.memberType.AbsOptionalType;
-//import compiler.ast.tree.memberType.AbsTypeName;
+//import compiler.ast.tree.stmt.AstControlTransferStatement;
+//import compiler.ast.tree.stmt.AstForStatement;
+//import compiler.ast.tree.stmt.AstIfStatement;
+//import compiler.ast.tree.stmt.AstSwitchStatement;
+//import compiler.ast.tree.stmt.AstWhileStatement;
+//import compiler.ast.tree.memberType.AstAtomType;
+//import compiler.ast.tree.memberType.AstFunctionType;
+//import compiler.ast.tree.memberType.AstListType;
+//import compiler.ast.tree.memberType.AstOptionalType;
+//import compiler.ast.tree.memberType.AstTypeName;
 //
 ///**
 // * Initialization checking phase of the compiler.
@@ -62,35 +62,35 @@
 //	///
 //
 //	@Override
-//	public void visit(AbsListType acceptor) {
+//	public void visit(AstListType acceptor) {
 //		///
 //	}
 //
 //	@Override
-//	public void visit(AbsClassDef acceptor) {
+//	public void visit(AstClassDefinition acceptor) {
 //	    InitTable.initialize(acceptor);
 //
-//		acceptor.definitions.accept(this);
+//		acceptor.memberDefinitions.accept(this);
 //
-//		for (AbsFunDef constructor : acceptor.construstors) {
+//		for (AstFunctionDefinition constructor : acceptor.construstors) {
 //            constructor.accept(this);
 //        }
 //	}
 //
 //	@Override
-//	public void visit(AbsAtomConstExpr acceptor) {
+//	public void visit(AstAtomConstExpression acceptor) {
 //		///
 //	}
 //
 //	@Override
-//	public void visit(AbsAtomType acceptor) {
+//	public void visit(AstAtomType acceptor) {
 //        ///
 //	}
 //
 //	@Override
-//	public void visit(AbsBinExpr acceptor) {
-//		if (acceptor.oper == AbsBinExpr.ASSIGN) {
-//			if (acceptor.expr1 instanceof AbsBinExpr) {
+//	public void visit(AstBinaryExpression acceptor) {
+//		if (acceptor.oper == AstBinaryExpression.ASSIGN) {
+//			if (acceptor.expr1 instanceof AstBinaryExpression) {
 //				shouldCheckIfInitialized = false;
 //				acceptor.expr1.accept(this);
 //				shouldCheckIfInitialized = true;
@@ -102,7 +102,7 @@
 //				shouldCheckIfInitialized = true;
 //			}
 //		}
-//		else if (acceptor.oper == AbsBinExpr.DOT) {
+//		else if (acceptor.oper == AstBinaryExpression.DOT) {
 //			if (!shouldCheckIfInitialized) {
 //				shouldCheckIfInitialized = true;
 //				acceptor.expr1.accept(this);
@@ -121,50 +121,50 @@
 //	}
 //
 //	@Override
-//	public void visit(AbsDefs acceptor) {
-//        for (AbsDef definition : acceptor.definitions) {
+//	public void visit(AstDefinitions acceptor) {
+//        for (AstDefinition definition : acceptor.memberDefinitions) {
 //            definition.accept(this);
 //        }
 //	}
 //
 //	@Override
-//	public void visit(AbsExprs acceptor) {
-//		for (AbsExpr e : acceptor.expressions) {
+//	public void visit(AstExpressions acceptor) {
+//		for (AstExpression e : acceptor.expressions) {
 //			e.accept(this);
 //		}
 //	}
 //
 //	@Override
-//	public void visit(AbsForStmt acceptor) {
+//	public void visit(AstForStatement acceptor) {
 //		InitTable.newScope();
-//		InitTable.initialize((AbsVarDef) SymbolDescription.getDefinitionForAstNode(acceptor.iterator));
+//		InitTable.initialize((AstVariableDefinition) SymbolDescription.getDefinitionForAstNode(acceptor.iterator));
 //		acceptor.body.accept(this);
 //		InitTable.oldScope();
 //	}
 //
 //	@Override
-//	public void visit(AbsFunCall acceptor) {
-//		for (AbsExpr arg : acceptor.args) {
-//		    arg.accept(this);
+//	public void visit(AstFunctionCallExpression acceptor) {
+//		for (AstExpression getArgumentAtIndex : acceptor.arguments) {
+//		    getArgumentAtIndex.accept(this);
 //        }
 //	}
 //
 //	@Override
-//	public void visit(AbsFunDef acceptor) {
+//	public void visit(AstFunctionDefinition acceptor) {
 //	    InitTable.newScope();
 //
-//	    for (AbsParDef parDef : acceptor.pars) {
+//	    for (AstParameterDefinition parDef : acceptor.pars) {
 //	        InitTable.initialize(parDef);
 //        }
 //
-//        acceptor.func.accept(this);
+//        acceptor.functionCode.accept(this);
 //        InitTable.oldScope();
 //	}
 //
 //	@Override
-//	public void visit(AbsIfStmt acceptor) {
+//	public void visit(AstIfStatement acceptor) {
 //		for (Condition c : acceptor.conditions) {
-//			c.cond.accept(this);
+//			c.condition.accept(this);
 //
 //			InitTable.newScope();
 //			c.body.accept(this);
@@ -177,30 +177,30 @@
 //	}
 //
 //	@Override
-//	public void visit(AbsParDef acceptor) {
+//	public void visit(AstParameterDefinition acceptor) {
 //        ///
 //	}
 //
 //	@Override
-//	public void visit(AbsTypeName acceptor) {
+//	public void visit(AstTypeName acceptor) {
 //        ///
 //	}
 //
 //	@Override
-//	public void visit(AbsUnExpr acceptor) {
+//	public void visit(AstUnaryExpression acceptor) {
 //		acceptor.expr.accept(this);
 //	}
 //
 //	@Override
-//	public void visit(AbsVarDef acceptor) {
+//	public void visit(AstVariableDefinition acceptor) {
 //        ///
 //	}
 //
 //	@Override
-//	public void visit(AbsVarNameExpr acceptor) {
-//	    AbsDef definition = SymbolDescription.getDefinitionForAstNode(acceptor);
+//	public void visit(AstVariableNameExpression acceptor) {
+//	    AstDefinition definition = SymbolDescription.getDefinitionForAstNode(acceptor);
 //
-//	    if (definition == null || definition instanceof AbsParDef) {
+//	    if (definition == null || definition instanceof AstParameterDefinition) {
 //	        // TODO: - Parameters should't be handled separately
 //	        return;
 //        }
@@ -223,48 +223,48 @@
 //	}
 //
 //	@Override
-//	public void visit(AbsWhileStmt acceptor) {
-//		acceptor.cond.accept(this);
+//	public void visit(AstWhileStatement acceptor) {
+//		acceptor.condition.accept(this);
 //		InitTable.newScope();
 //		acceptor.body.accept(this);
 //        InitTable.oldScope();
 //	}
 //
 //	@Override
-//	public void visit(AbsImportDef acceptor) {
+//	public void visit(AstImportDefinition acceptor) {
 //		///
 //	}
 //
 //	@Override
-//	public void visit(AbsStmts acceptor) {
+//	public void visit(AstStatements acceptor) {
 //		for (AbsStmt s : acceptor.statements) {
 //			s.accept(this);
 //		}
 //	}
 //
 //	@Override
-//	public void visit(AbsReturnExpr acceptor) {
+//	public void visit(AstReturnExpression acceptor) {
 //		acceptor.expr.accept(this);
 //	}
 //
 //	@Override
-//	public void visit(AbsListExpr acceptor) {
-//		for (AbsExpr e : acceptor.expressions)
+//	public void visit(AstListExpr acceptor) {
+//		for (AstExpression e : acceptor.expressions)
 //			e.accept(this);
 //	}
 //
 //	@Override
-//	public void visit(AbsFunType acceptor) {
+//	public void visit(AstFunctionType acceptor) {
 //		///
 //	}
 //
 //	@Override
-//	public void visit(AbsControlTransferStmt acceptor) {
+//	public void visit(AstControlTransferStatement acceptor) {
 //		///
 //	}
 //
 //	@Override
-//	public void visit(AbsSwitchStmt switchStmt) {
+//	public void visit(AstSwitchStatement switchStmt) {
 //		switchStmt.subjectExpr.accept(this);
 //
 //		for (AbsCaseStmt singleCase : switchStmt.cases)
@@ -279,7 +279,7 @@
 //
 //	@Override
 //	public void visit(AbsCaseStmt acceptor) {
-//		for (AbsExpr e : acceptor.exprs)
+//		for (AstExpression e : acceptor.exprs)
 //			e.accept(this);
 //		InitTable.newScope();
 //		acceptor.body.accept(this);
@@ -287,55 +287,55 @@
 //	}
 //
 //	@Override
-//	public void visit(AbsEnumDef acceptor) {
+//	public void visit(AstEnumDefinition acceptor) {
 //	    InitTable.initialize(acceptor);
 //
-//		for (AbsDef def : acceptor.definitions)
+//		for (AstDefinition def : acceptor.memberDefinitions)
 //			def.accept(this);
 //	}
 //
 //	@Override
-//	public void visit(AbsEnumMemberDef acceptor) {
+//	public void visit(AstEnumMemberDefinition acceptor) {
 //        InitTable.initialize(acceptor);
 //	}
 //
 //	@Override
-//	public void visit(AbsTupleDef acceptor) {
+//	public void visit(AstTupleDefinition acceptor) {
 //	    ///
 //	}
 //
 //	@Override
-//	public void visit(AbsLabeledExpr acceptor) {
+//	public void visit(AstLabeledExpr acceptor) {
 //		acceptor.expr.accept(this);
 //	}
 //
 //	@Override
-//	public void visit(AbsTupleExpr acceptor) {
+//	public void visit(AstTupleExpression acceptor) {
 //		acceptor.expressions.accept(this);
 //	}
 //
 //	@Override
-//	public void visit(AbsOptionalType acceptor) {
+//	public void visit(AstOptionalType acceptor) {
 //		acceptor.childType.accept(this);
 //	}
 //
 //	@Override
-//	public void visit(AbsOptionalEvaluationExpr acceptor) {
+//	public void visit(AstOptionalEvaluationExpression acceptor) {
 //		acceptor.subExpr.accept(this);
 //	}
 //
 //	@Override
-//	public void visit(AbsForceValueExpr acceptor) {
+//	public void visit(AstForceValueExpression acceptor) {
 //		acceptor.subExpr.accept(this);
 //	}
 //
 //    @Override
-//    public void visit(AbsExtensionDef acceptor) {
+//    public void visit(AstExtensionDefinition acceptor) {
 //        ///
 //    }
 //
 //    @Override
-//    public void visit(AbsInterfaceDef absInterfaceDef) {
+//    public void visit(AstInterfaceDefinition absInterfaceDef) {
 //        ///
 //    }
 //}

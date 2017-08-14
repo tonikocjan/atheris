@@ -20,38 +20,38 @@ package compiler.seman;
 import java.util.*;
 
 import compiler.ast.tree.*;
-import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AstDefinition;
 import compiler.seman.type.*;
 
 public class SymbolDescription implements SymbolDescriptionMap {
 
-	private Map<AbsTree, Integer> scopeMap = new HashMap<>();
-    private Map<AbsTree, AbsDef> definitionMap = new HashMap<>();
-    private Map<AbsTree, Type> typeMap = new HashMap<>();
+	private Map<AstNode, Integer> scopeMap = new HashMap<>();
+    private Map<AstNode, AstDefinition> definitionMap = new HashMap<>();
+    private Map<AstNode, Type> typeMap = new HashMap<>();
 
-	public void setScope(AbsTree node, int nodeScope) {
+	public void setScope(AstNode node, int nodeScope) {
 		scopeMap.put(node, nodeScope);
 	}
 
-	public Integer getScope(AbsTree node) {
+	public Integer getScope(AstNode node) {
 		Integer nodeScope = scopeMap.get(node);
 		return nodeScope;
 	}
 
-	public void setDefinitionForAstNode(AbsTree node, AbsDef def) {
+	public void setDefinitionForAstNode(AstNode node, AstDefinition def) {
 		definitionMap.put(node, def);
 	}
 
-	public AbsDef getDefinitionForAstNode(AbsTree node) {
-		AbsDef def = definitionMap.get(node);
+	public AstDefinition getDefinitionForAstNode(AstNode node) {
+		AstDefinition def = definitionMap.get(node);
 		return def;
 	}
 
-	public void setTypeForAstNode(AbsTree node, Type type) {
+	public void setTypeForAstNode(AstNode node, Type type) {
         typeMap.put(node, type);
 	}
 
-	public Type getTypeForAstNode(AbsTree node) {
+	public Type getTypeForAstNode(AstNode node) {
 		Type typ = typeMap.get(node);
 		return typ;
 	}

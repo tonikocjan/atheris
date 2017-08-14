@@ -20,7 +20,7 @@ package compiler.lincode;
 import java.util.Iterator;
 import java.util.List;
 
-import compiler.ast.tree.def.AbsFunDef;
+import compiler.ast.tree.def.AstFunctionDefinition;
 import compiler.frames.FrameDescriptionMap;
 import compiler.frames.FrmLabel;
 import compiler.frames.FrmVirtualTableAccess;
@@ -124,7 +124,7 @@ public class CodeGenerator {
     private Iterator<FrmLabel> generateVirtualTableForClass(ClassType classType) {
         return new Iterator<FrmLabel>() {
 
-            Iterator<AbsFunDef> iter = classType.generateVirtualTable();
+            Iterator<AstFunctionDefinition> iter = classType.generateVirtualTable();
 
             @Override
             public boolean hasNext() {

@@ -19,18 +19,18 @@ package compiler.seman.type;
 
 import java.util.*;
 
-import compiler.ast.tree.def.AbsClassDef;
-import compiler.ast.tree.def.AbsDef;
-import compiler.ast.tree.def.AbsFunDef;
+import compiler.ast.tree.def.AstClassDefinition;
+import compiler.ast.tree.def.AstDefinition;
+import compiler.ast.tree.def.AstFunctionDefinition;
 import utils.Constants;
 
 public class ClassType extends ObjectType implements ReferenceType {
 
-    public ClassType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass) {
+    public ClassType(AstClassDefinition definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass) {
         super(definition, names, types, baseClass, 4);
     }
 
-    public ClassType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types) {
+    public ClassType(AstClassDefinition definition, ArrayList<String> names, ArrayList<Type> types) {
         super(definition, names, types, null, 4);
     }
 
@@ -99,37 +99,37 @@ public class ClassType extends ObjectType implements ReferenceType {
         return size;
     }
 
-    public Iterator<AbsFunDef> generateVirtualTable() {
-        Iterator<AbsFunDef> baseIterator = null;
+    public Iterator<AstFunctionDefinition> generateVirtualTable() {
+        Iterator<AstFunctionDefinition> baseIterator = null;
 
         if (base != null) {
             baseIterator = ((ClassType) base).generateVirtualTable();
         }
 
-        Iterator<AbsFunDef> finalBaseIterator = baseIterator;
-        return new Iterator<AbsFunDef>() {
+        Iterator<AstFunctionDefinition> finalBaseIterator = baseIterator;
+        return new Iterator<AstFunctionDefinition>() {
 
-            public AbsFunDef current = null;
-            Iterator<AbsDef> defIterator = classDefinition.definitions.definitions.iterator();
+            public AstFunctionDefinition current = null;
+            Iterator<AstDefinition> defIterator = classDefinition.memberDefinitions.definitions.iterator();
 
             @Override
             public boolean hasNext() {
                 if (finalBaseIterator != null && finalBaseIterator.hasNext()) {
                     current = finalBaseIterator.next();
 
-                    AbsDef member = findMemberForName(current.getName(), false);
+                    AstDefinition member = findMemberForName(current.getName(), false);
                     if (member != null) {
-                        current = (AbsFunDef) member;
+                        current = (AstFunctionDefinition) member;
                     }
 
                     return true;
                 }
 
                 while (defIterator.hasNext()) {
-                    AbsDef next = defIterator.next();
+                    AstDefinition next = defIterator.next();
 
-                    if (!next.isStatic() && next instanceof AbsFunDef) {
-                        current = (AbsFunDef) next;
+                    if (!next.isStatic() && next instanceof AstFunctionDefinition) {
+                        current = (AstFunctionDefinition) next;
                         return true;
                     }
                 }
@@ -138,7 +138,7 @@ public class ClassType extends ObjectType implements ReferenceType {
             }
 
             @Override
-            public AbsFunDef next() {
+            public AstFunctionDefinition next() {
                 return current;
             }
         };

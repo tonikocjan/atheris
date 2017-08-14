@@ -19,35 +19,19 @@ package compiler.frames;
 
 import java.util.ArrayList;
 
+import compiler.ast.tree.expr.*;
+import compiler.ast.tree.stmt.*;
+import compiler.ast.tree.type.*;
 import compiler.seman.SymbolDescriptionMap;
 import compiler.seman.SymbolTableMap;
 import utils.Constants;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.*;
 import compiler.ast.tree.def.*;
-import compiler.ast.tree.expr.AbsAtomConstExpr;
-import compiler.ast.tree.expr.AbsBinExpr;
-import compiler.ast.tree.expr.AbsExpr;
-import compiler.ast.tree.expr.AbsForceValueExpr;
-import compiler.ast.tree.expr.AbsFunCall;
-import compiler.ast.tree.expr.AbsLabeledExpr;
-import compiler.ast.tree.expr.AbsListExpr;
-import compiler.ast.tree.expr.AbsOptionalEvaluationExpr;
-import compiler.ast.tree.expr.AbsReturnExpr;
-import compiler.ast.tree.expr.AbsTupleExpr;
-import compiler.ast.tree.expr.AbsUnExpr;
-import compiler.ast.tree.expr.AbsVarNameExpr;
-import compiler.ast.tree.stmt.AbsCaseStmt;
-import compiler.ast.tree.stmt.AbsControlTransferStmt;
-import compiler.ast.tree.stmt.AbsForStmt;
-import compiler.ast.tree.stmt.AbsIfStmt;
-import compiler.ast.tree.stmt.AbsSwitchStmt;
-import compiler.ast.tree.stmt.AbsWhileStmt;
-import compiler.ast.tree.type.AbsAtomType;
-import compiler.ast.tree.type.AbsFunType;
-import compiler.ast.tree.type.AbsListType;
-import compiler.ast.tree.type.AbsOptionalType;
-import compiler.ast.tree.type.AbsTypeName;
+import compiler.ast.tree.expr.AstExpression;
+import compiler.ast.tree.stmt.AstCaseStatement;
+import compiler.ast.tree.stmt.AstSwitchStatement;
+import compiler.ast.tree.type.AstAtomType;
 import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
 import compiler.seman.type.Type;
@@ -68,8 +52,8 @@ public class FrmEvaluator implements ASTVisitor {
         this.symbolDescription = symbolDescription;
         this.frameDescription = frameDescription;
 
-        AbsFunDef _main = new AbsFunDef(null, Constants.ENTRY_POINT, new ArrayList<>(),
-                new AbsAtomType(null, AtomTypeKind.VOID), new AbsStmts(null, new ArrayList<>()));
+        AstFunctionDefinition _main = new AstFunctionDefinition(null, Constants.ENTRY_POINT, new ArrayList<>(),
+                new AstAtomType(null, AtomTypeKind.VOID), new AstStatements(null, new ArrayList<>()));
 
         entryPoint = new FrmFrame(_main, 0);
         entryPoint.entryLabel = FrmLabel.newNamedLabel(Constants.ENTRY_POINT);
@@ -80,12 +64,12 @@ public class FrmEvaluator implements ASTVisitor {
     }
 
 	@Override
-	public void visit(AbsListType acceptor) {
+	public void visit(AstListType acceptor) {
         ///
 	}
 
 	@Override
-	public void visit(AbsClassDef acceptor) {
+	public void visit(AstClassDefinition acceptor) {
         Type currentParentType = parentType;
         parentType = symbolDescription.getTypeForAstNode(acceptor);
 
@@ -99,9 +83,9 @@ public class FrmEvaluator implements ASTVisitor {
             frameDescription.setVirtualTable(classType, virtualTableAccess);
         }
 
-		acceptor.definitions.accept(this);
+		acceptor.memberDefinitions.accept(this);
 
-		for (AbsFunDef c : acceptor.construstors) {
+		for (AstFunctionDefinition c : acceptor.construstors) {
 			c.accept(this);
 		}
 		
@@ -109,35 +93,35 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsAtomConstExpr acceptor) {
+	public void visit(AstAtomConstExpression acceptor) {
         ///
 	}
 
 	@Override
-	public void visit(AbsAtomType acceptor) {
+	public void visit(AstAtomType acceptor) {
         ///
 	}
 
 	@Override
-	public void visit(AbsBinExpr acceptor) {
+	public void visit(AstBinaryExpression acceptor) {
 		acceptor.expr1.accept(this);
 		acceptor.expr2.accept(this);
 	}
 
 	@Override
-	public void visit(AbsDefs acceptor) {
-		for (AbsDef def : acceptor.definitions)
+	public void visit(AstDefinitions acceptor) {
+		for (AstDefinition def : acceptor.definitions)
 			def.accept(this);
 	}
 
 	@Override
-	public void visit(AbsExprs acceptor) {
-		for (AbsExpr e : acceptor.expressions)
+	public void visit(AstExpressions acceptor) {
+		for (AstExpression e : acceptor.expressions)
 			e.accept(this);
 	}
 
 	@Override
-	public void visit(AbsForStmt acceptor) {
+	public void visit(AstForStatement acceptor) {
 		symbolDescription.getDefinitionForAstNode(acceptor.iterator).accept(this);
 
 		acceptor.iterator.accept(this);
@@ -146,10 +130,10 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsFunCall acceptor) {
+	public void visit(AstFunctionCallExpression acceptor) {
 		int parSize = 4;
 
-		for (AbsExpr arg: acceptor.args) {
+		for (AstExpression arg: acceptor.arguments) {
             Type argType = symbolDescription.getTypeForAstNode(arg);
             int size = argType.isReferenceType() ? 4 : argType.sizeInBytes(); // FIXME: -
 
@@ -160,7 +144,7 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsFunDef acceptor) {
+	public void visit(AstFunctionDefinition acceptor) {
 		FrmFrame frame = new FrmFrame(acceptor, currentLevel);
 
 		frameDescription.setFrame(acceptor, frame);
@@ -171,22 +155,22 @@ public class FrmEvaluator implements ASTVisitor {
 
 		frame.parameterCount = acceptor.pars.size();
 
-		for (AbsParDef par : acceptor.pars) {
+		for (AstParameterDefinition par : acceptor.pars) {
             par.accept(this);
         }
 
 		currentLevel++;
 
-		acceptor.func.accept(this);
+		acceptor.functionCode.accept(this);
 
 		currentFrame = tmp;
 		currentLevel--;
 	}
 
 	@Override
-	public void visit(AbsIfStmt acceptor) {
+	public void visit(AstIfStatement acceptor) {
 		for (Condition c : acceptor.conditions) {
-			c.cond.accept(this);
+			c.condition.accept(this);
 			c.body.accept(this);
 		}
 
@@ -196,7 +180,7 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsParDef acceptor) {
+	public void visit(AstParameterDefinition acceptor) {
 		frameDescription.setAccess(acceptor, new FrmParAccess(acceptor, currentFrame, currentFrame.parametersSize));
 		
 		Type type = symbolDescription.getTypeForAstNode(acceptor);
@@ -206,18 +190,18 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsTypeName acceptor) {
+	public void visit(AstTypeName acceptor) {
         ///
 	}
 
 	@Override
-	public void visit(AbsUnExpr acceptor) {
+	public void visit(AstUnaryExpression acceptor) {
 		acceptor.expr.accept(this);
 	}
 
 	@Override
-	public void visit(AbsVarDef acceptor) {
-        AbsDef parentDefinition = acceptor.getParentDefinition();
+	public void visit(AstVariableDefinition acceptor) {
+        AstDefinition parentDefinition = acceptor.getParentDefinition();
         Type parentDefinitionType = symbolDescription.getTypeForAstNode(parentDefinition);
         boolean isGlobal = currentFrame.entryLabel.getName().equals("_" + Constants.ENTRY_POINT);
 
@@ -231,55 +215,55 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsVarNameExpr acceptor) {
+	public void visit(AstVariableNameExpression acceptor) {
         ///
 	}
 
 	@Override
-	public void visit(AbsWhileStmt acceptor) {
-		acceptor.cond.accept(this);
+	public void visit(AstWhileStatement acceptor) {
+		acceptor.condition.accept(this);
 		acceptor.body.accept(this);
 	}
 
 	@Override
-	public void visit(AbsImportDef importDef) {
+	public void visit(AstImportDefinition importDef) {
 		importDef.imports.accept(this);
 	}
 
 	@Override
-	public void visit(AbsStmts stmts) {
-		for (AbsStmt s : stmts.statements) {
+	public void visit(AstStatements stmts) {
+		for (AstStatement s : stmts.statements) {
 			s.accept(this);
 		}
 	}
 
 	@Override
-	public void visit(AbsReturnExpr returnExpr) {
+	public void visit(AstReturnExpression returnExpr) {
 		if (returnExpr.expr != null) 
 			returnExpr.expr.accept(this);
 	}
 
 	@Override
-	public void visit(AbsListExpr absListExpr) {
-		for (AbsExpr e : absListExpr.expressions)
+	public void visit(AstListExpr absListExpr) {
+		for (AstExpression e : absListExpr.expressions)
 			e.accept(this);
 	}
 
 	@Override
-	public void visit(AbsFunType acceptor) {
+	public void visit(AstFunctionType acceptor) {
 		
 	}
 
 	@Override
-	public void visit(AbsControlTransferStmt acceptor) {
+	public void visit(AstControlTransferStatement acceptor) {
 		///
 	}
 
 	@Override
-	public void visit(AbsSwitchStmt switchStmt) {
+	public void visit(AstSwitchStatement switchStmt) {
 		switchStmt.subjectExpr.accept(this);
 		
-		for (AbsCaseStmt singleCase : switchStmt.cases)
+		for (AstCaseStatement singleCase : switchStmt.cases)
 			singleCase.accept(this);
 		
 		if (switchStmt.defaultBody != null)
@@ -287,61 +271,61 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsCaseStmt acceptor) {
-		for (AbsExpr e : acceptor.exprs)
+	public void visit(AstCaseStatement acceptor) {
+		for (AstExpression e : acceptor.exprs)
 			e.accept(this);
 		acceptor.body.accept(this);
 	}
 
 	@Override
-	public void visit(AbsEnumDef acceptor) {
-		for (AbsDef def : acceptor.definitions)
+	public void visit(AstEnumDefinition acceptor) {
+		for (AstDefinition def : acceptor.definitions)
 			def.accept(this);
 	}
 
 	@Override
-	public void visit(AbsEnumMemberDef acceptor) {
+	public void visit(AstEnumMemberDefinition acceptor) {
 		///
 	}
 
 	@Override
-	public void visit(AbsTupleDef acceptor) {
+	public void visit(AstTupleDefinition acceptor) {
 		acceptor.definitions.accept(this);
 	}
 
 	@Override
-	public void visit(AbsLabeledExpr acceptor) {
+	public void visit(AstLabeledExpr acceptor) {
 		acceptor.expr.accept(this);
 	}
 
 	@Override
-	public void visit(AbsTupleExpr acceptor) {
+	public void visit(AstTupleExpression acceptor) {
 		acceptor.expressions.accept(this);
 	}
 	
 	@Override
-	public void visit(AbsOptionalType acceptor) {
+	public void visit(AstOptionalType acceptor) {
 		acceptor.childType.accept(this);
 	}
 
 	@Override
-	public void visit(AbsOptionalEvaluationExpr acceptor) {
+	public void visit(AstOptionalEvaluationExpression acceptor) {
 		acceptor.subExpr.accept(this);
 	}
 
 	@Override
-	public void visit(AbsForceValueExpr acceptor) {
+	public void visit(AstForceValueExpression acceptor) {
 		acceptor.subExpr.accept(this);
 	}
 
     @Override
-    public void visit(AbsExtensionDef acceptor) {
+    public void visit(AstExtensionDefinition acceptor) {
         acceptor.extendingType.accept(this);
         acceptor.definitions.accept(this);
     }
 
     @Override
-    public void visit(AbsInterfaceDef absInterfaceDef) {
+    public void visit(AstInterfaceDefinition absInterfaceDef) {
         absInterfaceDef.definitions.accept(this);
     }
 }

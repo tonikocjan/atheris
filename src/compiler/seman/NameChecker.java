@@ -20,34 +20,17 @@ package compiler.seman;
 import java.util.ArrayList;
 
 import compiler.Logger;
+import compiler.ast.tree.expr.*;
+import compiler.ast.tree.stmt.*;
+import compiler.ast.tree.type.*;
 import utils.Constants;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.*;
 import compiler.ast.tree.def.*;
-import compiler.ast.tree.expr.AbsAtomConstExpr;
-import compiler.ast.tree.expr.AbsBinExpr;
-import compiler.ast.tree.expr.AbsExpr;
-import compiler.ast.tree.expr.AbsForceValueExpr;
-import compiler.ast.tree.expr.AbsFunCall;
-import compiler.ast.tree.expr.AbsLabeledExpr;
-import compiler.ast.tree.expr.AbsListExpr;
-import compiler.ast.tree.expr.AbsOptionalEvaluationExpr;
-import compiler.ast.tree.expr.AbsReturnExpr;
-import compiler.ast.tree.expr.AbsTupleExpr;
-import compiler.ast.tree.expr.AbsUnExpr;
-import compiler.ast.tree.expr.AbsVarNameExpr;
-import compiler.ast.tree.stmt.AbsCaseStmt;
-import compiler.ast.tree.stmt.AbsControlTransferStmt;
-import compiler.ast.tree.stmt.AbsForStmt;
-import compiler.ast.tree.stmt.AbsIfStmt;
-import compiler.ast.tree.stmt.AbsSwitchStmt;
-import compiler.ast.tree.stmt.AbsWhileStmt;
-import compiler.ast.tree.type.AbsAtomType;
-import compiler.ast.tree.type.AbsFunType;
-import compiler.ast.tree.type.AbsListType;
-import compiler.ast.tree.type.AbsOptionalType;
-import compiler.ast.tree.type.AbsType;
-import compiler.ast.tree.type.AbsTypeName;
+import compiler.ast.tree.expr.AstAtomConstExpression;
+import compiler.ast.tree.stmt.AstCaseStatement;
+import compiler.ast.tree.stmt.AstControlTransferStatement;
+import compiler.ast.tree.type.AstAtomType;
 import compiler.lexan.LexAn;
 import compiler.synan.SynAn;
 
@@ -62,12 +45,12 @@ public class NameChecker implements ASTVisitor {
     }
 
 	@Override
-	public void visit(AbsListType acceptor) {
+	public void visit(AstListType acceptor) {
 		acceptor.type.accept(this);
 	}
 
 	@Override
-	public void visit(AbsClassDef acceptor) {
+	public void visit(AstClassDefinition acceptor) {
         try {
             symbolTable.insertDefinitionOnCurrentScope(acceptor.getName(), acceptor);
         } catch (SemIllegalInsertException e) {
@@ -78,14 +61,14 @@ public class NameChecker implements ASTVisitor {
             acceptor.baseClass.accept(this);
         }
 
-        for (AbsType conformance : acceptor.conformances) {
+        for (AstType conformance : acceptor.conformances) {
             conformance.accept(this);
         }
 
-        for (AbsFunDef constructor: acceptor.construstors) {
+        for (AstFunctionDefinition constructor: acceptor.construstors) {
             // add implicit self: classType parameter to constructors
-            AbsParDef parDef = new AbsParDef(constructor.position, Constants.selfParameterIdentifier,
-                    new AbsAtomType(constructor.position, AtomTypeKind.NIL));
+            AstParameterDefinition parDef = new AstParameterDefinition(constructor.position, Constants.selfParameterIdentifier,
+                    new AstAtomType(constructor.position, AtomTypeKind.NIL));
 
             constructor.addParamater(parDef);
             constructor.accept(this);
@@ -93,19 +76,19 @@ public class NameChecker implements ASTVisitor {
 
         symbolTable.newScope();
 
-        for (AbsDef def : acceptor.definitions.definitions) {
-            if (def instanceof AbsFunDef && !def.isStatic()) {
+        for (AstDefinition def : acceptor.memberDefinitions.definitions) {
+            if (def instanceof AstFunctionDefinition && !def.isStatic()) {
                 // add implicit self: classType parameter to instance methods
-                AbsFunDef funDef = (AbsFunDef) def;
+                AstFunctionDefinition funDef = (AstFunctionDefinition) def;
 
-                AbsParDef parDef = new AbsParDef(funDef.position, Constants.selfParameterIdentifier,
-                        new AbsAtomType(funDef.position, AtomTypeKind.NIL));
+                AstParameterDefinition parDef = new AstParameterDefinition(funDef.position, Constants.selfParameterIdentifier,
+                        new AstAtomType(funDef.position, AtomTypeKind.NIL));
                 funDef.addParamater(parDef);
             }
 
-            // nested class and enum definitions are always static
-            if (/*def instanceof AbsClassDef || */def instanceof AbsEnumDef) {
-                def.setModifier(Modifier.isStatic);
+            // nested class and enum memberDefinitions are always static
+            if (/*def instanceof AstClassDefinition || */def instanceof AstEnumDefinition) {
+                def.setModifier(DefinitionModifier.isStatic);
             }
 
             def.accept(this);
@@ -115,42 +98,42 @@ public class NameChecker implements ASTVisitor {
     }
 
 	@Override
-	public void visit(AbsAtomConstExpr acceptor) {
+	public void visit(AstAtomConstExpression acceptor) {
         ///
 	}
 
 	@Override
-	public void visit(AbsAtomType acceptor) {
+	public void visit(AstAtomType acceptor) {
         ///
 	}
 
 	@Override
-	public void visit(AbsBinExpr acceptor) {
+	public void visit(AstBinaryExpression acceptor) {
 		acceptor.expr1.accept(this);
 
-		if (acceptor.oper != AbsBinExpr.DOT) {
+		if (acceptor.oper != AstBinaryExpression.DOT) {
             acceptor.expr2.accept(this);
 		}
 	}
 
 	@Override
-	public void visit(AbsDefs acceptor) {
-		for (AbsDef def : acceptor.definitions) {
+	public void visit(AstDefinitions acceptor) {
+		for (AstDefinition def : acceptor.definitions) {
             def.accept(this);
         }
 	}
 
 	@Override
-	public void visit(AbsExprs acceptor) {
-		for (AbsExpr e : acceptor.expressions)
+	public void visit(AstExpressions acceptor) {
+		for (AstExpression e : acceptor.expressions)
 			e.accept(this);
 	}
 
 	@Override
-	public void visit(AbsForStmt acceptor) {
+	public void visit(AstForStatement acceptor) {
 		symbolTable.newScope();
 
-		AbsVarDef var = new AbsVarDef(
+		AstVariableDefinition var = new AstVariableDefinition(
 				acceptor.iterator.position, acceptor.iterator.name, null, false);
 		try {
 			symbolTable.insertDefinitionOnCurrentScope(acceptor.iterator.name, var);
@@ -166,21 +149,21 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsFunCall acceptor) {
-        AbsFunDef definition = (AbsFunDef) symbolDescription.getDefinitionForAstNode(acceptor);
+	public void visit(AstFunctionCallExpression acceptor) {
+        AstFunctionDefinition definition = (AstFunctionDefinition) symbolDescription.getDefinitionForAstNode(acceptor);
 
         if (definition == null) {
             String funCallIdentifier = acceptor.getStringRepresentation();
-            definition = (AbsFunDef) symbolTable.findDefinitionForName(funCallIdentifier);
+            definition = (AstFunctionDefinition) symbolTable.findDefinitionForName(funCallIdentifier);
 
             if (definition == null) {
                 // handle implicit "self" argument for constructors
-                AbsVarNameExpr selfArgExpr = new AbsVarNameExpr(acceptor.position, Constants.selfParameterIdentifier);
-                AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.position, selfArgExpr, Constants.selfParameterIdentifier);
+                AstVariableNameExpression selfArgExpr = new AstVariableNameExpression(acceptor.position, Constants.selfParameterIdentifier);
+                AstLabeledExpr selfArg = new AstLabeledExpr(acceptor.position, selfArgExpr, Constants.selfParameterIdentifier);
 
                 acceptor.addArgument(selfArg);
 
-                definition = (AbsFunDef) symbolTable.findDefinitionForName(acceptor.getStringRepresentation());
+                definition = (AstFunctionDefinition) symbolTable.findDefinitionForName(acceptor.getStringRepresentation());
             }
 
             if (definition == null) {
@@ -191,9 +174,9 @@ public class NameChecker implements ASTVisitor {
         boolean isConstructor = definition.isConstructor;
 		symbolDescription.setDefinitionForAstNode(acceptor, definition);
 
-		for (AbsExpr argExpr : acceptor.args) {
+		for (AstExpression argExpr : acceptor.arguments) {
 		    // skip first ("self") argument if function is constructor
-            if (isConstructor && argExpr == acceptor.args.get(0))
+            if (isConstructor && argExpr == acceptor.arguments.get(0))
                 continue;
 
             argExpr.accept(this);
@@ -201,7 +184,7 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsFunDef acceptor) {
+	public void visit(AstFunctionDefinition acceptor) {
 		try {
 			symbolTable.insertDefinitionOnCurrentScope(acceptor.getStringRepresentation(), acceptor);
 		} catch (SemIllegalInsertException e) {
@@ -210,19 +193,19 @@ public class NameChecker implements ASTVisitor {
 		
 		symbolTable.newScope();
 
-		for (AbsParDef par : acceptor.getParamaters())
+		for (AstParameterDefinition par : acceptor.getParamaters())
 			par.accept(this);
 		
-		acceptor.type.accept(this);
-		acceptor.func.accept(this);
+		acceptor.returnType.accept(this);
+		acceptor.functionCode.accept(this);
 
 		symbolTable.oldScope();
 	}
 
 	@Override
-	public void visit(AbsIfStmt acceptor) {
+	public void visit(AstIfStatement acceptor) {
 		for (Condition c : acceptor.conditions) {
-			c.cond.accept(this);
+			c.condition.accept(this);
 
 			symbolTable.newScope();
 			c.body.accept(this);
@@ -237,7 +220,7 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsParDef acceptor) {
+	public void visit(AstParameterDefinition acceptor) {
 		try {
 			symbolTable.insertDefinitionOnCurrentScope(acceptor.name, acceptor);
 		} catch (SemIllegalInsertException e) {
@@ -247,8 +230,8 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsTypeName acceptor) {
-		AbsDef definition = symbolTable.findDefinitionForName(acceptor.name);
+	public void visit(AstTypeName acceptor) {
+		AstDefinition definition = symbolTable.findDefinitionForName(acceptor.name);
 
 		if (definition == null) {
             Logger.error(acceptor.position, "Type \"" + acceptor.name + "\" is undefined");
@@ -258,12 +241,12 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsUnExpr acceptor) {
+	public void visit(AstUnaryExpression acceptor) {
 		acceptor.expr.accept(this);
 	}
 
 	@Override
-	public void visit(AbsVarDef acceptor) {
+	public void visit(AstVariableDefinition acceptor) {
 		try {
 			symbolTable.insertDefinitionOnCurrentScope(acceptor.name, acceptor);
 			if (acceptor.type != null)
@@ -274,7 +257,7 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsVarNameExpr acceptor) {
+	public void visit(AstVariableNameExpression acceptor) {
 	    if (acceptor.name.equals("Int")) return;
         if (acceptor.name.equals("Double")) return;
         if (acceptor.name.equals("String")) return;
@@ -285,7 +268,7 @@ public class NameChecker implements ASTVisitor {
             return;
         }
 
-		AbsDef definition = symbolTable.findDefinitionForName(acceptor.name);
+		AstDefinition definition = symbolTable.findDefinitionForName(acceptor.name);
 		
 		if (definition == null)
 			Logger.error(acceptor.position, "Use of unresolved indentifier \"" + acceptor.name + "\"");
@@ -294,8 +277,8 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsWhileStmt acceptor) {
-		acceptor.cond.accept(this);
+	public void visit(AstWhileStatement acceptor) {
+		acceptor.condition.accept(this);
 
 		symbolTable.newScope();
 		acceptor.body.accept(this);
@@ -303,25 +286,25 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsImportDef acceptor) {
+	public void visit(AstImportDefinition acceptor) {
 		String tmp = Logger.fileName;
 		Logger.fileName = acceptor.getName();
 
 		// parse the file
 		// FIXME: - Hardcoded location
-		SynAn synAn = new SynAn(new LexAn("test/" + acceptor.getName() + ".ar", false), false);
+		SynAn synAn = new SynAn(LexAn.parseSourceFile("test/" + acceptor.getName() + ".ar", false), false);
 		synAn.parseStandardLibrary = acceptor.getName().equals(Constants.standardLibraryIdentifier);
 
-		AbsStmts source = (AbsStmts) synAn.parse();
-        ArrayList<AbsDef> definitions = new ArrayList<>();
+		AstStatements source = (AstStatements) synAn.parse();
+        ArrayList<AstDefinition> definitions = new ArrayList<>();
 		
-		for (AbsStmt s : source.statements) {
-			// skip statements which are not definitions
-			if (!(s instanceof AbsDef)) {
+		for (AstStatement s : source.statements) {
+			// skip statements which are not memberDefinitions
+			if (!(s instanceof AstDefinition)) {
                 continue;
             }
 
-			AbsDef definition = (AbsDef) s;
+			AstDefinition definition = (AstDefinition) s;
 
 			if (acceptor.definitions.size() > 0) {
 				String name = definition.getName();
@@ -334,48 +317,48 @@ public class NameChecker implements ASTVisitor {
 			definitions.add(definition);
 		}
 
-		acceptor.imports = new AbsDefs(source.position, definitions);
+		acceptor.imports = new AstDefinitions(source.position, definitions);
 		acceptor.imports.accept(this);
 
 		Logger.fileName = tmp;
 	}
 
 	@Override
-	public void visit(AbsStmts stmts) {
-		for (AbsStmt s : stmts.statements) {
+	public void visit(AstStatements stmts) {
+		for (AstStatement s : stmts.statements) {
 			s.accept(this);
 		}
 	}
 
 	@Override
-	public void visit(AbsReturnExpr returnExpr) {
+	public void visit(AstReturnExpression returnExpr) {
 		if (returnExpr.expr != null)
 			returnExpr.expr.accept(this);
 	}
 
 	@Override
-	public void visit(AbsListExpr absListExpr) {
-		for (AbsExpr e : absListExpr.expressions)
+	public void visit(AstListExpr absListExpr) {
+		for (AstExpression e : absListExpr.expressions)
 			e.accept(this);
 	}
 
 	@Override
-	public void visit(AbsFunType funType) {
-		for (AbsType t : funType.parameterTypes)
+	public void visit(AstFunctionType funType) {
+		for (AstType t : funType.parameterTypes)
 			t.accept(this);
 		funType.returnType.accept(this);
 	}
 
 	@Override
-	public void visit(AbsControlTransferStmt transferStmt) {
+	public void visit(AstControlTransferStatement transferStmt) {
 		///
 	}
 
 	@Override
-	public void visit(AbsSwitchStmt switchStmt) {
+	public void visit(AstSwitchStatement switchStmt) {
 		switchStmt.subjectExpr.accept(this);
 		
-		for (AbsCaseStmt singleCase : switchStmt.cases)
+		for (AstCaseStatement singleCase : switchStmt.cases)
 			singleCase.accept(this);
 		
 		if (switchStmt.defaultBody != null) {
@@ -386,8 +369,8 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsCaseStmt acceptor) {
-		for (AbsExpr e : acceptor.exprs)
+	public void visit(AstCaseStatement acceptor) {
+		for (AstExpression e : acceptor.exprs)
 			e.accept(this);
 		symbolTable.newScope();
 		acceptor.body.accept(this);
@@ -395,7 +378,7 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsEnumDef acceptor) {
+	public void visit(AstEnumDefinition acceptor) {
 		try {
 			symbolTable.insertDefinitionOnCurrentScope(acceptor.name, acceptor);
 		} catch (SemIllegalInsertException e) {
@@ -407,13 +390,13 @@ public class NameChecker implements ASTVisitor {
 			acceptor.type.accept(this);
 
 		symbolTable.newScope();
-		for (AbsDef def : acceptor.definitions)
+		for (AstDefinition def : acceptor.definitions)
 			def.accept(this);
 		symbolTable.oldScope();
 	}
 
 	@Override
-	public void visit(AbsEnumMemberDef acceptor) {
+	public void visit(AstEnumMemberDefinition acceptor) {
 		try {
 			symbolTable.insertDefinitionOnCurrentScope(acceptor.name.name, acceptor);
 		} catch (SemIllegalInsertException e) {
@@ -425,63 +408,63 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsTupleDef acceptor) {
+	public void visit(AstTupleDefinition acceptor) {
 		acceptor.definitions.accept(this);
 	}
 
 	@Override
-	public void visit(AbsLabeledExpr acceptor) {
+	public void visit(AstLabeledExpr acceptor) {
 		acceptor.expr.accept(this);
 	}
 
 	@Override
-	public void visit(AbsTupleExpr acceptor) {
+	public void visit(AstTupleExpression acceptor) {
 		acceptor.expressions.accept(this);
 	}
 
 	@Override
-	public void visit(AbsOptionalType acceptor) {
+	public void visit(AstOptionalType acceptor) {
 		acceptor.childType.accept(this);
 	}
 
 	@Override
-	public void visit(AbsOptionalEvaluationExpr acceptor) {
+	public void visit(AstOptionalEvaluationExpression acceptor) {
 		acceptor.subExpr.accept(this);
 
         symbolDescription.setDefinitionForAstNode(acceptor, symbolDescription.getDefinitionForAstNode(acceptor.subExpr));
 	}
 
 	@Override
-	public void visit(AbsForceValueExpr acceptor) {
+	public void visit(AstForceValueExpression acceptor) {
 		acceptor.subExpr.accept(this);
 
 		symbolDescription.setDefinitionForAstNode(acceptor, symbolDescription.getDefinitionForAstNode(acceptor.subExpr));
 	}
 
     @Override
-    public void visit(AbsExtensionDef acceptor) {
+    public void visit(AstExtensionDefinition acceptor) {
 	    acceptor.extendingType.accept(this);
 
-        for (AbsType conformance: acceptor.conformances) {
+        for (AstType conformance: acceptor.conformances) {
             conformance.accept(this);
         }
 
         symbolTable.newScope();
-	    for (AbsDef def : acceptor.definitions.definitions) {
-            if (def instanceof AbsFunDef) {
+	    for (AstDefinition def : acceptor.definitions.definitions) {
+            if (def instanceof AstFunctionDefinition) {
                 if (!def.isStatic()) {
                     // add implicit self: classType parameter to instance methods
-                    AbsFunDef funDef = (AbsFunDef) def;
+                    AstFunctionDefinition funDef = (AstFunctionDefinition) def;
 
-                    AbsParDef parDef = new AbsParDef(
+                    AstParameterDefinition parDef = new AstParameterDefinition(
                             funDef.position,
                             Constants.selfParameterIdentifier,
-                            new AbsAtomType(funDef.position, AtomTypeKind.NIL));
+                            new AstAtomType(funDef.position, AtomTypeKind.NIL));
                     funDef.addParamater(parDef);
                 }
             }
             else {
-                Logger.error(def.position, "Only function definitions are allowed in extensions");
+                Logger.error(def.position, "Only function memberDefinitions are allowed in extensions");
             }
 
             def.accept(this);
@@ -490,18 +473,18 @@ public class NameChecker implements ASTVisitor {
     }
 
     @Override
-    public void visit(AbsInterfaceDef acceptor) {
+    public void visit(AstInterfaceDefinition acceptor) {
         try {
             symbolTable.insertDefinitionOnCurrentScope(acceptor.getName(), acceptor);
         } catch (SemIllegalInsertException e) {
             Logger.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName() + "\'");
         }
 
-        for (AbsDef def : acceptor.definitions.definitions) {
+        for (AstDefinition def : acceptor.definitions.definitions) {
             // add implicit self: classType parameter to instance methods
-            AbsFunDef funDef = (AbsFunDef) def;
-            AbsParDef parDef = new AbsParDef(funDef.position, Constants.selfParameterIdentifier,
-                    new AbsAtomType(funDef.position, AtomTypeKind.NIL));
+            AstFunctionDefinition funDef = (AstFunctionDefinition) def;
+            AstParameterDefinition parDef = new AstParameterDefinition(funDef.position, Constants.selfParameterIdentifier,
+                    new AstAtomType(funDef.position, AtomTypeKind.NIL));
             funDef.addParamater(parDef);
         }
     }

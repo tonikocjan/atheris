@@ -19,8 +19,8 @@ package compiler.seman.type;
 
 import java.util.*;
 
-import compiler.ast.tree.def.AbsDef;
-import compiler.ast.tree.def.AbsFunDef;
+import compiler.ast.tree.def.AstDefinition;
+import compiler.ast.tree.def.AstFunctionDefinition;
 
 /**
  * Function memberType.
@@ -42,7 +42,7 @@ public class FunctionType extends Type implements ReferenceType {
 	/**
 	 * Function definition.
 	 */
-	public final AbsFunDef functionDefinition;
+	public final AstFunctionDefinition functionDefinition;
 
 	/**
 	 * Create new function memberType.
@@ -54,16 +54,16 @@ public class FunctionType extends Type implements ReferenceType {
 	 * @param definition
 	 * 			  Function definition.
 	 */
-	public FunctionType(Vector<Type> parTypes, Type resultType, AbsFunDef definition) {
+	public FunctionType(Vector<Type> parTypes, Type resultType, AstFunctionDefinition definition) {
 		this.parameterTypes = parTypes;
 		this.resultType = resultType;
 		this.functionDefinition = definition;
 	}
 
 	/**
-	 * Get parameter count.
+	 * Get parameter elementCount.
 	 * 
-	 * @return Parameter count.
+	 * @return Parameter elementCount.
 	 */
 	public int getParamaterCount() {
 		return parameterTypes.size();
@@ -134,7 +134,7 @@ public class FunctionType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public AbsDef findMemberDefinitionForName(String name) {
+	public AstDefinition findMemberDefinitionForName(String name) {
 		return null;
 	}
 

@@ -18,16 +18,16 @@
 
 package compiler.frames;
 
-import compiler.ast.tree.def.AbsVarDef;
+import compiler.ast.tree.def.AstVariableDefinition;
 import compiler.seman.type.*;
 
 public class FrmLocAccess extends FrmAccess {
 
-	public final AbsVarDef variableDefinition;
+	public final AstVariableDefinition variableDefinition;
 	public final FrmFrame frame;
 	public final int framePointerOffset;
 
-	public FrmLocAccess(AbsVarDef variableDefinition, FrmFrame frame, Type type) {
+	public FrmLocAccess(AstVariableDefinition variableDefinition, FrmFrame frame, Type type) {
 		this.variableDefinition = variableDefinition;
 		this.frame = frame;
 		this.framePointerOffset = 0 - frame.blockSizeForLocalVariables - type.sizeInBytes();

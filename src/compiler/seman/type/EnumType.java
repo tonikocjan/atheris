@@ -22,22 +22,22 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import compiler.Logger;
-import compiler.ast.tree.def.AbsDef;
-import compiler.ast.tree.def.AbsEnumDef;
-import compiler.ast.tree.def.AbsEnumMemberDef;
+import compiler.ast.tree.def.AstDefinition;
+import compiler.ast.tree.def.AstEnumDefinition;
+import compiler.ast.tree.def.AstEnumMemberDefinition;
 
 public class EnumType extends Type implements ReferenceType {
 
     private final LinkedHashMap<String, ClassType> members = new LinkedHashMap<>();
-	public final AbsEnumDef enumDefinition;
+	public final AstEnumDefinition enumDefinition;
 	public final int membersCount;
 	public String selectedMember;
 
-	public EnumType(AbsEnumDef definition, 
+	public EnumType(AstEnumDefinition definition,
 			ArrayList<String> names, ArrayList<ClassType> types) {
 		if (names.size() != types.size())
 			Logger.error("Internal error :: compiler.seman.memberType.EnumType: "
-					+ "names count not equal types count");
+					+ "names elementCount not equal types elementCount");
 		
 		this.enumDefinition = definition;
 		this.membersCount = names.size();
@@ -67,7 +67,7 @@ public class EnumType extends Type implements ReferenceType {
 
 	public int offsetForMember(String name) {
 		int offset = 0;
-		for (AbsDef def : enumDefinition.definitions) {
+		for (AstDefinition def : enumDefinition.definitions) {
 			if (def.getName().equals(name)) return offset;
 			offset++;
 		}
@@ -75,8 +75,8 @@ public class EnumType extends Type implements ReferenceType {
 	}
 	
 	@Override
-	public AbsDef findMemberDefinitionForName(String name) {
-		for (AbsDef def : enumDefinition.definitions) {
+	public AstDefinition findMemberDefinitionForName(String name) {
+		for (AstDefinition def : enumDefinition.definitions) {
 			String definitionsName = def.getName();
 			
 			if (definitionsName.equals(name))
@@ -108,11 +108,11 @@ public class EnumType extends Type implements ReferenceType {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Enum: ");
 		sb.append(enumDefinition.name + "(");
-		for (AbsDef def : enumDefinition.definitions) {
+		for (AstDefinition def : enumDefinition.definitions) {
 			sb.append(def.getName());
-			if (def instanceof AbsEnumMemberDef) {
-				if (((AbsEnumMemberDef)def).value != null)
-					sb.append(" - Raw value: " + ((AbsEnumMemberDef)def).value.value);
+			if (def instanceof AstEnumMemberDefinition) {
+				if (((AstEnumMemberDefinition)def).value != null)
+					sb.append(" - Raw value: " + ((AstEnumMemberDefinition)def).value.value);
 			}
 			
 			if (def != enumDefinition.definitions.get(enumDefinition.definitions.size() - 1))

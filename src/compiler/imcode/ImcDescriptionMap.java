@@ -1,9 +1,9 @@
 package compiler.imcode;
 
-import compiler.ast.tree.AbsTree;
+import compiler.ast.tree.AstNode;
 
 public interface ImcDescriptionMap {
 
-    void setImcCode(AbsTree node, ImcCode imc);
-    ImcCode getImcCode(AbsTree node);
+    void setImcCode(AstNode node, ImcCode imc);
+    ImcCode getImcCode(AstNode node);
 }

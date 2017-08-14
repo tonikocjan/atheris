@@ -18,7 +18,7 @@
 package compiler.seman.type;
 
 import compiler.ast.tree.AtomTypeKind;
-import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AstDefinition;
 
 /**
  * Data memberType description.
@@ -42,7 +42,7 @@ public abstract class Type {
 
 	public abstract boolean containsMember(String name);
 
-	public abstract AbsDef findMemberDefinitionForName(String name);
+	public abstract AstDefinition findMemberDefinitionForName(String name);
 
 	public abstract String toString();
 

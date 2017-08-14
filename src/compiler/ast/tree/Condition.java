@@ -17,21 +17,15 @@
 
 package compiler.ast.tree;
 
-import compiler.ast.tree.expr.AbsExpr;
+import compiler.ast.tree.expr.AstExpression;
 
-/**
- * Structure holding condition and body which is executed when condition is positive.
- */
 public class Condition {
+
+	public final AstExpression condition;
+	public final AstStatements body;
 	
-	/** Condition. */
-	public final AbsExpr cond;
-	
-	/** Positive branch */
-	public final AbsStmts body;
-	
-	public Condition(AbsExpr cond, AbsStmts body) {
-		this.cond = cond;
+	public Condition(AstExpression cond, AstStatements body) {
+		this.condition = cond;
 		this.body = body;
 	}
 }

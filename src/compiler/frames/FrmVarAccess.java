@@ -17,14 +17,14 @@
 
 package compiler.frames;
 
-import compiler.ast.tree.def.AbsVarDef;
+import compiler.ast.tree.def.AstVariableDefinition;
 
 public class FrmVarAccess extends FrmAccess {
 
-	public final AbsVarDef variableDefinition;
+	public final AstVariableDefinition variableDefinition;
 	public final FrmLabel label;
 
-	public FrmVarAccess(AbsVarDef variableDefinition) {
+	public FrmVarAccess(AstVariableDefinition variableDefinition) {
 		this.variableDefinition = variableDefinition;
 		label = FrmLabel.newNamedLabel(variableDefinition.getName());
 	}

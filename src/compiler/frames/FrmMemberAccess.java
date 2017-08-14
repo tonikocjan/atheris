@@ -17,15 +17,15 @@
 
 package compiler.frames;
 
-import compiler.ast.tree.def.AbsVarDef;
+import compiler.ast.tree.def.AstVariableDefinition;
 import compiler.seman.type.ObjectType;
 
 public class FrmMemberAccess extends FrmAccess {
 
-	private final AbsVarDef memberDefinition;
+	private final AstVariableDefinition memberDefinition;
     private final ObjectType parentType;
 
-	public FrmMemberAccess(AbsVarDef memberDefinition, ObjectType parentType) {
+	public FrmMemberAccess(AstVariableDefinition memberDefinition, ObjectType parentType) {
 		this.memberDefinition = memberDefinition;
 		this.parentType = parentType;
 	}

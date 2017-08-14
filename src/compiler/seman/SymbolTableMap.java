@@ -1,10 +1,6 @@
 package compiler.seman;
 
-import compiler.Logger;
-import compiler.ast.tree.def.AbsDef;
-
-import java.util.LinkedList;
-import java.util.List;
+import compiler.ast.tree.def.AstDefinition;
 
 /**
  * Created by Toni Kocjan on 13/08/2017.
@@ -15,7 +11,7 @@ public interface SymbolTableMap {
 
     void newScope();
     void oldScope();
-    void insertDefinitionOnCurrentScope(String name, AbsDef definition) throws SemIllegalInsertException;
+    void insertDefinitionOnCurrentScope(String name, AstDefinition definition) throws SemIllegalInsertException;
     void removeDefinitionFromCurrentScope(String name) throws SemIllegalDeleteException;
-    AbsDef findDefinitionForName(String name);
+    AstDefinition findDefinitionForName(String name);
 }

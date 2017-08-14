@@ -22,35 +22,15 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import compiler.Logger;
+import compiler.ast.tree.expr.*;
+import compiler.ast.tree.stmt.*;
+import compiler.ast.tree.type.*;
 import utils.Constants;
 import compiler.Position;
 import compiler.ast.tree.*;
 import compiler.ast.tree.def.*;
-import compiler.ast.tree.expr.AbsAtomConstExpr;
-import compiler.ast.tree.expr.AbsBinExpr;
-import compiler.ast.tree.expr.AbsExpr;
-import compiler.ast.tree.expr.AbsForceValueExpr;
-import compiler.ast.tree.expr.AbsFunCall;
-import compiler.ast.tree.expr.AbsLabeledExpr;
-import compiler.ast.tree.expr.AbsListExpr;
-import compiler.ast.tree.expr.AbsOptionalEvaluationExpr;
-import compiler.ast.tree.expr.AbsReturnExpr;
-import compiler.ast.tree.expr.AbsTupleExpr;
-import compiler.ast.tree.expr.AbsUnExpr;
-import compiler.ast.tree.expr.AbsVarNameExpr;
-import compiler.ast.tree.stmt.AbsCaseStmt;
-import compiler.ast.tree.stmt.AbsConditionalStmt;
-import compiler.ast.tree.stmt.AbsControlTransferStmt;
-import compiler.ast.tree.stmt.AbsForStmt;
-import compiler.ast.tree.stmt.AbsIfStmt;
-import compiler.ast.tree.stmt.AbsSwitchStmt;
-import compiler.ast.tree.stmt.AbsWhileStmt;
-import compiler.ast.tree.type.AbsAtomType;
-import compiler.ast.tree.type.AbsFunType;
-import compiler.ast.tree.type.AbsListType;
-import compiler.ast.tree.type.AbsOptionalType;
-import compiler.ast.tree.type.AbsType;
-import compiler.ast.tree.type.AbsTypeName;
+import compiler.ast.tree.expr.AstExpression;
+import compiler.ast.tree.type.AstAtomType;
 import compiler.lexan.*;
 
 /**
@@ -91,7 +71,7 @@ public class SynAn {
 	/**
 	 * Opravi sintaksno analizo.
 	 */
-	public AbsTree parse() {
+	public AstNode parse() {
 		if (symbol == null)
 			Logger.error("Error accessing LexAn");
 
@@ -99,7 +79,7 @@ public class SynAn {
 			getNextSymbol();
 
 		dump("source -> statements");
-		AbsTree abstrTree = parseStatements();
+		AstNode abstrTree = parseStatements();
 
 		if (symbol.getTokenType() != TokenType.EOF && symbol.getTokenType() != TokenType.NEWLINE)
 			Logger.error(symbol.getPosition(), "Syntax error on tokenType \""
@@ -108,22 +88,22 @@ public class SynAn {
 		return abstrTree;
 	}
 
-	private AbsStmts parseStatements() {
+	private AstStatements parseStatements() {
 		dump("statements -> statement statements'");
 
-        ArrayList<AbsStmt> absStmts = new ArrayList<>();
+        ArrayList<AstStatement> astStatements = new ArrayList<>();
 		if (symbol.getTokenType() == TokenType.RBRACE)
-			return new AbsStmts(symbol.getPosition(), absStmts);
+			return new AstStatements(symbol.getPosition(), astStatements);
 
-		AbsStmt statement = parseStatement();
+		AstStatement statement = parseStatement();
 
-        absStmts.add(statement);
-		absStmts.addAll(parseStatements_(statement));
+        astStatements.add(statement);
+		astStatements.addAll(parseStatements_(statement));
 
-		return new AbsStmts(new Position(absStmts.get(0).position, absStmts.get(absStmts.size() - 1).position), absStmts);
+		return new AstStatements(new Position(astStatements.get(0).position, astStatements.get(astStatements.size() - 1).position), astStatements);
 	}
 
-	private ArrayList<AbsStmt> parseStatements_(AbsStmt prevStmt) {
+	private ArrayList<AstStatement> parseStatements_(AstStatement prevStmt) {
 		switch (symbol.getTokenType()) {
 		case EOF:
 			dump("statements' -> $");
@@ -139,10 +119,10 @@ public class SynAn {
 			if (symbol.getTokenType() == TokenType.EOF || symbol.getTokenType() == TokenType.RBRACE)
 				return new ArrayList<>();
 		case IDENTIFIER:
-			AbsStmt statement = parseStatement();
-            ArrayList<AbsStmt> absStmts = parseStatements_(statement);
-			absStmts.add(0, statement);
-			return absStmts;
+			AstStatement statement = parseStatement();
+            ArrayList<AstStatement> astStatements = parseStatements_(statement);
+			astStatements.add(0, statement);
+			return astStatements;
 		case NEWLINE:
 			getNextSymbol();
 
@@ -151,33 +131,33 @@ public class SynAn {
 				return new ArrayList<>();
 
 			statement = parseStatement();
-			absStmts = parseStatements_(statement);
-			absStmts.add(0, statement);
-			return absStmts;
+			astStatements = parseStatements_(statement);
+			astStatements.add(0, statement);
+			return astStatements;
 		case ASSIGN:
-			if (!(prevStmt instanceof AbsVarDef))
+			if (!(prevStmt instanceof AstVariableDefinition))
 				Logger.error(prevStmt.position, "Syntax error");
 
 			getNextSymbol();
 			dump("var_definition -> = expression");
 
-			AbsVarDef var = (AbsVarDef) prevStmt;
-			AbsVarNameExpr varName = new AbsVarNameExpr(var.position, var.name);
+			AstVariableDefinition var = (AstVariableDefinition) prevStmt;
+			AstVariableNameExpression varName = new AstVariableNameExpression(var.position, var.name);
 
-			AbsExpr e = parseExpression();
-			absStmts = parseStatements_(null);
+			AstExpression e = parseExpression();
+			astStatements = parseStatements_(null);
 
-			absStmts.add(0, new AbsBinExpr(new Position(var.position, e.position),
-					AbsBinExpr.ASSIGN, varName, e));
+			astStatements.add(0, new AstBinaryExpression(new Position(var.position, e.position),
+					AstBinaryExpression.ASSIGN, varName, e));
 
-			return absStmts;
+			return astStatements;
 		default:
 			Logger.error(symbol.getPosition(), "Consecutive statements must be separated by separator");
 		}
 		return null;
 	}
 
-	private AbsStmt parseStatement() {
+	private AstStatement parseStatement() {
 		switch (symbol.getTokenType()) {
 		/**
 		 * Parse definition.
@@ -200,12 +180,12 @@ public class SynAn {
 		case KW_CONTINUE:
 			dump("expression -> continue");
 			getNextSymbol();
-			return new AbsControlTransferStmt(symbol.getPosition(),
+			return new AstControlTransferStatement(symbol.getPosition(),
 					ControlTransferKind.Continue);
 		case KW_BREAK:
 			dump("expression -> break");
 			getNextSymbol();
-			return new AbsControlTransferStmt(symbol.getPosition(),
+			return new AstControlTransferStatement(symbol.getPosition(),
 					ControlTransferKind.Break);
 
 		/**
@@ -233,38 +213,38 @@ public class SynAn {
 		}
 	}
 
-	private AbsDefs parseDefinitions() {
-		dump("definitions -> definition definitions'");
+	private AstDefinitions parseDefinitions() {
+		dump("memberDefinitions -> definition memberDefinitions'");
 
         if (symbol.getTokenType() == TokenType.NEWLINE) {
             getNextSymbol();
         }
 
         if (symbol.getTokenType() == TokenType.RBRACE) {
-            return new AbsDefs(symbol.getPosition(), new ArrayList<>());
+            return new AstDefinitions(symbol.getPosition(), new ArrayList<>());
         }
 
-        AbsDef definition = parseDefinition();
+        AstDefinition definition = parseDefinition();
 
-        ArrayList<AbsDef> absDefs = parseDefinitions_();
+        ArrayList<AstDefinition> absDefs = parseDefinitions_();
 		absDefs.add(0, definition);
-		return new AbsDefs(new Position(absDefs.get(0).position, absDefs.get(absDefs.size() - 1).position), absDefs);
+		return new AstDefinitions(new Position(absDefs.get(0).position, absDefs.get(absDefs.size() - 1).position), absDefs);
 	}
 
-	private ArrayList<AbsDef> parseDefinitions_() {
+	private ArrayList<AstDefinition> parseDefinitions_() {
 		switch (symbol.getTokenType()) {
 		case EOF:
-			dump("definitions' -> $");
+			dump("memberDefinitions' -> $");
 
 			return new ArrayList<>();
 		case RBRACE:
-			dump("definitions' -> e");
+			dump("memberDefinitions' -> e");
 			getNextSymbol();
 
 			return new ArrayList<>();
 		case SEMIC:
         case NEWLINE:
-			dump("definitions' -> ; definitions");
+			dump("memberDefinitions' -> ; memberDefinitions");
 			getNextSymbol();
 			if (symbol.getTokenType() == TokenType.NEWLINE)
 				getNextSymbol();
@@ -272,8 +252,8 @@ public class SynAn {
 			if (symbol.getTokenType() == TokenType.EOF || symbol.getTokenType() == TokenType.RBRACE)
 				return new ArrayList<>();
 
-			AbsDef definition = parseDefinition();
-            ArrayList<AbsDef> absDefs = parseDefinitions_();
+			AstDefinition definition = parseDefinition();
+            ArrayList<AstDefinition> absDefs = parseDefinitions_();
 			absDefs.add(0, definition);
 			return absDefs;
 		default:
@@ -284,10 +264,10 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsDef parseDefinition() {
-		AbsDef definition = null;
+	private AstDefinition parseDefinition() {
+		AstDefinition definition = null;
 
-		HashSet<Modifier> modifiers = parseModifiers();
+		HashSet<DefinitionModifier> modifiers = parseModifiers();
 
 		switch (symbol.getTokenType()) {
 		case KW_FUN:
@@ -342,12 +322,12 @@ public class SynAn {
 		return definition;
 	}
 
-	private HashSet<Modifier> parseModifiers() {
-	    HashSet<Modifier> modifiers = new HashSet<>();
+	private HashSet<DefinitionModifier> parseModifiers() {
+	    HashSet<DefinitionModifier> modifiers = new HashSet<>();
 
-	    Modifier modifier = parseModifier();
+	    DefinitionModifier modifier = parseModifier();
 
-        while (modifier != Modifier.none) {
+        while (modifier != DefinitionModifier.none) {
 	        if (modifiers.contains(modifier)) {
 	            Logger.error(symbol.getPosition(), "Duplicate modifier");
             }
@@ -359,32 +339,32 @@ public class SynAn {
 	    return modifiers;
     }
 
-    private Modifier parseModifier() {
+    private DefinitionModifier parseModifier() {
 	    if (symbol.getTokenType() == TokenType.KW_STATIC) {
 	        getNextSymbol();
-	        return Modifier.isStatic;
+	        return DefinitionModifier.isStatic;
         }
         if (symbol.getTokenType() == TokenType.KW_FINAL) {
             getNextSymbol();
-            return Modifier.isFinal;
+            return DefinitionModifier.isFinal;
         }
         if (symbol.getTokenType() == TokenType.KW_OVERRIDE) {
             getNextSymbol();
-            return Modifier.isOverriding;
+            return DefinitionModifier.isOverriding;
         }
         if (symbol.getTokenType() == TokenType.KW_PUBLIC) {
             getNextSymbol();
-            return Modifier.isPublic;
+            return DefinitionModifier.isPublic;
         }
         if (symbol.getTokenType() == TokenType.KW_PRIVATE) {
             getNextSymbol();
-            return Modifier.isPrivate;
+            return DefinitionModifier.isPrivate;
         }
 
-        return Modifier.none;
+        return DefinitionModifier.none;
     }
 
-	private AbsFunDef parseFunDefinition() {
+	private AstFunctionDefinition parseFunDefinition() {
 		Position startPos = symbol.getPosition();
 
         if (symbol.getTokenType() == TokenType.KW_FUN) {
@@ -392,9 +372,9 @@ public class SynAn {
 
 			getNextSymbol(TokenType.LPARENT, "(");
 			getNextSymbol();
-			dump("function_definition -> func identifier ( parameters ) function_definition'");
+			dump("function_definition -> functionCode identifier ( parameters ) function_definition'");
 
-            ArrayList<AbsParDef> params = parseParameters();
+            ArrayList<AstParameterDefinition> params = parseParameters();
 
 			return parseFunDefinition_(startPos, functionName, params, false);
 		}
@@ -404,7 +384,7 @@ public class SynAn {
 		return null;
 	}
 
-    private AbsFunDef parseConstructorDefinition() {
+    private AstFunctionDefinition parseConstructorDefinition() {
         Position startPos = symbol.getPosition();
 
         if (symbol.getTokenType() == TokenType.KW_INIT) {
@@ -414,7 +394,7 @@ public class SynAn {
             getNextSymbol();
             dump("constructor_definition -> init ( parameters ) function_definition'");
 
-            ArrayList<AbsParDef> params = parseParameters();
+            ArrayList<AstParameterDefinition> params = parseParameters();
 
             return parseFunDefinition_(startPos, functionName, params, true);
         }
@@ -425,12 +405,12 @@ public class SynAn {
         return null;
     }
 
-	private AbsFunDef parseFunDefinition_(Position startPos, Symbol functionName, ArrayList<AbsParDef> params, boolean isConstructor) {
-		AbsType type;
+	private AstFunctionDefinition parseFunDefinition_(Position startPos, Symbol functionName, ArrayList<AstParameterDefinition> params, boolean isConstructor) {
+		AstType type;
 
 		if (symbol.getTokenType() == TokenType.LBRACE) {
 			dump("function_definition' -> { statements } ");
-			type = new AbsAtomType(symbol.getPosition(), AtomTypeKind.VOID);
+			type = new AstAtomType(symbol.getPosition(), AtomTypeKind.VOID);
 		}
 		else {
 			dump("function_definition' -> memberType { statements } ");
@@ -445,16 +425,16 @@ public class SynAn {
 		getNextSymbol(TokenType.NEWLINE, "NEWLINE");
 		getNextSymbol();
 
-		AbsStmts expr = parseStatements();
+		AstStatements expr = parseStatements();
 		if (symbol.getTokenType() != TokenType.RBRACE)
 			Logger.error(symbol.getPosition(), "Syntax error on tokenType \""
 					+ previous.getLexeme() + "\", expected \"}\" after this tokenType");
 		getNextSymbol();
 
-		return new AbsFunDef(new Position(startPos, expr.position), functionName.getLexeme(), params, type, expr, isConstructor);
+		return new AstFunctionDefinition(new Position(startPos, expr.position), functionName.getLexeme(), params, type, expr, isConstructor);
 	}
 
-	private AbsDef parseVarDefinition() {
+	private AstDefinition parseVarDefinition() {
 		Position startPos = symbol.getPosition();
 		boolean isMutable = true;
 		Symbol id = null;
@@ -472,11 +452,11 @@ public class SynAn {
 
 		getNextSymbol();
 
-		AbsType type = null;
+		AstType type = null;
 
 		if (symbol.getTokenType() == TokenType.ASSIGN) {
 			dump("var_definition -> variableDefinition identifier = expr");
-			return new AbsVarDef(startPos, id.getLexeme(), type, isMutable);
+			return new AstVariableDefinition(startPos, id.getLexeme(), type, isMutable);
 		}
 		else if (symbol.getTokenType() != TokenType.COLON) {
             Logger.error(previous.getPosition(), "Syntax error on tokenType \""
@@ -488,10 +468,10 @@ public class SynAn {
 		dump("var_definition -> variableDefinition identifier : memberType");
 
 		type = parseType();
-		return new AbsVarDef(new Position(startPos, type.position), id.getLexeme(), type, isMutable);
+		return new AstVariableDefinition(new Position(startPos, type.position), id.getLexeme(), type, isMutable);
 	}
 
-	private AbsImportDef parseImportDefinition() {
+	private AstImportDefinition parseImportDefinition() {
 		Position pos = symbol.getPosition();
 		getNextSymbol(TokenType.IDENTIFIER, "IDENTIFIER");
 
@@ -500,14 +480,14 @@ public class SynAn {
 
 		if (symbol.getTokenType() == TokenType.DOT) {
 			getNextSymbol();
-			return parseImportDefinition_(new AbsImportDef(pos, file));
+			return parseImportDefinition_(new AstImportDefinition(pos, file));
 		}
 		else {
-            return new AbsImportDef(pos, file);
+            return new AstImportDefinition(pos, file);
         }
 	}
 
-	private AbsImportDef parseImportDefinition_(AbsImportDef def) {
+	private AstImportDefinition parseImportDefinition_(AstImportDefinition def) {
 		switch (symbol.getTokenType()) {
 		case IDENTIFIER:
 			def.definitions.add(symbol.getLexeme());
@@ -520,7 +500,7 @@ public class SynAn {
 		}
 	}
 
-	private AbsImportDef parseImportDefinition__(AbsImportDef def) {
+	private AstImportDefinition parseImportDefinition__(AstImportDefinition def) {
 		switch (symbol.getTokenType()) {
 		case COMMA:
 			getNextSymbol();
@@ -533,7 +513,7 @@ public class SynAn {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private AbsClassDef parseClassDefinition(boolean parseStructure) {
+	private AstClassDefinition parseClassDefinition(boolean parseStructure) {
 		Position start = symbol.getPosition();
 		getNextSymbol();
 
@@ -544,10 +524,10 @@ public class SynAn {
 		String className = symbol.getLexeme();
 		getNextSymbol();
 
-		AbsType baseClass = null;
+		AstType baseClass = null;
 
         // parse conformances
-        ArrayList<AbsType> conformances = parseConformances();
+        ArrayList<AstType> conformances = parseConformances();
 
         if (conformances.size() > 0) {
             baseClass = conformances.get(0);
@@ -576,18 +556,18 @@ public class SynAn {
 		getNextSymbol();
 
         if (parseStructure) {
-            return new AbsStructDef(className, definitionPosition, baseClass, definitions, defaultConstructor, constructors);
+            return new AstStructureDefinition(className, definitionPosition, baseClass, definitions, defaultConstructor, constructors);
         }
 
-        return new AbsClassDef(className, definitionPosition, baseClass, conformances, definitions, defaultConstructor, constructors, staticConstructor);
+        return new AstClassDefinition(className, definitionPosition, baseClass, conformances, definitions, defaultConstructor, constructors, staticConstructor);
 	}
 
 	@SuppressWarnings("rawtypes")
 	private ArrayList[] parseClassMemberDefinitions() {
-        ArrayList<AbsDef> definitions = new ArrayList<>();
-        ArrayList<AbsFunDef> constructors = new ArrayList<>();
-        ArrayList<AbsStmt> defaultConstructor = new ArrayList<>();
-        ArrayList<AbsStmt> staticConstructor = new ArrayList<>();
+        ArrayList<AstDefinition> definitions = new ArrayList<>();
+        ArrayList<AstFunctionDefinition> constructors = new ArrayList<>();
+        ArrayList<AstStatement> defaultConstructor = new ArrayList<>();
+        ArrayList<AstStatement> staticConstructor = new ArrayList<>();
 
         if (symbol.getTokenType() == TokenType.RBRACE) {
             return new ArrayList[] { definitions, defaultConstructor, constructors, staticConstructor };
@@ -603,25 +583,25 @@ public class SynAn {
                 return new ArrayList[] { definitions, defaultConstructor, constructors, staticConstructor };
             }
 
-            AbsDef definition = parseDefinition();
+            AstDefinition definition = parseDefinition();
 
-            if (definition instanceof AbsFunDef && ((AbsFunDef) definition).isConstructor) {
-                constructors.add((AbsFunDef) definition);
+            if (definition instanceof AstFunctionDefinition && ((AstFunctionDefinition) definition).isConstructor) {
+                constructors.add((AstFunctionDefinition) definition);
             }
             else {
                 definitions.add(definition);
 
-                if (definition instanceof AbsVarDef) {
+                if (definition instanceof AstVariableDefinition) {
                     if (symbol.getTokenType() == TokenType.ASSIGN) {
                         getNextSymbol();
                         dump("var_definition -> = expression");
 
-                        AbsVarNameExpr varNameExpr = new AbsVarNameExpr(definition.position, ((AbsVarDef) definition).name);
-                        AbsExpr valueExpr = parseExpression();
-                        AbsBinExpr dotExpr = new AbsBinExpr(
-                                new Position(definition.position, valueExpr.position), AbsBinExpr.DOT,
-                                new AbsVarNameExpr(definition.position, Constants.selfParameterIdentifier), varNameExpr);
-                        AbsBinExpr assignExpr = new AbsBinExpr(definition.position, AbsBinExpr.ASSIGN, dotExpr, valueExpr);
+                        AstVariableNameExpression varNameExpr = new AstVariableNameExpression(definition.position, ((AstVariableDefinition) definition).name);
+                        AstExpression valueExpr = parseExpression();
+                        AstBinaryExpression dotExpr = new AstBinaryExpression(
+                                new Position(definition.position, valueExpr.position), AstBinaryExpression.DOT,
+                                new AstVariableNameExpression(definition.position, Constants.selfParameterIdentifier), varNameExpr);
+                        AstBinaryExpression assignExpr = new AstBinaryExpression(definition.position, AstBinaryExpression.ASSIGN, dotExpr, valueExpr);
 
                         if (!definition.isStatic()) {
                             defaultConstructor.add(assignExpr);
@@ -647,8 +627,8 @@ public class SynAn {
         }
 	}
 
-	private ArrayList<AbsType> parseConformances() {
-        ArrayList<AbsType> conformances = new ArrayList<>();
+	private ArrayList<AstType> parseConformances() {
+        ArrayList<AstType> conformances = new ArrayList<>();
 
         if (symbol.getTokenType() == TokenType.COLON) {
             do {
@@ -661,7 +641,7 @@ public class SynAn {
         return conformances;
     }
 
-	private AbsInterfaceDef parseInterfaceDefinition() {
+	private AstInterfaceDefinition parseInterfaceDefinition() {
         Position start = symbol.getPosition();
         String interfaceName = getNextSymbol(TokenType.IDENTIFIER, "identifier").getLexeme();
         getNextSymbol();
@@ -676,7 +656,7 @@ public class SynAn {
             getNextSymbol();
         }
 
-        ArrayList<AbsDef> defs = parseInterfaceDefinitions();
+        ArrayList<AstDefinition> defs = parseInterfaceDefinitions();
         Position positition = start;
 
         if (defs.size() > 0) {
@@ -689,11 +669,11 @@ public class SynAn {
 
         getNextSymbol();
 
-        return new AbsInterfaceDef(positition, interfaceName, new AbsDefs(positition, defs));
+        return new AstInterfaceDefinition(positition, interfaceName, new AstDefinitions(positition, defs));
     }
 
-    private ArrayList<AbsDef> parseInterfaceDefinitions() {
-        ArrayList<AbsDef> defs = new ArrayList<>();
+    private ArrayList<AstDefinition> parseInterfaceDefinitions() {
+        ArrayList<AstDefinition> defs = new ArrayList<>();
 
         if (symbol.getTokenType() == TokenType.NEWLINE) {
             getNextSymbol();
@@ -712,7 +692,7 @@ public class SynAn {
 	    return defs;
     }
 
-    private AbsFunDef parseFunctionPrototype() {
+    private AstFunctionDefinition parseFunctionPrototype() {
         Position startPos = symbol.getPosition();
 
         if (symbol.getTokenType() == TokenType.KW_FUN) {
@@ -720,33 +700,33 @@ public class SynAn {
 
             getNextSymbol(TokenType.LPARENT, "(");
             getNextSymbol();
-            dump("function_prototype -> func identifier ( parameters ) function_prototype'");
+            dump("function_prototype -> functionCode identifier ( parameters ) function_prototype'");
 
-            ArrayList<AbsParDef> params = parseParameters();
+            ArrayList<AstParameterDefinition> params = parseParameters();
 
-            AbsType type;
+            AstType type;
 
             if (symbol.getTokenType() == TokenType.NEWLINE || symbol.getTokenType() == TokenType.SEMIC) {
                 dump("function_prototype' -> $ ");
                 getNextSymbol();
-                type = new AbsAtomType(symbol.getPosition(), AtomTypeKind.VOID);
+                type = new AstAtomType(symbol.getPosition(), AtomTypeKind.VOID);
             }
             else {
                 dump("function_prototype' -> memberType ");
                 type = parseType();
             }
 
-            return new AbsFunDef(new Position(startPos, type.position), functionName.getLexeme(), params, type, new AbsStmts(startPos, new ArrayList<>()));
+            return new AstFunctionDefinition(new Position(startPos, type.position), functionName.getLexeme(), params, type, new AstStatements(startPos, new ArrayList<>()));
         }
         Logger.error(previous.getPosition(), "Syntax error on tokenType \"" + previous.getLexeme() + "\", expected keyword \"functionDefinition\"");
 
         return null;
     }
 
-	private AbsEnumDef parseEnumDefinition() {
+	private AstEnumDefinition parseEnumDefinition() {
 		Position start = symbol.getPosition();
 		String name = getNextSymbol(TokenType.IDENTIFIER, "IDENTIFIER").getLexeme();
-		AbsType type = null;
+		AstType type = null;
 
 		getNextSymbol();
 		if (symbol.getTokenType() == TokenType.COLON) {
@@ -760,21 +740,21 @@ public class SynAn {
 		getNextSymbol(TokenType.NEWLINE, "\n");
 		getNextSymbol(TokenType.KW_CASE, "CASE");
 
-        ArrayList<AbsDef> enumDefinitions = parseEnumMemberDefinitions();
+        ArrayList<AstDefinition> enumDefinitions = parseEnumMemberDefinitions();
 		if (symbol.getTokenType() != TokenType.RBRACE)
 			Logger.error(symbol.getPosition(), "Syntax error on tokenType \""
 					+ symbol.getLexeme() + "\", expected \"}\"");
 		getNextSymbol();
 
 		Position end = enumDefinitions.get(enumDefinitions.size() - 1).position;
-		return new AbsEnumDef(new Position(start, end), name, enumDefinitions, (AbsAtomType) type);
+		return new AstEnumDefinition(new Position(start, end), name, enumDefinitions, (AstAtomType) type);
 	}
 
-	private ArrayList<AbsDef> parseEnumMemberDefinitions() {
-        ArrayList<AbsDef> definitions = new ArrayList<>();
+	private ArrayList<AstDefinition> parseEnumMemberDefinitions() {
+        ArrayList<AstDefinition> definitions = new ArrayList<>();
 
 		while (true) {
-			AbsDef definition = parseDefinition();
+			AstDefinition definition = parseDefinition();
 			definitions.add(definition);
 
 			if (symbol.getTokenType() == TokenType.COMMA) {
@@ -804,34 +784,34 @@ public class SynAn {
 		return definitions;
 	}
 
-	private AbsEnumMemberDef parseEnumCaseDefinition() {
+	private AstEnumMemberDefinition parseEnumCaseDefinition() {
 		if (symbol.getTokenType() == TokenType.KW_CASE)
 			getNextSymbol(TokenType.IDENTIFIER, "identifier");
-		AbsVarNameExpr name = new AbsVarNameExpr(symbol.getPosition(), symbol.getLexeme());
+		AstVariableNameExpression name = new AstVariableNameExpression(symbol.getPosition(), symbol.getLexeme());
 
 		getNextSymbol();
 		if (symbol.getTokenType() == TokenType.ASSIGN) {
 			getNextSymbol();
 
-			AbsExpr value = parseExpression();
-			if (!(value instanceof AbsAtomConstExpr))
+			AstExpression value = parseExpression();
+			if (!(value instanceof AstAtomConstExpression))
 				Logger.error(value.position, "Raw value for enum definition must be literal");
 
 			Position definitionPos = new Position(name.position, value.position);
-			return new AbsEnumMemberDef(definitionPos, name, (AbsAtomConstExpr) value);
+			return new AstEnumMemberDefinition(definitionPos, name, (AstAtomConstExpression) value);
 		}
-		return new AbsEnumMemberDef(name.position, name, null);
+		return new AstEnumMemberDefinition(name.position, name, null);
 	}
 
-	private AbsExtensionDef parseExtensionDefinition() {
+	private AstExtensionDefinition parseExtensionDefinition() {
 	    getNextSymbol();
         if (!symbol.isIdentifier()) {
             Logger.error(symbol.getPosition(), "Expected memberType getName");
         }
 
-        AbsType type = parseChildType();
+        AstType type = parseChildType();
 
-        ArrayList<AbsType> conformances = parseConformances();
+        ArrayList<AstType> conformances = parseConformances();
 
         if (symbol.getTokenType() != TokenType.LBRACE) {
             Logger.error(symbol.getPosition(), "Expected \"{\"");
@@ -839,7 +819,7 @@ public class SynAn {
 
         getNextSymbol();
 
-        AbsDefs defs = parseDefinitions();
+        AstDefinitions defs = parseDefinitions();
 
         if (symbol.getTokenType() != TokenType.RBRACE) {
             Logger.error(symbol.getPosition(), "Expected \"}\"");
@@ -847,7 +827,7 @@ public class SynAn {
 
         getNextSymbol();
 
-        return new AbsExtensionDef(
+        return new AstExtensionDefinition(
                 new Position(
                         symbol.getPosition(),
                         defs.position),
@@ -857,8 +837,8 @@ public class SynAn {
                 conformances);
     }
 
-	private AbsType parseType() {
-		AbsType type = parseChildType();
+	private AstType parseType() {
+		AstType type = parseChildType();
 
 		if (symbol.getTokenType() == TokenType.QMARK || symbol.getTokenType() == TokenType.NOT) {
 		    boolean isForced = symbol.getTokenType() == TokenType.NOT;
@@ -866,13 +846,13 @@ public class SynAn {
 			Position pos = new Position(type.position, symbol.getPosition());
 			getNextSymbol();
 
-			return new AbsOptionalType(pos, type, isForced);
+			return new AstOptionalType(pos, type, isForced);
 		}
 
 		return type;
 	}
 
-	private AbsType parseChildType() {
+	private AstType parseChildType() {
 		Symbol s = symbol;
 
 		switch (symbol.getTokenType()) {
@@ -881,60 +861,60 @@ public class SynAn {
                 dump("memberType -> logical");
                 getNextSymbol();
 
-                return new AbsAtomType(s.getPosition(), AtomTypeKind.LOG);
+                return new AstAtomType(s.getPosition(), AtomTypeKind.LOG);
             }
             if (symbol.getLexeme().equals("Int")) {
                 dump("memberType -> integer");
                 getNextSymbol();
 
-                return new AbsAtomType(s.getPosition(), AtomTypeKind.INT);
+                return new AstAtomType(s.getPosition(), AtomTypeKind.INT);
             }
             if (symbol.getLexeme().equals("Double")) {
                 dump("memberType -> double");
                 getNextSymbol();
 
-                return new AbsAtomType(s.getPosition(), AtomTypeKind.DOB);
+                return new AstAtomType(s.getPosition(), AtomTypeKind.DOB);
             }
             if (symbol.getLexeme().equals("String")) {
                 dump("memberType -> string");
                 getNextSymbol();
 
-                return new AbsAtomType(s.getPosition(), AtomTypeKind.STR);
+                return new AstAtomType(s.getPosition(), AtomTypeKind.STR);
             }
             if (symbol.getLexeme().equals("Char")) {
                 dump("memberType -> char");
                 getNextSymbol();
 
-                return new AbsAtomType(s.getPosition(), AtomTypeKind.CHR);
+                return new AstAtomType(s.getPosition(), AtomTypeKind.CHR);
             }
             if (symbol.getLexeme().equals("Void")) {
                 dump("memberType -> void");
                 getNextSymbol();
 
-                return new AbsAtomType(s.getPosition(), AtomTypeKind.VOID);
+                return new AstAtomType(s.getPosition(), AtomTypeKind.VOID);
             }
 
 			dump("memberType -> identifier");
 			getNextSymbol();
 
-			return new AbsTypeName(s.getPosition(), s.getLexeme());
+			return new AstTypeName(s.getPosition(), s.getLexeme());
 		case LBRACKET:
 			getNextSymbol();
 			dump("memberType -> [ memberType ]");
-			AbsType type = parseType();
+			AstType type = parseType();
 
 			if (symbol.getTokenType() != TokenType.RBRACKET)
 				Logger.error(symbol.getPosition(), "Syntax error, insert \"]\"");
 
 			getNextSymbol();
-			return new AbsListType(new Position(s.getPosition(), type.position), 0,
+			return new AstListType(new Position(s.getPosition(), type.position), 0,
 					type);
 		case LPARENT:
 			Position start = symbol.getPosition();
 			dump("memberType -> (parameters) -> memberType");
 			getNextSymbol();
 
-            ArrayList<AbsType> parameters = new ArrayList<>();
+            ArrayList<AstType> parameters = new ArrayList<>();
 			if (symbol.getTokenType() != TokenType.RPARENT) {
 				while (true) {
 					parameters.add(parseType());
@@ -950,7 +930,7 @@ public class SynAn {
 			getNextSymbol();
 
 			type = parseType();
-			return new AbsFunType(new Position(start, type.position), parameters, type);
+			return new AstFunctionType(new Position(start, type.position), parameters, type);
 		default:
 			Logger.error(symbol.getPosition(), "Syntax error on tokenType \""
 					+ symbol.getLexeme() + "\", expected \"variable memberType\"");
@@ -959,7 +939,7 @@ public class SynAn {
 		return null;
 	}
 
-	private ArrayList<AbsParDef> parseParameters() {
+	private ArrayList<AstParameterDefinition> parseParameters() {
 		if (symbol.getTokenType() == TokenType.RPARENT) {
 			getNextSymbol();
 			return new ArrayList<>();
@@ -967,22 +947,22 @@ public class SynAn {
 
 		dump("parameters -> parameter parameters'");
 
-		AbsParDef paramater = parseParameter();
+		AstParameterDefinition paramater = parseParameter();
 
-        ArrayList<AbsParDef> params = new ArrayList<>();
+        ArrayList<AstParameterDefinition> params = new ArrayList<>();
 		params.add(paramater);
 		params.addAll(parseParameters_());
 
 		return params;
 	}
 
-	private Vector<AbsParDef> parseParameters_() {
+	private Vector<AstParameterDefinition> parseParameters_() {
 		if (symbol.getTokenType() == TokenType.COMMA) {
 			dump("parameters' -> parameters");
 			getNextSymbol();
 
-			AbsParDef parameter = parseParameter();
-			Vector<AbsParDef> params = new Vector<>();
+			AstParameterDefinition parameter = parseParameter();
+			Vector<AstParameterDefinition> params = new Vector<>();
 			params.add(parameter);
 			params.addAll(parseParameters_());
 			return params;
@@ -996,7 +976,7 @@ public class SynAn {
 		return new Vector<>();
 	}
 
-	private AbsParDef parseParameter() {
+	private AstParameterDefinition parseParameter() {
 		if (symbol.getTokenType() == TokenType.IDENTIFIER) {
 			Symbol argumentLabel = symbol;
 			String parameterName = null;
@@ -1014,8 +994,8 @@ public class SynAn {
 
 			dump("parameter -> identifier : memberType");
 
-			AbsType type = parseType();
-			return new AbsParDef(new Position(argumentLabel.getPosition(), type.position),
+			AstType type = parseType();
+			return new AstParameterDefinition(new Position(argumentLabel.getPosition(), type.position),
 					parameterName, argumentLabel.getLexeme(), type);
 		}
 
@@ -1025,8 +1005,8 @@ public class SynAn {
 		return null;
 	}
 
-	private Vector<AbsExpr> parseExpressions() {
-		AbsExpr e = null;
+	private Vector<AstExpression> parseExpressions() {
+		AstExpression e = null;
 
 		switch (symbol.getTokenType()) {
 		case ADD:
@@ -1047,7 +1027,7 @@ public class SynAn {
 			dump("expressions -> expression expression'");
 			e = parseExpression();
 
-			Vector<AbsExpr> expressions = new Vector<>();
+			Vector<AstExpression> expressions = new Vector<>();
 			expressions.add(e);
 			expressions.addAll(parseExpressions_());
 
@@ -1060,15 +1040,15 @@ public class SynAn {
 		return null;
 	}
 
-	private Vector<AbsExpr> parseExpressions_() {
+	private Vector<AstExpression> parseExpressions_() {
 		switch (symbol.getTokenType()) {
 		case COMMA:
 			dump("expressions' -> , expression expression'");
 			getNextSymbol();
 
-			AbsExpr e = parseExpression();
+			AstExpression e = parseExpression();
 
-			Vector<AbsExpr> expressions = new Vector<>();
+			Vector<AstExpression> expressions = new Vector<>();
 			expressions.add(e);
 			expressions.addAll(parseExpressions_());
 
@@ -1085,7 +1065,7 @@ public class SynAn {
 		return new Vector<>();
 	}
 
-	private AbsExpr parseExpression() {
+	private AstExpression parseExpression() {
 		switch (symbol.getTokenType()) {
 		case ADD:
 		case SUB:
@@ -1113,7 +1093,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseExpression_(AbsExpr e) {
+	private AstExpression parseExpression_(AstExpression e) {
 		switch (symbol.getTokenType()) {
 		case SEMIC:
 		case COLON:
@@ -1131,8 +1111,8 @@ public class SynAn {
 			return e;
 		case ASSIGN:
 			getNextSymbol();
-			AbsExpr e2 = parseExpression();
-			return new AbsBinExpr(new Position(e.position, e2.position), AbsBinExpr.ASSIGN, e, e2);
+			AstExpression e2 = parseExpression();
+			return new AstBinaryExpression(new Position(e.position, e2.position), AstBinaryExpression.ASSIGN, e, e2);
 		default:
 			Logger.error(symbol.getPosition(), "Syntax error on tokenType \""
 					+ symbol.getLexeme() + "\", delete this tokenType");
@@ -1141,7 +1121,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseIorExpression() {
+	private AstExpression parseIorExpression() {
 		switch (symbol.getTokenType()) {
 		case ADD:
 		case SUB:
@@ -1170,14 +1150,14 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseIorExpression_(AbsExpr e) {
+	private AstExpression parseIorExpression_(AstExpression e) {
 		switch (symbol.getTokenType()) {
 		case IOR:
 			dump("logical_ior_expression' -> | log_ior_expression");
 			getNextSymbol();
-			AbsExpr expr = parseAndExpression();
-			return parseIorExpression_(new AbsBinExpr(new Position(e.position,
-					expr.position), AbsBinExpr.IOR, e, expr));
+			AstExpression expr = parseAndExpression();
+			return parseIorExpression_(new AstBinaryExpression(new Position(e.position,
+					expr.position), AstBinaryExpression.IOR, e, expr));
 		case SEMIC:
 		case COLON:
 		case NEWLINE:
@@ -1201,7 +1181,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseAndExpression() {
+	private AstExpression parseAndExpression() {
 		switch (symbol.getTokenType()) {
 		case ADD:
 		case SUB:
@@ -1230,7 +1210,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseAndExpression_(AbsExpr e) {
+	private AstExpression parseAndExpression_(AstExpression e) {
 		switch (symbol.getTokenType()) {
             case LOG_CONST:
                 break;
@@ -1246,9 +1226,9 @@ public class SynAn {
 			dump("logical_and_expression' -> & logical_and_expression");
 			getNextSymbol();
 
-			AbsExpr expr = parseCmpExpression();
-			return parseAndExpression_(new AbsBinExpr(new Position(e.position,
-					expr.position), AbsBinExpr.AND, e, expr));
+			AstExpression expr = parseCmpExpression();
+			return parseAndExpression_(new AstBinaryExpression(new Position(e.position,
+					expr.position), AstBinaryExpression.AND, e, expr));
         case IOR:
 		case SEMIC:
 		case NEWLINE:
@@ -1315,7 +1295,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseCmpExpression() {
+	private AstExpression parseCmpExpression() {
 		switch (symbol.getTokenType()) {
 		case ADD:
 		case SUB:
@@ -1344,8 +1324,8 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseCmpExpression_(AbsExpr e) {
-		AbsExpr expr = null;
+	private AstExpression parseCmpExpression_(AstExpression e) {
+		AstExpression expr = null;
 		int oper = -1;
 
 		switch (symbol.getTokenType()) {
@@ -1371,69 +1351,69 @@ public class SynAn {
 			getNextSymbol();
 
 			expr = parseAddExpression();
-			oper = AbsBinExpr.EQU;
+			oper = AstBinaryExpression.EQU;
 			break;
         case KW_IS:
             dump("compare_expression' -> is compare_expression");
             getNextSymbol();
 
             expr = parseAddExpression();
-            oper = AbsBinExpr.IS;
+            oper = AstBinaryExpression.IS;
             break;
 
         case KW_AS:
             dump("compare_expression' -> as identifier");
             getNextSymbol();
 
-            expr = new AbsVarNameExpr(symbol.getPosition(), symbol.getLexeme());;
+            expr = new AstVariableNameExpression(symbol.getPosition(), symbol.getLexeme());;
             getNextSymbol();
 
-            oper = AbsBinExpr.AS;
+            oper = AstBinaryExpression.AS;
             break;
 		case NEQ:
 			dump("compare_expression' -> != compare_expression");
 			getNextSymbol();
 
 			expr = parseAddExpression();
-			oper = AbsBinExpr.NEQ;
+			oper = AstBinaryExpression.NEQ;
 			break;
 		case GTH:
 			dump("compare_expression' -> > compare_expression");
 			getNextSymbol();
 
 			expr = parseAddExpression();
-			oper = AbsBinExpr.GTH;
+			oper = AstBinaryExpression.GTH;
 			break;
 		case LTH:
 			dump("compare_expression' -> < compare_expression");
 			getNextSymbol();
 
 			expr = parseAddExpression();
-			oper = AbsBinExpr.LTH;
+			oper = AstBinaryExpression.LTH;
 			break;
 		case GEQ:
 			dump("compare_expression' -> >= compare_expression");
 			getNextSymbol();
 
 			expr = parseAddExpression();
-			oper = AbsBinExpr.GEQ;
+			oper = AstBinaryExpression.GEQ;
 			break;
 		case LEQ:
 			dump("compare_expression' -> <= compare_expression");
 			getNextSymbol();
 
 			expr = parseAddExpression();
-			oper = AbsBinExpr.LEQ;
+			oper = AstBinaryExpression.LEQ;
 			break;
 		default:
 			Logger.error(symbol.getPosition(), "Syntax error on tokenType \""
 					+ symbol.getLexeme() + "\", delete this tokenType");
 		}
 
-		return new AbsBinExpr(new Position(e.position, expr.position), oper, e, expr);
+		return new AstBinaryExpression(new Position(e.position, expr.position), oper, e, expr);
 	}
 
-	private AbsExpr parseAddExpression() {
+	private AstExpression parseAddExpression() {
 		switch (symbol.getTokenType()) {
 		case ADD:
 		case SUB:
@@ -1462,8 +1442,8 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseAddExpression_(AbsExpr e) {
-		AbsExpr expr = null;
+	private AstExpression parseAddExpression_(AstExpression e) {
+		AstExpression expr = null;
 
 		switch (symbol.getTokenType()) {
 		case AND:
@@ -1496,15 +1476,15 @@ public class SynAn {
 			getNextSymbol();
 
 			expr = parseMulExpression();
-			return parseAddExpression_(new AbsBinExpr(new Position(e.position,
-					expr.position), AbsBinExpr.ADD, e, expr));
+			return parseAddExpression_(new AstBinaryExpression(new Position(e.position,
+					expr.position), AstBinaryExpression.ADD, e, expr));
 		case SUB:
 			dump("add_expression' -> - add_expression");
 			getNextSymbol();
 
 			expr = parseMulExpression();
-			return parseAddExpression_(new AbsBinExpr(e.position,
-					AbsBinExpr.SUB, e, expr));
+			return parseAddExpression_(new AstBinaryExpression(e.position,
+					AstBinaryExpression.SUB, e, expr));
 		default:
 			Logger.error(symbol.getPosition(), "Syntax error on parseAddExpression_");
 		}
@@ -1512,7 +1492,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseMulExpression() {
+	private AstExpression parseMulExpression() {
 		switch (symbol.getTokenType()) {
 		case ADD:
 		case SUB:
@@ -1541,8 +1521,8 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseMulExpression_(AbsExpr e) {
-		AbsExpr expr = null;
+	private AstExpression parseMulExpression_(AstExpression e) {
+		AstExpression expr = null;
 		int oper = -1;
 
 		switch (symbol.getTokenType()) {
@@ -1574,25 +1554,25 @@ public class SynAn {
 			dump("multiplicative_expression' -> e");
 			return e;
 		case MUL:
-			oper = AbsBinExpr.MUL;
+			oper = AstBinaryExpression.MUL;
 			dump("multiplicative_expression' -> prefix_expression multiplicative_expression'");
 			getNextSymbol();
 			expr = parsePrefixExpression();
 			break;
 		case DIV:
-			oper = AbsBinExpr.DIV;
+			oper = AstBinaryExpression.DIV;
 			dump("multiplicative_expression' -> prefix_expression multiplicative_expression'");
 			getNextSymbol();
 			expr = parsePrefixExpression();
 			break;
 		case MOD:
-			oper = AbsBinExpr.MOD;
+			oper = AstBinaryExpression.MOD;
 			dump("multiplicative_expression' -> prefix_expression multiplicative_expression'");
 			getNextSymbol();
 			expr = parsePrefixExpression();
 			break;
 		case DOT:
-			oper = AbsBinExpr.DOT;
+			oper = AstBinaryExpression.DOT;
 			dump("multiplicative_expression' -> prefix_expression multiplicative_expression'");
 			getNextSymbol();
 			expr = parsePrefixExpression();
@@ -1603,19 +1583,19 @@ public class SynAn {
 					+ symbol.getLexeme() + "\", delete this tokenType");
 		}
 
-		expr = new AbsBinExpr(new Position(e.position, expr.position), oper, e, expr);
+		expr = new AstBinaryExpression(new Position(e.position, expr.position), oper, e, expr);
 
-        if (expr instanceof AbsBinExpr) {
-            AbsBinExpr binExpr = (AbsBinExpr) expr;
+        if (expr instanceof AstBinaryExpression) {
+            AstBinaryExpression binExpr = (AstBinaryExpression) expr;
 
             // TODO: - Fix this (object.data[index] is not parsed in the right way at the moment
             // so this is a temporary solution
-            if (binExpr.oper == AbsBinExpr.DOT && binExpr.expr2 instanceof AbsBinExpr) {
-                AbsBinExpr binExpr2 = (AbsBinExpr) binExpr.expr2;
+            if (binExpr.oper == AstBinaryExpression.DOT && binExpr.expr2 instanceof AstBinaryExpression) {
+                AstBinaryExpression binExpr2 = (AstBinaryExpression) binExpr.expr2;
 
-                if (binExpr2.oper == AbsBinExpr.ARR) {
-                    expr = new AbsBinExpr(binExpr.position, AbsBinExpr.ARR,
-                            new AbsBinExpr(binExpr.expr1.position, AbsBinExpr.DOT, binExpr.expr1, binExpr2.expr1), binExpr2.expr2);
+                if (binExpr2.oper == AstBinaryExpression.ARR) {
+                    expr = new AstBinaryExpression(binExpr.position, AstBinaryExpression.ARR,
+                            new AstBinaryExpression(binExpr.expr1.position, AstBinaryExpression.DOT, binExpr.expr1, binExpr2.expr1), binExpr2.expr2);
                 }
             }
         }
@@ -1624,8 +1604,8 @@ public class SynAn {
         return parseMulExpression_(expr);
 	}
 
-	private AbsExpr parsePrefixExpression() {
-		AbsExpr e = null;
+	private AstExpression parsePrefixExpression() {
+		AstExpression e = null;
 		Symbol op = symbol;
 
 		switch (symbol.getTokenType()) {
@@ -1634,36 +1614,36 @@ public class SynAn {
 			getNextSymbol();
 
 			e = parsePrefixExpression();
-			return new AbsUnExpr(new Position(op.getPosition(), e.position),
-					AbsUnExpr.ADD, e);
+			return new AstUnaryExpression(new Position(op.getPosition(), e.position),
+					AstUnaryExpression.ADD, e);
 		case SUB:
 			dump("prefix_expression -> - prefix_expression");
 			getNextSymbol();
 
 			e = parsePrefixExpression();
-			return new AbsUnExpr(new Position(op.getPosition(), e.position),
-					AbsUnExpr.SUB, e);
+			return new AstUnaryExpression(new Position(op.getPosition(), e.position),
+					AstUnaryExpression.SUB, e);
 		case NOT:
 			dump("prefix_expression -> ! prefix_expression");
 			getNextSymbol();
 
 			e = parsePrefixExpression();
-			return new AbsUnExpr(new Position(op.getPosition(), e.position),
-					AbsUnExpr.NOT, e);
+			return new AstUnaryExpression(new Position(op.getPosition(), e.position),
+					AstUnaryExpression.NOT, e);
 		case AND:
 			dump("prefix_expression -> & prefix_expression");
 			getNextSymbol();
 
 			e = parsePrefixExpression();
-			return new AbsUnExpr(new Position(op.getPosition(), e.position),
-					AbsUnExpr.MEM, e);
+			return new AstUnaryExpression(new Position(op.getPosition(), e.position),
+					AstUnaryExpression.MEM, e);
 		case MUL:
 			dump("prefix_expression -> * prefix_expression");
 			getNextSymbol();
 
 			e = parsePrefixExpression();
-			return new AbsUnExpr(new Position(op.getPosition(), e.position),
-					AbsUnExpr.VAL, e);
+			return new AstUnaryExpression(new Position(op.getPosition(), e.position),
+					AstUnaryExpression.VAL, e);
 		case LOG_CONST:
 		case INT_CONST:
 		case STR_CONST:
@@ -1687,7 +1667,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parsePostfixExpression() {
+	private AstExpression parsePostfixExpression() {
 		switch (symbol.getTokenType()) {
 		case LOG_CONST:
 		case INT_CONST:
@@ -1715,7 +1695,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parsePostfixExpression_(AbsExpr e) {
+	private AstExpression parsePostfixExpression_(AstExpression e) {
 		Position symbolPos = symbol.getPosition();
 
 		switch (symbol.getTokenType()) {
@@ -1753,22 +1733,22 @@ public class SynAn {
 		case LBRACKET:
 			dump("postfix_expression' -> [ expression ] postfix_expression'");
 			getNextSymbol();
-			AbsExpr expr = parseExpression();
+			AstExpression expr = parseExpression();
 			if (symbol.getTokenType() != TokenType.RBRACKET)
 				Logger.error(previous.getPosition(),
 						"Syntax error, insert \"]\" to complete expression");
 			getNextSymbol();
 
-			return parsePostfixExpression_(new AbsBinExpr(new Position(
-					e.position, expr.position), AbsBinExpr.ARR, e, expr));
+			return parsePostfixExpression_(new AstBinaryExpression(new Position(
+					e.position, expr.position), AstBinaryExpression.ARR, e, expr));
 		case QMARK:
 			dump("postfix_expression' -> optional evaluation expression");
 			getNextSymbol();
-			return new AbsOptionalEvaluationExpr(new Position(e.position, symbolPos), e);
+			return new AstOptionalEvaluationExpression(new Position(e.position, symbolPos), e);
 		case NOT:
 			dump("postfix_expression' -> force value expression");
 			getNextSymbol();
-			return new AbsForceValueExpr(
+			return new AstForceValueExpression(
 					new Position(e.position, symbolPos), e);
 		default:
 			Logger.error(symbol.getPosition(), "Syntax error on tokenType \""
@@ -1778,7 +1758,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsExpr parseAtomExpression() {
+	private AstExpression parseAtomExpression() {
 		Symbol current = symbol;
 
 		switch (symbol.getTokenType()) {
@@ -1786,37 +1766,37 @@ public class SynAn {
 			dump("atom_expression -> log_const");
 			getNextSymbol();
 
-			return new AbsAtomConstExpr(current.getPosition(), AtomTypeKind.LOG,
+			return new AstAtomConstExpression(current.getPosition(), AtomTypeKind.LOG,
 					current.getLexeme());
 		case INT_CONST:
 			dump("atom_expression -> int_const");
 			getNextSymbol();
 
-			return new AbsAtomConstExpr(current.getPosition(), AtomTypeKind.INT,
+			return new AstAtomConstExpression(current.getPosition(), AtomTypeKind.INT,
 					current.getLexeme());
 		case STR_CONST:
 			dump("atom_expression -> str_const");
 			getNextSymbol();
 
-			return new AbsAtomConstExpr(current.getPosition(), AtomTypeKind.STR,
+			return new AstAtomConstExpression(current.getPosition(), AtomTypeKind.STR,
 					current.getLexeme());
 		case CHAR_CONST:
 			dump("atom_expression -> char_const");
 			getNextSymbol();
 
-			return new AbsAtomConstExpr(current.getPosition(), AtomTypeKind.CHR,
+			return new AstAtomConstExpression(current.getPosition(), AtomTypeKind.CHR,
 					current.getLexeme());
 		case DOUBLE_CONST:
 			dump("atom_expression -> double_const");
 			getNextSymbol();
 
-			return new AbsAtomConstExpr(current.getPosition(), AtomTypeKind.DOB,
+			return new AstAtomConstExpression(current.getPosition(), AtomTypeKind.DOB,
 					current.getLexeme());
 		case KW_NULL:
 			dump("atom_expression -> nil");
 			getNextSymbol();
 
-			return new AbsAtomConstExpr(current.getPosition(), AtomTypeKind.NIL,
+			return new AstAtomConstExpression(current.getPosition(), AtomTypeKind.NIL,
 					current.getLexeme());
 		case IDENTIFIER:
 			getNextSymbol();
@@ -1826,27 +1806,27 @@ public class SynAn {
 				if (symbol.getTokenType() == TokenType.RPARENT) {
 					dump("atom_expression -> identifier ( )");
 					getNextSymbol();
-					return new AbsFunCall(symbol.getPosition(), current.getLexeme(), new ArrayList<>());
+					return new AstFunctionCallExpression(symbol.getPosition(), current.getLexeme(), new ArrayList<>());
 				}
 
 				dump("atom_expression -> identifier ( expressions )");
 
 				// TODO: - Optimize this
 				// FIXME: - Function arguments should be parsed with their own method
-                ArrayList<AbsExpr> arguments = parseTupleExpressions(true);
+                ArrayList<AstExpression> arguments = parseTupleExpressions(true);
 
-                ArrayList<AbsLabeledExpr> absExprs = new ArrayList<>();
-				for (AbsExpr e : arguments)
-					absExprs.add((AbsLabeledExpr) e);
+                ArrayList<AstLabeledExpr> absExprs = new ArrayList<>();
+				for (AstExpression e : arguments)
+					absExprs.add((AstLabeledExpr) e);
 
 				if (symbol.getTokenType() != TokenType.RPARENT)
 					Logger.error(symbol.getPosition(), "Expected ')'");
 				getNextSymbol();
 
-				return new AbsFunCall(new Position(current.getPosition(), absExprs.get(absExprs.size() - 1).position), current.getLexeme(), absExprs);
+				return new AstFunctionCallExpression(new Position(current.getPosition(), absExprs.get(absExprs.size() - 1).position), current.getLexeme(), absExprs);
 			} else {
 				dump("atom_expression -> identifier");
-				return new AbsVarNameExpr(current.getPosition(), current.getLexeme());
+				return new AstVariableNameExpression(current.getPosition(), current.getLexeme());
 			}
 		case LBRACKET:
 			return parseBracket();
@@ -1856,11 +1836,11 @@ public class SynAn {
 			// FIXME
 			if (symbol.getTokenType() == TokenType.SEMIC || symbol.getTokenType() == TokenType.NEWLINE) {
 				dump("atom_expression -> return");
-				return new AbsReturnExpr(pos, null);
+				return new AstReturnExpression(pos, null);
 			}
 			dump("atom_expression -> return expression");
-			AbsExpr e = parseExpression();
-			return new AbsReturnExpr(new Position(pos, e.position), e);
+			AstExpression e = parseExpression();
+			return new AstReturnExpression(new Position(pos, e.position), e);
 		case LPARENT:
 			return parseTupleExpression(false);
 		default:
@@ -1869,7 +1849,7 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsConditionalStmt parseForLoop() {
+	private AstConditionalStatement parseForLoop() {
 		if (symbol.getTokenType() == TokenType.KW_FOR) {
 			Position start = symbol.getPosition();
 			Symbol count = getNextSymbol(TokenType.IDENTIFIER, "identifier");
@@ -1881,7 +1861,7 @@ public class SynAn {
 						+ "\", expected keyword \"in\" after this tokenType");
 			getNextSymbol();
 
-			AbsExpr e = parseExpression();
+			AstExpression e = parseExpression();
 			if (symbol.getTokenType() != TokenType.LBRACE)
 				Logger.error(previous.getPosition(), "Syntax error on tokenType \""
 						+ previous.getLexeme()
@@ -1890,7 +1870,7 @@ public class SynAn {
 			getNextSymbol(TokenType.NEWLINE, "NEWLINE");
 			getNextSymbol();
 
-			AbsStmts s = parseStatements();
+			AstStatements s = parseStatements();
 
 			if (symbol.getTokenType() != TokenType.RBRACE)
 				Logger.error(previous.getPosition(), "Syntax error on tokenType \""
@@ -1898,9 +1878,9 @@ public class SynAn {
 						+ "\", expected \"}\" after this tokenType");
 			getNextSymbol();
 
-			return new AbsForStmt(
+			return new AstForStatement(
 			        new Position(start, s.position),
-                    new AbsVarNameExpr(
+                    new AstVariableNameExpression(
                             count.getPosition(),
                             count.getLexeme()),
                     e,
@@ -1912,16 +1892,16 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsConditionalStmt parseWhileLoop() {
+	private AstConditionalStatement parseWhileLoop() {
 		if (symbol.getTokenType() == TokenType.KW_WHILE) {
 			Position start = symbol.getPosition();
 			getNextSymbol();
-			AbsExpr e1 = parseExpression();
+			AstExpression e1 = parseExpression();
 			if (symbol.getTokenType() == TokenType.LBRACE) {
 				getNextSymbol(TokenType.NEWLINE, "NEWLINE");
 				getNextSymbol();
 
-				AbsStmts s = parseStatements();
+				AstStatements s = parseStatements();
 
 				if (symbol.getTokenType() != TokenType.RBRACE)
 					Logger.error(symbol.getPosition(), "Syntax error on tokenType \""
@@ -1929,7 +1909,7 @@ public class SynAn {
 							+ "\", expected '}' after this tokenType");
 				getNextSymbol();
 
-				return new AbsWhileStmt(new Position(start, s.position), e1, s);
+				return new AstWhileStatement(new Position(start, s.position), e1, s);
 			}
 			Logger.error(previous.getPosition(), "Syntax error on tokenType \""
 					+ previous.getLexeme() + "\", expected \"{\" after this tokenType");
@@ -1944,13 +1924,13 @@ public class SynAn {
 		dump("if_expression -> if epression { statements }");
 
 		getNextSymbol();
-		AbsExpr condition = parseExpression();
+		AstExpression condition = parseExpression();
 		if (symbol.getTokenType() != TokenType.LBRACE)
 			Logger.error(symbol.getPosition(), "Syntax error on tokenType \""
 					+ previous.getLexeme() + "\", expected '{' after this tokenType");
 		getNextSymbol(TokenType.NEWLINE, "NEWLINE");
 		getNextSymbol();
-		AbsStmts s = parseStatements();
+		AstStatements s = parseStatements();
 		if (symbol.getTokenType() != TokenType.RBRACE)
 			Logger.error(symbol.getPosition(), "Syntax error on tokenType \""
 					+ previous.getLexeme() + "\", expected '}' after this tokenType");
@@ -1958,7 +1938,7 @@ public class SynAn {
 		return new Condition(condition, s);
 	}
 
-	private AbsIfStmt parseIf() {
+	private AstIfStatement parseIf() {
 		if (symbol.getTokenType() == TokenType.KW_IF) {
 			Position start = symbol.getPosition();
 			return parseIf_(start, parseIfCondition());
@@ -1968,13 +1948,13 @@ public class SynAn {
 		return null;
 	}
 
-	private AbsIfStmt parseIf_(Position start, Condition condition) {
+	private AstIfStatement parseIf_(Position start, Condition condition) {
 		if (symbol.getTokenType() == TokenType.NEWLINE)
 			getNextSymbol();
 
         ArrayList<Condition> conditions = new ArrayList<>();
 		conditions.add(condition);
-		AbsStmts elseBody = null;
+		AstStatements elseBody = null;
 
 		while (true) {
 			if (symbol.getTokenType() == TokenType.KW_ELSE) {
@@ -2006,10 +1986,10 @@ public class SynAn {
 
 		Position lastPos = elseBody != null ?
 				elseBody.position : conditions.get(conditions.size() - 1).body.position;
-		return new AbsIfStmt(new Position(condition.cond.position, lastPos), conditions, elseBody);
+		return new AstIfStatement(new Position(condition.condition.position, lastPos), conditions, elseBody);
 	}
 
-	private AbsSwitchStmt parseSwitch() {
+	private AstSwitchStatement parseSwitch() {
 		if (symbol.getTokenType() != TokenType.KW_SWITCH)
 			Logger.error(symbol.getPosition(),
 					"Syntax error, expected keyword \"switch\"");
@@ -2017,15 +1997,15 @@ public class SynAn {
 		Position start = symbol.getPosition();
 		getNextSymbol();
 
-		AbsExpr subjectExpr = parseExpression();
+		AstExpression subjectExpr = parseExpression();
 		getNextSymbol(TokenType.NEWLINE, "newline");
 		getNextSymbol();
 
 		if (symbol.getTokenType() != TokenType.KW_CASE)
 			Logger.error(symbol.getPosition(), "Syntax error, \"switch\" must be followed by at least one \"case\" statement");
 
-        ArrayList<AbsCaseStmt> cases = new ArrayList<>();
-		AbsStmts defaultBody = null;
+        ArrayList<AstCaseStatement> cases = new ArrayList<>();
+		AstStatements defaultBody = null;
 
 		while (symbol.getTokenType() == TokenType.KW_CASE)
 			cases.add(parseCase());
@@ -2045,10 +2025,10 @@ public class SynAn {
 		Position switchPos = new Position(start,
 				defaultBody != null ? defaultBody.position : cases.get(cases.size() - 1).position);
 
-		return new AbsSwitchStmt(switchPos, subjectExpr, cases, defaultBody);
+		return new AstSwitchStatement(switchPos, subjectExpr, cases, defaultBody);
 	}
 
-	private AbsCaseStmt parseCase() {
+	private AstCaseStatement parseCase() {
 		if (symbol.getTokenType() != TokenType.KW_CASE)
 			Logger.error(symbol.getPosition(),
 					"Syntax error, expected keyword \"case\"");
@@ -2056,7 +2036,7 @@ public class SynAn {
 		Position start = symbol.getPosition();
 		getNextSymbol();
 
-        ArrayList<AbsExpr> expressions = new ArrayList<>();
+        ArrayList<AstExpression> expressions = new ArrayList<>();
 		expressions.add(parseExpression());
 
 		// join conditions
@@ -2076,13 +2056,13 @@ public class SynAn {
 		if (symbol.getTokenType() == TokenType.KW_CASE || symbol.getTokenType() == TokenType.KW_DEFAULT)
 			Logger.error(symbol.getPosition(), "Case should have at least one executable statement");
 
-		AbsStmts body = parseStatements();
+		AstStatements body = parseStatements();
 		Position casePos = new Position(start, body.position);
 
-		return new AbsCaseStmt(casePos, expressions, body);
+		return new AstCaseStatement(casePos, expressions, body);
 	}
 
-	private AbsExpr parseBracket() {
+	private AstExpression parseBracket() {
 		dump("atom_expression -> []");
 
 		Position start = symbol.getPosition();
@@ -2090,24 +2070,24 @@ public class SynAn {
 
 		if (symbol.getTokenType() == TokenType.RBRACKET) {
 			getNextSymbol();
-			return new AbsListExpr(start, new ArrayList<>());
+			return new AstListExpr(start, new ArrayList<>());
 		}
 
-		AbsExpr e1 = parseExpression();
+		AstExpression e1 = parseExpression();
 
 //		if (symbol.getTokenType() == Token.KW_FOR) {
 //			dump("[] -> [ expression for identifier in expression ]");
 //			Vector<AbsStmt> stmt = new Vector<>();
 //			stmt.add(e1);
-//			AbsStmts s = new AbsStmts(new Position(start, e1.position), stmt);
+//			AstStatements s = new AstStatements(new Position(start, e1.position), stmt);
 //
 //			if (symbol.getTokenType() != Token.KW_FOR)
 //				Logger.error(previous.getPosition(), "Syntax error on tokenType \""
 //						+ previous.getLexeme()
 //						+ "\", expected keyword \"for\" after this tokenType");
 //
-//			Symbol count = getNextSymbol(new Symbol(Token.IDENTIFIER, "identifier", null));
-//			AbsVarNameExpr variableDefinition = new AbsVarNameExpr(count.position, count.lexeme);
+//			Symbol elementCount = getNextSymbol(new Symbol(Token.IDENTIFIER, "identifier", null));
+//			AstVariableNameExpression variableDefinition = new AstVariableNameExpression(elementCount.position, elementCount.lexeme);
 //			getNextSymbol();
 //
 //			if (symbol.getTokenType() != Token.KW_IN)
@@ -2116,7 +2096,7 @@ public class SynAn {
 //						+ "\", expected keyword \"in\" after this tokenType");
 //			getNextSymbol();
 //
-//			AbsExpr e2 = parseExpression();
+//			AstExpression e2 = parseExpression();
 //
 //			if (symbol.getTokenType() != Token.RBRACKET)
 //				Logger.error(previous.getPosition(), "Syntax error on tokenType \""
@@ -2124,12 +2104,12 @@ public class SynAn {
 //						+ "\", expected \"]\" after this tokenType");
 //			getNextSymbol();
 //
-//			return new AbsForStmt(new Position(start, e2.position), variableDefinition, e2, s);
+//			return new AstForStatement(new Position(start, e2.position), variableDefinition, e2, s);
 //		}
 
 		/*else */if (symbol.getTokenType() == TokenType.COMMA) {
 			dump("[] -> [expression, expressions']");
-            ArrayList<AbsExpr> elements = new ArrayList<>();
+            ArrayList<AstExpression> elements = new ArrayList<>();
 			elements.add(e1);
 			while (symbol.getTokenType() == TokenType.COMMA) {
 				getNextSymbol();
@@ -2140,25 +2120,25 @@ public class SynAn {
 						+ previous.getLexeme()
 						+ "\", expected \"]\" after this tokenType");
 			getNextSymbol();
-			return new AbsListExpr(new Position(elements.get(0).position, elements.get(elements.size() - 1).position), elements);
+			return new AstListExpr(new Position(elements.get(0).position, elements.get(elements.size() - 1).position), elements);
 		}
 		else if (symbol.getTokenType() == TokenType.RBRACKET) {
 			dump("[] -> [expression]");
-            ArrayList<AbsExpr> elements = new ArrayList<>();
+            ArrayList<AstExpression> elements = new ArrayList<>();
 			elements.add(e1);
 			getNextSymbol();
-			return new AbsListExpr(new Position(elements.get(0).position, elements.get(elements.size() - 1).position), elements);
+			return new AstListExpr(new Position(elements.get(0).position, elements.get(elements.size() - 1).position), elements);
 		}
 
 		return null;
 	}
 
 
-	private AbsTupleExpr parseTupleExpression(boolean argumentTuple) {
+	private AstTupleExpression parseTupleExpression(boolean argumentTuple) {
 		Position start = symbol.getPosition();
 		getNextSymbol();
 
-        ArrayList<AbsExpr> expressions = parseTupleExpressions(argumentTuple);
+        ArrayList<AstExpression> expressions = parseTupleExpressions(argumentTuple);
 
 		if (symbol.getTokenType() != TokenType.RPARENT)
 			Logger.error(symbol.getPosition(), "Expected ')'");
@@ -2166,30 +2146,30 @@ public class SynAn {
 		Position tuplePos = new Position(start, symbol.getPosition());
 		getNextSymbol();
 
-		return new AbsTupleExpr(tuplePos, expressions);
+		return new AstTupleExpression(tuplePos, expressions);
 	}
 
-	private ArrayList<AbsExpr> parseTupleExpressions(boolean argumentTuple) {
+	private ArrayList<AstExpression> parseTupleExpressions(boolean argumentTuple) {
 		int index = 0;
-        ArrayList<AbsExpr> expressions = new ArrayList<>();
+        ArrayList<AstExpression> expressions = new ArrayList<>();
 
 		while (true) {
-			AbsExpr e1 = parseExpression();
+			AstExpression e1 = parseExpression();
 
 			if (symbol.getTokenType() == TokenType.COLON) {
-				if (!(e1 instanceof AbsVarNameExpr))
+				if (!(e1 instanceof AstVariableNameExpression))
 					Logger.error(e1.position, "Expected identifier for tuple member getName");
 
-				String memberName = ((AbsVarNameExpr) e1).name;
+				String memberName = ((AstVariableNameExpression) e1).name;
 
 				// TODO
 //				if (names.contains(memberName))
 //					Logger.error(e1.position, "This tuple already contains member named \"" + memberName + "\"");
 
 				getNextSymbol();
-				AbsExpr e2 = parseExpression();
+				AstExpression e2 = parseExpression();
 				Position pos = new Position(e1.position, e2.position);
-				expressions.add(new AbsLabeledExpr(pos, e2, memberName));
+				expressions.add(new AstLabeledExpr(pos, e2, memberName));
 			}
 			else {
 				String memberName;
@@ -2199,7 +2179,7 @@ public class SynAn {
 				else
 					memberName = String.valueOf(index);
 
-				expressions.add(new AbsLabeledExpr(e1.position, e1, memberName));
+				expressions.add(new AstLabeledExpr(e1.position, e1, memberName));
 			}
 
 			if (symbol.getTokenType() == TokenType.RPARENT)

@@ -22,15 +22,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
-import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AstDefinition;
 
 public class InitTable {
 	
 	/**
 	 * Already initialized variables.
 	 */
-	private static HashSet<AbsDef> initTable = new HashSet<>();
-	private static HashMap<AbsDef, HashSet<Integer>> scopes = new HashMap<>();
+	private static HashSet<AstDefinition> initTable = new HashSet<>();
+	private static HashMap<AstDefinition, HashSet<Integer>> scopes = new HashMap<>();
 	
 	/**
 	 * Current initialization scope.
@@ -40,7 +40,7 @@ public class InitTable {
 	/**
 	 * Initialize variable.
 	 */
-	public static void initialize(AbsDef var) {
+	public static void initialize(AstDefinition var) {
 		initTable.add(var);
 		
 		HashSet<Integer> currentScope = scopes.get(var);
@@ -53,7 +53,7 @@ public class InitTable {
 	/**
 	 * Unitialize variable.
 	 */
-	public static void uninitialize(AbsDef var) {
+	public static void uninitialize(AstDefinition var) {
 		initTable.remove(var);
 		scopes.remove(var);
 	}
@@ -62,7 +62,7 @@ public class InitTable {
 	 * Check if variable is initialized
 	 * @return true if variable is initialized, otherwise false
 	 */
-	public static boolean isInitialized(AbsDef var) {
+	public static boolean isInitialized(AstDefinition var) {
 		return initTable.contains(var);
 	}
 	
@@ -79,10 +79,10 @@ public class InitTable {
 	 */
 	public static void oldScope() {
 		// TODO: - O(n), should increase speed? 
-		Iterator<Map.Entry<AbsDef, HashSet<Integer>>> iter = scopes.entrySet().iterator();
+		Iterator<Map.Entry<AstDefinition, HashSet<Integer>>> iter = scopes.entrySet().iterator();
 
 		while (iter.hasNext()) {
-		    Map.Entry<AbsDef, HashSet<Integer>> entry = iter.next();
+		    Map.Entry<AstDefinition, HashSet<Integer>> entry = iter.next();
 		    entry.getValue().remove(scope);
 
 		    if (entry.getValue().size() == 0) {

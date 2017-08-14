@@ -17,17 +17,17 @@
 
 package compiler.frames;
 
-import compiler.ast.tree.def.AbsDef;
-import compiler.ast.tree.def.AbsVarDef;
+import compiler.ast.tree.def.AstDefinition;
+import compiler.ast.tree.def.AstVariableDefinition;
 import compiler.seman.type.CanType;
 import compiler.seman.type.ObjectType;
 import compiler.seman.type.Type;
 
 public abstract class FrmAccess {
 
-    public static FrmAccess createAccess(AbsVarDef acceptor,
+    public static FrmAccess createAccess(AstVariableDefinition acceptor,
                                          Type acceptorType,
-                                         AbsDef parentDefinition,
+                                         AstDefinition parentDefinition,
                                          Type parentType,
                                          boolean isGlobal,
                                          FrmFrame currentFrame) {

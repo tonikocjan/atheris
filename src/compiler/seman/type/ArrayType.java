@@ -17,7 +17,7 @@
 
 package compiler.seman.type;
 
-import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AstDefinition;
 
 public class ArrayType extends Type implements ReferenceType {
 
@@ -70,7 +70,7 @@ public class ArrayType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public AbsDef findMemberDefinitionForName(String name) {
+	public AstDefinition findMemberDefinitionForName(String name) {
 		return null;
 	}
 }

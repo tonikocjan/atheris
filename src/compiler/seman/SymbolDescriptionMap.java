@@ -1,14 +1,14 @@
 package compiler.seman;
 
-import compiler.ast.tree.AbsTree;
-import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.AstNode;
+import compiler.ast.tree.def.AstDefinition;
 import compiler.seman.type.Type;
 
 public interface SymbolDescriptionMap {
-    void setScope(AbsTree node, int nodeScope);
-    Integer getScope(AbsTree node);
-    void setDefinitionForAstNode(AbsTree node, AbsDef def);
-    AbsDef getDefinitionForAstNode(AbsTree node);
-    void setTypeForAstNode(AbsTree node, Type type);
-    Type getTypeForAstNode(AbsTree node);
+    void setScope(AstNode node, int nodeScope);
+    Integer getScope(AstNode node);
+    void setDefinitionForAstNode(AstNode node, AstDefinition def);
+    AstDefinition getDefinitionForAstNode(AstNode node);
+    void setTypeForAstNode(AstNode node, Type type);
+    Type getTypeForAstNode(AstNode node);
 }

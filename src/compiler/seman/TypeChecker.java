@@ -20,34 +20,17 @@ package compiler.seman;
 import java.util.*;
 
 import compiler.Logger;
+import compiler.ast.tree.expr.*;
+import compiler.ast.tree.stmt.*;
+import compiler.ast.tree.type.*;
 import utils.Constants;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.*;
 import compiler.ast.tree.def.*;
-import compiler.ast.tree.expr.AbsAtomConstExpr;
-import compiler.ast.tree.expr.AbsBinExpr;
-import compiler.ast.tree.expr.AbsExpr;
-import compiler.ast.tree.expr.AbsForceValueExpr;
-import compiler.ast.tree.expr.AbsFunCall;
-import compiler.ast.tree.expr.AbsLabeledExpr;
-import compiler.ast.tree.expr.AbsListExpr;
-import compiler.ast.tree.expr.AbsOptionalEvaluationExpr;
-import compiler.ast.tree.expr.AbsReturnExpr;
-import compiler.ast.tree.expr.AbsTupleExpr;
-import compiler.ast.tree.expr.AbsUnExpr;
-import compiler.ast.tree.expr.AbsVarNameExpr;
-import compiler.ast.tree.stmt.AbsCaseStmt;
-import compiler.ast.tree.stmt.AbsControlTransferStmt;
-import compiler.ast.tree.stmt.AbsForStmt;
-import compiler.ast.tree.stmt.AbsIfStmt;
-import compiler.ast.tree.stmt.AbsSwitchStmt;
-import compiler.ast.tree.stmt.AbsWhileStmt;
-import compiler.ast.tree.type.AbsAtomType;
-import compiler.ast.tree.type.AbsFunType;
-import compiler.ast.tree.type.AbsListType;
-import compiler.ast.tree.type.AbsOptionalType;
-import compiler.ast.tree.type.AbsType;
-import compiler.ast.tree.type.AbsTypeName;
+import compiler.ast.tree.expr.AstAtomConstExpression;
+import compiler.ast.tree.stmt.AstCaseStatement;
+import compiler.ast.tree.stmt.AstWhileStatement;
+import compiler.ast.tree.type.AstAtomType;
 import compiler.seman.type.*;
 import managers.LanguageManager;
 
@@ -72,7 +55,7 @@ public class TypeChecker implements ASTVisitor {
     }
 
 	@Override
-	public void visit(AbsListType acceptor) {
+	public void visit(AstListType acceptor) {
 		acceptor.type.accept(this);
 
 		Type type = symbolDescription.getTypeForAstNode(acceptor.type);
@@ -80,18 +63,18 @@ public class TypeChecker implements ASTVisitor {
 		    type = ((CanType) type).childType;
         }
 
-		symbolDescription.setTypeForAstNode(acceptor, new ArrayType(type, acceptor.count));
+		symbolDescription.setTypeForAstNode(acceptor, new ArrayType(type, acceptor.elementCount));
 	}
 
 	@Override
-	public void visit(AbsClassDef acceptor) {
+	public void visit(AstClassDefinition acceptor) {
 	    if (traversalState == TraversalStates.extensions) {
             ArrayList<Type> types = new ArrayList<>();
             ArrayList<String> names = new ArrayList<>();
 
             ArrayList<Type> staticTypes = new ArrayList<>();
             ArrayList<String> staticNames = new ArrayList<>();
-            ArrayList<AbsDef> staticDefinitions = new ArrayList<>();
+            ArrayList<AstDefinition> staticDefinitions = new ArrayList<>();
 
             CanType baseClass = null;
 
@@ -101,7 +84,7 @@ public class TypeChecker implements ASTVisitor {
 
                 Type type = symbolDescription.getTypeForAstNode(acceptor.baseClass);
 
-                if (acceptor instanceof AbsStructDef) {
+                if (acceptor instanceof AstStructureDefinition) {
                     // only classes are allowed to inherit
                     Logger.error("Structs are not allowed to inherit");
                 }
@@ -120,7 +103,7 @@ public class TypeChecker implements ASTVisitor {
             }
 
             // check whether conformance is legal
-            for (AbsType conformance : acceptor.conformances) {
+            for (AstType conformance : acceptor.conformances) {
                 conformance.accept(this);
 
                 if (!symbolDescription.getTypeForAstNode(conformance).isInterfaceType()) {
@@ -134,25 +117,25 @@ public class TypeChecker implements ASTVisitor {
             }
 
             // memberType inference
-            for (AbsStmt stmt: acceptor.defaultConstructor.func.statements) {
-                AbsBinExpr initExpr = (AbsBinExpr) stmt;
+            for (AstStatement stmt: acceptor.defaultConstructor.functionCode.statements) {
+                AstBinaryExpression initExpr = (AstBinaryExpression) stmt;
                 initExpr.expr2.accept(this);
                 Type type = symbolDescription.getTypeForAstNode(initExpr.expr2);
 
-                AbsVarDef definition = (AbsVarDef) acceptor.definitions.findDefinitionForName(((AbsVarNameExpr) ((AbsBinExpr)initExpr.expr1).expr2).name);
+                AstVariableDefinition definition = (AstVariableDefinition) acceptor.memberDefinitions.findDefinitionForName(((AstVariableNameExpression) ((AstBinaryExpression)initExpr.expr1).expr2).name);
                 symbolDescription.setTypeForAstNode(definition, type);
             }
 
             resolveTypeOnly = true;
 
-            for (AbsDef def : acceptor.definitions.definitions) {
+            for (AstDefinition def : acceptor.memberDefinitions.definitions) {
                 if (names.contains(def.getName())) {
                     Logger.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
                 }
                 else if (baseClass != null) {
                     // check whether inheritance (overriding) is legal
                     if (def.isOverriding()) {
-                        AbsDef baseDefinition = baseClass.childType.findMemberDefinitionForName(def.getName());
+                        AstDefinition baseDefinition = baseClass.childType.findMemberDefinitionForName(def.getName());
 
                         if (baseDefinition == null || baseDefinition.isStatic()) {
                             Logger.error(def.position, "Method does not override any method from it's super class");
@@ -180,11 +163,11 @@ public class TypeChecker implements ASTVisitor {
                 }
             }
 
-            for (AbsFunDef c : acceptor.construstors) {
+            for (AstFunctionDefinition c : acceptor.construstors) {
                 c.accept(this);
             }
 
-            for (AbsDef def : acceptor.definitions.definitions) {
+            for (AstDefinition def : acceptor.memberDefinitions.definitions) {
                 def.accept(this);
 
                 if (def.isStatic()) {
@@ -196,7 +179,7 @@ public class TypeChecker implements ASTVisitor {
             }
 
             ObjectType type;
-            if (acceptor instanceof AbsStructDef) {
+            if (acceptor instanceof AstStructureDefinition) {
                 type = new StructType(acceptor, names, types);
             }
             else {
@@ -206,10 +189,10 @@ public class TypeChecker implements ASTVisitor {
             CanType canType = new CanType(type);
             symbolDescription.setTypeForAstNode(acceptor, canType);
 
-            // add static member definitions to canType
+            // add static member memberDefinitions to canType
             Iterator<String> namesIterator = staticNames.iterator();
             Iterator<Type> typesIterator = staticTypes.iterator();
-            Iterator<AbsDef> defsIterator = staticDefinitions.iterator();
+            Iterator<AstDefinition> defsIterator = staticDefinitions.iterator();
 
             while (namesIterator.hasNext()) {
                 canType.addStaticDefinition(defsIterator.next(), namesIterator.next(), typesIterator.next());
@@ -224,13 +207,13 @@ public class TypeChecker implements ASTVisitor {
 
 	        declarationContext.push(staticType);
 
-            AbsFunDef baseClassDefaultConstructor = null;
+            AstFunctionDefinition baseClassDefaultConstructor = null;
             if (baseClass != null) {
                 baseClassDefaultConstructor = ((ClassType) baseClass.childType).classDefinition.defaultConstructor;
             }
 
             // check if all methods in conforming interfaces are implemented
-            for (AbsType conformance : acceptor.conformances) {
+            for (AstType conformance : acceptor.conformances) {
                 InterfaceType interfaceType = (InterfaceType) symbolDescription.getTypeForAstNode(conformance);
 
                 if (!objectType.conformsTo(interfaceType)) {
@@ -239,16 +222,16 @@ public class TypeChecker implements ASTVisitor {
             }
 
             // add implicit "self: classType" parameter to constructors
-            for (AbsFunDef constructor : acceptor.construstors) {
-                AbsParDef selfParDef = constructor.getParameterForIndex(0);
-                selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
+            for (AstFunctionDefinition constructor : acceptor.construstors) {
+                AstParameterDefinition selfParDef = constructor.getParameterAtIndex(0);
+                selfParDef.type = new AstTypeName(selfParDef.position, acceptor.name);
 
                 symbolDescription.setDefinitionForAstNode(selfParDef.type, acceptor);
                 symbolDescription.setTypeForAstNode(selfParDef, objectType);
 
                 // append base classes' initialization code
                 if (baseClassDefaultConstructor != null) {
-                    constructor.func.statements.addAll(0, baseClassDefaultConstructor.func.statements);
+                    constructor.functionCode.statements.addAll(0, baseClassDefaultConstructor.functionCode.statements);
                 }
 
                 constructor.accept(this);
@@ -259,12 +242,12 @@ public class TypeChecker implements ASTVisitor {
                 symbolDescription.setTypeForAstNode(constructor, funType);
             }
 
-            for (AbsDef def : acceptor.definitions.definitions) {
-                if (!def.isStatic() && def instanceof AbsFunDef) {
+            for (AstDefinition def : acceptor.memberDefinitions.definitions) {
+                if (!def.isStatic() && def instanceof AstFunctionDefinition) {
                     // add implicit "self: classType" parameter to instance methods
-                    AbsFunDef funDef = (AbsFunDef) def;
-                    AbsParDef selfParDef = funDef.getParameterForIndex(0);
-                    selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.name);
+                    AstFunctionDefinition funDef = (AstFunctionDefinition) def;
+                    AstParameterDefinition selfParDef = funDef.getParameterAtIndex(0);
+                    selfParDef.type = new AstTypeName(selfParDef.position, acceptor.name);
 
                     symbolDescription.setDefinitionForAstNode(selfParDef.type, acceptor);
                 }
@@ -272,14 +255,14 @@ public class TypeChecker implements ASTVisitor {
                 def.accept(this);
 
                 // push constructors from nested class definition
-                if (def instanceof AbsClassDef) {
+                if (def instanceof AstClassDefinition) {
                     CanType context = declarationContext.peek();
                     if (context != null) {
-                        AbsClassDef classDef = (AbsClassDef) def;
+                        AstClassDefinition classDef = (AstClassDefinition) def;
                         String className = classDef.name;
                         classDef.name = context.childType.friendlyName() + "." + classDef.getName();
 
-                        for (AbsFunDef constructor: classDef.construstors) {
+                        for (AstFunctionDefinition constructor: classDef.construstors) {
                             context.addStaticMember(
                                     constructor,
                                     constructor.getStringRepresentation(className),
@@ -297,25 +280,25 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsAtomConstExpr acceptor) {
+	public void visit(AstAtomConstExpression acceptor) {
 		symbolDescription.setTypeForAstNode(acceptor, Type.atomType(acceptor.type));
 	}
 
 	@Override
-	public void visit(AbsAtomType acceptor) {
+	public void visit(AstAtomType acceptor) {
 		symbolDescription.setTypeForAstNode(acceptor, Type.atomType(acceptor.type));
 	}
 
 	@Override
-	public void visit(AbsBinExpr acceptor) {
-	    assigningToVariable = acceptor.oper == AbsBinExpr.ASSIGN;
+	public void visit(AstBinaryExpression acceptor) {
+	    assigningToVariable = acceptor.oper == AstBinaryExpression.ASSIGN;
 
 		acceptor.expr1.accept(this);
         Type lhs = symbolDescription.getTypeForAstNode(acceptor.expr1);
 
 		lhsTypes.push(lhs);
 		
-		if (acceptor.oper != AbsBinExpr.DOT)
+		if (acceptor.oper != AstBinaryExpression.DOT)
 			acceptor.expr2.accept(this);
 
         lhsTypes.pop();
@@ -329,7 +312,7 @@ public class TypeChecker implements ASTVisitor {
 		/**
 		 * expr1[expr2]
 		 */
-		if (oper == AbsBinExpr.ARR) {
+		if (oper == AstBinaryExpression.ARR) {
 			if (!rhs.isBuiltinIntType())
 				Logger.error(acceptor.expr2.position,
 						LanguageManager.localize("type_error_expected_int_for_subscript"));
@@ -349,7 +332,7 @@ public class TypeChecker implements ASTVisitor {
 		/**
 		 * expr1 = expr2
 		 */
-		else if (oper == AbsBinExpr.ASSIGN) {
+		else if (oper == AstBinaryExpression.ASSIGN) {
 		    boolean success = false;
 
             if (rhs.isArrayType()) {
@@ -404,27 +387,27 @@ public class TypeChecker implements ASTVisitor {
 		/**
 		 * identifier.identifier
 		 */
-		else if (oper == AbsBinExpr.DOT) {
+		else if (oper == AstBinaryExpression.DOT) {
             String memberName = null;
-            if (acceptor.expr2 instanceof AbsVarNameExpr) {
-                memberName = ((AbsVarNameExpr) acceptor.expr2).name;
+            if (acceptor.expr2 instanceof AstVariableNameExpression) {
+                memberName = ((AstVariableNameExpression) acceptor.expr2).name;
             }
-            else if (acceptor.expr2 instanceof AbsFunCall) {
-                memberName = ((AbsFunCall) acceptor.expr2).getStringRepresentation();
+            else if (acceptor.expr2 instanceof AstFunctionCallExpression) {
+                memberName = ((AstFunctionCallExpression) acceptor.expr2).getStringRepresentation();
             }
-            else if (acceptor.expr2 instanceof AbsAtomConstExpr) {
-                memberName = ((AbsAtomConstExpr) acceptor.expr2).value;
+            else if (acceptor.expr2 instanceof AstAtomConstExpression) {
+                memberName = ((AstAtomConstExpression) acceptor.expr2).value;
             }
-            else if (acceptor.expr2 instanceof AbsBinExpr) {
+            else if (acceptor.expr2 instanceof AstBinaryExpression) {
                 Logger.error(acceptor.position, "Not yet supported");
             }
 
 			/**
-			 * Handle list.count
+			 * Handle list.elementCount
 			 */
 			// FIXME: - remove this in the future
 			if (lhs.isArrayType()) {
-				if (!memberName.equals("count"))
+				if (!memberName.equals("elementCount"))
                     Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
 				symbolDescription.setTypeForAstNode(acceptor, Type.intType);
 				return;
@@ -434,11 +417,11 @@ public class TypeChecker implements ASTVisitor {
             }
 
 			if (lhs.isObjectType()) {
-			    if (acceptor.expr2 instanceof AbsFunCall) {
-			        AbsFunCall fnCall = (AbsFunCall) acceptor.expr2;
+			    if (acceptor.expr2 instanceof AstFunctionCallExpression) {
+			        AstFunctionCallExpression fnCall = (AstFunctionCallExpression) acceptor.expr2;
 
                     // add implicit "self" argument to instance method
-                    AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.position, acceptor.expr1, Constants.selfParameterIdentifier);
+                    AstLabeledExpr selfArg = new AstLabeledExpr(acceptor.position, acceptor.expr1, Constants.selfParameterIdentifier);
                     fnCall.addArgument(selfArg);
 
                     memberName = fnCall.getStringRepresentation();
@@ -452,8 +435,8 @@ public class TypeChecker implements ASTVisitor {
                                     memberName));
                 }
 				
-				AbsDef definition = lhs.findMemberDefinitionForName(memberName);
-				AbsDef objectDefinition = symbolDescription.getDefinitionForAstNode(acceptor.expr1);
+				AstDefinition definition = lhs.findMemberDefinitionForName(memberName);
+				AstDefinition objectDefinition = symbolDescription.getDefinitionForAstNode(acceptor.expr1);
 
 				// check for access control (if object's getName is not "self")
                 if (!objectDefinition.name.equals(Constants.selfParameterIdentifier)) {
@@ -466,8 +449,8 @@ public class TypeChecker implements ASTVisitor {
 				symbolDescription.setDefinitionForAstNode(acceptor.expr2, definition);
 				symbolDescription.setDefinitionForAstNode(acceptor, definition);
 
-				if (acceptor.expr2 instanceof AbsFunCall) {
-                    for (AbsExpr arg: ((AbsFunCall) acceptor.expr2).args) {
+				if (acceptor.expr2 instanceof AstFunctionCallExpression) {
+                    for (AstExpression arg: ((AstFunctionCallExpression) acceptor.expr2).arguments) {
                         arg.accept(this);
                     }
                 }
@@ -489,7 +472,7 @@ public class TypeChecker implements ASTVisitor {
                                         enumType.friendlyName(),
                                         memberName));
 
-                    AbsDef definition = enumType.findMemberDefinitionForName(memberName);
+                    AstDefinition definition = enumType.findMemberDefinitionForName(memberName);
 
                     if (definition.isPrivate())
                         Logger.error(acceptor.expr2.position,
@@ -529,14 +512,14 @@ public class TypeChecker implements ASTVisitor {
 			else if (lhs.isCanType()) {
 			    CanType canType = (CanType) lhs;
 
-                if (acceptor.expr2 instanceof AbsFunCall) {
-                    AbsDef def = canType.findMemberDefinitionForName(((AbsFunCall) acceptor.expr2).name);
+                if (acceptor.expr2 instanceof AstFunctionCallExpression) {
+                    AstDefinition def = canType.findMemberDefinitionForName(((AstFunctionCallExpression) acceptor.expr2).name);
 
-                    if (def != null && def instanceof AbsClassDef) {
-                        AbsFunCall fnCall = (AbsFunCall) acceptor.expr2;
+                    if (def != null && def instanceof AstClassDefinition) {
+                        AstFunctionCallExpression fnCall = (AstFunctionCallExpression) acceptor.expr2;
 
                         // add implicit "self" argument to instance method
-                        AbsLabeledExpr selfArg = new AbsLabeledExpr(acceptor.position, acceptor.expr1, Constants.selfParameterIdentifier);
+                        AstLabeledExpr selfArg = new AstLabeledExpr(acceptor.position, acceptor.expr1, Constants.selfParameterIdentifier);
                         fnCall.addArgument(selfArg);
 
                         memberName = fnCall.getStringRepresentation();
@@ -550,13 +533,13 @@ public class TypeChecker implements ASTVisitor {
                                     memberName));
                 }
 
-                if (acceptor.expr2 instanceof AbsFunCall) {
-                    for (AbsExpr arg: ((AbsFunCall) acceptor.expr2).args) {
+                if (acceptor.expr2 instanceof AstFunctionCallExpression) {
+                    for (AstExpression arg: ((AstFunctionCallExpression) acceptor.expr2).arguments) {
                         arg.accept(this);
                     }
                 }
 
-                AbsDef definition = canType.findStaticMemberForName(memberName);
+                AstDefinition definition = canType.findStaticMemberForName(memberName);
 
                 if (definition.isPrivate()) {
                     Logger.error(acceptor.expr2.position,
@@ -576,21 +559,21 @@ public class TypeChecker implements ASTVisitor {
             else if (lhs.isInterfaceType()) {
 			    InterfaceType interfaceType = (InterfaceType) lhs;
 
-                if (acceptor.expr2 instanceof AbsFunCall) {
-                    AbsFunCall fnCall = (AbsFunCall) acceptor.expr2;
+                if (acceptor.expr2 instanceof AstFunctionCallExpression) {
+                    AstFunctionCallExpression fnCall = (AstFunctionCallExpression) acceptor.expr2;
 
                     // add implicit "self" argument to instance method
-                    fnCall.addArgument(new AbsLabeledExpr(acceptor.position, acceptor.expr1, Constants.selfParameterIdentifier));
+                    fnCall.addArgument(new AstLabeledExpr(acceptor.position, acceptor.expr1, Constants.selfParameterIdentifier));
                     memberName = fnCall.getStringRepresentation();
 
-                    for (AbsExpr arg: fnCall.args) {
+                    for (AstExpression arg: fnCall.arguments) {
                         arg.accept(this);
                     }
                 }
                 else {
                     Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
-                AbsDef def = interfaceType.findMemberDefinitionForName(memberName);
+                AstDefinition def = interfaceType.findMemberDefinitionForName(memberName);
 			    if (def == null) {
                     Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
@@ -615,7 +598,7 @@ public class TypeChecker implements ASTVisitor {
         /**
          * expr1 is expr2
          */
-		else if (oper == AbsBinExpr.IS) {
+		else if (oper == AstBinaryExpression.IS) {
 		    if (!lhs.isCanType() && rhs.isCanType()) {
 		        symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
@@ -624,7 +607,7 @@ public class TypeChecker implements ASTVisitor {
         /**
          * expr1 as expr2
          */
-        else if (oper == AbsBinExpr.AS) {
+        else if (oper == AstBinaryExpression.AS) {
             if (rhs.isCanType()) {
                 symbolDescription.setTypeForAstNode(acceptor, ((CanType) rhs).childType);
             }
@@ -701,7 +684,7 @@ public class TypeChecker implements ASTVisitor {
 		 * Enumerations comparison.
 		 */
 		else if (lhs.isEnumType() && lhs.sameStructureAs(rhs)) {
-			if (oper == AbsBinExpr.EQU) {
+			if (oper == AstBinaryExpression.EQU) {
                 symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
 			else {
@@ -715,21 +698,21 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsDefs acceptor) {
+	public void visit(AstDefinitions acceptor) {
         if (isRootNode) {
             isRootNode = false;
 
             for (TraversalStates state : TraversalStates.values()) {
                 traversalState = state;
 
-                for (AbsDef s : acceptor.definitions) {
+                for (AstDefinition s : acceptor.definitions) {
                     s.accept(this);
                 }
             }
 
             // TODO: - Issue with tests
 //            for (AtomType atomType: Type.atomTypes) {
-//                for (AbsType conformance : atomType.classDefinition.conformances) {
+//                for (AstType conformance : atomType.classDefinition.conformances) {
 //                    if (!atomType.conformsTo((InterfaceType) symbolDescription.getTypeForAstNode(conformance))) {
 //                        Logger.error(conformance.position, "Type \"" + atomType.friendlyName() + "\" does not conform to interface \"" + conformance.getName() + "\"");
 //                    }
@@ -737,26 +720,26 @@ public class TypeChecker implements ASTVisitor {
 //            }
         }
         else {
-            for (AbsDef s : acceptor.definitions) {
+            for (AstDefinition s : acceptor.definitions) {
                 s.accept(this);
             }
         }
 	}
 
 	@Override
-	public void visit(AbsExprs acceptor) {
+	public void visit(AstExpressions acceptor) {
 		if (acceptor.expressions.isEmpty()) {
             symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
         }
 		else {
-			for (AbsExpr e : acceptor.expressions) {
+			for (AstExpression e : acceptor.expressions) {
                 e.accept(this);
             }
 		}
 	}
 
 	@Override
-	public void visit(AbsForStmt acceptor) {
+	public void visit(AstForStatement acceptor) {
 		acceptor.collection.accept(this);
 		Type type = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor.collection)).memberType;
 
@@ -768,15 +751,15 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsFunCall acceptor) {
-		AbsFunDef definition = (AbsFunDef) symbolTable.findDefinitionForName(acceptor.getStringRepresentation());
+	public void visit(AstFunctionCallExpression acceptor) {
+		AstFunctionDefinition definition = (AstFunctionDefinition) symbolTable.findDefinitionForName(acceptor.getStringRepresentation());
 		FunctionType funType = (FunctionType) symbolDescription.getTypeForAstNode(definition);
 
 		symbolDescription.setTypeForAstNode(acceptor, funType.resultType);
 		boolean isConstructor = definition.isConstructor;
 
-		for (int i = 0; i < acceptor.numArgs(); i++) {
-			AbsExpr arg = acceptor.arg(i);
+		for (int i = 0; i < acceptor.getArgumentCount(); i++) {
+			AstExpression arg = acceptor.getArgumentAtIndex(i);
 
             // skip first ("self") argument if function is constructor
             if (isConstructor && i == 0) {
@@ -798,26 +781,26 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsFunDef acceptor) {
+	public void visit(AstFunctionDefinition acceptor) {
         Vector<Type> parameters = new Vector<>();
 
-        for (AbsParDef par : acceptor.getParamaters()) {
+        for (AstParameterDefinition par : acceptor.getParamaters()) {
             par.accept(this);
             parameters.add(symbolDescription.getTypeForAstNode(par));
         }
 
-        acceptor.type.accept(this);
-        Type returnType = symbolDescription.getTypeForAstNode(acceptor.type);
+        acceptor.returnType.accept(this);
+        Type returnType = symbolDescription.getTypeForAstNode(acceptor.returnType);
 
         FunctionType funType = new FunctionType(parameters, returnType, acceptor);
         symbolDescription.setTypeForAstNode(acceptor, funType);
 
         if (!resolveTypeOnly){
 			// check if return memberType matches
-			for (AbsStmt stmt : acceptor.func.statements) {
+			for (AstStatement stmt : acceptor.functionCode.statements) {
 			    stmt.accept(this);
 
-				if (stmt instanceof AbsReturnExpr) {
+				if (stmt instanceof AstReturnExpression) {
 					Type t = symbolDescription.getTypeForAstNode(stmt);
 
 					if (!t.sameStructureAs(funType.resultType)) {
@@ -834,15 +817,15 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsIfStmt acceptor) {
+	public void visit(AstIfStatement acceptor) {
 		for (Condition c : acceptor.conditions) {
-			c.cond.accept(this);
+			c.condition.accept(this);
 			c.body.accept(this);
 			
-			if (symbolDescription.getTypeForAstNode(c.cond).sameStructureAs(Type.boolType))
+			if (symbolDescription.getTypeForAstNode(c.condition).sameStructureAs(Type.boolType))
 				symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
 			else
-				Logger.error(c.cond.position,
+				Logger.error(c.condition.position,
 						"Condition must be of memberType Bool");
 		}
 
@@ -852,7 +835,7 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsParDef acceptor) {
+	public void visit(AstParameterDefinition acceptor) {
 		acceptor.type.accept(this);
 		
 		Type type = symbolDescription.getTypeForAstNode(acceptor.type);
@@ -863,7 +846,7 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsTypeName acceptor) {
+	public void visit(AstTypeName acceptor) {
         if (acceptor.name.equals("Int")) {
             symbolDescription.setTypeForAstNode(acceptor, Type.intType);
             return;
@@ -885,9 +868,9 @@ public class TypeChecker implements ASTVisitor {
             return;
         }
 
-		AbsDef definition = symbolDescription.getDefinitionForAstNode(acceptor);
+		AstDefinition definition = symbolDescription.getDefinitionForAstNode(acceptor);
 		
-		if (!(definition instanceof AbsTypeDef))
+		if (!(definition instanceof AstTypeDefinition))
 			Logger.error(acceptor.position, "Use of undeclared memberType \'" + definition.name + "\'");
 
 		Type type = symbolDescription.getTypeForAstNode(definition);
@@ -900,17 +883,17 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsUnExpr acceptor) {
+	public void visit(AstUnaryExpression acceptor) {
 		acceptor.expr.accept(this);
 		Type type = symbolDescription.getTypeForAstNode(acceptor.expr);
 
-		if (acceptor.oper == AbsUnExpr.NOT) {
+		if (acceptor.oper == AstUnaryExpression.NOT) {
 			if (type.sameStructureAs(Type.boolType))
 				symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
 			else
 				Logger.error(acceptor.position,
 						"Operator \"!\" is not defined for memberType " + type);
-		} else if (acceptor.oper == AbsUnExpr.ADD || acceptor.oper == AbsUnExpr.SUB) {
+		} else if (acceptor.oper == AstUnaryExpression.ADD || acceptor.oper == AstUnaryExpression.SUB) {
 			if (type.isBuiltinIntType() || type.canBeCastedToType(Type.intType))
 				symbolDescription.setTypeForAstNode(acceptor, type);
 			else
@@ -921,7 +904,7 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsVarDef acceptor) {
+	public void visit(AstVariableDefinition acceptor) {
         if (acceptor.type != null) {
 			acceptor.type.accept(this);
 
@@ -934,7 +917,7 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsVarNameExpr acceptor) {
+	public void visit(AstVariableNameExpression acceptor) {
         if (acceptor.name.equals("Int")) {
             symbolDescription.setTypeForAstNode(acceptor, Type.intType.staticType);
             return;
@@ -971,20 +954,20 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsWhileStmt acceptor) {
-		acceptor.cond.accept(this);
+	public void visit(AstWhileStatement acceptor) {
+		acceptor.condition.accept(this);
 		acceptor.body.accept(this);
 
-		if (symbolDescription.getTypeForAstNode(acceptor.cond).sameStructureAs(Type.boolType)) {
+		if (symbolDescription.getTypeForAstNode(acceptor.condition).sameStructureAs(Type.boolType)) {
             symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
         }
 		else {
-            Logger.error(acceptor.cond.position, "Condition must be typed as Boolean");
+            Logger.error(acceptor.condition.position, "Condition must be typed as Boolean");
         }
 	}
 
 	@Override
-	public void visit(AbsImportDef importDef) {
+	public void visit(AstImportDefinition importDef) {
 	    if (traversalState == TraversalStates.extensions) {
             String currentFile = Logger.fileName;
 
@@ -997,15 +980,15 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsStmts stmts) {
+	public void visit(AstStatements stmts) {
 	    if (isRootNode) {
 	        isRootNode = false;
 
             for (TraversalStates state : TraversalStates.values()) {
                 traversalState = state;
 
-                for (AbsStmt s : stmts.statements) {
-                    if (traversalState == TraversalStates.extensions && !(s instanceof AbsDef))
+                for (AstStatement s : stmts.statements) {
+                    if (traversalState == TraversalStates.extensions && !(s instanceof AstDefinition))
                         continue;
 
                     s.accept(this);
@@ -1013,14 +996,14 @@ public class TypeChecker implements ASTVisitor {
             }
         }
         else {
-            for (AbsStmt s : stmts.statements) {
+            for (AstStatement s : stmts.statements) {
                 s.accept(this);
             }
         }
 	}
 
 	@Override
-	public void visit(AbsReturnExpr returnExpr) {
+	public void visit(AstReturnExpression returnExpr) {
 		if (returnExpr.expr != null) {
 			returnExpr.expr.accept(this);
 
@@ -1032,7 +1015,7 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsListExpr absListExpr) {
+	public void visit(AstListExpr absListExpr) {
 		Vector<Type> vec = new Vector<>();
 		Type base = null;
 
@@ -1043,7 +1026,7 @@ public class TypeChecker implements ASTVisitor {
             }
         }
 
-		for (AbsExpr e : absListExpr.expressions) {
+		for (AstExpression e : absListExpr.expressions) {
 			e.accept(this);
 
 			Type t = symbolDescription.getTypeForAstNode(e);
@@ -1068,9 +1051,9 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsFunType funType) {
+	public void visit(AstFunctionType funType) {
 		Vector<Type> parameters = new Vector<>();
-		for (AbsType t : funType.parameterTypes) {
+		for (AstType t : funType.parameterTypes) {
 			t.accept(this);
 			parameters.add(symbolDescription.getTypeForAstNode(t));
 		}
@@ -1080,19 +1063,19 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsControlTransferStmt acceptor) {
+	public void visit(AstControlTransferStatement acceptor) {
 		///
 	}
 
 	@Override
-	public void visit(AbsSwitchStmt switchStmt) {
+	public void visit(AstSwitchStatement switchStmt) {
 		switchStmt.subjectExpr.accept(this);
 		
 		Type switchType = symbolDescription.getTypeForAstNode(switchStmt.subjectExpr);
 		
-		for (AbsCaseStmt singleCase : switchStmt.cases) {
+		for (AstCaseStatement singleCase : switchStmt.cases) {
 			singleCase.accept(this);
-			for (AbsExpr e : singleCase.exprs) {
+			for (AstExpression e : singleCase.exprs) {
 				Type caseType = symbolDescription.getTypeForAstNode(e);
 				if (!caseType.sameStructureAs(switchType))
 					Logger.error(e.position,
@@ -1109,8 +1092,8 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsCaseStmt acceptor) {
-		for (AbsExpr e : acceptor.exprs) {
+	public void visit(AstCaseStatement acceptor) {
+		for (AstExpression e : acceptor.exprs) {
             e.accept(this);
         }
 
@@ -1120,7 +1103,7 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsEnumDef acceptor) {
+	public void visit(AstEnumDefinition acceptor) {
         if (traversalState != TraversalStates.extensions) return;
 
         AtomType enumRawValueType = null;
@@ -1136,9 +1119,9 @@ public class TypeChecker implements ASTVisitor {
 		ArrayList<String> names = new ArrayList<>(acceptor.definitions.size());
 		ArrayList<ClassType> types = new ArrayList<>(acceptor.definitions.size());
 		
-		for (AbsDef def : acceptor.definitions) {
-			if (def instanceof AbsEnumMemberDef) {
-				AbsEnumMemberDef enumMemberDef = (AbsEnumMemberDef) def;
+		for (AstDefinition def : acceptor.definitions) {
+			if (def instanceof AstEnumMemberDefinition) {
+				AstEnumMemberDefinition enumMemberDef = (AstEnumMemberDefinition) def;
 				
 				if (enumRawValueType != null && enumMemberDef.value == null) {
 					if (!enumRawValueType.isBuiltinStringType() && !enumRawValueType.isBuiltinIntType())
@@ -1157,7 +1140,7 @@ public class TypeChecker implements ASTVisitor {
 							value = "" + (Integer.parseInt(previousValue) + 1);
 					}
 					
-					enumMemberDef.value = new AbsAtomConstExpr(enumMemberDef.position, enumRawValueType.type, value);
+					enumMemberDef.value = new AstAtomConstExpression(enumMemberDef.position, enumRawValueType.type, value);
 	
 					previousValue = value;
 					iterator++;
@@ -1193,32 +1176,32 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsEnumMemberDef acceptor) {
+	public void visit(AstEnumMemberDefinition acceptor) {
         ArrayList<String> names = new ArrayList<>();
         ArrayList<Type> types = new ArrayList<>();
-        ArrayList<AbsDef> definitions = new ArrayList<>();
+        ArrayList<AstDefinition> definitions = new ArrayList<>();
 		
 		if (acceptor.value != null) {
 			acceptor.value.accept(this);
 			
 			names.add("rawValue");
 			types.add(symbolDescription.getTypeForAstNode(acceptor.value));
-			definitions.add(new AbsVarDef(acceptor.position, "rawValue", new AbsAtomType(null, null)));
+			definitions.add(new AstVariableDefinition(acceptor.position, "rawValue", new AstAtomType(null, null)));
 		}
 		
-		AbsClassDef classDef = new AbsClassDef(acceptor.getName(), acceptor.position, definitions, new ArrayList<>(), new ArrayList<>());
+		AstClassDefinition classDef = new AstClassDefinition(acceptor.getName(), acceptor.position, definitions, new ArrayList<>(), new ArrayList<>());
 		ClassType type = new ClassType(classDef, names, types);
 		symbolDescription.setTypeForAstNode(acceptor, type);
 	}
 
 	@Override
-	public void visit(AbsTupleDef acceptor) {
+	public void visit(AstTupleDefinition acceptor) {
         if (traversalState == TraversalStates.extensions) return;
 
         LinkedList<Type> types = new LinkedList<>();
 		LinkedList<String> names = new LinkedList<>();
 		
-		for (AbsDef def : acceptor.definitions.definitions) {
+		for (AstDefinition def : acceptor.definitions.definitions) {
 			def.accept(this);
 			
 			names.add(def.getName());
@@ -1230,7 +1213,7 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsLabeledExpr acceptor) {
+	public void visit(AstLabeledExpr acceptor) {
 		acceptor.expr.accept(this);
 		
 		Type exprType = symbolDescription.getTypeForAstNode(acceptor.expr);
@@ -1238,17 +1221,17 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsTupleExpr acceptor) {
+	public void visit(AstTupleExpression acceptor) {
 		acceptor.expressions.accept(this);
 		
 		LinkedList<Type> types = new LinkedList<>();
 		LinkedList<String> names = new LinkedList<>();
 
-		for (AbsExpr e : acceptor.expressions.expressions) {
-			AbsLabeledExpr labeledExpr = (AbsLabeledExpr) e;
+		for (AstExpression e : acceptor.expressions.expressions) {
+			AstLabeledExpr labeledExpr = (AstLabeledExpr) e;
 			
 			types.add(symbolDescription.getTypeForAstNode(labeledExpr));
-			names.add(labeledExpr.name);
+			names.add(labeledExpr.label);
 		}
 
 		// TODO:
@@ -1257,7 +1240,7 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsOptionalType acceptor) {
+	public void visit(AstOptionalType acceptor) {
 		acceptor.childType.accept(this);
 		
 		Type childType = symbolDescription.getTypeForAstNode(acceptor.childType);
@@ -1269,7 +1252,7 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsOptionalEvaluationExpr acceptor) {
+	public void visit(AstOptionalEvaluationExpression acceptor) {
 		acceptor.subExpr.accept(this);
 
 		Type childType = symbolDescription.getTypeForAstNode(acceptor.subExpr);
@@ -1281,7 +1264,7 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsForceValueExpr acceptor) {
+	public void visit(AstForceValueExpression acceptor) {
 		acceptor.subExpr.accept(this);
 
 		Type type = symbolDescription.getTypeForAstNode(acceptor.subExpr);
@@ -1296,11 +1279,11 @@ public class TypeChecker implements ASTVisitor {
 	}
 
     @Override
-    public void visit(AbsExtensionDef acceptor) {
+    public void visit(AstExtensionDefinition acceptor) {
 	    if (traversalState == TraversalStates.extensions) {
             acceptor.extendingType.accept(this);
 
-            for (AbsType conformance: acceptor.conformances) {
+            for (AstType conformance: acceptor.conformances) {
                 conformance.accept(this);
             }
 
@@ -1323,10 +1306,10 @@ public class TypeChecker implements ASTVisitor {
 
             resolveTypeOnly = true;
 
-            for (AbsDef def : acceptor.definitions.definitions) {
+            for (AstDefinition def : acceptor.definitions.definitions) {
                 if (isAtomType) {
                     // atomic types methods are always final (not dynamic)
-                    def.setModifier(Modifier.isFinal);
+                    def.setModifier(DefinitionModifier.isFinal);
                 }
 
                 def.accept(this);
@@ -1346,7 +1329,7 @@ public class TypeChecker implements ASTVisitor {
                 }
             }
 
-            for (AbsType conformance : acceptor.conformances) {
+            for (AstType conformance : acceptor.conformances) {
                 if (!extendingType.addConformance(conformance)) {
                     Logger.error(conformance.position, "Redundant conformance \"" + conformance.getName() + "\"");
                 }
@@ -1355,13 +1338,13 @@ public class TypeChecker implements ASTVisitor {
             resolveTypeOnly = false;
         }
         else {
-            for (AbsDef def : acceptor.definitions.definitions) {
-                if (def instanceof AbsFunDef) {
+            for (AstDefinition def : acceptor.definitions.definitions) {
+                if (def instanceof AstFunctionDefinition) {
                     if (!def.isStatic()) {
                         // add implicit "self: classType" parameter to instance methods
-                        AbsFunDef funDef = (AbsFunDef) def;
-                        AbsParDef selfParDef = funDef.getParameterForIndex(0);
-                        selfParDef.type = new AbsTypeName(selfParDef.position, acceptor.getName());
+                        AstFunctionDefinition funDef = (AstFunctionDefinition) def;
+                        AstParameterDefinition selfParDef = funDef.getParameterAtIndex(0);
+                        selfParDef.type = new AstTypeName(selfParDef.position, acceptor.getName());
 
                         symbolDescription.setDefinitionForAstNode(selfParDef.type, acceptor);
                     }
@@ -1373,7 +1356,7 @@ public class TypeChecker implements ASTVisitor {
     }
 
     @Override
-    public void visit(AbsInterfaceDef acceptor) {
+    public void visit(AstInterfaceDefinition acceptor) {
         acceptor.definitions.accept(this);
 
         InterfaceType type = new InterfaceType(acceptor);

@@ -32,9 +32,9 @@ public class Interpreter {
     public static boolean checkMemory = true;
     public static PrintStream interpreterOutput = System.out;
 	public static int heapPointer = 4;
-    public static int STACK_SIZE = 1000;
-    private static int framePointer = STACK_SIZE;
-    private static int stackPointer = STACK_SIZE;
+    public static int stackSize = 1000;
+    private static int framePointer = stackSize;
+    private static int stackPointer = stackSize;
     public static Memory memory; // TODO: - How to make sure that memory is initialized?
 
     public static int getFP() { return framePointer; }
@@ -42,7 +42,7 @@ public class Interpreter {
 	public static void printMemory() {
 	    int address = 0;
 		for (int i = 0; i < memory.memory.size(); i++, address += 1) {
-		    if (address > STACK_SIZE + Constants.Byte)
+		    if (address > stackSize + Constants.Byte)
 		        Logger.error("Memory overflow");
 
 		    Object value = memory.ldM(address);
@@ -96,12 +96,14 @@ public class Interpreter {
 
 		framePointer = (Integer) memory.ldM(framePointer - frame.blockSizeForLocalVariables - 4);
 		stackPointer = stackPointer + frame.size();
+
 		if (debug) {
 			System.out.println("[FP=" + framePointer + "]");
 			System.out.println("[SP=" + stackPointer + "]");
 		}
 
 		memory.stM(stackPointer, memory.ldT(frame.RV));
+
 		if (debug) {
 			System.out.println("[RV=" + memory.ldT(frame.RV) + "]");
 		}

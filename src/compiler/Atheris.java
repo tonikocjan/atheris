@@ -23,8 +23,7 @@ import compiler.interpreter.Memory;
 import compiler.seman.*;
 import utils.ArgumentParser;
 import utils.Constants;
-import compiler.ast.Ast;
-import compiler.ast.tree.AbsTree;
+import compiler.ast.tree.AstNode;
 import compiler.frames.PrintAstVisitor;
 import compiler.frames.FrameDescription;
 import compiler.frames.FrmEvaluator;
@@ -75,7 +74,7 @@ public class Atheris {
             String size = parser.valueFor("stack_size");
 
             try {
-                Interpreter.STACK_SIZE = Integer.parseInt(size);
+                Interpreter.stackSize = Integer.parseInt(size);
             }
             catch(Exception e) {
                 Logger.warning(LanguageManager.localize("error_invalid_stack_size_parameter"));
@@ -125,7 +124,7 @@ public class Atheris {
         // Izvajanje faz prevajanja.
         while (true) {
             // Leksikalna analiza.
-            LexAn lexAn = new LexAn(sourceFileName, dumpPhases.contains("lexan"));
+            LexAn lexAn = LexAn.parseSourceFile(sourceFileName, dumpPhases.contains("lexan"));
             if (execPhase.equals("lexan")) {
                 while (lexAn.nextSymbol().getTokenType() != TokenType.EOF) {}
                 break;
@@ -133,11 +132,11 @@ public class Atheris {
 
             // Sintaksna analiza.
             SynAn synAn = new SynAn(lexAn, dumpPhases.contains("synan"));
-            AbsTree source = synAn.parse();
+            AstNode source = synAn.parse();
             if (execPhase.equals("synan")) break;
 
             // Abstraktna sintaksa.
-            Ast ast = new Ast(dumpPhases.contains("ast"));
+            PrintAstVisitor ast = new PrintAstVisitor(dumpPhases.contains("ast"), symbolTable, symbolDescription, frameDescription);
             ast.dump(source);
             if (execPhase.equals("ast")) break;
 

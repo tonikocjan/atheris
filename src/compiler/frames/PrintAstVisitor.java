@@ -21,29 +21,13 @@ import compiler.*;
 import compiler.ast.*;
 import compiler.ast.tree.*;
 import compiler.ast.tree.def.*;
-import compiler.ast.tree.expr.AbsAtomConstExpr;
-import compiler.ast.tree.expr.AbsBinExpr;
-import compiler.ast.tree.expr.AbsExpr;
-import compiler.ast.tree.expr.AbsForceValueExpr;
-import compiler.ast.tree.expr.AbsFunCall;
-import compiler.ast.tree.expr.AbsLabeledExpr;
-import compiler.ast.tree.expr.AbsListExpr;
-import compiler.ast.tree.expr.AbsOptionalEvaluationExpr;
-import compiler.ast.tree.expr.AbsReturnExpr;
-import compiler.ast.tree.expr.AbsTupleExpr;
-import compiler.ast.tree.expr.AbsUnExpr;
-import compiler.ast.tree.expr.AbsVarNameExpr;
-import compiler.ast.tree.stmt.AbsCaseStmt;
-import compiler.ast.tree.stmt.AbsControlTransferStmt;
-import compiler.ast.tree.stmt.AbsForStmt;
-import compiler.ast.tree.stmt.AbsIfStmt;
-import compiler.ast.tree.stmt.AbsSwitchStmt;
-import compiler.ast.tree.stmt.AbsWhileStmt;
-import compiler.ast.tree.type.AbsAtomType;
-import compiler.ast.tree.type.AbsFunType;
-import compiler.ast.tree.type.AbsListType;
-import compiler.ast.tree.type.AbsOptionalType;
-import compiler.ast.tree.type.AbsTypeName;
+import compiler.ast.tree.expr.*;
+import compiler.ast.tree.expr.AstExpression;
+import compiler.ast.tree.stmt.*;
+import compiler.ast.tree.stmt.AstCaseStatement;
+import compiler.ast.tree.stmt.AstControlTransferStatement;
+import compiler.ast.tree.type.*;
+import compiler.ast.tree.type.AstOptionalType;
 import compiler.seman.*;
 import compiler.seman.type.*;
 
@@ -62,7 +46,7 @@ public class PrintAstVisitor implements ASTVisitor {
         this.frameDescription = frameDescription;
     }
 
-	public void dump(AbsTree tree) {
+	public void dump(AstNode tree) {
 		if (!dump)
 			return;
 		if (Logger.dumpFile() == null)
@@ -71,9 +55,9 @@ public class PrintAstVisitor implements ASTVisitor {
 		tree.accept(this);
 	}
 
-	public void visit(AbsListType arrType) {
+	public void visit(AstListType arrType) {
 		Logger.dump(indent, "AbsArrType " + arrType.position.toString() + ": "
-				+ "[" + arrType.count + "]");
+				+ "[" + arrType.elementCount + "]");
 		{
 			Type typ = symbolDescription.getTypeForAstNode(arrType);
 			if (typ != null)
@@ -85,7 +69,7 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsClassDef classDef) {
+	public void visit(AstClassDefinition classDef) {
         Logger.dump(indent, classDef.toString());
 		{
 			Type typ = symbolDescription.getTypeForAstNode(classDef);
@@ -93,17 +77,17 @@ public class PrintAstVisitor implements ASTVisitor {
 				Logger.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2;
-		Logger.dump(indent, "Member definitions:");
-		indent += 2; classDef.definitions.accept(this); indent -= 2;
+		Logger.dump(indent, "Member memberDefinitions:");
+		indent += 2; classDef.memberDefinitions.accept(this); indent -= 2;
 		Logger.dump(indent, "Constructors:");
 		indent += 2;
-		for (AbsFunDef c : classDef.construstors) {
+		for (AstFunctionDefinition c : classDef.construstors) {
 			c.accept(this);
 		}
 		indent -= 4;
 	}
 
-	public void visit(AbsAtomConstExpr atomConst) {
+	public void visit(AstAtomConstExpression atomConst) {
 		switch (atomConst.type) {
 		case LOG:
 			Logger.dump(indent, "AbsAtomConst " + atomConst.position.toString()
@@ -142,38 +126,38 @@ public class PrintAstVisitor implements ASTVisitor {
 		}
 	}
 
-	public void visit(AbsAtomType atomType) {
+	public void visit(AstAtomType atomType) {
 		switch (atomType.type) {
 		case LOG:
-			Logger.dump(indent, "AbsAtomType " + atomType.position.toString()
+			Logger.dump(indent, "AstAtomType " + atomType.position.toString()
 					+ ": LOGICAL");
 			break;
 		case INT:
-			Logger.dump(indent, "AbsAtomType " + atomType.position.toString()
+			Logger.dump(indent, "AstAtomType " + atomType.position.toString()
 					+ ": INTEGER");
 			break;
 		case STR:
-			Logger.dump(indent, "AbsAtomType " + atomType.position.toString()
+			Logger.dump(indent, "AstAtomType " + atomType.position.toString()
 					+ ": STRING");
 			break;
 		case DOB:
-			Logger.dump(indent, "AbsAtomType " + atomType.position.toString()
+			Logger.dump(indent, "AstAtomType " + atomType.position.toString()
 					+ ": DOUBLE");
 			break;
 		case CHR:
-			Logger.dump(indent, "AbsAtomType " + atomType.position.toString()
+			Logger.dump(indent, "AstAtomType " + atomType.position.toString()
 					+ ": CHAR");
 			break;
 		case VOID:
-			Logger.dump(indent, "AbsAtomType " + atomType.position.toString()
+			Logger.dump(indent, "AstAtomType " + atomType.position.toString()
 					+ ": VOID");
 			break;
         case NIL:
-            Logger.dump(indent, "AbsAtomType " + atomType.position.toString()
+            Logger.dump(indent, "AstAtomType " + atomType.position.toString()
                     + ": NIL");
             break;
 		default:
-			Logger.error("Internal error :: compiler.ast.PrintAstVisitor.visit(AbsAtomType)");
+			Logger.error("Internal error :: compiler.ast.PrintAstVisitor.visit(AstAtomType)");
 		}
 		{
 			Type typ = symbolDescription.getTypeForAstNode(atomType);
@@ -182,64 +166,64 @@ public class PrintAstVisitor implements ASTVisitor {
 		}
 	}
 
-	public void visit(AbsBinExpr binExpr) {
+	public void visit(AstBinaryExpression binExpr) {
         switch (binExpr.oper) {
-            case AbsBinExpr.IOR:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": IOR");
+            case AstBinaryExpression.IOR:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": IOR");
                 break;
-            case AbsBinExpr.AND:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": AND");
+            case AstBinaryExpression.AND:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": AND");
                 break;
-            case AbsBinExpr.EQU:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": EQU");
+            case AstBinaryExpression.EQU:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": EQU");
                 break;
-            case AbsBinExpr.NEQ:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": NEQ");
+            case AstBinaryExpression.NEQ:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": NEQ");
                 break;
-            case AbsBinExpr.LEQ:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": LEQ");
+            case AstBinaryExpression.LEQ:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": LEQ");
                 break;
-            case AbsBinExpr.GEQ:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": GEQ");
+            case AstBinaryExpression.GEQ:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": GEQ");
                 break;
-            case AbsBinExpr.LTH:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": LTH");
+            case AstBinaryExpression.LTH:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": LTH");
                 break;
-            case AbsBinExpr.GTH:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": GTH");
+            case AstBinaryExpression.GTH:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": GTH");
                 break;
-            case AbsBinExpr.ADD:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": ADD");
+            case AstBinaryExpression.ADD:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": ADD");
                 break;
-            case AbsBinExpr.SUB:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": SUB");
+            case AstBinaryExpression.SUB:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": SUB");
                 break;
-            case AbsBinExpr.MUL:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": MUL");
+            case AstBinaryExpression.MUL:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": MUL");
                 break;
-            case AbsBinExpr.DIV:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": DIV");
+            case AstBinaryExpression.DIV:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": DIV");
                 break;
-            case AbsBinExpr.MOD:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": MOD");
+            case AstBinaryExpression.MOD:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": MOD");
                 break;
-            case AbsBinExpr.ARR:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": ARR");
+            case AstBinaryExpression.ARR:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": ARR");
                 break;
-            case AbsBinExpr.ASSIGN:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": ASSIGN");
+            case AstBinaryExpression.ASSIGN:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": ASSIGN");
                 break;
-            case AbsBinExpr.DOT:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": DOT");
+            case AstBinaryExpression.DOT:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": DOT");
                 break;
-            case AbsBinExpr.IS:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": IS");
+            case AstBinaryExpression.IS:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": IS");
                 break;
-            case AbsBinExpr.AS:
-                Logger.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": As");
+            case AstBinaryExpression.AS:
+                Logger.dump(indent, "AstBinaryExpression " + binExpr.position.toString() + ": As");
                 break;
             default:
-                Logger.error("Internal error :: compiler.ast.Abstr.visit(AbsBinExpr)");
+                Logger.error("Internal error :: compiler.ast.Abstr.visit(AstBinaryExpression)");
         }
         {
             Type typ = symbolDescription.getTypeForAstNode(binExpr);
@@ -250,34 +234,34 @@ public class PrintAstVisitor implements ASTVisitor {
         indent += 2; binExpr.expr2.accept(this); indent -= 2;
 	}
 
-	public void visit(AbsDefs defs) {
-		Logger.dump(indent, "AbsDefs " + defs.position.toString() + ":");
+	public void visit(AstDefinitions defs) {
+		Logger.dump(indent, "AstDefinitions " + defs.position.toString() + ":");
 		{
 			Type typ = symbolDescription.getTypeForAstNode(defs);
 			if (typ != null)
 				Logger.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		for (AbsDef def : defs.definitions) {
+		for (AstDefinition def : defs.definitions) {
 			indent += 2;
 			def.accept(this);
 			indent -= 2;
 		}
 	}
 
-	public void visit(AbsExprs exprs) {
-		Logger.dump(indent, "AbsExprs " + exprs.position.toString() + ":");
+	public void visit(AstExpressions exprs) {
+		Logger.dump(indent, "AstExpressions " + exprs.position.toString() + ":");
 		{
 			Type typ = symbolDescription.getTypeForAstNode(exprs);
 			if (typ != null)
 				Logger.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2;
-		for (AbsExpr e : exprs.expressions)
+		for (AstExpression e : exprs.expressions)
 			e.accept(this);
 		indent -= 2;
 	}
 
-	public void visit(AbsForStmt forStmt) {
+	public void visit(AstForStatement forStmt) {
 		Logger.dump(indent, "AbsFor " + forStmt.position.toString() + ":");
 		{
 			Type typ = symbolDescription.getTypeForAstNode(forStmt);
@@ -295,11 +279,11 @@ public class PrintAstVisitor implements ASTVisitor {
 		indent -= 2;
 	}
 
-	public void visit(AbsFunCall funCall) {
-		Logger.dump(indent, "AbsFunCall " + funCall.position.toString() + ": "
+	public void visit(AstFunctionCallExpression funCall) {
+		Logger.dump(indent, "AstFunctionCallExpression " + funCall.position.toString() + ": "
 				+ funCall.name);
 		{
-			AbsDef def = symbolDescription.getDefinitionForAstNode(funCall);
+			AstDefinition def = symbolDescription.getDefinitionForAstNode(funCall);
 			if (def != null && def.position != null)
 				Logger.dump(indent + 2,
 						"#defined at " + def.position.toString());
@@ -309,15 +293,15 @@ public class PrintAstVisitor implements ASTVisitor {
 			if (typ != null)
 				Logger.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		for (int arg = 0; arg < funCall.numArgs(); arg++) {
+		for (int arg = 0; arg < funCall.getArgumentCount(); arg++) {
 			indent += 2;
-			funCall.arg(arg).accept(this);
+			funCall.getArgumentAtIndex(arg).accept(this);
 			indent -= 2;
 		}
 	}
 
-	public void visit(AbsFunDef funDef) {
-		Logger.dump(indent, "AbsFunDef " + funDef.position.toString() + ": "
+	public void visit(AstFunctionDefinition funDef) {
+		Logger.dump(indent, "AstFunctionDefinition " + funDef.position.toString() + ": "
 				+ funDef.name);
 		{
 			Type typ = symbolDescription.getTypeForAstNode(funDef);
@@ -329,20 +313,20 @@ public class PrintAstVisitor implements ASTVisitor {
 			if (frame != null)
 				Logger.dump(indent + 2, "#framed as " + frame.toString());
 		}
-		for (AbsParDef par : funDef.getParamaters()) {
+		for (AstParameterDefinition par : funDef.getParamaters()) {
 			indent += 2;
 			par.accept(this);
 			indent -= 2;
 		}
 		indent += 2;
-		funDef.type.accept(this);
+		funDef.returnType.accept(this);
 		indent -= 2;
 		indent += 2;
-		funDef.func.accept(this);
+		funDef.functionCode.accept(this);
 		indent -= 2;
 	}
 
-	public void visit(AbsIfStmt ifExpr) {
+	public void visit(AstIfStatement ifExpr) {
 		Logger.dump(indent, "AbsIfExpr " + ifExpr.position.toString() + ":");
 		Type typ = symbolDescription.getTypeForAstNode(ifExpr);
 		if (typ != null)
@@ -350,7 +334,7 @@ public class PrintAstVisitor implements ASTVisitor {
 		
 		indent += 2;
 		for (Condition c : ifExpr.conditions) {
-			c.cond.accept(this);
+			c.condition.accept(this);
 			c.body.accept(this);
 		}
 		if (ifExpr.elseBody != null)
@@ -358,7 +342,7 @@ public class PrintAstVisitor implements ASTVisitor {
 		indent -= 2;
 	}
 
-	public void visit(AbsParDef par) {
+	public void visit(AstParameterDefinition par) {
 		Logger.dump(indent, "AbsPar " + par.position.toString() + ": "
 				+ par.name);
 		{
@@ -376,8 +360,8 @@ public class PrintAstVisitor implements ASTVisitor {
 		indent -= 2;
 	}
 
-	public void visit(AbsTypeDef typeDef) {
-//		Logger.dump(indent, "AbsTypeDef " + typeDef.position.toString() + ": "
+	public void visit(AstTypeDefinition typeDef) {
+//		Logger.dump(indent, "AstTypeDefinition " + typeDef.position.toString() + ": "
 //				+ typeDef.getName);
 //		{
 //			SemType typ = symbolDescription.getTypeForAstNode(typeDef);
@@ -389,11 +373,11 @@ public class PrintAstVisitor implements ASTVisitor {
 //		indent -= 2;
 	}
 
-	public void visit(AbsTypeName typeName) {
-		Logger.dump(indent, "AbsTypeName " + typeName.position.toString()
+	public void visit(AstTypeName typeName) {
+		Logger.dump(indent, "AstTypeName " + typeName.position.toString()
 				+ ": " + typeName.name);
 		{
-			AbsDef def = symbolDescription.getDefinitionForAstNode(typeName);
+			AstDefinition def = symbolDescription.getDefinitionForAstNode(typeName);
 			if (def != null)
 				Logger.dump(indent + 2,
 						"#defined at " + def.position.toString());
@@ -405,30 +389,30 @@ public class PrintAstVisitor implements ASTVisitor {
 		}
 	}
 
-	public void visit(AbsUnExpr unExpr) {
+	public void visit(AstUnaryExpression unExpr) {
 		switch (unExpr.oper) {
-		case AbsUnExpr.ADD:
-			Logger.dump(indent, "AbsUnExpr " + unExpr.position.toString()
+		case AstUnaryExpression.ADD:
+			Logger.dump(indent, "AstUnaryExpression " + unExpr.position.toString()
 					+ ": ADD");
 			break;
-		case AbsUnExpr.SUB:
-			Logger.dump(indent, "AbsUnExpr " + unExpr.position.toString()
+		case AstUnaryExpression.SUB:
+			Logger.dump(indent, "AstUnaryExpression " + unExpr.position.toString()
 					+ ": SUB");
 			break;
-		case AbsUnExpr.NOT:
-			Logger.dump(indent, "AbsUnExpr " + unExpr.position.toString()
+		case AstUnaryExpression.NOT:
+			Logger.dump(indent, "AstUnaryExpression " + unExpr.position.toString()
 					+ ": NOT");
 			break;
-		case AbsUnExpr.MEM:
-			Logger.dump(indent, "AbsUnExpr " + unExpr.position.toString()
+		case AstUnaryExpression.MEM:
+			Logger.dump(indent, "AstUnaryExpression " + unExpr.position.toString()
 					+ ": MEM");
 			break;
-		case AbsUnExpr.VAL:
-			Logger.dump(indent, "AbsUnExpr " + unExpr.position.toString()
+		case AstUnaryExpression.VAL:
+			Logger.dump(indent, "AstUnaryExpression " + unExpr.position.toString()
 					+ ": VAL");
 			break;
 		default:
-			Logger.error("Internal error :: compiler.ast.Abstr.visit(AbsBinExpr)");
+			Logger.error("Internal error :: compiler.ast.Abstr.visit(AstBinaryExpression)");
 		}
 		{
 			Type typ = symbolDescription.getTypeForAstNode(unExpr);
@@ -440,8 +424,8 @@ public class PrintAstVisitor implements ASTVisitor {
 		indent -= 2;
 	}
 
-	public void visit(AbsVarDef varDef) {
-		Logger.dump(indent, "AbsVarDef " + varDef.position.toString() + ": "
+	public void visit(AstVariableDefinition varDef) {
+		Logger.dump(indent, "AstVariableDefinition " + varDef.position.toString() + ": "
 				+ varDef.name);
 		{
 			Type typ = symbolDescription.getTypeForAstNode(varDef);
@@ -458,11 +442,11 @@ public class PrintAstVisitor implements ASTVisitor {
 		indent -= 2;
 	}
 
-	public void visit(AbsVarNameExpr varName) {
+	public void visit(AstVariableNameExpression varName) {
 		Logger.dump(indent, "AbsVarName " + varName.position.toString() + ": "
 				+ varName.name);
 		{
-			AbsDef def = symbolDescription.getDefinitionForAstNode(varName);
+			AstDefinition def = symbolDescription.getDefinitionForAstNode(varName);
 			if (def != null)
 				Logger.dump(indent + 2,
 						"#defined at " + def.position.toString());
@@ -474,7 +458,7 @@ public class PrintAstVisitor implements ASTVisitor {
 		}
 	}
 
-	public void visit(AbsWhileStmt whileStmt) {
+	public void visit(AstWhileStatement whileStmt) {
 		Logger.dump(indent, "AbsWhileName " + whileStmt.position.toString()
 				+ ":");
 		{
@@ -483,7 +467,7 @@ public class PrintAstVisitor implements ASTVisitor {
 				Logger.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2;
-		whileStmt.cond.accept(this);
+		whileStmt.condition.accept(this);
 		indent -= 2;
 		indent += 2;
 		whileStmt.body.accept(this);
@@ -491,8 +475,8 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsImportDef importDef) {
-        Logger.dump(indent, "AbsImportDef " + importDef.position + ":");
+	public void visit(AstImportDefinition importDef) {
+        Logger.dump(indent, "AstImportDefinition " + importDef.position + ":");
         {
             Type typ = symbolDescription.getTypeForAstNode(importDef);
             if (typ != null)
@@ -502,14 +486,14 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsStmts stmts) {
-		Logger.dump(indent, "AbsStmts " + stmts.position.toString() + ":");
+	public void visit(AstStatements stmts) {
+		Logger.dump(indent, "AstStatements " + stmts.position.toString() + ":");
 		{
 			Type typ = symbolDescription.getTypeForAstNode(stmts);
 			if (typ != null)
 				Logger.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		for (AbsStmt s : stmts.statements) {
+		for (AstStatement s : stmts.statements) {
 			indent += 2;
 			s.accept(this);
 			indent -= 2;
@@ -517,8 +501,8 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsReturnExpr returnExpr) {
-		Logger.dump(indent, "AbsReturnExpr " + returnExpr.position.toString());
+	public void visit(AstReturnExpression returnExpr) {
+		Logger.dump(indent, "AstReturnExpression " + returnExpr.position.toString());
 		{
 			Type typ = symbolDescription.getTypeForAstNode(returnExpr);
 			if (typ != null)
@@ -531,22 +515,22 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsListExpr absListExpr) {
-		Logger.dump(indent, "AbsListExpr " + absListExpr.position.toString());
+	public void visit(AstListExpr absListExpr) {
+		Logger.dump(indent, "AstListExpr " + absListExpr.position.toString());
 		{
 			Type typ = symbolDescription.getTypeForAstNode(absListExpr);
 			if (typ != null)
 				Logger.dump(indent + 2, "#typed as " + typ.toString());
 		}
 		indent += 2; 
-		for (AbsExpr e : absListExpr.expressions)
+		for (AstExpression e : absListExpr.expressions)
 			e.accept(this);
 		indent -= 2;
 	}
 
 	@Override
-	public void visit(AbsFunType funType) {
-		Logger.dump(indent, "AbsFunType " + funType.position.toString() + ":");
+	public void visit(AstFunctionType funType) {
+		Logger.dump(indent, "AstFunctionType " + funType.position.toString() + ":");
 		Logger.dump(indent + 2, funType.toString());
 		{
 			Type typ = symbolDescription.getTypeForAstNode(funType);
@@ -556,13 +540,13 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsControlTransferStmt acceptor) {
-		Logger.dump(indent, "AbsControlTransferStmt: " + acceptor.control);
+	public void visit(AstControlTransferStatement acceptor) {
+		Logger.dump(indent, "AstControlTransferStatement: " + acceptor.control);
 	}
 	
 	@Override
-	public void visit(AbsSwitchStmt switchStmt) {
-		Logger.dump(indent, "AbsSwitchStmt " + switchStmt.position.toString() + ":");
+	public void visit(AstSwitchStatement switchStmt) {
+		Logger.dump(indent, "AstSwitchStatement " + switchStmt.position.toString() + ":");
 		indent += 2;
 		{
 			Type typ = symbolDescription.getTypeForAstNode(switchStmt);
@@ -580,7 +564,7 @@ public class PrintAstVisitor implements ASTVisitor {
 		}
 		indent -= 2;
 		
-		for (AbsCaseStmt singleCase : switchStmt.cases)
+		for (AstCaseStatement singleCase : switchStmt.cases)
 			singleCase.accept(this);
 		
 		if (switchStmt.defaultBody != null) {
@@ -599,10 +583,10 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsCaseStmt acceptor) {
+	public void visit(AstCaseStatement acceptor) {
 		Logger.dump(indent, "Case:");
 		indent += 2; 
-		for (AbsExpr e : acceptor.exprs) {
+		for (AstExpression e : acceptor.exprs) {
 			e.accept(this);
 
 			Type typ = symbolDescription.getTypeForAstNode(e);
@@ -615,8 +599,8 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsEnumDef enumDef) {
-		Logger.dump(indent, "AbsEnumDef " + enumDef.position.toString() + ": " + enumDef.name);
+	public void visit(AstEnumDefinition enumDef) {
+		Logger.dump(indent, "AstEnumDefinition " + enumDef.position.toString() + ": " + enumDef.name);
 		{
 			Type typ = symbolDescription.getTypeForAstNode(enumDef);
 			if (typ != null)
@@ -629,13 +613,13 @@ public class PrintAstVisitor implements ASTVisitor {
 		indent -= 2;
 		
 		indent += 2;
-		for (AbsDef def : enumDef.definitions)
+		for (AstDefinition def : enumDef.definitions)
 			def.accept(this);
 		indent -= 2;
 	}
 
 	@Override
-	public void visit(AbsEnumMemberDef acceptor) {
+	public void visit(AstEnumMemberDefinition acceptor) {
 		acceptor.name.accept(this);
 		{
 			Type typ = symbolDescription.getTypeForAstNode(acceptor);
@@ -647,8 +631,8 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsTupleDef tupleDef) {
-		Logger.dump(indent, "AbsTupleDef " + tupleDef.position.toString());
+	public void visit(AstTupleDefinition tupleDef) {
+		Logger.dump(indent, "AstTupleDefinition " + tupleDef.position.toString());
 		{
 			Type typ = symbolDescription.getTypeForAstNode(tupleDef);
 			if (typ != null)
@@ -657,10 +641,10 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsLabeledExpr labeledExpr) {
-		Logger.dump(indent, "AbsLabeledExpr " + labeledExpr.position.toString());
+	public void visit(AstLabeledExpr labeledExpr) {
+		Logger.dump(indent, "AstLabeledExpr " + labeledExpr.position.toString());
 		indent += 2;
-		Logger.dump(indent, "Label: " + labeledExpr.name);
+		Logger.dump(indent, "Label: " + labeledExpr.label);
 		labeledExpr.expr.accept(this);
 		{
 			Type typ = symbolDescription.getTypeForAstNode(labeledExpr);
@@ -671,31 +655,31 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AbsTupleExpr tupleExpr) {
-		Logger.dump(indent, "AbsTupleExpr " + tupleExpr.position.toString());
+	public void visit(AstTupleExpression tupleExpr) {
+		Logger.dump(indent, "AstTupleExpression " + tupleExpr.position.toString());
 		indent += 2;
 		tupleExpr.expressions.accept(this);
 		indent -= 2;
 	}
 
 	@Override
-	public void visit(AbsOptionalType acceptor) {
+	public void visit(AstOptionalType acceptor) {
 		acceptor.childType.accept(this);
 	}
 
 	@Override
-	public void visit(AbsOptionalEvaluationExpr acceptor) {
+	public void visit(AstOptionalEvaluationExpression acceptor) {
 		acceptor.subExpr.accept(this);
 	}
 
 	@Override
-	public void visit(AbsForceValueExpr acceptor) {
+	public void visit(AstForceValueExpression acceptor) {
 		acceptor.subExpr.accept(this);
 	}
 
     @Override
-    public void visit(AbsExtensionDef acceptor) {
-        Logger.dump(indent, "AbsExtensionDef " + acceptor.position.toString() + ":");
+    public void visit(AstExtensionDefinition acceptor) {
+        Logger.dump(indent, "AstExtensionDefinition " + acceptor.position.toString() + ":");
         {
             Type typ = symbolDescription.getTypeForAstNode(acceptor);
             if (typ != null)
@@ -707,8 +691,8 @@ public class PrintAstVisitor implements ASTVisitor {
     }
 
     @Override
-    public void visit(AbsInterfaceDef acceptor) {
-        Logger.dump(indent, "AbsInterfaceDef " + acceptor.position.toString() + ":");
+    public void visit(AstInterfaceDefinition acceptor) {
+        Logger.dump(indent, "AstInterfaceDefinition " + acceptor.position.toString() + ":");
         {
             Type typ = symbolDescription.getTypeForAstNode(acceptor);
             if (typ != null)

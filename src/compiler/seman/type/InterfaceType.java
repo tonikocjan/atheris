@@ -1,9 +1,9 @@
 package compiler.seman.type;
 
+import compiler.ast.tree.def.AstDefinition;
+import compiler.ast.tree.def.AstInterfaceDefinition;
 import utils.Constants;
-import compiler.ast.tree.def.AbsDef;
-import compiler.ast.tree.def.AbsFunDef;
-import compiler.ast.tree.def.AbsInterfaceDef;
+import compiler.ast.tree.def.AstFunctionDefinition;
 
 
 /**
@@ -12,13 +12,13 @@ import compiler.ast.tree.def.AbsInterfaceDef;
 public class InterfaceType extends Type {
 
     /** Definition. */
-    public final AbsInterfaceDef definition;
+    public final AstInterfaceDefinition definition;
 
     /**
      * Create new interface memberType.
      * @param definition
      */
-    public InterfaceType(AbsInterfaceDef definition) {
+    public InterfaceType(AstInterfaceDefinition definition) {
         this.definition = definition;
     }
 
@@ -53,8 +53,8 @@ public class InterfaceType extends Type {
 
     @Override
     public boolean containsMember(String name) {
-        for (AbsDef def : definition.definitions.definitions) {
-            if (((AbsFunDef) def).getStringRepresentation().equals(name))
+        for (AstDefinition def : definition.definitions.definitions) {
+            if (((AstFunctionDefinition) def).getStringRepresentation().equals(name))
                 return true;
         }
 
@@ -62,9 +62,9 @@ public class InterfaceType extends Type {
     }
 
     @Override
-    public AbsDef findMemberDefinitionForName(String name) {
-        for (AbsDef def : definition.definitions.definitions) {
-            if (((AbsFunDef) def).getStringRepresentation().equals(name))
+    public AstDefinition findMemberDefinitionForName(String name) {
+        for (AstDefinition def : definition.definitions.definitions) {
+            if (((AstFunctionDefinition) def).getStringRepresentation().equals(name))
                 return def;
         }
 

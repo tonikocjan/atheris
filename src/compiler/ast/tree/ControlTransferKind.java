@@ -17,11 +17,6 @@
 
 package compiler.ast.tree;
 
-/**
- * Control transfer enumeration.
- * @author toni kocjan
- *
- */
 public enum ControlTransferKind {
 	Continue,
 	Break

@@ -19,12 +19,12 @@ package compiler.frames;
 
 import java.util.*;
 
-import compiler.ast.tree.def.AbsFunDef;
+import compiler.ast.tree.def.AstFunctionDefinition;
 import utils.Constants;
 
 public class FrmFrame {
 
-	public AbsFunDef functionDefinition;
+	public AstFunctionDefinition functionDefinition;
 	public int staticLevel;
 	public FrmLabel entryLabel;
 	public FrmLabel endLabel;
@@ -39,7 +39,7 @@ public class FrmFrame {
 	public FrmTemp FP;
 	public FrmTemp RV;
 
-	public FrmFrame(AbsFunDef fun, int level) {
+	public FrmFrame(AstFunctionDefinition fun, int level) {
 		this.functionDefinition = fun;
 		this.staticLevel = level;
 		this.entryLabel = (level == 1 ? FrmLabel.newNamedLabel(fun.name) : FrmLabel.newAnonymousLabel());

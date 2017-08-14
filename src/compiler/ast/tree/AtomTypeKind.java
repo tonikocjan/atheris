@@ -17,11 +17,6 @@
 
 package compiler.ast.tree;
 
-/**
- * Built-in memberType enumeration.
- * @author toni kocjan
- *
- */
 public enum AtomTypeKind {
 	LOG, INT, STR, DOB, CHR, VOID, NIL
 }

@@ -17,14 +17,14 @@
 
 package compiler.frames;
 
-import compiler.ast.tree.def.AbsFunDef;
+import compiler.ast.tree.def.AstFunctionDefinition;
 
 public class FrmFunAccess extends FrmAccess {
 
-	public final AbsFunDef functionDefinition;
+	public final AstFunctionDefinition functionDefinition;
 	public final FrmLabel label;
 
-	public FrmFunAccess(AbsFunDef functionDefinition) {
+	public FrmFunAccess(AstFunctionDefinition functionDefinition) {
 		this.functionDefinition = functionDefinition;
 		label = FrmLabel.newNamedLabel(functionDefinition.name);
 	}

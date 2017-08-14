@@ -1,6 +1,6 @@
 package compiler.seman.type;
 
-import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AstDefinition;
 
 public class OptionalType extends Type implements ReferenceType {
 
@@ -45,7 +45,7 @@ public class OptionalType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public AbsDef findMemberDefinitionForName(String name) {
+	public AstDefinition findMemberDefinitionForName(String name) {
 		return childType.findMemberDefinitionForName(name);
 	}
 

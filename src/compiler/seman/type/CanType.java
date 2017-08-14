@@ -17,8 +17,8 @@
 
 package compiler.seman.type;
 
-import compiler.ast.tree.def.AbsDef;
-import compiler.ast.tree.def.AbsVarDef;
+import compiler.ast.tree.def.AstDefinition;
+import compiler.ast.tree.def.AstVariableDefinition;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -34,7 +34,7 @@ public class CanType extends Type {
 	public final Type childType;
 
 	/** Static definitions in childType */
-	private final LinkedList<AbsDef> staticDefinitions = new LinkedList<>();
+	private final LinkedList<AstDefinition> staticDefinitions = new LinkedList<>();
     private final LinkedList<Type> staticTypes = new LinkedList<>();
     private final LinkedList<String> staticNames = new LinkedList<>();
 
@@ -76,26 +76,26 @@ public class CanType extends Type {
 	}
 
 	@Override
-	public AbsDef findMemberDefinitionForName(String name) {
+	public AstDefinition findMemberDefinitionForName(String name) {
 		return childType.findMemberDefinitionForName(name);
 	}
 
-	public void addStaticDefinition(AbsDef def, String name, Type type) {
+	public void addStaticDefinition(AstDefinition def, String name, Type type) {
 	    staticDefinitions.add(def);
 	    staticNames.add(name);
 	    staticTypes.add(type);
     }
 
     public int staticSize() {
-        Iterator<AbsDef> defIterator = staticDefinitions.iterator();
+        Iterator<AstDefinition> defIterator = staticDefinitions.iterator();
         Iterator<Type> typeIterator = staticTypes.iterator();
 
         int size = 0;
         while (defIterator.hasNext()) {
             Type t = typeIterator.next();
-            AbsDef def = defIterator.next();
+            AstDefinition def = defIterator.next();
 
-            if (def instanceof AbsVarDef) {
+            if (def instanceof AstVariableDefinition) {
                 size += t.sizeInBytes();
             }
         }
@@ -107,13 +107,13 @@ public class CanType extends Type {
         return staticNames.contains(name);
     }
 
-    public AbsDef findStaticMemberForName(String memberName) {
+    public AstDefinition findStaticMemberForName(String memberName) {
         Iterator<String> namesIterator = staticNames.iterator();
-        Iterator<AbsDef> defsIterator = staticDefinitions.iterator();
+        Iterator<AstDefinition> defsIterator = staticDefinitions.iterator();
 
         while (defsIterator.hasNext()) {
             String name = namesIterator.next();
-            AbsDef def = defsIterator.next();
+            AstDefinition def = defsIterator.next();
 
             if (name.equals(memberName)) {
                 return def;
@@ -126,13 +126,13 @@ public class CanType extends Type {
     public int offsetForStaticMember(String name) {
         Iterator<String> namesIterator = staticNames.iterator();
         Iterator<Type> typesIterator = staticTypes.iterator();
-        Iterator<AbsDef> defsIterator = staticDefinitions.iterator();
+        Iterator<AstDefinition> defsIterator = staticDefinitions.iterator();
 
         int offset = 0;
         while (defsIterator.hasNext()) {
-            AbsDef next = defsIterator.next();
+            AstDefinition next = defsIterator.next();
 
-            if (!(next instanceof AbsVarDef)) {
+            if (!(next instanceof AstVariableDefinition)) {
                 namesIterator.next();
                 typesIterator.next();
                 continue;
@@ -151,7 +151,7 @@ public class CanType extends Type {
      * @param memberType
      * @return
      */
-    public boolean addStaticMember(AbsDef definition, String memberName, Type memberType) {
+    public boolean addStaticMember(AstDefinition definition, String memberName, Type memberType) {
         if (staticDefinitions.contains(memberName)) {
             return false;
         }

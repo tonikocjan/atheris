@@ -1,10 +1,10 @@
 package compiler.seman.type;
 
 import compiler.Logger;
-import compiler.ast.tree.def.AbsClassDef;
-import compiler.ast.tree.def.AbsDef;
-import compiler.ast.tree.def.AbsVarDef;
-import compiler.ast.tree.type.AbsType;
+import compiler.ast.tree.def.AstClassDefinition;
+import compiler.ast.tree.def.AstDefinition;
+import compiler.ast.tree.def.AstVariableDefinition;
+import compiler.ast.tree.type.AstType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ public abstract class ObjectType extends Type {
     /**
      * Class definition.
      */
-    public final AbsClassDef classDefinition;
+    public final AstClassDefinition classDefinition;
 
     /**
      * Class member names and types.
@@ -27,9 +27,9 @@ public abstract class ObjectType extends Type {
     protected final ArrayList<Type> memberTypes;
 
     /**
-     * Mapping for definitions.
+     * Mapping for memberDefinitions.
      */
-    protected final HashMap<String, AbsDef> definitions = new HashMap<>();
+    protected final HashMap<String, AstDefinition> definitions = new HashMap<>();
 
     /**
      * Sum of sizes of all members.
@@ -54,17 +54,17 @@ public abstract class ObjectType extends Type {
      * @param types Type for each member.
      * @param baseClass Base class for this class memberType.
      */
-    public ObjectType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass, int reservedSize) {
+    public ObjectType(AstClassDefinition definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass, int reservedSize) {
         if (names.size() != types.size()) {
             Logger.error("Internal error :: compiler.seman.memberType.ObjectType: "
-                    + "names count not equal types count");
+                    + "names elementCount not equal types elementCount");
         }
 
         int size = 0;
         for (int i = 0; i < names.size(); i++) {
-            definitions.put(names.get(i), definition.definitions.definitions.get(i));
+            definitions.put(names.get(i), definition.memberDefinitions.definitions.get(i));
 
-            if (definition.definitions.definitions.get(i) instanceof AbsVarDef) {
+            if (definition.memberDefinitions.definitions.get(i) instanceof AstVariableDefinition) {
                 size += types.get(i).sizeInBytes();
             }
         }
@@ -84,7 +84,7 @@ public abstract class ObjectType extends Type {
      * @param names Name for each member.
      * @param types Type for each member.
      */
-    public ObjectType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types, int reservedSize) {
+    public ObjectType(AstClassDefinition definition, ArrayList<String> names, ArrayList<Type> types, int reservedSize) {
         this(definition, names, types, null, reservedSize);
     }
 
@@ -95,7 +95,7 @@ public abstract class ObjectType extends Type {
      * @param memberType
      * @return
      */
-    public boolean addMember(AbsDef definition, String memberName, Type memberType) {
+    public boolean addMember(AstDefinition definition, String memberName, Type memberType) {
         if (definitions.containsKey(memberName)) {
             return false;
         }
@@ -104,7 +104,7 @@ public abstract class ObjectType extends Type {
 
         memberNames.add(memberName);
         memberTypes.add(memberType);
-        classDefinition.definitions.definitions.add(definition);
+        classDefinition.memberDefinitions.definitions.add(definition);
 
         return true;
     }
@@ -114,8 +114,8 @@ public abstract class ObjectType extends Type {
      * @param conformance
      * @return
      */
-    public boolean addConformance(AbsType conformance) {
-        for (AbsType c : classDefinition.conformances) {
+    public boolean addConformance(AstType conformance) {
+        for (AstType c : classDefinition.conformances) {
             if (c.getName().equals(conformance.getName())) return false;
         }
 
@@ -167,12 +167,12 @@ public abstract class ObjectType extends Type {
 
         Iterator<String> namesIterator = memberNames.iterator();
         Iterator<Type> typesIterator = memberTypes.iterator();
-        Iterator<AbsDef> defsIterator = classDefinition.definitions.definitions.iterator();
+        Iterator<AstDefinition> defsIterator = classDefinition.memberDefinitions.definitions.iterator();
 
         while (defsIterator.hasNext()) {
-            AbsDef next = defsIterator.next();
+            AstDefinition next = defsIterator.next();
 
-            if (!(next instanceof AbsVarDef)) {
+            if (!(next instanceof AstVariableDefinition)) {
                 namesIterator.next();
                 typesIterator.next();
                 continue;
@@ -247,7 +247,7 @@ public abstract class ObjectType extends Type {
     }
 
     @Override
-    public AbsDef findMemberDefinitionForName(String name) {
+    public AstDefinition findMemberDefinitionForName(String name) {
         return findMemberForName(name, true);
     }
 
@@ -257,9 +257,9 @@ public abstract class ObjectType extends Type {
      * @param fromBase
      * @return
      */
-    public AbsDef findMemberForName(String name, boolean fromBase) {
+    public AstDefinition findMemberForName(String name, boolean fromBase) {
         if (fromBase && base != null) {
-            AbsDef member = base.findMemberDefinitionForName(name);
+            AstDefinition member = base.findMemberDefinitionForName(name);
 
             if (member != null) return member;
         }
@@ -290,8 +290,8 @@ public abstract class ObjectType extends Type {
      * @return
      */
     public boolean conformsTo(InterfaceType interfaceType) {
-        for (AbsDef def: interfaceType.definition.definitions.definitions) {
-            AbsDef member = findMemberDefinitionForName(def.getName());
+        for (AstDefinition def: interfaceType.definition.definitions.definitions) {
+            AstDefinition member = findMemberDefinitionForName(def.getName());
             if (member == null) return false;
         }
 
@@ -333,7 +333,7 @@ public abstract class ObjectType extends Type {
             return true;
         }
 
-        for (AbsType conformance : classDefinition.conformances) {
+        for (AstType conformance : classDefinition.conformances) {
             if (conformance.getName().equals(type.friendlyName())) {
                 return true;
             }

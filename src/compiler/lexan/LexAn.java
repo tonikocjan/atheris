@@ -45,35 +45,44 @@ public class LexAn {
 
 	private boolean dump;
 	private FileInputStream file = null;
-	private StringBuilder currentSymbol = null;
+	private StringBuilder currentSymbol = new StringBuilder();
 	private int nextCharacter = -1;
 	private int startCol = 1, startRow = 1;
 	private boolean skipNextCharacter = false;
 
-	public LexAn(String sourceFileName, boolean dump) {
+	private LexAn(String sourceFileName, boolean dump) {
 		this.dump = dump;
 
-		try {
-			Path current = Paths.get("");
-			System.out.println("Working dir: "
-					+ current.toAbsolutePath().toString());
-			System.out.println("    Opening file: " + sourceFileName);
-			this.file = new FileInputStream(sourceFileName);
-			currentSymbol = new StringBuilder();
-
-			/**
-			 * Construct keyword map.
-			 */
-			keywordsMap = new HashMap<>();
-			for (int i = 0; i < reserverKeywords.length; i++) {
-                keywordsMap.put(reserverKeywords[i],
-                        TokenType.values()[i + TokenType.KW_ELSE.ordinal()]);
-            }
-
-		} catch (FileNotFoundException e) {
-			Logger.error(LanguageManager.localize("lexan_error_opening_file", sourceFileName));
-		}
+		openFile(sourceFileName);
+        constructKeywordMap();
 	}
+
+	public static LexAn parseSourceFile(String sourceFileName, boolean dump) {
+	    return new LexAn(sourceFileName, dump);
+    }
+
+	private void constructKeywordMap() {
+	    if (keywordsMap != null) return;
+
+	    int firstKeywordIndex = TokenType.KW_ELSE.ordinal();
+
+        keywordsMap = new HashMap<>();
+        for (int i = 0; i < reserverKeywords.length; i++) {
+            keywordsMap.put(reserverKeywords[i], TokenType.values()[i + firstKeywordIndex]);
+        }
+    }
+
+    private void openFile(String sourceFileName) {
+        try {
+            Path current = Paths.get("");
+            System.out.println("Working dir: "
+                    + current.toAbsolutePath().toString());
+            System.out.println("    Opening file: " + sourceFileName);
+            this.file = new FileInputStream(sourceFileName);
+        } catch (FileNotFoundException e) {
+            Logger.error(LanguageManager.localize("lexan_error_opening_file", sourceFileName));
+        }
+    }
 
 	public Symbol nextSymbol() {
 		if (file == null) {

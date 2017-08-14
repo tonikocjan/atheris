@@ -18,16 +18,15 @@
 package compiler.seman.type;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import compiler.ast.tree.def.AbsDef;
-import compiler.ast.tree.def.AbsTupleDef;
+import compiler.ast.tree.def.AstDefinition;
+import compiler.ast.tree.def.AstTupleDefinition;
 
 public class TupleType extends Type implements ReferenceType {
 
-	public final AbsTupleDef definition;
+	public final AstTupleDefinition definition;
 	private final LinkedHashMap<String, Type> members = new LinkedHashMap<>();
 	private final int size;
 
@@ -43,7 +42,7 @@ public class TupleType extends Type implements ReferenceType {
 		this.size = size;
 	}
 
-	public TupleType(AbsTupleDef definition, List<Type> types, List<String> names) {
+	public TupleType(AstTupleDefinition definition, List<Type> types, List<String> names) {
 		int size = 0;
 		
 		for (int i = 0; i < names.size(); i++) {
@@ -125,7 +124,7 @@ public class TupleType extends Type implements ReferenceType {
 	}
 
 	@Override
-	public AbsDef findMemberDefinitionForName(String name) {
+	public AstDefinition findMemberDefinitionForName(String name) {
 		return null;
 	}
 

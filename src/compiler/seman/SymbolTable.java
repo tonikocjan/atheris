@@ -20,11 +20,11 @@ package compiler.seman;
 import java.util.*;
 
 import compiler.*;
-import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.def.AstDefinition;
 
 public class SymbolTable implements SymbolTableMap {
 
-	private HashMap<String, LinkedList<AbsDef>> mapping = new HashMap<>();
+	private HashMap<String, LinkedList<AstDefinition>> mapping = new HashMap<>();
 	private int currentScopeDepth = 0;
 	private SymbolDescriptionMap symbolDescription;
 
@@ -53,8 +53,8 @@ public class SymbolTable implements SymbolTableMap {
         }
     }
 
-	public void insertDefinitionOnCurrentScope(String name, AbsDef definition) throws SemIllegalInsertException {
-		LinkedList<AbsDef> definitionsForName = mapping.get(name);
+	public void insertDefinitionOnCurrentScope(String name, AstDefinition definition) throws SemIllegalInsertException {
+		LinkedList<AstDefinition> definitionsForName = mapping.get(name);
 
 		if (definitionsForName == null) {
 			createNewEntry(name, definition);
@@ -77,7 +77,7 @@ public class SymbolTable implements SymbolTableMap {
 	}
 
     public void removeDefinitionFromCurrentScope(String name) throws SemIllegalDeleteException {
-        LinkedList<AbsDef> definitionsForName = mapping.get(name);
+        LinkedList<AstDefinition> definitionsForName = mapping.get(name);
 
         if (definitionsForName == null) {
             throw new SemIllegalDeleteException();
@@ -98,8 +98,8 @@ public class SymbolTable implements SymbolTableMap {
             mapping.remove(name);
     }
 
-    public AbsDef findDefinitionForName(String name) {
-        LinkedList<AbsDef> definitionsForName = mapping.get(name);
+    public AstDefinition findDefinitionForName(String name) {
+        LinkedList<AstDefinition> definitionsForName = mapping.get(name);
 
         if (definitionsForName == null || definitionsForName.isEmpty()) {
             return null;
@@ -108,26 +108,26 @@ public class SymbolTable implements SymbolTableMap {
         return definitionsForName.getFirst();
     }
 
-	private void createNewEntry(String name, AbsDef definition) {
-        LinkedList<AbsDef> definitions = new LinkedList<>();
+	private void createNewEntry(String name, AstDefinition definition) {
+        LinkedList<AstDefinition> definitions = new LinkedList<>();
         definitions.addFirst(definition);
 
         mapping.put(name, definitions);
     }
 
-    private void setScopeForDefinition(AbsDef definition) {
+    private void setScopeForDefinition(AstDefinition definition) {
         symbolDescription.setScope(definition, currentScopeDepth);
     }
 
-    private boolean isNameAlreadyUsedInCurrentScope(List<AbsDef> definitions) {
+    private boolean isNameAlreadyUsedInCurrentScope(List<AstDefinition> definitions) {
         return symbolDescription.getScope(definitions.get(0)) == currentScopeDepth;
     }
 
-    private boolean isNameDefinedInCurrentOrGreaterScope(List<AbsDef> definitions) {
+    private boolean isNameDefinedInCurrentOrGreaterScope(List<AstDefinition> definitions) {
 	    return symbolDescription.getScope(definitions.get(0)) >= currentScopeDepth;
     }
 
-    private boolean isIllegal(List<AbsDef> definitionList) {
+    private boolean isIllegal(List<AstDefinition> definitionList) {
 	    return definitionList.isEmpty() || (symbolDescription.getScope(definitionList.get(0)) == null);
     }
 }

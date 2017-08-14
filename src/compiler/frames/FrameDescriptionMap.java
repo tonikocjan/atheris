@@ -1,16 +1,16 @@
 package compiler.frames;
 
-import compiler.ast.tree.AbsTree;
-import compiler.ast.tree.def.AbsDef;
+import compiler.ast.tree.AstNode;
+import compiler.ast.tree.def.AstDefinition;
 import compiler.seman.type.ClassType;
 
 public interface FrameDescriptionMap {
 
-    void setFrame(AbsDef fun, FrmFrame frame);
-    FrmFrame getFrame(AbsTree fun);
+    void setFrame(AstDefinition fun, FrmFrame frame);
+    FrmFrame getFrame(AstNode fun);
 
-    void setAccess(AbsDef var, FrmAccess access);
-    FrmAccess getAccess(AbsDef var);
+    void setAccess(AstDefinition var, FrmAccess access);
+    FrmAccess getAccess(AstDefinition var);
 
     void setVirtualTable(ClassType classType, FrmVirtualTableAccess virtualTable);
     FrmVirtualTableAccess getVirtualTable(ClassType classType);

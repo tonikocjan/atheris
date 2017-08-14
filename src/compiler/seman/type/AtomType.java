@@ -19,7 +19,7 @@ package compiler.seman.type;
 
 import compiler.*;
 import compiler.ast.tree.AtomTypeKind;
-import compiler.ast.tree.def.AbsClassDef;
+import compiler.ast.tree.def.AstClassDefinition;
 
 import java.util.ArrayList;
 
@@ -29,7 +29,7 @@ public class AtomType extends ObjectType {
     public final CanType staticType;
 
 	public AtomType(AtomTypeKind type) {
-	    super(new AbsClassDef(type.toString()), new ArrayList<>(), new ArrayList<>(), 0);
+	    super(new AstClassDefinition(type.toString()), new ArrayList<>(), new ArrayList<>(), 0);
 	    this.staticType = new CanType(this);
 		this.type = type;
 	}

@@ -17,15 +17,15 @@
 
 package compiler.frames;
 
-import compiler.ast.tree.def.AbsParDef;
+import compiler.ast.tree.def.AstParameterDefinition;
 
 public class FrmParAccess extends FrmAccess {
 
-	public AbsParDef parameterDefinition;
+	public AstParameterDefinition parameterDefinition;
 	public FrmFrame frame;
 	public int framePointerOffset;
 
-	public FrmParAccess(AbsParDef par, FrmFrame frame, int offset) {
+	public FrmParAccess(AstParameterDefinition par, FrmFrame frame, int offset) {
 		this.parameterDefinition = par;
 		this.frame = frame;
 		this.framePointerOffset = offset;
