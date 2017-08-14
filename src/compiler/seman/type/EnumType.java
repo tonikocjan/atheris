@@ -26,40 +26,17 @@ import compiler.ast.tree.def.AbsDef;
 import compiler.ast.tree.def.AbsEnumDef;
 import compiler.ast.tree.def.AbsEnumMemberDef;
 
-/**
- * Enumeration type.
- * @author toni kocjan
- *
- */
 public class EnumType extends Type implements ReferenceType {
 
-	/**
-	 * Enumeration definition.
-	 */
+    private final LinkedHashMap<String, ClassType> members = new LinkedHashMap<>();
 	public final AbsEnumDef enumDefinition;
-	
-	/**
-	 * Enum members.
-	 */
-	private final LinkedHashMap<String, ClassType> members = new LinkedHashMap<>();
-	
-	/**
-	 * Number of members.
-	 */
 	public final int membersCount;
-	
-	/**
-	 * Selected member (i.e.: Languages.Java.rawValue -> selected member is Java).
-	 */
 	public String selectedMember;
 
-	/**
-	 * Create new enumeration.
-	 */
 	public EnumType(AbsEnumDef definition, 
 			ArrayList<String> names, ArrayList<ClassType> types) {
 		if (names.size() != types.size())
-			Logger.error("Internal error :: compiler.seman.type.EnumType: "
+			Logger.error("Internal error :: compiler.seman.memberType.EnumType: "
 					+ "names count not equal types count");
 		
 		this.enumDefinition = definition;
@@ -69,37 +46,26 @@ public class EnumType extends Type implements ReferenceType {
 		for (int i = 0; i < names.size(); i++)
 			members.put(names.get(i), types.get(i));
 	}
-	
-	/**
-	 * Copy another Enum Type
-	 * @param copyType Type to copy.
-	 * @param selectedMember Selected member for this type.
-	 */
-	public EnumType(EnumType copyType, String selectedMember) {
-		this.enumDefinition = copyType.enumDefinition;
-		this.membersCount = copyType.membersCount;
-		this.selectedMember = selectedMember;
-		
-		for (Map.Entry<String, ClassType> entry : copyType.members.entrySet()) {
-			members.put(entry.getKey(), entry.getValue());
-		}
+
+	public static EnumType copyType(EnumType typeToCopy, String selectedMember) {
+	    return new EnumType(typeToCopy, selectedMember);
+    }
+
+	private EnumType(EnumType copyType, String selectedMember) {
+        this.enumDefinition = copyType.enumDefinition;
+        this.membersCount = copyType.membersCount;
+        this.selectedMember = selectedMember;
+
+        for (Map.Entry<String, ClassType> entry : copyType.members.entrySet()) {
+            members.put(entry.getKey(), entry.getValue());
+        }
 	}
 
-	/**
-	 * Get type for member.
-	 * @param name Name of member.
-	 * @return Type of found member (null if member with such getName doesn't exist).
-	 */
 	public ClassType getMemberTypeForName(String name) {
 		return members.get(name);
 	}
-	
-	/**
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public int memberOffsetForName(String name) {
+
+	public int offsetForMember(String name) {
 		int offset = 0;
 		for (AbsDef def : enumDefinition.definitions) {
 			if (def.getName().equals(name)) return offset;

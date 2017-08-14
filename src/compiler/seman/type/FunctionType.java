@@ -23,7 +23,7 @@ import compiler.ast.tree.def.AbsDef;
 import compiler.ast.tree.def.AbsFunDef;
 
 /**
- * Function type.
+ * Function memberType.
  * 
  * @author toni
  */
@@ -35,7 +35,7 @@ public class FunctionType extends Type implements ReferenceType {
 	public final Vector<Type> parameterTypes;
 
 	/** 
-	 * Result type. 
+	 * Result memberType.
 	 */
 	public Type resultType;
 
@@ -45,12 +45,12 @@ public class FunctionType extends Type implements ReferenceType {
 	public final AbsFunDef functionDefinition;
 
 	/**
-	 * Create new function type.
+	 * Create new function memberType.
 	 * 
 	 * @param parTypes
 	 *            Parameter types.
 	 * @param resultType
-	 *            Result type.
+	 *            Result memberType.
 	 * @param definition
 	 * 			  Function definition.
 	 */
@@ -70,12 +70,12 @@ public class FunctionType extends Type implements ReferenceType {
 	}
 
 	/**
-	 * Get parameter type at given index.
+	 * Get parameter memberType at given index.
 	 * 
 	 * @param index
 	 *            Indeks of parameter.
 	 * @return 
-	 * 			  Parameter type.
+	 * 			  Parameter memberType.
 	 */
 	public Type getParType(int index) {
 		return parameterTypes.elementAt(index);

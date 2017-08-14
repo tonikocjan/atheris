@@ -41,7 +41,10 @@ public class AbsClassDef extends AbsTypeDef {
 	/** Default constructor */
 	public final AbsFunDef defaultConstructor;
 
-	/** Base class type getName (null if no base class) */
+    /** Static constructor */
+    public final AbsFunDef staticConstructor;
+
+	/** Base class memberType name (null if no base class) */
 	public final AbsType baseClass;
 
 	/** Conforming interfaces. */
@@ -66,6 +69,7 @@ public class AbsClassDef extends AbsTypeDef {
                 true);
         constructor.setParentDefinition(this);
         this.defaultConstructor = constructor;
+        this.staticConstructor = constructor;
     }
 
     /**
@@ -79,7 +83,7 @@ public class AbsClassDef extends AbsTypeDef {
      * @param constructors
      */
     public AbsClassDef(String name, Position pos, AbsType baseClass, ArrayList<AbsType> conformances, ArrayList<AbsDef> definitions,
-                       ArrayList<AbsStmt> defaultConstructor, ArrayList<AbsFunDef> constructors) {
+                       ArrayList<AbsStmt> defaultConstructor, ArrayList<AbsFunDef> constructors, ArrayList<AbsStmt> staticConstructor) {
         super(pos, name);
         this.construstors = constructors;
         this.definitions = new AbsDefs(position, definitions);
@@ -120,11 +124,21 @@ public class AbsClassDef extends AbsTypeDef {
         if (!hasDefaultConstructor) {
             constructors.add(constructor);
         }
+
+        // add static constructor
+        constructor = new AbsFunDef(pos,
+                constructorName,
+                new ArrayList<>(),
+                new AbsAtomType(pos, AtomTypeKind.VOID),
+                new AbsStmts(pos, staticConstructor),
+                true);
+        constructor.setParentDefinition(this);
+        this.staticConstructor = constructor;
     }
 
     /**
-     * * Create new class definition.
-     * @param name Definition's getName
+     * Create new class definition.
+     * @param name Definition's name
      * @param pos Position in file
      * @param definitions Member definitions
      * @param defaultConstructor Initializing expressions for default constructor
@@ -132,7 +146,7 @@ public class AbsClassDef extends AbsTypeDef {
      */
 	public AbsClassDef(String name, Position pos, AbsType baseClass, ArrayList<AbsDef> definitions,
                        ArrayList<AbsStmt> defaultConstructor, ArrayList<AbsFunDef> constructors) {
-        this(name, pos, baseClass, new ArrayList<>(), definitions, defaultConstructor, constructors);
+        this(name, pos, baseClass, new ArrayList<>(), definitions, defaultConstructor, constructors, new ArrayList<>());
 	}
 
     /**
@@ -145,7 +159,7 @@ public class AbsClassDef extends AbsTypeDef {
      */
     public AbsClassDef(String name, Position pos, ArrayList<AbsDef> definitions,
                        ArrayList<AbsStmt> defaultConstructor, ArrayList<AbsFunDef> constructors) {
-        this(name, pos, null, new ArrayList<>(), definitions, defaultConstructor, constructors);
+        this(name, pos, null, new ArrayList<>(), definitions, defaultConstructor, constructors, new ArrayList<>());
     }
 
     /**

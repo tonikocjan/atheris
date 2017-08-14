@@ -17,9 +17,7 @@
 
 package compiler.imcode;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Stack;
+import java.util.*;
 
 import compiler.seman.SymbolDescriptionMap;
 import compiler.seman.SymbolTableMap;
@@ -59,7 +57,7 @@ public class ImcCodeGen implements ASTVisitor {
     private int virtualTableCount = 0;
     private int currentFunctionScope = 0;
     public ImcCodeChunk entryPointCode = null;
-    public LinkedList<ImcChunk> chunks;
+    public List<ImcChunk> chunks;
     private Stack<FrmFrame> returnExprFrameStack = new Stack<>();
     private Stack<FrmLabel> controlTransferStartLabelStack = new Stack<>();
     private Stack<FrmLabel> controlTransferEndLabelStack = new Stack<>();
@@ -72,7 +70,7 @@ public class ImcCodeGen implements ASTVisitor {
 
 	public ImcCodeGen(FrmFrame entryPoint, SymbolTableMap symbolTable, SymbolDescriptionMap symbolDescription, FrameDescriptionMap frameDescription, ImcDescriptionMap imcDescription) {
 		returnExprFrameStack.add(entryPoint);
-		chunks = new LinkedList<>();
+		chunks = new ArrayList<>();
         this.symbolTable = symbolTable;
         this.symbolDescription = symbolDescription;
         this.frameDescription = frameDescription;
@@ -126,7 +124,7 @@ public class ImcCodeGen implements ASTVisitor {
             ImcMEM location = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, framePointer, offset));
 
             // assign new object as "self" parameter
-            constructorCode.stmts.addFirst(new ImcMOVE(location, new ImcMALLOC(size)));
+            constructorCode.stmts.add(0, new ImcMOVE(location, new ImcMALLOC(size)));
 
             // assign pointer to vtable
             if (virtualTablePointer != null) {
@@ -228,7 +226,7 @@ public class ImcCodeGen implements ASTVisitor {
                     while (types.hasNext()) {
                         Type t = types.next();
 
-                        // FIXME: - This won't work for variables with function type
+                        // FIXME: - This won't work for variables with function memberType
                         if (t.isFunctionType()) continue;
 
                         ImcMEM dst = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcCONST(offset)));
@@ -336,7 +334,7 @@ public class ImcCodeGen implements ASTVisitor {
 		else if (acceptor.oper == AbsBinExpr.ARR) {
 		    // TODO: -
 			ArrayType type = (ArrayType) symbolDescription.getTypeForAstNode(acceptor.expr1);
-			int size = type.type.sizeInBytes();
+			int size = type.memberType.sizeInBytes();
 			
 			code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcBINOP(
 					ImcBINOP.MUL, e2, new ImcCONST(size))));
@@ -368,7 +366,7 @@ public class ImcCodeGen implements ASTVisitor {
 					code = imcDescription.getImcCode(memberDef);
 				}
 				else {
-                    code = new ImcCONST(enumType.memberOffsetForName(memberName));
+                    code = new ImcCONST(enumType.offsetForMember(memberName));
                 }
 			}
 
@@ -473,7 +471,7 @@ public class ImcCodeGen implements ASTVisitor {
                     code = c2;
                 }
                 else {
-                    int offset = tupleType.offsetOf(memberName);
+                    int offset = tupleType.offsetOfMember(memberName);
                     code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcCONST(offset)));
                 }
             }
@@ -534,7 +532,7 @@ public class ImcCodeGen implements ASTVisitor {
 		
 		if (type.isArrayType()) {
 			count = ((ArrayType) type).count;
-			type = ((ArrayType) type).type;
+			type = ((ArrayType) type).memberType;
 		}
 
 		ImcExpr size = new ImcCONST(type.sizeInBytes());
@@ -616,7 +614,7 @@ public class ImcCodeGen implements ASTVisitor {
 		code.stmts.add(new ImcLABEL(returnExprFrameStack.peek().endLabel));
 
 		if (resultType.isVoidType()) {
-		    code.stmts.addFirst(new ImcMOVE(new ImcTEMP(returnExprFrameStack.peek().RV), new ImcCONST(-555)));
+		    code.stmts.add(0, new ImcMOVE(new ImcTEMP(returnExprFrameStack.peek().RV), new ImcCONST(-555)));
         }
 
 		chunks.add(new ImcCodeChunk(returnExprFrameStack.peek(), code));
@@ -812,7 +810,7 @@ public class ImcCodeGen implements ASTVisitor {
 
 		currentFunctionScope--;
 		if (currentFunctionScope == 0) {
-            seq.stmts.addFirst(new ImcMOVE(new ImcTEMP(returnExprFrameStack.peek().RV), new ImcCONST(-555)));
+            seq.stmts.add(0, new ImcMOVE(new ImcTEMP(returnExprFrameStack.peek().RV), new ImcCONST(-555)));
 			entryPointCode = new ImcCodeChunk(returnExprFrameStack.peek(), seq);
 			chunks.add(entryPointCode);
 		}
@@ -839,7 +837,7 @@ public class ImcCodeGen implements ASTVisitor {
 	@Override
 	public void visit(AbsListExpr acceptor) {
 		int size = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor)).count;
-		int elSize = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor)).type.sizeInBytes();
+		int elSize = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor)).memberType.sizeInBytes();
 
 		FrmLabel label = FrmLabel.newAnonymousLabel();
 		ImcDataChunk chunk = new ImcDataChunk(label, size * elSize);
@@ -984,7 +982,7 @@ public class ImcCodeGen implements ASTVisitor {
 		for (AbsExpr e : acceptor.expressions.expressions) {
 			e.accept(this);
 			
-			int memberOffset = tupleType.offsetOf(((AbsLabeledExpr) e).name);
+			int memberOffset = tupleType.offsetOfMember(((AbsLabeledExpr) e).name);
 			ImcExpr exprCode = (ImcExpr) imcDescription.getImcCode(e);
 			ImcExpr dst = new ImcMEM(
 					new ImcBINOP(ImcBINOP.ADD, location, new ImcCONST(memberOffset)));

@@ -19,64 +19,106 @@ package compiler.lexan;
 
 import compiler.*;
 
-/**
- * Leksikalni simbol.
- * 
- * @author Toni Kocjan
- */
 public class Symbol {
-	
-	/** Vrsta simbola. */
-	public final TokenType token;
 
-	/** Znakovna predstavitev simbola. */
-	public final String lexeme;
-	
-	/** Polozaj simbola v izvorni datoteki. */
-	public final Position position;
+	private TokenType tokenType;
+	private String lexeme;
+	private Position position;
 
-	/**
-	 * Ustvari nov leksikalni simbol.
-	 * 
-	 * @param tokenType
-	 *            Vrsta simbola.
-	 * @param lexeme
-	 *            Znakovna predstavitev simbola.
-	 * @param begLine
-	 *            Vrstca zacetka simbola v izvorni datoteki.
-	 * @param begColumn
-	 *            Stolpec zacetka simbola v izvorni datoteki.
-	 * @param endLine
-	 *            Vrstica konca simbola v izvorni datoteki.
-	 * @param endColumn
-	 *            Stolpec konca simbola v izvorni datoteki.
-	 */
-	public Symbol(TokenType tokenType, String lexeme, int begLine, int begColumn, int endLine, int endColumn) {
-		this.token = tokenType;
-		this.lexeme = lexeme;
-		this.position = new Position(begLine, begColumn, endLine, endColumn);
-	}
+    public void setLexeme(String lexeme) {
+        this.lexeme = lexeme;
+    }
 
-	/**
-	 * Ustvari nov leksikalni simbol.
-	 * 
-	 * @param tokenType
-	 *            Vrsta simbola.
-	 * @param lexeme
-	 *            Znakovna predstavitev simbola.
-	 * @param position
-	 *            Polozaj simbola v izvorni datoteki.
-	 */
-	public Symbol(TokenType tokenType, String lexeme, Position position) {
-		this.token = tokenType;
-		this.lexeme = lexeme;
-		this.position = position;
-	}
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
+    public void setTokenType(TokenType tokenType) {
+        this.tokenType = tokenType;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public String getLexeme() {
+        return lexeme;
+    }
+
+    public TokenType getTokenType() {
+        return tokenType;
+    }
+
+    public static class Builder {
+
+        private TokenType tokenType;
+        private String lexeme;
+        private int startRow, endRow, startCol, endCol;
+        private Position position;
+
+        public Symbol build() {
+            if (tokenType == null) {
+                return null;
+            }
+
+            Position pos;
+
+            if (position == null) {
+                pos = new Position(startRow, startCol, endRow, endCol);
+            }
+            else {
+                pos = position;
+            }
+
+            Symbol symbol = new Symbol();
+
+            symbol.setLexeme(lexeme);
+            symbol.setTokenType(tokenType);
+            symbol.setPosition(pos);
+
+            return symbol;
+        }
+
+        public Builder setTokenType(TokenType type) {
+            this.tokenType = type;
+            return this;
+        }
+
+        public Builder setLexeme(String lexeme) {
+            this.lexeme = lexeme;
+            return this;
+        }
+
+        public Builder setStartRow(int row) {
+            this.startRow = row;
+            return this;
+        }
+
+        public Builder setEndRow(int row) {
+            this.endRow = row;
+            return this;
+        }
+
+        public Builder setStartCol(int col) {
+            this.startCol = col;
+            return this;
+        }
+
+        public Builder setEndCol(int col) {
+            this.endCol = col;
+            return this;
+        }
+
+        public Builder setPosition(Position position) {
+            this.position = position;
+            return this;
+        }
+    }
 
 	@Override
 	public String toString() {
 		String tokenName = "";
-		switch (token) {
+		switch (tokenType) {
 
 		case EOF          : tokenName = "EOF"       ; break;
 		
@@ -159,13 +201,13 @@ public class Symbol {
         case KW_OVERRIDE    : tokenName = "OVERRIDE"; break;
 		
 		default:
-			Logger.error("Internal error: token=" + token + " in compiler.lexan.Symbol.toString().");
+			Logger.error("Internal error: tokenType=" + tokenType + " in compiler.lexan.Symbol.toString().");
 		}
 		return tokenName + ":" + lexeme;
 	}
 
 	public boolean isIdentifier() {
-	    return token == TokenType.IDENTIFIER;
+	    return tokenType == TokenType.IDENTIFIER;
     }
 
 }

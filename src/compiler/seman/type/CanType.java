@@ -24,14 +24,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * This type is used for representing class definition, enum definition, ... .
+ * This memberType is used for representing class definition, enum definition, ... .
  * @author toni
  *
  */
-// TODO: What should this type be called?
+// TODO: What should this memberType be called?
 public class CanType extends Type {
 
-    /** Child type. */
 	public final Type childType;
 
 	/** Static definitions in childType */
@@ -39,10 +38,6 @@ public class CanType extends Type {
     private final LinkedList<Type> staticTypes = new LinkedList<>();
     private final LinkedList<String> staticNames = new LinkedList<>();
 
-    /**
-     *
-     * @param child
-     */
 	public CanType(Type child) {
 		this.childType = child;
 	}
@@ -169,7 +164,7 @@ public class CanType extends Type {
     }
 
     /**
-     * Get type for member.
+     * Get memberType for member.
      * @param name Name of the member.
      * @return Type of the member (or null if member with such getName doesn't exist).
      */

@@ -29,13 +29,13 @@ import compiler.*;
 public class ImcSEQ extends ImcStmt {
 
 	/* Stavki.  */
-	public LinkedList<ImcStmt> stmts;
+	public ArrayList<ImcStmt> stmts;
 
 	/**
 	 * Ustvari zaporedje stavkov.
 	 */
 	public ImcSEQ() {
-		stmts = new LinkedList<>();
+		stmts = new ArrayList<>();
 	}
 
 	@Override

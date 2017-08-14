@@ -21,7 +21,7 @@ import compiler.ast.tree.AtomTypeKind;
 import compiler.ast.tree.def.AbsDef;
 
 /**
- * Data type description.
+ * Data memberType description.
  */
 public abstract class Type {
 
@@ -31,7 +31,7 @@ public abstract class Type {
         return TYPE_DESCRIPTOR++;
     }
 
-    /** Descriptor for this type (automatically assigned when new type is instantiated)  */
+    /** Descriptor for this memberType is automatically assigned when new memberType is instantiated  */
     public final int descriptor = getTypeDescriptor();
 
 	public abstract boolean sameStructureAs(Type type);
@@ -137,6 +137,7 @@ public abstract class Type {
         boolType = new AtomType(AtomTypeKind.LOG);
         voidType = new AtomType(AtomTypeKind.VOID);
         nilType = new AtomType(AtomTypeKind.NIL);
+        TYPE_DESCRIPTOR = 0;
     }
 
 	/// Static members

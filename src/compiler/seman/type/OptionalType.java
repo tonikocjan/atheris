@@ -4,7 +4,7 @@ import compiler.ast.tree.def.AbsDef;
 
 public class OptionalType extends Type implements ReferenceType {
 
-        /** Child type */
+        /** Child memberType */
 	public final Type childType;
 
     /** Is implicitly forced */

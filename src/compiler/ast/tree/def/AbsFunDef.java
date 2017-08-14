@@ -34,7 +34,7 @@ public class AbsFunDef extends AbsDef {
     /** Parameters. */
 	public final ArrayList<AbsParDef> pars;
 
-	/** Return type. */
+	/** Return memberType. */
 	public final AbsType type;
 	
 	/** Function code. */
@@ -53,7 +53,7 @@ public class AbsFunDef extends AbsDef {
 	 * @param parameters
 	 *            Parameter list
 	 * @param returnType
-	 *            Return type
+	 *            Return memberType
 	 * @param bodyStatements
 	 *            Function code
 	 */
@@ -76,7 +76,7 @@ public class AbsFunDef extends AbsDef {
      * @param parameters
      *            Parameter list
      * @param returnType
-     *            Return type
+     *            Return memberType
      * @param bodyStatements
      *            Function code
      * @param isConstructor
@@ -101,7 +101,7 @@ public class AbsFunDef extends AbsDef {
      * @param parameters
      *            Parameter list
      * @param returnType
-     *            Return type
+     *            Return memberType
      * @param bodyStatements
      *            Function code
      * @param isConstructor

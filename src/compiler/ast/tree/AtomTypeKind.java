@@ -18,7 +18,7 @@
 package compiler.ast.tree;
 
 /**
- * Built-in type enumeration.
+ * Built-in memberType enumeration.
  * @author toni kocjan
  *
  */

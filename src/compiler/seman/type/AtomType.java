@@ -54,7 +54,7 @@ public class AtomType extends ObjectType {
 		case CHR: return "Char";
 		case NIL: return "Nil";
 		}
-		Logger.error("Internal error :: compiler.seman.type.SemAtomType.toString()");
+		Logger.error("Internal error :: compiler.seman.memberType.SemAtomType.toString()");
 		return "";
 	}
 
@@ -73,7 +73,7 @@ public class AtomType extends ObjectType {
 		case DOB:
 			return 8;
 		}
-		Logger.error("Internal error :: compiler.seman.type.SemAtomType.sizeInBytes()");
+		Logger.error("Internal error :: compiler.seman.memberType.SemAtomType.sizeInBytes()");
 		return 0;
 	}
 

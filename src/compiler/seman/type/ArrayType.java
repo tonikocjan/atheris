@@ -19,30 +19,13 @@ package compiler.seman.type;
 
 import compiler.ast.tree.def.AbsDef;
 
-/**
- * Array type.
- * 
- * @author toni
- */
 public class ArrayType extends Type implements ReferenceType {
 
-	/**
-	 * Type of array member.
-	 */
-	public final Type type;
-
-	/**
-	 * Size (number of elements) in array.
-	 */
+	public final Type memberType;
 	public final int count;
 
-	/**
-	 * Create new Array Type.
-	 * @param type Type for each member.
-	 * @param count Number of elements.
-	 */
 	public ArrayType(Type type, int count) {
-		this.type = type;
+		this.memberType = type;
 		this.count = count;
 	}
 
@@ -50,7 +33,7 @@ public class ArrayType extends Type implements ReferenceType {
 	public boolean sameStructureAs(Type type) {
 		if (type.isArrayType()) {
 			ArrayType listType = (ArrayType) type;
-			return this.type.sameStructureAs(listType.type);
+			return this.memberType.sameStructureAs(listType.memberType);
 		}
 
 		return false;
@@ -58,19 +41,19 @@ public class ArrayType extends Type implements ReferenceType {
 
 	@Override
 	public String toString() {
-		return "LIST(" + type.toString() + ")";
+		return "LIST(" + memberType.toString() + ")";
 	}
 
 	@Override
 	public int sizeInBytes() {
-		return count * type.sizeInBytes();
+		return count * memberType.sizeInBytes();
 	}
 
 	@Override
 	public boolean canBeCastedToType(Type type) {
         if (type.isArrayType()) {
             ArrayType listType = (ArrayType) type;
-            return this.type.canBeCastedToType(listType.type);
+            return this.memberType.canBeCastedToType(listType.memberType);
         }
 
         return false;
@@ -83,7 +66,7 @@ public class ArrayType extends Type implements ReferenceType {
 
 	@Override
 	public String friendlyName() {
-		return "[" + type.friendlyName() + "]";
+		return "[" + memberType.friendlyName() + "]";
 	}
 
 	@Override

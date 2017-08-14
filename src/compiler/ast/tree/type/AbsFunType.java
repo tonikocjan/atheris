@@ -28,7 +28,7 @@ public class AbsFunType extends AbsType {
 	/** Types of paramaters */
 	public final ArrayList<AbsType> parameterTypes;
 	
-	/** Return type */
+	/** Return memberType */
 	public final AbsType returnType;
 
     /**

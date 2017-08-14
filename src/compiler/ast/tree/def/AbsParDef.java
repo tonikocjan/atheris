@@ -28,7 +28,7 @@ import compiler.ast.tree.type.AbsType;
  */
 public class AbsParDef extends AbsDef {
 
-	/** Parameter type. */
+	/** Parameter memberType. */
 	public AbsType type;
 
 	/**

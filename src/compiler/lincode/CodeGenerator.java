@@ -18,15 +18,15 @@
 package compiler.lincode;
 
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 
 import compiler.ast.tree.def.AbsFunDef;
-import compiler.frames.FrameDescription;
 import compiler.frames.FrameDescriptionMap;
 import compiler.frames.FrmLabel;
 import compiler.frames.FrmVirtualTableAccess;
 import compiler.imcode.*;
 import compiler.interpreter.Interpreter;
+import compiler.interpreter.Memory;
 import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
 import utils.Constants;
@@ -34,25 +34,23 @@ import utils.Constants;
 public class CodeGenerator {
 
     private FrameDescriptionMap frameDescription;
+    private Memory memory;
+    private ImcCodeChunk mainFrame;
 
-    public CodeGenerator(FrameDescriptionMap frameDescription) {
+    public CodeGenerator(FrameDescriptionMap frameDescription, Memory memory) {
         this.frameDescription = frameDescription;
+        this.memory = memory;
     }
 
-	public ImcCodeChunk linearize(LinkedList<ImcChunk> chunks) {
-		ImcCodeChunk mainFrame = null;
-
-		for (ImcChunk chnk : chunks) {
-			if (chnk instanceof ImcCodeChunk) {
-                storeFunction((ImcCodeChunk) chnk);
-
-                if (chnk.name().equals("__main__")) {
-                    mainFrame = (ImcCodeChunk) chnk;
-                }
+	public ImcCodeChunk linearize(List<ImcChunk> chunks) {
+		for (ImcChunk chunk : chunks) {
+			if (chunk instanceof ImcCodeChunk) {
+                storeFunctionAndLinearizeCode((ImcCodeChunk) chunk);
+                saveMainCodeChunk((ImcCodeChunk) chunk);
 			}
 			else {
-				ImcDataChunk data = (ImcDataChunk) chnk;
-				Interpreter.locations.put(data.label, Interpreter.heapPointer);
+				ImcDataChunk data = (ImcDataChunk) chunk;
+				memory.labelToAddressMapping.put(data.label, Interpreter.heapPointer);
 
 				if (data instanceof ImcVirtualTableDataChunk) {
 				    storeVirtualTable((ImcVirtualTableDataChunk) data);
@@ -66,21 +64,34 @@ public class CodeGenerator {
 		return mainFrame;
 	}
 
-	private void storeFunction(ImcCodeChunk fn) {
-        fn.lincode = fn.imcode.linear();
+	private void saveMainCodeChunk(ImcCodeChunk chunk) {
+        if (chunk.name().equals("__main__")) {
+            mainFrame = (ImcCodeChunk) chunk;
+        }
+    }
 
-        Interpreter.locations.put(fn.frame.entryLabel, Interpreter.heapPointer);
-        Interpreter.stM(Interpreter.heapPointer, fn);
+	private void storeFunctionAndLinearizeCode(ImcCodeChunk fn) {
+        linearizeCode(fn);
+        storeFunction(fn);
+    }
+
+    private  void linearizeCode(ImcCodeChunk codeChunk) {
+        codeChunk.linearize();
+    }
+
+    private void storeFunction(ImcCodeChunk fn) {
+        memory.labelToAddressMapping.put(fn.getFrame().entryLabel, Interpreter.heapPointer);
+        memory.stM(Interpreter.heapPointer, fn);
 
         Interpreter.heapPointer += Constants.Byte;
     }
 
     private void storeVariable(ImcDataChunk data) {
         if (data.data == null) {
-            Interpreter.stM(Interpreter.heapPointer, 0);
+            memory.stM(Interpreter.heapPointer, 0);
         }
         else {
-            Interpreter.stM(Interpreter.heapPointer, data.data);
+            memory.stM(Interpreter.heapPointer, data.data);
         }
 
         Interpreter.heapPointer += data.size;
@@ -96,16 +107,16 @@ public class CodeGenerator {
             baseClassVirtualTablePointer = baseVirtualTable.location;
         }
 
-        Interpreter.stM(Interpreter.heapPointer, type.descriptor);
+        memory.stM(Interpreter.heapPointer, type.descriptor);
         Interpreter.heapPointer += Constants.Byte;
-        Interpreter.stM(Interpreter.heapPointer, baseClassVirtualTablePointer);
+        memory.stM(Interpreter.heapPointer, baseClassVirtualTablePointer);
         Interpreter.heapPointer += Constants.Byte;
 
         Iterator<FrmLabel> virtualTableIterator = generateVirtualTableForClass(type);
         for (Iterator<FrmLabel> it = virtualTableIterator; it.hasNext(); ) {
             FrmLabel label = it.next();
 
-            Interpreter.stM(Interpreter.heapPointer, label);
+            memory.stM(Interpreter.heapPointer, label);
             Interpreter.heapPointer += Constants.Byte;
         }
     }

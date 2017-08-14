@@ -27,18 +27,22 @@ public class ArgumentParser {
         for (int argc = 0; argc < args.length; argc++) {
             String arg = args[argc];
 
-            if (args[argc].startsWith("--")) {
-                int indexOfEqual = arg.indexOf('=');
-
-                String argumentName = arg.substring(2, indexOfEqual);
-                String argumentValue = arg.substring(indexOfEqual + 1);
-
-                arguments.put(argumentName, argumentValue);
+            if (arg.startsWith("--")) {
+                parseArgument(arg);
             }
             else {
                 arguments.put("sourceFileName", arg);
             }
         }
+    }
+
+    private void parseArgument(String arg) {
+        int indexOfEqual = arg.indexOf('=');
+
+        String argumentName = arg.substring(2, indexOfEqual);
+        String argumentValue = arg.substring(indexOfEqual + 1);
+
+        arguments.put(argumentName, argumentValue);
     }
 
     public String valueFor(String argumentName) {

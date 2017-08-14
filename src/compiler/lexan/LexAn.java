@@ -84,7 +84,14 @@ public class LexAn {
 			Symbol s = parseSymbol();
 
 			if (s == null) {
-                s = new Symbol(TokenType.EOF, "$", startRow, startCol, startRow, startCol + 1);
+                s = new Symbol.Builder()
+                        .setTokenType(TokenType.EOF)
+                        .setLexeme("$")
+                        .setStartRow(startRow)
+                        .setStartCol(startCol)
+                        .setStartRow(startRow)
+                        .setStartCol(startCol + 1)
+                        .build();
             }
 
 			dump(s);
@@ -125,9 +132,16 @@ public class LexAn {
                     parseMultiLineComment();
                 }
                 else {
-                    // if next character is not *, return division token
+                    // if next character is not *, return division tokenType
                     skipNextCharacter = true;
-                    return new Symbol(TokenType.DIV, "/", startRow, startCol, startRow, startCol + 1);
+                    return new Symbol.Builder()
+                            .setTokenType(TokenType.DIV)
+                            .setLexeme("/")
+                            .setStartRow(startRow)
+                            .setStartCol(startCol)
+                            .setStartRow(startRow)
+                            .setStartCol(startCol + 1)
+                            .build();
                 }
 
 				continue;
@@ -137,7 +151,14 @@ public class LexAn {
 			 * Handle EOF.
 			 */
 			if (nextCharacter == -1) {
-                return new Symbol(TokenType.EOF, "$", startRow, startCol, startRow, startCol);
+                return new Symbol.Builder()
+                        .setTokenType(TokenType.EOF)
+                        .setLexeme("$")
+                        .setStartRow(startRow)
+                        .setStartCol(startCol)
+                        .setStartRow(startRow)
+                        .setStartCol(startCol)
+                        .build();
             }
 
 			/**
@@ -210,7 +231,6 @@ public class LexAn {
     }
 
     private void parseMultiLineComment() throws IOException {
-        // else skip characters until '*/'
         do {
             nextCharacter = file.read();
             startCol++;
@@ -263,7 +283,14 @@ public class LexAn {
                     LanguageManager.localize("lexan_error_string_not_closed"));
         }
 
-        return new Symbol(TokenType.STR_CONST, currentSymbol.toString(), startRow, startCol, startRow, startCol + currentSymbol.length());
+        return new Symbol.Builder()
+                .setTokenType(TokenType.STR_CONST)
+                .setLexeme(currentSymbol.toString())
+                .setStartRow(startRow)
+                .setStartCol(startCol)
+                .setStartRow(startRow)
+                .setStartCol(startCol + currentSymbol.length())
+                .build();
     }
 
     private Symbol parseNumericConstant() throws IOException {
@@ -288,13 +315,27 @@ public class LexAn {
 
         skipNextCharacter = true;
 
-        TokenType t = didParseDouble ? TokenType.DOUBLE_CONST : TokenType.INT_CONST;
-        return new Symbol(t, currentSymbol.toString(), startRow, startCol, startRow, startCol + currentSymbol.length());
+        TokenType tokenType = didParseDouble ? TokenType.DOUBLE_CONST : TokenType.INT_CONST;
+        return new Symbol.Builder()
+                .setTokenType(tokenType)
+                .setLexeme(currentSymbol.toString())
+                .setStartRow(startRow)
+                .setStartCol(startCol)
+                .setStartRow(startRow)
+                .setStartCol(startCol + currentSymbol.length())
+                .build();
     }
 
     private Symbol parseCharConstant() throws IOException {
         nextCharacter = file.read();
-        Symbol s = new Symbol(TokenType.CHAR_CONST, "" + (char) nextCharacter, startRow, startCol, startRow, startCol + 2);
+        Symbol s = new Symbol.Builder()
+                .setTokenType(TokenType.CHAR_CONST)
+                .setLexeme("" + (char) nextCharacter)
+                .setStartRow(startRow)
+                .setStartCol(startCol)
+                .setStartRow(startRow)
+                .setStartCol(startCol + 2)
+                .build();
         nextCharacter = file.read();
 
         if (nextCharacter != '\'') {
@@ -334,7 +375,14 @@ public class LexAn {
                     tokenType = TokenType.LOG_CONST;
                 }
 
-                return new Symbol(tokenType, currentSymbol.toString(), startRow, startCol, startRow, startCol + currentSymbol.length());
+                return new Symbol.Builder()
+                        .setTokenType(tokenType)
+                        .setLexeme(currentSymbol.toString())
+                        .setStartRow(startRow)
+                        .setStartCol(startCol)
+                        .setStartRow(startRow)
+                        .setStartCol(startCol + currentSymbol.length())
+                        .build();
             }
 
             if (!isLegalIdentifier(nextCharacter)) {
@@ -345,7 +393,7 @@ public class LexAn {
     }
 
     private Symbol parseOperator(Symbol op) throws IOException {
-        if (op.token == TokenType.NEWLINE) {
+        if (op.getTokenType() == TokenType.NEWLINE) {
             // skip all whitespaces
             skipWhitespaces();
 
@@ -365,7 +413,7 @@ public class LexAn {
         nextCharacter = tmpCh;
         startCol++;
 
-        if (op.token == TokenType.NEWLINE) {
+        if (op.getTokenType() == TokenType.NEWLINE) {
             startRow++;
             startCol = 1;
         }
@@ -374,110 +422,90 @@ public class LexAn {
     }
 
 	private Symbol isOperator(int ch) {
+	    Symbol.Builder builder = new Symbol.Builder();
+	    builder.setStartRow(startRow)
+                .setStartCol(startCol)
+                .setEndRow(startRow)
+                .setEndCol(startCol + 1)
+                .setLexeme(String.valueOf((char) ch));
+
 		if (ch == '+')
-			return new Symbol(TokenType.ADD, "+", startRow, startCol, startRow,
-					startCol + 1);
+			builder.setTokenType(TokenType.ADD);
 		if (ch == '-')
-			return new Symbol(TokenType.SUB, "-", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.SUB);
 		if (ch == '*')
-			return new Symbol(TokenType.MUL, "*", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.MUL);
 		if (ch == '/')
-			return new Symbol(TokenType.DIV, "/", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.DIV);
 		if (ch == '%')
-			return new Symbol(TokenType.MOD, "%", startRow, startCol, startRow,
-					startCol + 1);
-
+            builder.setTokenType(TokenType.MOD);
 		if (ch == '!')
-			return new Symbol(TokenType.NOT, "!", startRow, startCol, startRow,
-					startCol + 1);
-
+            builder.setTokenType(TokenType.NOT);
 		if (ch == '(')
-			return new Symbol(TokenType.LPARENT, "(", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.LPARENT);
 		if (ch == ')')
-			return new Symbol(TokenType.RPARENT, ")", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.RPARENT);
 		if (ch == '{')
-			return new Symbol(TokenType.LBRACE, "{", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.LBRACE);
 		if (ch == '}')
-			return new Symbol(TokenType.RBRACE, "}", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.RBRACE);
 		if (ch == '[')
-			return new Symbol(TokenType.LBRACKET, "[", startRow, startCol,
-					startRow, startCol + 1);
+            builder.setTokenType(TokenType.LBRACKET);
 		if (ch == ']')
-			return new Symbol(TokenType.RBRACKET, "]", startRow, startCol,
-					startRow, startCol + 1);
-
+            builder.setTokenType(TokenType.RBRACKET);
 		if (ch == '<')
-			return new Symbol(TokenType.LTH, "<", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.LTH);
 		if (ch == '>')
-			return new Symbol(TokenType.GTH, ">", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.GTH);
 		if (ch == '=')
-			return new Symbol(TokenType.ASSIGN, "=", startRow, startCol, startRow,
-					startCol + 1);
-
+            builder.setTokenType(TokenType.ASSIGN);
 		if (ch == '.')
-			return new Symbol(TokenType.DOT, ".", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.DOT);
 		if (ch == ':')
-			return new Symbol(TokenType.COLON, ":", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.COLON);
 		if (ch == ';')
-			return new Symbol(TokenType.SEMIC, ";", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.SEMIC);
 		if (ch == ',')
-			return new Symbol(TokenType.COMMA, ",", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.COMMA);
 		if (ch == '|')
-			return new Symbol(TokenType.IOR, "|", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.IOR);
 		if (ch == '&')
-			return new Symbol(TokenType.AND, "&", startRow, startCol, startRow,
-					startCol + 1);
-		if (ch == '\n')
-			return new Symbol(TokenType.NEWLINE, "\\n", startRow, startCol,
-					startRow, startCol + 1);
-
+            builder.setTokenType(TokenType.AND);
 		if (ch == '?')
-			return new Symbol(TokenType.QMARK, "?", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.QMARK);
 		if (ch == '!')
-			return new Symbol(TokenType.EMARK, "?", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.EMARK);
+        if (ch == '\n')
+            builder.setTokenType(TokenType.NEWLINE)
+                    .setLexeme("\\n");
 		
-		return null;
+		return builder.build();
 	}
 
 	private Symbol isComposedOperator(int ch1, int ch2) {
-		if (ch1 == '=' && ch2 == '=')
-			return new Symbol(TokenType.EQU, "==", startRow, startCol, startRow,
-					startCol + 2);
+        Symbol.Builder builder = new Symbol.Builder();
+        builder.setStartRow(startRow)
+                .setStartCol(startCol)
+                .setEndRow(startRow)
+                .setEndCol(startCol + 1)
+                .setLexeme(String.valueOf((char) ch1) + String.valueOf((char) ch2));
+
+        if (ch1 == '=' && ch2 == '=')
+            builder.setTokenType(TokenType.EQU);
 		if (ch1 == '!' && ch2 == '=')
-			return new Symbol(TokenType.NEQ, "!=", startRow, startCol, startRow,
-					startCol + 2);
+            builder.setTokenType(TokenType.NEQ);
 		if (ch1 == '>' && ch2 == '=')
-			return new Symbol(TokenType.GEQ, ">=", startRow, startCol, startRow,
-					startCol + 2);
+            builder.setTokenType(TokenType.GEQ);
 		if (ch1 == '<' && ch2 == '=')
-			return new Symbol(TokenType.LEQ, "<=", startRow, startCol, startRow,
-					startCol + 2);
+            builder.setTokenType(TokenType.LEQ);
 		if (ch1 == '&' && ch1 == ch2)
-			return new Symbol(TokenType.AND, "&", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.AND);
 		if (ch1 == '|' && ch1 == ch2)
-			return new Symbol(TokenType.IOR, "|", startRow, startCol, startRow,
-					startCol + 1);
+            builder.setTokenType(TokenType.IOR);
 		if (ch1 == '-' && ch2 == '>')
-			return new Symbol(TokenType.ARROW, "->", startRow, startCol, startRow,
-					startCol + 1);
-		return null;
+            builder.setTokenType(TokenType.ARROW);
+
+		return builder.build();
 	}
 
 	private boolean isNumeric(int ch) {
@@ -515,10 +543,10 @@ public class LexAn {
 			return;
 		if (Logger.dumpFile() == null)
 			return;
-		if (symb.token == TokenType.EOF)
+		if (symb.getTokenType() == TokenType.EOF)
 			Logger.dumpFile().println(symb.toString());
 		else
 			Logger.dumpFile().println(
-					"[" + symb.position.toString() + "] " + symb.toString());
+					"[" + symb.getPosition().toString() + "] " + symb.toString());
 	}
 }

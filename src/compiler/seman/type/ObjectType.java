@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 /**
- * Object type.
+ * Object memberType.
  */
 public abstract class ObjectType extends Type {
 
@@ -37,7 +37,7 @@ public abstract class ObjectType extends Type {
     protected final int size;
 
     /**
-     * Inital framePointerOffset of all members (space used for type descriptor).
+     * Inital framePointerOffset of all members (space used for memberType descriptor).
      */
     protected final int reservedSize;
 
@@ -48,15 +48,15 @@ public abstract class ObjectType extends Type {
     protected final ObjectType base;
 
     /**
-     * Create new class type.
+     * Create new class memberType.
      * @param definition Class definition.
      * @param names Name for each member.
      * @param types Type for each member.
-     * @param baseClass Base class for this class type.
+     * @param baseClass Base class for this class memberType.
      */
     public ObjectType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass, int reservedSize) {
         if (names.size() != types.size()) {
-            Logger.error("Internal error :: compiler.seman.type.ObjectType: "
+            Logger.error("Internal error :: compiler.seman.memberType.ObjectType: "
                     + "names count not equal types count");
         }
 
@@ -79,7 +79,7 @@ public abstract class ObjectType extends Type {
     }
 
     /**
-     * Create new class type.
+     * Create new class memberType.
      * @param definition Class definition.
      * @param names Name for each member.
      * @param types Type for each member.
@@ -126,7 +126,7 @@ public abstract class ObjectType extends Type {
     /////////
 
     /**
-     * Get type for member.
+     * Get memberType for member.
      * @param name Name of the member.
      * @return Type of the member (or null if member with such getName doesn't exist).
      */
@@ -219,7 +219,7 @@ public abstract class ObjectType extends Type {
 
     /**
      *
-     * @param type Given type.
+     * @param type Given memberType.
      * @return
      */
     @Override
@@ -230,7 +230,7 @@ public abstract class ObjectType extends Type {
 
     /**
      *
-     * @param type Given type
+     * @param type Given memberType
      * @return
      */
     @Override
@@ -268,7 +268,7 @@ public abstract class ObjectType extends Type {
     }
 
     /**
-     * Check whether this type is descendant of baseType.
+     * Check whether this memberType is descendant of baseType.
      * @param baseType
      * @return True or false
      */
@@ -285,7 +285,7 @@ public abstract class ObjectType extends Type {
     }
 
     /**
-     * Check whether this type conforms to interface, i.e. implements all of it's methods.
+     * Check whether this memberType conforms to interface, i.e. implements all of it's methods.
      * @param interfaceType
      * @return
      */

@@ -30,79 +30,22 @@ public class Interpreter {
 	public static boolean debug = false;
 	public static boolean printMemory = false;
     public static boolean checkMemory = true;
-
     public static PrintStream interpreterOutput = System.out;
-	
-	/*--- staticni removeDefinitionFromCurrentScope navideznega stroja ---*/
-	
-	/** Pomnilnik navideznega stroja. */
-	public static HashMap<Integer, Object> mems = new HashMap<>();
-	public static HashMap<FrmLabel, Integer> locations = new HashMap<>();
-	
-	/** Vrhnji naslov kopice */
 	public static int heapPointer = 4;
+    public static int STACK_SIZE = 1000;
+    private static int framePointer = STACK_SIZE;
+    private static int stackPointer = STACK_SIZE;
+    public static Memory memory; // TODO: - How to make sure that memory is initialized?
+
+    public static int getFP() { return framePointer; }
 	
-	public static void stM(int address, Object value) {
-	    if (checkMemory && value == null)
-	        Logger.error("Storing null is illegal");
-		if (debug) System.out.println(" [" + address + "] <= " + value);
-
-		mems.put(address, value);
-	}
-
-	public static Object ldM(int address) {
-		Object value = mems.get(address);
-		if (debug) System.out.println(" [" + address + "] => " + value);
-		return value;
-	}
-
-	public static int getFP() { return framePointer; }
-	
-	/** Velikost sklada */
-	public static int STACK_SIZE = 1000;
-	
-	/** Kazalec na vrh klicnega zapisa. */
-	private static int framePointer = STACK_SIZE;
-
-	/** Kazalec na dno klicnega zapisa. */
-	private static int stackPointer = STACK_SIZE;
-	
-	/*--- dinamicni removeDefinitionFromCurrentScope navideznega stroja ---*/
-	
-	/** Zacasne spremenljivke (`registri') navideznega stroja. */
-	public HashMap<FrmTemp, Object> temps = new HashMap<>();
-		
-	public void stT(FrmTemp temp, Object value) {
-        if (checkMemory && value == null)
-            Logger.error("Storing null is illegal");
-		if (debug) System.out.println(" " + temp.getName() + " <= " + value);
-		temps.put(temp, value);
-	}
-
-	public Object ldT(FrmTemp temp) {
-		Object value = temps.get(temp);
-
-		if (debug) System.out.println(" " + temp.getName() + " => " + value);
-		return value;
-	}
-
-	// TODO: - Bad design!!
-    public static void clean() {
-        mems.clear();
-        locations.clear();
-        heapPointer = Constants.Byte;
-    }
-
-    /**
-	 * Debug print memory
-	 */
 	public static void printMemory() {
 	    int address = 0;
-		for (int i = 0; i < mems.size(); i++, address += 1) {
+		for (int i = 0; i < memory.memory.size(); i++, address += 1) {
 		    if (address > STACK_SIZE + Constants.Byte)
 		        Logger.error("Memory overflow");
 
-		    Object value = mems.get(address);
+		    Object value = memory.ldM(address);
 		    if (value == null) {
 		        i--;
 		        continue;
@@ -110,17 +53,14 @@ public class Interpreter {
             System.out.println("Address [" + address + "]: " + value);
         }
 	}
-
-	/*--- Izvajanje navideznega stroja. ---*/
-
 	public Interpreter(FrmFrame frame, ImcSEQ code) {
 		if (debug) {
 			System.out.println("[START OF " + frame.entryLabel.getName() + "]");
 		}
 
-		stM(stackPointer - frame.blockSizeForLocalVariables - 4, framePointer);
+		memory.stM(stackPointer - frame.blockSizeForLocalVariables - 4, framePointer);
 		framePointer = stackPointer;
-		stT(frame.FP, framePointer);
+        memory.stT(frame.FP, framePointer);
 		stackPointer = stackPointer - frame.size();
 
 		if (stackPointer < 0) {
@@ -154,16 +94,16 @@ public class Interpreter {
 			}
 		}
 
-		framePointer = (Integer) ldM(framePointer - frame.blockSizeForLocalVariables - 4);
+		framePointer = (Integer) memory.ldM(framePointer - frame.blockSizeForLocalVariables - 4);
 		stackPointer = stackPointer + frame.size();
 		if (debug) {
 			System.out.println("[FP=" + framePointer + "]");
 			System.out.println("[SP=" + stackPointer + "]");
 		}
 
-		stM(stackPointer, ldT(frame.RV));
+		memory.stM(stackPointer, memory.ldT(frame.RV));
 		if (debug) {
-			System.out.println("[RV=" + ldT(frame.RV) + "]");
+			System.out.println("[RV=" + memory.ldT(frame.RV) + "]");
 		}
 
 		if (debug) {
@@ -215,54 +155,54 @@ public class Interpreter {
 			ImcCALL instr = (ImcCALL) instruction;
 			int offset = 0;
 
-			stM(stackPointer, execute(instr.args.getFirst()));
+			memory.stM(stackPointer, execute(instr.args.getFirst()));
 			
 			offset += Constants.Byte;
 			
 			for (int i = 1; i < instr.args.size(); i++) {
-				stM(stackPointer + offset, execute(instr.args.get(i)));
+				memory.stM(stackPointer + offset, execute(instr.args.get(i)));
 				offset += Constants.Byte;
 			}
 
 			if (instr.label.getName().equals("_print")) {
-				interpreterOutput.println(ldM(stackPointer + Constants.Byte));
+				interpreterOutput.println(memory.ldM(stackPointer + Constants.Byte));
 				return 0;
 			}
 			if (instr.label.getName().equals("_time")) {
 				return (int) System.currentTimeMillis();
 			}
 			if (instr.label.getName().equals("_rand")) {
-				return new Random().nextInt((Integer)ldM(stackPointer + Constants.Byte));
+				return new Random().nextInt((Integer)memory.ldM(stackPointer + Constants.Byte));
 			}
 			if (instr.label.getName().equals("_mem")) {
-			    return ldM((Integer) ldM(stackPointer + Constants.Byte));
+			    return memory.ldM((Integer) memory.ldM(stackPointer + Constants.Byte));
             }
 
-            Integer address = locations.get(instr.label);
-            ImcCodeChunk function = (ImcCodeChunk) ldM(address);
-			new Interpreter(function.frame, function.lincode);
-			return ldM(stackPointer);
+            Integer address = memory.labelToAddressMapping.get(instr.label);
+            ImcCodeChunk function = (ImcCodeChunk) memory.ldM(address);
+			new Interpreter(function.getFrame(), function.getLincode());
+			return memory.ldM(stackPointer);
 		}
 
         if (instruction instanceof ImcMethodCALL) {
             ImcMethodCALL instr = (ImcMethodCALL) instruction;
             int offset = 0;
 
-            stM(stackPointer, execute(instr.args.getFirst()));
+            memory.stM(stackPointer, execute(instr.args.getFirst()));
 
             offset += Constants.Byte;
 
             for (int i = 1; i < instr.args.size(); i++) {
-                stM(stackPointer + offset, execute(instr.args.get(i)));
+                memory.stM(stackPointer + offset, execute(instr.args.get(i)));
                 offset += Constants.Byte;
             }
 
-            FrmLabel label = (FrmLabel) ldM((Integer) ldT(instr.temp));
+            FrmLabel label = (FrmLabel) memory.ldM((Integer) memory.ldT(instr.temp));
 
-            Integer address = locations.get(label);
-            ImcCodeChunk function = (ImcCodeChunk) ldM(address);
-            new Interpreter(function.frame, function.lincode);
-            return ldM(stackPointer);
+            Integer address = memory.labelToAddressMapping.get(label);
+            ImcCodeChunk function = (ImcCodeChunk) memory.ldM(address);
+            new Interpreter(function.getFrame(), function.getLincode());
+            return memory.ldM(stackPointer);
         }
 		
 		if (instruction instanceof ImcCJUMP) {
@@ -300,7 +240,7 @@ public class Interpreter {
 			Integer address = (Integer) execute(instr.expr);
 			if (address == 0)
 				Logger.error("Null pointer exception");
-			return ldM(address);
+			return memory.ldM(address);
 		}
 		
 		if (instruction instanceof ImcMALLOC) {
@@ -316,14 +256,14 @@ public class Interpreter {
             if (instr.dst instanceof ImcTEMP) {
                 FrmTemp temp = ((ImcTEMP) instr.dst).temp;
                 Object srcValue = execute(instr.src);
-                stT(temp, srcValue);
+                memory.stT(temp, srcValue);
 
                 return srcValue;
             }
             if (instr.dst instanceof ImcMEM) {
                 Object dstValue = execute(((ImcMEM) instr.dst).expr);
                 Object srcValue = execute(instr.src);
-                stM((Integer) dstValue, srcValue);
+                memory.stM((Integer) dstValue, srcValue);
                 return srcValue;
             }
         }
@@ -334,12 +274,12 @@ public class Interpreter {
 			if (instr.label.getName().equals("FP")) return framePointer;
 			if (instr.label.getName().equals("SP")) return stackPointer;
 
-			return locations.get(instr.label);
+			return memory.labelToAddressMapping.get(instr.label);
 		}
 		
 		if (instruction instanceof ImcTEMP) {
 			ImcTEMP instr = (ImcTEMP) instruction;
-			return ldT(instr.temp);
+			return memory.ldT(instr.temp);
 		}
 	
 		return null;

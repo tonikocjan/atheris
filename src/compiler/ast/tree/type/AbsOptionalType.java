@@ -5,7 +5,7 @@ import compiler.ast.ASTVisitor;
 
 public class AbsOptionalType extends AbsType {
 	
-	/** Child type */
+	/** Child memberType */
 	public final AbsType childType;
 
 	/** Is this optional force, i.e. let x: Int! */

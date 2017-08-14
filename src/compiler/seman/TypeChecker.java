@@ -51,11 +51,6 @@ import compiler.ast.tree.type.AbsTypeName;
 import compiler.seman.type.*;
 import managers.LanguageManager;
 
-/**
- * Preverjanje tipov.
- * 
- * @author toni
- */
 public class TypeChecker implements ASTVisitor {
 
     private SymbolTableMap symbolTable;
@@ -113,7 +108,7 @@ public class TypeChecker implements ASTVisitor {
 
                 if (!type.isInterfaceType() && (!type.isCanType() || !((CanType) type).childType.isClassType())) {
                     Logger.error(acceptor.baseClass.position,
-                            "Inheritance from non-class type \"" + type.friendlyName() + "\" is not allowed");
+                            "Inheritance from non-class memberType \"" + type.friendlyName() + "\" is not allowed");
                 }
 
                 if (type.isInterfaceType()) {
@@ -138,7 +133,7 @@ public class TypeChecker implements ASTVisitor {
                 }
             }
 
-            // type inference
+            // memberType inference
             for (AbsStmt stmt: acceptor.defaultConstructor.func.statements) {
                 AbsBinExpr initExpr = (AbsBinExpr) stmt;
                 initExpr.expr2.accept(this);
@@ -339,10 +334,10 @@ public class TypeChecker implements ASTVisitor {
 				Logger.error(acceptor.expr2.position,
 						LanguageManager.localize("type_error_expected_int_for_subscript"));
 			/**
-			 * expr1 is of type ARR(n, t)
+			 * expr1 is of memberType ARR(n, t)
 			 */
 			if (lhs.isArrayType()) {
-				symbolDescription.setTypeForAstNode(acceptor, ((ArrayType) lhs).type);
+				symbolDescription.setTypeForAstNode(acceptor, ((ArrayType) lhs).memberType);
 			}
 			else {
                 Logger.error(acceptor.expr1.position,
@@ -361,14 +356,14 @@ public class TypeChecker implements ASTVisitor {
                 System.out.println();
             }
 
-            // type inference: if lhs doesn't have type, assigningToVariable rhs type
+            // memberType inference: if lhs doesn't have memberType, assigningToVariable rhs memberType
 			if (lhs == null) {
                 symbolDescription.setTypeForAstNode(acceptor, rhs);
 				symbolDescription.setTypeForAstNode(acceptor.expr1, rhs);
 				symbolDescription.setTypeForAstNode(symbolDescription.getDefinitionForAstNode(acceptor.expr1), rhs);
 
-				if (rhs.isArrayType() && ((ArrayType) rhs).type.sameStructureAs(Type.anyType)) {
-				    Logger.warning(acceptor.expr2.position, "Implicitly inferred Any type");
+				if (rhs.isArrayType() && ((ArrayType) rhs).memberType.sameStructureAs(Type.anyType)) {
+				    Logger.warning(acceptor.expr2.position, "Implicitly inferred Any memberType");
                 }
 
 				success = true;
@@ -385,7 +380,7 @@ public class TypeChecker implements ASTVisitor {
 				symbolDescription.setTypeForAstNode(acceptor.expr2, rhs);
 				success = true;
 			}
-			// nil can be assigned to any pointer type
+			// nil can be assigned to any pointer memberType
 			else if (rhs.isBuiltinNilType() && lhs.isReferenceType()) {
 				symbolDescription.setTypeForAstNode(acceptor.expr2, lhs);
 				symbolDescription.setTypeForAstNode(acceptor, lhs);
@@ -430,12 +425,12 @@ public class TypeChecker implements ASTVisitor {
 			// FIXME: - remove this in the future
 			if (lhs.isArrayType()) {
 				if (!memberName.equals("count"))
-                    Logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
 				symbolDescription.setTypeForAstNode(acceptor, Type.intType);
 				return;
 			}
             if (lhs.isOptionalType()) {
-			    Logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" not unwrapped");
+			    Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" not unwrapped");
             }
 
 			if (lhs.isObjectType()) {
@@ -503,7 +498,7 @@ public class TypeChecker implements ASTVisitor {
                     symbolDescription.setDefinitionForAstNode(acceptor.expr2, definition);
                     symbolDescription.setDefinitionForAstNode(acceptor, definition);
 
-                    EnumType memberType = new EnumType(enumType, memberName);
+                    EnumType memberType = EnumType.copyType(enumType, memberName);
 
                     symbolDescription.setTypeForAstNode(acceptor.expr2, memberType);
                     symbolDescription.setTypeForAstNode(acceptor, memberType);
@@ -593,11 +588,11 @@ public class TypeChecker implements ASTVisitor {
                     }
                 }
                 else {
-                    Logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
                 AbsDef def = interfaceType.findMemberDefinitionForName(memberName);
 			    if (def == null) {
-                    Logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
 
                 FunctionType functionType = (FunctionType) symbolDescription.getTypeForAstNode(def);
@@ -606,12 +601,12 @@ public class TypeChecker implements ASTVisitor {
                 symbolDescription.setTypeForAstNode(acceptor.expr2, functionType);
             }
             else {
-                Logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
             }
 		}
 
         /**
-         * reference type comparison to nil
+         * reference memberType comparison to nil
          */
         else if (lhs.isReferenceType() && rhs.isBuiltinNilType()) {
             symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
@@ -636,7 +631,7 @@ public class TypeChecker implements ASTVisitor {
         }
 
 		/**
-		 * expr1 and expr2 are of type Bool
+		 * expr1 and expr2 are of memberType Bool
 		 */
 		else if (lhs.isBuiltinBoolType() && rhs.isBuiltinBoolType()) {
 			// ==, !=, <=, >=, <, >, &, |
@@ -646,11 +641,11 @@ public class TypeChecker implements ASTVisitor {
 			else {
                 Logger.error(
                         acceptor.position,
-                        "Numeric operations \"+\", \"-\", \"*\", \"/\" and \"%\" are undefined for type Bool");
+                        "Numeric operations \"+\", \"-\", \"*\", \"/\" and \"%\" are undefined for memberType Bool");
             }
 		}
 		/**
-		 * expr1 and expr2 are of type Int
+		 * expr1 and expr2 are of memberType Int
 		 */
 		else if (lhs.isBuiltinIntType() && rhs.isBuiltinIntType()) {
 			// +, -, *, /, %
@@ -663,11 +658,11 @@ public class TypeChecker implements ASTVisitor {
             }
 			else {
                 Logger.error(acceptor.position,
-                        "Logical operations \"&\" and \"|\" are undefined for type Int");
+                        "Logical operations \"&\" and \"|\" are undefined for memberType Int");
             }
 		}
 		/**
-		 * expr1 and expr2 are of type Double
+		 * expr1 and expr2 are of memberType Double
 		 */
 		else if (lhs.isBuiltinDoubleType() && rhs.isBuiltinDoubleType()) {
 			// +, -, *, /, %
@@ -680,7 +675,7 @@ public class TypeChecker implements ASTVisitor {
             }
 			else {
                 Logger.error(acceptor.position,
-                        "Logical operations \"&\" and \"|\" are undefined for type Double");
+                        "Logical operations \"&\" and \"|\" are undefined for memberType Double");
             }
 		}
 		/**
@@ -698,7 +693,7 @@ public class TypeChecker implements ASTVisitor {
             }
 			else {
                 Logger.error(acceptor.position,
-                        "Logical operations \"&\" and \"|\" are undefined for type Double");
+                        "Logical operations \"&\" and \"|\" are undefined for memberType Double");
             }
 		}
 		
@@ -711,7 +706,7 @@ public class TypeChecker implements ASTVisitor {
             }
 			else {
                 Logger.error(acceptor.position,
-                        "Operator cannot be applied to operands of type \"" + lhs.toString() + "\" and \"" + rhs.toString() + "\"");
+                        "Operator cannot be applied to operands of memberType \"" + lhs.toString() + "\" and \"" + rhs.toString() + "\"");
             }
 		}
 		else {
@@ -763,7 +758,7 @@ public class TypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AbsForStmt acceptor) {
 		acceptor.collection.accept(this);
-		Type type = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor.collection)).type;
+		Type type = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor.collection)).memberType;
 
 		symbolDescription.setTypeForAstNode(symbolDescription.getDefinitionForAstNode(acceptor.iterator), type);
 		symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
@@ -796,8 +791,8 @@ public class TypeChecker implements ASTVisitor {
             if (argType == null) return;
 
 			if (!(funType.getParType(i).sameStructureAs(argType))) {
-				Logger.error(arg.position, "Cannot assigningToVariable value of type \"" +
-                        argType.friendlyName() + "\" to type \"" + funType.getParType(i).friendlyName() + "\"");
+				Logger.error(arg.position, "Cannot assigningToVariable value of memberType \"" +
+                        argType.friendlyName() + "\" to memberType \"" + funType.getParType(i).friendlyName() + "\"");
 			}
 		}
 	}
@@ -818,7 +813,7 @@ public class TypeChecker implements ASTVisitor {
         symbolDescription.setTypeForAstNode(acceptor, funType);
 
         if (!resolveTypeOnly){
-			// check if return type matches
+			// check if return memberType matches
 			for (AbsStmt stmt : acceptor.func.statements) {
 			    stmt.accept(this);
 
@@ -827,7 +822,7 @@ public class TypeChecker implements ASTVisitor {
 
 					if (!t.sameStructureAs(funType.resultType)) {
                         Logger.error(stmt.position,
-                                "Return type doesn't match, expected \""
+                                "Return memberType doesn't match, expected \""
                                         + funType.resultType.friendlyName()
                                         + "\", got \""
                                         + t.friendlyName()
@@ -848,7 +843,7 @@ public class TypeChecker implements ASTVisitor {
 				symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
 			else
 				Logger.error(c.cond.position,
-						"Condition must be of type Bool");
+						"Condition must be of memberType Bool");
 		}
 
 		if (acceptor.elseBody != null) {
@@ -893,7 +888,7 @@ public class TypeChecker implements ASTVisitor {
 		AbsDef definition = symbolDescription.getDefinitionForAstNode(acceptor);
 		
 		if (!(definition instanceof AbsTypeDef))
-			Logger.error(acceptor.position, "Use of undeclared type \'" + definition.name + "\'");
+			Logger.error(acceptor.position, "Use of undeclared memberType \'" + definition.name + "\'");
 
 		Type type = symbolDescription.getTypeForAstNode(definition);
 
@@ -914,13 +909,13 @@ public class TypeChecker implements ASTVisitor {
 				symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
 			else
 				Logger.error(acceptor.position,
-						"Operator \"!\" is not defined for type " + type);
+						"Operator \"!\" is not defined for memberType " + type);
 		} else if (acceptor.oper == AbsUnExpr.ADD || acceptor.oper == AbsUnExpr.SUB) {
 			if (type.isBuiltinIntType() || type.canBeCastedToType(Type.intType))
 				symbolDescription.setTypeForAstNode(acceptor, type);
 			else
 				Logger.error(acceptor.position,
-						"Operators \"+\" and \"-\" are not defined for type "
+						"Operators \"+\" and \"-\" are not defined for memberType "
 								+ type);
 		}
 	}
@@ -1044,7 +1039,7 @@ public class TypeChecker implements ASTVisitor {
 		if (!lhsTypes.isEmpty()) {
             base = lhsTypes.peek();
             if (base != null && base.isArrayType()) {
-                base = ((ArrayType) base).type;
+                base = ((ArrayType) base).memberType;
             }
         }
 
@@ -1101,8 +1096,8 @@ public class TypeChecker implements ASTVisitor {
 				Type caseType = symbolDescription.getTypeForAstNode(e);
 				if (!caseType.sameStructureAs(switchType))
 					Logger.error(e.position,
-							"Expression of type \"" + caseType.toString() + 
-							"\" cannot match values of type \"" + switchType.toString() +"\"");
+							"Expression of memberType \"" + caseType.toString() +
+							"\" cannot match values of memberType \"" + switchType.toString() +"\"");
 			}
 		}
 		
@@ -1149,7 +1144,7 @@ public class TypeChecker implements ASTVisitor {
 					if (!enumRawValueType.isBuiltinStringType() && !enumRawValueType.isBuiltinIntType())
 						Logger.error(enumMemberDef.position,
 								"Enum members require explicit raw values when "
-								+ "the raw type is not Int or String literal");
+								+ "the raw memberType is not Int or String literal");
 					
 					String value = null;
 					
@@ -1177,13 +1172,13 @@ public class TypeChecker implements ASTVisitor {
 					if (enumRawValueType == null)
 						Logger.error(enumMemberDef.value.position,
 								"Enum member cannot have a raw value "
-								+ "if the enum doesn't have a raw type");
+								+ "if the enum doesn't have a raw memberType");
 					
 					
 					if (!rawValueType.sameStructureAs(enumRawValueType))
 						Logger.error(enumMemberDef.value.position,
-								"Cannot assigningToVariable value of type \"" +
-								rawValueType.toString() + "\" to type \"" + 
+								"Cannot assigningToVariable value of memberType \"" +
+								rawValueType.toString() + "\" to memberType \"" +
 								enumRawValueType.toString() + "\"");
 
 					previousValue = enumMemberDef.value.value;
@@ -1296,7 +1291,7 @@ public class TypeChecker implements ASTVisitor {
         }
 		else {
             Logger.error(acceptor.position,
-                    "Cannot unwrap value of non-optional type '" + type.toString() + "'");
+                    "Cannot unwrap value of non-optional memberType '" + type.toString() + "'");
         }
 	}
 

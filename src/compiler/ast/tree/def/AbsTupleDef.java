@@ -35,7 +35,7 @@ public class AbsTupleDef extends AbsTypeDef {
 	public final AbsDefs definitions;
 
 	/**
-	 * Create new tuple type definition
+	 * Create new tuple memberType definition
 	 * @param pos position
 	 * @param defs member definitions
 	 */

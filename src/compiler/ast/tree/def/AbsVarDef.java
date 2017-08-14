@@ -28,7 +28,7 @@ import compiler.ast.tree.type.AbsType;
  */
 public class AbsVarDef extends AbsDef {
 
-	/** Variable type. */
+	/** Variable memberType. */
 	public final AbsType type;
 
     /**

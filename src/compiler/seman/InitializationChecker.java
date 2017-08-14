@@ -44,11 +44,11 @@
 //import compiler.ast.tree.stmt.AbsIfStmt;
 //import compiler.ast.tree.stmt.AbsSwitchStmt;
 //import compiler.ast.tree.stmt.AbsWhileStmt;
-//import compiler.ast.tree.type.AbsAtomType;
-//import compiler.ast.tree.type.AbsFunType;
-//import compiler.ast.tree.type.AbsListType;
-//import compiler.ast.tree.type.AbsOptionalType;
-//import compiler.ast.tree.type.AbsTypeName;
+//import compiler.ast.tree.memberType.AbsAtomType;
+//import compiler.ast.tree.memberType.AbsFunType;
+//import compiler.ast.tree.memberType.AbsListType;
+//import compiler.ast.tree.memberType.AbsOptionalType;
+//import compiler.ast.tree.memberType.AbsTypeName;
 //
 ///**
 // * Initialization checking phase of the compiler.

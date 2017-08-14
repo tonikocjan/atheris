@@ -6,25 +6,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-/**
- * Created by toni on 15/04/2017.
- */
 public class StructType extends ObjectType implements ValueType {
 
-    /**
-     *
-     * @param definition
-     * @param names
-     * @param types
-     */
     public StructType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types) {
         super(definition, names, types, null, 0);
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

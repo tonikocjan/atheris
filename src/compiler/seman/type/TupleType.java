@@ -19,34 +19,19 @@ package compiler.seman.type;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import compiler.ast.tree.def.AbsDef;
 import compiler.ast.tree.def.AbsTupleDef;
 
 public class TupleType extends Type implements ReferenceType {
-	
-	/**
-	 * Definition for this type.
-	 */
+
 	public final AbsTupleDef definition;
-
-	/**
-	 * Tuple member types.
-	 */
 	private final LinkedHashMap<String, Type> members = new LinkedHashMap<>();
-
-	/**
-	 * Sum of sizes of all members.
-	 */
 	private final int size;
-	
-	/**
-	 * Create new tuple type.
-	 * @param types
-	 * @param names
-	 */
-	public TupleType(LinkedList<Type> types, LinkedList<String> names) {
+
+	public TupleType(List<Type> types, List<String> names) {
 		int size = 0;
 		
 		for (int i = 0; i < names.size(); i++) {
@@ -57,14 +42,8 @@ public class TupleType extends Type implements ReferenceType {
 		this.definition = null;
 		this.size = size;
 	}
-	
-	/**
-	 * Create new tuple type.
-	 * @param definition
-	 * @param types
-	 * @param names
-	 */
-	public TupleType(AbsTupleDef definition, LinkedList<Type> types, LinkedList<String> names) {
+
+	public TupleType(AbsTupleDef definition, List<Type> types, List<String> names) {
 		int size = 0;
 		
 		for (int i = 0; i < names.size(); i++) {
@@ -76,21 +55,11 @@ public class TupleType extends Type implements ReferenceType {
 		this.size = size;
 	}
 
-	/**
-	 * Get type for given getName.
-	 * @param name
-	 * @return
-	 */
 	public Type typeForName(String name) {
 		return members.get(name);
 	}
-	
-	/**
-	 * Calculate framePointerOffset for member.
-	 * @param name member getName
-	 * @return framePointerOffset of that member
-	 */
-	public int offsetOf(String name) {
+
+	public int offsetOfMember(String name) {
 		int offset = 0;
 		
 		for (Map.Entry<String, Type> entry : members.entrySet()) {

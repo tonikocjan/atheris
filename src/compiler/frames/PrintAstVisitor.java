@@ -385,7 +385,7 @@ public class PrintAstVisitor implements ASTVisitor {
 //				Logger.dump(indent + 2, "#typed as " + typ.toString());
 //		}
 //		indent += 2;
-//		typeDef.type.accept(this);
+//		typeDef.memberType.accept(this);
 //		indent -= 2;
 	}
 

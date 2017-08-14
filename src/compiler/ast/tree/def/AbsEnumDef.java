@@ -47,7 +47,7 @@ public class AbsEnumDef extends AbsTypeDef {
 	 * @param pos position
 	 * @param name getName
 	 * @param definitions enum definitions
-	 * @param type type for each definitions' raw value
+	 * @param type memberType for each definitions' raw value
 	 */
 	public AbsEnumDef(Position pos, String name, ArrayList<AbsDef> definitions, AbsAtomType type) {
 		super(pos, name);

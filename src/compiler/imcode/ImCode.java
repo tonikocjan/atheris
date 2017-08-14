@@ -47,7 +47,7 @@ public class ImCode {
 	 * @param chunks
 	 *            Seznam fragmentov vmesne kode.
 	 */
-	public void dump(LinkedList<ImcChunk> chunks) {
+	public void dump(List<ImcChunk> chunks) {
 		if (! dump) return;
 		if (Logger.dumpFile() == null) return;
 		for (int chunk = 0; chunk < chunks.size(); chunk++)

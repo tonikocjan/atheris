@@ -24,10 +24,6 @@ import compiler.ast.tree.def.AbsDef;
 import compiler.ast.tree.def.AbsFunDef;
 import utils.Constants;
 
-/**
- * Class type. 
- * @author toni kocjan
- */
 public class ClassType extends ObjectType implements ReferenceType {
 
     public ClassType(AbsClassDef definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass) {
@@ -95,7 +91,7 @@ public class ClassType extends ObjectType implements ReferenceType {
         }
 
         for (Type type : memberTypes) {
-            if (type instanceof FunctionType) {
+            if (type.isFunctionType()) {
                 size += Constants.Byte;
             }
         }

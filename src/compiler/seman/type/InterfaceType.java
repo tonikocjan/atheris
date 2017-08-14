@@ -15,7 +15,7 @@ public class InterfaceType extends Type {
     public final AbsInterfaceDef definition;
 
     /**
-     * Create new interface type.
+     * Create new interface memberType.
      * @param definition
      */
     public InterfaceType(AbsInterfaceDef definition) {
@@ -28,7 +28,7 @@ public class InterfaceType extends Type {
             return true;
         }
 
-        // any type can be assigned to Any
+        // any memberType can be assigned to Any
         if (friendlyName().equals(Constants.any)) {
             return true;
         }

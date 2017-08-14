@@ -20,35 +20,35 @@ package compiler.imcode;
 import compiler.*;
 import compiler.frames.*;
 
-/**
- * Fragment kode.
- * 
- * @author sliva
- */
 public class ImcCodeChunk extends ImcChunk {
 
-	/** Klicni zapis funkcije.  */
-	public FrmFrame frame;
+	private FrmFrame frame;
+	private ImcStmt imcode;
+	private ImcSEQ lincode;
 
-	/** Vmesna koda funkcije.  */
-	public ImcStmt imcode;
-
-	/** Linearna vmesna koda.  */
-	public ImcSEQ lincode;
-
-	/**
-	 * Ustvari nov fragment kode.
-	 * 
-	 * @param frame Klicni zapis funkcije.
-	 * @param imcode Vmesna koda funckije.
-	 */
 	public ImcCodeChunk(FrmFrame frame, ImcStmt imcode) {
 		this.frame = frame;
 		this.imcode = imcode;
 		this.lincode = null;
 	}
 
-	@Override
+	public void linearize() {
+	    this.lincode = imcode.linear();
+    }
+
+    public FrmFrame getFrame() {
+        return frame;
+    }
+
+    public ImcSEQ getLincode() {
+        return lincode;
+    }
+
+    public ImcStmt getImcode() {
+        return imcode;
+    }
+
+    @Override
 	public void dump() {
 		Logger.dump(0, "CODE CHUNK: entryLabel=" + frame.entryLabel.getName());
 		Logger.dump(2, frame.toString());

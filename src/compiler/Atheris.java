@@ -19,6 +19,7 @@ package compiler;
 
 import compiler.frames.FrameDescriptionMap;
 import compiler.imcode.*;
+import compiler.interpreter.Memory;
 import compiler.seman.*;
 import utils.ArgumentParser;
 import utils.Constants;
@@ -46,6 +47,7 @@ public class Atheris {
     private String execPhase = "interpret";
     private String dumpPhases = "interpret";
 
+    private Memory memory = new Memory();
     private ImcCodeChunk compiledCode;
 
     private void parseArguments(String[] args) {
@@ -110,7 +112,6 @@ public class Atheris {
 
         Logger.fileName = sourceFileName;
 
-        Interpreter.clean();
         ImcCodeChunk mainCodeChunk = null;
 
         SymbolDescriptionMap symbolDescription = new SymbolDescription();
@@ -118,12 +119,15 @@ public class Atheris {
         FrameDescriptionMap frameDescription = new FrameDescription();
         ImcDescriptionMap imcDescription = new ImcDescription();
 
+        Interpreter.heapPointer = 4;
+        Type.clean();
+
         // Izvajanje faz prevajanja.
         while (true) {
             // Leksikalna analiza.
             LexAn lexAn = new LexAn(sourceFileName, dumpPhases.contains("lexan"));
             if (execPhase.equals("lexan")) {
-                while (lexAn.nextSymbol().token != TokenType.EOF) {}
+                while (lexAn.nextSymbol().getTokenType() != TokenType.EOF) {}
                 break;
             }
 
@@ -157,17 +161,14 @@ public class Atheris {
             source.accept(imcodegen);
 
             // Linearizacija vmesne kode.
-            mainCodeChunk = new CodeGenerator(frameDescription).linearize(imcodegen.chunks);
+            mainCodeChunk = new CodeGenerator(frameDescription, memory).linearize(imcodegen.chunks);
             if (mainCodeChunk == null) {
                 mainCodeChunk = imcodegen.entryPointCode;
             }
 
-            ImCode imcode = new ImCode(dumpPhases.contains("imcode"));
+            ImCode imcode = new ImCode(dumpPhases.contains("imcode") || dumpPhases.contains("interpret"));
             imcode.dump(imcodegen.chunks);
             if (execPhase.equals("imcode")) break;
-
-            // clean-up
-            Type.clean();
 
             compilationTime(startTime);
 
@@ -175,8 +176,9 @@ public class Atheris {
             if (execPhase.equals("interpret")) break;
 
             // Neznana faza prevajanja.
-            if (!execPhase.equals(""))
+            if (!execPhase.equals("")) {
                 Logger.warning(LanguageManager.localize("error_uknown_phase", execPhase));
+            }
         }
 
         this.compiledCode = mainCodeChunk;
@@ -189,8 +191,10 @@ public class Atheris {
 
         System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
 
-        Interpreter.stM(Interpreter.getFP() + Constants.Byte, 0);
-        new Interpreter(compiledCode.frame, compiledCode.lincode);
+        Interpreter.memory = memory;
+
+        memory.stM(Interpreter.getFP() + Constants.Byte, 0);
+        new Interpreter(compiledCode.getFrame(), compiledCode.getLincode());
 
         return this;
     }
