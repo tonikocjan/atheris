@@ -18,6 +18,7 @@
 package compiler.seman;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import compiler.Logger;
 import compiler.ast.tree.enums.AtomTypeKind;
@@ -53,50 +54,66 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AstClassDefinition acceptor) {
+        insertDefinition(acceptor);
+        acceptBaseClass(acceptor);
+        acceptConformances(acceptor.conformances);
+        acceptConstructors(acceptor.construstors);
+        symbolTable.newScope();
+        acceptMemberDefinitions(acceptor.memberDefinitions);
+        symbolTable.oldScope();
+    }
+
+    private void insertDefinition(AstDefinition acceptor) {
         try {
             symbolTable.insertDefinitionOnCurrentScope(acceptor.getName(), acceptor);
         } catch (SemIllegalInsertException e) {
             Logger.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName() + "\'");
         }
+    }
 
+    private void acceptBaseClass(AstClassDefinition acceptor) {
         if (acceptor.baseClass != null) {
             acceptor.baseClass.accept(this);
         }
+    }
 
-        for (AstType conformance : acceptor.conformances) {
+    private void acceptConformances(List<AstType> conformances) {
+        for (AstType conformance : conformances) {
             conformance.accept(this);
         }
+    }
 
-        for (AstFunctionDefinition constructor: acceptor.construstors) {
-            // add implicit self: classType parameter to constructors
-            AstParameterDefinition parDef = new AstParameterDefinition(constructor.position, Constants.selfParameterIdentifier,
-                    new AstAtomType(constructor.position, AtomTypeKind.NIL));
-
-            constructor.addParamater(parDef);
+    private void acceptConstructors(List<AstFunctionDefinition> constructors) {
+        for (AstFunctionDefinition constructor: constructors) {
+            addImplicitSelfParameterToMethod(constructor);
             constructor.accept(this);
         }
+    }
 
-        symbolTable.newScope();
+    private void addImplicitSelfParameterToMethod(AstFunctionDefinition method) {
+        AstParameterDefinition parDef = new AstParameterDefinition(
+                method.position,
+                Constants.selfParameterIdentifier,
+                new AstAtomType(
+                        method.position,
+                        AtomTypeKind.NIL));
 
-        for (AstDefinition def : acceptor.memberDefinitions.definitions) {
-            if (def instanceof AstFunctionDefinition && !def.isStatic()) {
-                // add implicit self: classType parameter to instance methods
-                AstFunctionDefinition funDef = (AstFunctionDefinition) def;
+        method.addParamater(parDef);
+    }
 
-                AstParameterDefinition parDef = new AstParameterDefinition(funDef.position, Constants.selfParameterIdentifier,
-                        new AstAtomType(funDef.position, AtomTypeKind.NIL));
-                funDef.addParamater(parDef);
+    private void acceptMemberDefinitions(AstDefinitions definitions) {
+        for (AstDefinition definition : definitions.definitions) {
+            if (definition instanceof AstFunctionDefinition && !definition.isStatic()) {
+                addImplicitSelfParameterToMethod((AstFunctionDefinition) definition);
             }
 
-            // nested class and enums memberDefinitions are always static
-            if (/*def instanceof AstClassDefinition || */def instanceof AstEnumDefinition) {
-                def.setModifier(DefinitionModifier.isStatic);
+            // nested class and enums definitions are always static
+            if (/*def instanceof AstClassDefinition || */definition instanceof AstEnumDefinition) {
+                definition.setModifier(DefinitionModifier.isStatic);
             }
 
-            def.accept(this);
+            definition.accept(this);
         }
-
-        symbolTable.oldScope();
     }
 
 	@Override
@@ -127,31 +144,33 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AstExpressions acceptor) {
-		for (AstExpression e : acceptor.expressions)
-			e.accept(this);
+		for (AstExpression e : acceptor.expressions) {
+            e.accept(this);
+        }
 	}
 
 	@Override
 	public void visit(AstForStatement acceptor) {
-		symbolTable.newScope();
+		AstVariableDefinition iterator = new AstVariableDefinition(acceptor.iterator.position, acceptor.iterator.name, null, false);
 
-		AstVariableDefinition var = new AstVariableDefinition(
-				acceptor.iterator.position, acceptor.iterator.name, null, false);
-		try {
-			symbolTable.insertDefinitionOnCurrentScope(acceptor.iterator.name, var);
-			symbolDescription.setDefinitionForAstNode(acceptor.iterator, var);
-		} catch (SemIllegalInsertException e) {
-			Logger.error("Error @ NameChecker::AbsFor");
-		}
+        symbolTable.newScope();
+
+		insertDefinition(iterator);
 		acceptor.iterator.accept(this);
 		acceptor.collection.accept(this);
-
 		acceptor.body.accept(this);
+
 		symbolTable.oldScope();
 	}
 
 	@Override
 	public void visit(AstFunctionCallExpression acceptor) {
+        AstFunctionDefinition definition = findFunctionDefinitionForFunctionCall(acceptor);
+        symbolDescription.setDefinitionForAstNode(acceptor, definition);
+        acceptFunctionCallArguments(acceptor);
+	}
+
+	private AstFunctionDefinition findFunctionDefinitionForFunctionCall(AstFunctionCallExpression acceptor) {
         AstFunctionDefinition definition = (AstFunctionDefinition) symbolDescription.getDefinitionForAstNode(acceptor);
 
         if (definition == null) {
@@ -159,13 +178,9 @@ public class NameChecker implements ASTVisitor {
             definition = (AstFunctionDefinition) symbolTable.findDefinitionForName(funCallIdentifier);
 
             if (definition == null) {
-                // handle implicit "self" argument for constructors
-                AstVariableNameExpression selfArgExpr = new AstVariableNameExpression(acceptor.position, Constants.selfParameterIdentifier);
-                AstLabeledExpr selfArg = new AstLabeledExpr(acceptor.position, selfArgExpr, Constants.selfParameterIdentifier);
-
-                acceptor.addArgument(selfArg);
-
-                definition = (AstFunctionDefinition) symbolTable.findDefinitionForName(acceptor.getStringRepresentation());
+                addImplicitSelfParameterToFunctionCall(acceptor);
+                funCallIdentifier = acceptor.getStringRepresentation();
+                definition = (AstFunctionDefinition) symbolTable.findDefinitionForName(funCallIdentifier);
             }
 
             if (definition == null) {
@@ -173,61 +188,70 @@ public class NameChecker implements ASTVisitor {
             }
         }
 
-        boolean isConstructor = definition.isConstructor;
-		symbolDescription.setDefinitionForAstNode(acceptor, definition);
+        return definition;
+    }
 
-		for (AstExpression argExpr : acceptor.arguments) {
-		    // skip first ("self") argument if function is constructor
+	private void addImplicitSelfParameterToFunctionCall(AstFunctionCallExpression acceptor) {
+        AstVariableNameExpression selfArgExpr = new AstVariableNameExpression(acceptor.position, Constants.selfParameterIdentifier);
+        AstLabeledExpr selfArg = new AstLabeledExpr(acceptor.position, selfArgExpr, Constants.selfParameterIdentifier);
+
+        acceptor.addArgument(selfArg);
+    }
+
+	private void acceptFunctionCallArguments(AstFunctionCallExpression acceptor) {
+        boolean isConstructor = ((AstFunctionDefinition) symbolDescription.getDefinitionForAstNode(acceptor)).isConstructor;
+
+        for (AstExpression argExpr : acceptor.arguments) {
+            // skip first ("self") argument if function is constructor
             if (isConstructor && argExpr == acceptor.arguments.get(0))
                 continue;
 
             argExpr.accept(this);
         }
-	}
+    }
 
 	@Override
 	public void visit(AstFunctionDefinition acceptor) {
-		try {
-			symbolTable.insertDefinitionOnCurrentScope(acceptor.getStringRepresentation(), acceptor);
-		} catch (SemIllegalInsertException e) {
-			Logger.error(acceptor.position, "Invalid redeclaration of \"" + acceptor.getStringRepresentation() + "\"");
-		}
-		
+		insertDefinition(acceptor);
 		symbolTable.newScope();
-
-		for (AstParameterDefinition par : acceptor.getParamaters())
-			par.accept(this);
-		
+		acceptFunctionDefinitionArguments(acceptor);
 		acceptor.returnType.accept(this);
 		acceptor.functionCode.accept(this);
-
 		symbolTable.oldScope();
 	}
 
+	private void acceptFunctionDefinitionArguments(AstFunctionDefinition acceptor) {
+        for (AstParameterDefinition par : acceptor.getParamaters()) {
+            par.accept(this);
+        }
+    }
+
 	@Override
 	public void visit(AstIfStatement acceptor) {
-		for (Condition c : acceptor.conditions) {
-			c.condition.accept(this);
-
-			symbolTable.newScope();
-			c.body.accept(this);
-			symbolTable.oldScope();
-		}
-
-		if (acceptor.elseBody != null) {
-			symbolTable.newScope();
-			acceptor.elseBody.accept(this);
-			symbolTable.oldScope();
-		}
+		acceptIfConditions(acceptor);
+        acceptElseBody(acceptor);
 	}
+
+	private void acceptIfConditions(AstIfStatement acceptor) {
+        for (Condition c : acceptor.conditions) {
+            c.condition.accept(this);
+            symbolTable.newScope();
+            c.body.accept(this);
+            symbolTable.oldScope();
+        }
+    }
+
+    private void acceptElseBody(AstIfStatement acceptor) {
+        if (acceptor.elseBody == null) { return; }
+
+        symbolTable.newScope();
+        acceptor.elseBody.accept(this);
+        symbolTable.oldScope();
+    }
 
 	@Override
 	public void visit(AstParameterDefinition acceptor) {
-		try {
-			symbolTable.insertDefinitionOnCurrentScope(acceptor.name, acceptor);
-		} catch (SemIllegalInsertException e) {
-			Logger.error(acceptor.position, "Duplicate parameter \"" + acceptor.name + "\"");
-		}
+		insertDefinition(acceptor);
 		acceptor.type.accept(this);
 	}
 
@@ -249,39 +273,42 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AstVariableDefinition acceptor) {
-		try {
-			symbolTable.insertDefinitionOnCurrentScope(acceptor.name, acceptor);
-			if (acceptor.type != null)
-				acceptor.type.accept(this);
-		} catch (SemIllegalInsertException e) {
-			Logger.error(acceptor.position, "Duplicate variable \"" + acceptor.name + "\"");
-		}
+        insertDefinition(acceptor);
+        acceptVariableDefinitionType(acceptor);
 	}
+
+	private void acceptVariableDefinitionType(AstVariableDefinition acceptor) {
+        if (acceptor.type != null) {
+            acceptor.type.accept(this);
+        }
+    }
 
 	@Override
 	public void visit(AstVariableNameExpression acceptor) {
-	    if (acceptor.name.equals("Int")) return;
-        if (acceptor.name.equals("Double")) return;
-        if (acceptor.name.equals("String")) return;
-        if (acceptor.name.equals("Char")) return;
-        if (acceptor.name.equals("Void")) return;
-
-        if (symbolDescription.getDefinitionForAstNode(acceptor) != null) {
-            return;
-        }
+	    if (isAtomType(acceptor.name)) return;
+        if (symbolDescription.getDefinitionForAstNode(acceptor) != null) return;
 
 		AstDefinition definition = symbolTable.findDefinitionForName(acceptor.name);
 		
-		if (definition == null)
-			Logger.error(acceptor.position, "Use of unresolved indentifier \"" + acceptor.name + "\"");
+		if (definition == null) {
+            Logger.error(acceptor.position, "Use of unresolved indentifier \"" + acceptor.name + "\"");
+        }
 
 		symbolDescription.setDefinitionForAstNode(acceptor, definition);
 	}
 
+	private boolean isAtomType(String name) {
+        if (name.equals("Int")) return true;
+        if (name.equals("Double")) return true;
+        if (name.equals("String")) return true;
+        if (name.equals("Char")) return true;
+        if (name.equals("Void")) return true;
+        return false;
+    }
+
 	@Override
 	public void visit(AstWhileStatement acceptor) {
 		acceptor.condition.accept(this);
-
 		symbolTable.newScope();
 		acceptor.body.accept(this);
 		symbolTable.oldScope();
@@ -289,29 +316,21 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AstImportDefinition acceptor) {
-		String tmp = Logger.fileName;
+		String currentFile = Logger.fileName;
 		Logger.fileName = acceptor.getName();
 
-		// parse the file
-		// FIXME: - Hardcoded location
-		SynAn synAn = new SynAn(LexAn.parseSourceFile("test/" + acceptor.getName() + ".ar", false), false);
-		synAn.parseStandardLibrary = acceptor.getName().equals(Constants.standardLibraryIdentifier);
-
-		AstStatements source = (AstStatements) synAn.parse();
         ArrayList<AstDefinition> definitions = new ArrayList<>();
-		
-		for (AstStatement s : source.statements) {
-			// skip statements which are not memberDefinitions
-			if (!(s instanceof AstDefinition)) {
-                continue;
-            }
 
-			AstDefinition definition = (AstDefinition) s;
+        AstStatements statements = parseFile(acceptor.getName());
+		for (AstStatement statement : statements.statements) {
+			if (!isDefinition(statement)) { continue; }
 
-			if (acceptor.definitions.size() > 0) {
+			AstDefinition definition = (AstDefinition) statement;
+
+			if (!acceptor.selectedDefinitions.isEmpty()) {
 				String name = definition.getName();
 
-				if (!acceptor.definitions.contains(name)) {
+				if (!acceptor.selectedDefinitions.contains(name)) {
                     continue;
                 }
 			}
@@ -319,61 +338,84 @@ public class NameChecker implements ASTVisitor {
 			definitions.add(definition);
 		}
 
-		acceptor.imports = new AstDefinitions(source.position, definitions);
+		acceptor.imports = new AstDefinitions(statements.position, definitions);
 		acceptor.imports.accept(this);
 
-		Logger.fileName = tmp;
+		Logger.fileName = currentFile;
 	}
 
+	private AstStatements parseFile(String fileName) {
+        // FIXME: - Hardcoded location
+        SynAn synAn = new SynAn(LexAn.parseSourceFile("test/" + fileName + ".ar", false), false);
+        return (AstStatements) synAn.parse();
+    }
+
+    private boolean isDefinition(AstStatement statement) {
+        return statement instanceof AstDefinition;
+    }
+
 	@Override
-	public void visit(AstStatements stmts) {
-		for (AstStatement s : stmts.statements) {
+	public void visit(AstStatements acceptor) {
+		for (AstStatement s : acceptor.statements) {
 			s.accept(this);
 		}
 	}
 
 	@Override
-	public void visit(AstReturnExpression returnExpr) {
-		if (returnExpr.expr != null)
-			returnExpr.expr.accept(this);
+	public void visit(AstReturnExpression acceptor) {
+		if (acceptor.expr != null) {
+            acceptor.expr.accept(this);
+        }
 	}
 
 	@Override
-	public void visit(AstListExpr absListExpr) {
-		for (AstExpression e : absListExpr.expressions)
-			e.accept(this);
+	public void visit(AstListExpr acceptor) {
+		for (AstExpression e : acceptor.expressions) {
+            e.accept(this);
+        }
 	}
 
 	@Override
-	public void visit(AstFunctionType funType) {
-		for (AstType t : funType.parameterTypes)
-			t.accept(this);
-		funType.returnType.accept(this);
+	public void visit(AstFunctionType acceptor) {
+		for (AstType t : acceptor.parameterTypes) {
+            t.accept(this);
+        }
+
+		acceptor.returnType.accept(this);
 	}
 
 	@Override
-	public void visit(AstControlTransferStatement transferStmt) {
+	public void visit(AstControlTransferStatement acceptor) {
 		///
 	}
 
 	@Override
-	public void visit(AstSwitchStatement switchStmt) {
-		switchStmt.subjectExpr.accept(this);
-		
-		for (AstCaseStatement singleCase : switchStmt.cases)
-			singleCase.accept(this);
-		
-		if (switchStmt.defaultBody != null) {
-			symbolTable.newScope();
-			switchStmt.defaultBody.accept(this);
-			symbolTable.oldScope();
-		}
+	public void visit(AstSwitchStatement acceptor) {
+		acceptor.subjectExpr.accept(this);
+		acceptCaseStatements(acceptor);
+		acceptDefaultBody(acceptor);
 	}
+
+	private void acceptCaseStatements(AstSwitchStatement acceptor) {
+        for (AstCaseStatement singleCase : acceptor.cases) {
+            singleCase.accept(this);
+        }
+    }
+
+    private void acceptDefaultBody(AstSwitchStatement acceptor) {
+        if (acceptor.defaultBody == null) { return; }
+
+        symbolTable.newScope();
+        acceptor.defaultBody.accept(this);
+        symbolTable.oldScope();
+    }
 
 	@Override
 	public void visit(AstCaseStatement acceptor) {
-		for (AstExpression e : acceptor.exprs)
-			e.accept(this);
+		for (AstExpression e : acceptor.exprs) {
+            e.accept(this);
+        }
+
 		symbolTable.newScope();
 		acceptor.body.accept(this);
 		symbolTable.oldScope();
@@ -381,31 +423,28 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AstEnumDefinition acceptor) {
-		try {
-			symbolTable.insertDefinitionOnCurrentScope(acceptor.name, acceptor);
-		} catch (SemIllegalInsertException e) {
-			Logger.error(acceptor.position, "Invalid redeclaration of \'" +
-					acceptor.name + "\'");
-		}
-
-		if (acceptor.type != null)
-			acceptor.type.accept(this);
-
+		insertDefinition(acceptor);
+        acceptEnumDefinitionType(acceptor);
 		symbolTable.newScope();
-		for (AstDefinition def : acceptor.definitions)
-			def.accept(this);
+		acceptEnumDefinitionMemberDefinitions(acceptor);
 		symbolTable.oldScope();
 	}
 
+	private void acceptEnumDefinitionType(AstEnumDefinition acceptor) {
+        if (acceptor.type != null) {
+            acceptor.type.accept(this);
+        }
+    }
+
+    private void acceptEnumDefinitionMemberDefinitions(AstEnumDefinition acceptor) {
+        for (AstDefinition def : acceptor.definitions) {
+            def.accept(this);
+        }
+    }
+
 	@Override
 	public void visit(AstEnumMemberDefinition acceptor) {
-		try {
-			symbolTable.insertDefinitionOnCurrentScope(acceptor.name.name, acceptor);
-		} catch (SemIllegalInsertException e) {
-			Logger.error(acceptor.position, "Invalid redeclaration of \'" +
-					acceptor.name.name + "\'");
-		}
-
+		insertDefinition(acceptor);
 		acceptor.name.accept(this);
 	}
 
@@ -432,62 +471,32 @@ public class NameChecker implements ASTVisitor {
 	@Override
 	public void visit(AstOptionalEvaluationExpression acceptor) {
 		acceptor.subExpr.accept(this);
-
-        symbolDescription.setDefinitionForAstNode(acceptor, symbolDescription.getDefinitionForAstNode(acceptor.subExpr));
+		AstDefinition definition = symbolDescription.getDefinitionForAstNode(acceptor.subExpr);
+        symbolDescription.setDefinitionForAstNode(acceptor, definition);
 	}
 
 	@Override
 	public void visit(AstForceValueExpression acceptor) {
 		acceptor.subExpr.accept(this);
-
-		symbolDescription.setDefinitionForAstNode(acceptor, symbolDescription.getDefinitionForAstNode(acceptor.subExpr));
+		AstDefinition definition = symbolDescription.getDefinitionForAstNode(acceptor.subExpr);
+		symbolDescription.setDefinitionForAstNode(acceptor, definition);
 	}
 
     @Override
     public void visit(AstExtensionDefinition acceptor) {
 	    acceptor.extendingType.accept(this);
-
-        for (AstType conformance: acceptor.conformances) {
-            conformance.accept(this);
-        }
-
+	    acceptConformances(acceptor.conformances);
         symbolTable.newScope();
-	    for (AstDefinition def : acceptor.definitions.definitions) {
-            if (def instanceof AstFunctionDefinition) {
-                if (!def.isStatic()) {
-                    // add implicit self: classType parameter to instance methods
-                    AstFunctionDefinition funDef = (AstFunctionDefinition) def;
-
-                    AstParameterDefinition parDef = new AstParameterDefinition(
-                            funDef.position,
-                            Constants.selfParameterIdentifier,
-                            new AstAtomType(funDef.position, AtomTypeKind.NIL));
-                    funDef.addParamater(parDef);
-                }
-            }
-            else {
-                Logger.error(def.position, "Only function memberDefinitions are allowed in extensions");
-            }
-
-            def.accept(this);
-        }
+        acceptMemberDefinitions(acceptor.definitions);
         symbolTable.oldScope();
     }
 
     @Override
     public void visit(AstInterfaceDefinition acceptor) {
-        try {
-            symbolTable.insertDefinitionOnCurrentScope(acceptor.getName(), acceptor);
-        } catch (SemIllegalInsertException e) {
-            Logger.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName() + "\'");
-        }
+        insertDefinition(acceptor);
 
-        for (AstDefinition def : acceptor.definitions.definitions) {
-            // add implicit self: classType parameter to instance methods
-            AstFunctionDefinition funDef = (AstFunctionDefinition) def;
-            AstParameterDefinition parDef = new AstParameterDefinition(funDef.position, Constants.selfParameterIdentifier,
-                    new AstAtomType(funDef.position, AtomTypeKind.NIL));
-            funDef.addParamater(parDef);
+        for (AstDefinition functionDefinition : acceptor.definitions.definitions) {
+            addImplicitSelfParameterToMethod((AstFunctionDefinition) functionDefinition);
         }
     }
 }

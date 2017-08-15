@@ -29,7 +29,7 @@ import utils.Constants;
 import managers.LanguageManager;
 import compiler.*;
 
-public class LexAn {
+public class LexAn implements LexicalAnalyzer {
 
     private static final String[] reserverKeywords = new String[]
             {
@@ -91,21 +91,18 @@ public class LexAn {
         }
 
 		try {
-			Symbol s = parseSymbol();
+			Symbol symbol = parseSymbol();
 
-			if (s == null) {
-                s = new Symbol.Builder()
-                        .setTokenType(TokenType.EOF)
-                        .setLexeme("$")
+			if (symbol == null) {
+                symbol = Symbol.EOF()
                         .setStartRow(startRow)
                         .setStartCol(startCol)
                         .setStartRow(startRow)
-                        .setStartCol(startCol + 1)
-                        .build();
+                        .setStartCol(startCol + 1).build();
             }
 
-			dump(s);
-			return s;
+			dump(symbol);
+			return symbol;
 
 		} catch (IOException e) {
 			Logger.error(LanguageManager.localize("lexan_error_parsing_file"));
@@ -161,9 +158,7 @@ public class LexAn {
 			 * Handle EOF.
 			 */
 			if (nextCharacter == -1) {
-                return new Symbol.Builder()
-                        .setTokenType(TokenType.EOF)
-                        .setLexeme("$")
+                return Symbol.EOF()
                         .setStartRow(startRow)
                         .setStartCol(startCol)
                         .setStartRow(startRow)
@@ -527,10 +522,7 @@ public class LexAn {
 	}
 
 	private boolean isLegalIdentifier(int ch) {
-		return isNumeric(nextCharacter) ||
-                nextCharacter == '_' ||
-				(nextCharacter >= 'a' && nextCharacter <= 'z') ||
-				(nextCharacter >= 'A' && nextCharacter <= 'Z');
+		return isNumeric(ch) || ch == '_' || (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
 	}
 	
 	private void skipWhitespaces() throws IOException {

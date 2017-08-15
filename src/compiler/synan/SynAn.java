@@ -36,34 +36,14 @@ import compiler.ast.tree.expr.AstExpression;
 import compiler.ast.tree.type.AstAtomType;
 import compiler.lexan.*;
 
-/**
- * Syntax parser.
- *
- * @author Toni Kocjan
- */
 public class SynAn {
 
-	/** Leksikalni analizator. */
-	private LexAn lexAn;
-
-	/** Ali se izpisujejo vmesni rezultati. */
+	private LexicalAnalyzer lexAn;
 	private boolean dump;
-
-	/** Current & previous symbol */
 	private Symbol symbol = null;
 	private Symbol previous = null;
 
-	public boolean parseStandardLibrary = false;
-
-	/**
-	 * Ustvari nov sintaksni analizator.
-	 *
-	 * @param lexAn
-	 *            Leksikalni analizator.
-	 * @param dump
-	 *            Ali se izpisujejo vmesni rezultati.
-	 */
-	public SynAn(LexAn lexAn, boolean dump) {
+	public SynAn(LexicalAnalyzer lexAn, boolean dump) {
 		this.lexAn = lexAn;
 		this.dump = dump;
 
@@ -71,9 +51,6 @@ public class SynAn {
 		this.previous = this.symbol;
 	}
 
-	/**
-	 * Opravi sintaksno analizo.
-	 */
 	public AstNode parse() {
 		if (symbol == null)
 			Logger.error("Error accessing LexAn");
@@ -493,7 +470,7 @@ public class SynAn {
 	private AstImportDefinition parseImportDefinition_(AstImportDefinition def) {
 		switch (symbol.getTokenType()) {
 		case IDENTIFIER:
-			def.definitions.add(symbol.getLexeme());
+			def.selectedDefinitions.add(symbol.getLexeme());
 			getNextSymbol();
 			return parseImportDefinition__(def);
 		default:
@@ -507,7 +484,7 @@ public class SynAn {
 		switch (symbol.getTokenType()) {
 		case COMMA:
 			getNextSymbol();
-			def.definitions.add(symbol.getLexeme());
+			def.selectedDefinitions.add(symbol.getLexeme());
 			getNextSymbol();
 			return parseImportDefinition__(def);
 		default:

@@ -26,7 +26,7 @@ import compiler.ast.tree.AstDefinitions;
 public class AstImportDefinition extends AstDefinition {
 
 	public AstDefinitions imports;
-	public final HashSet<String> definitions = new HashSet<>();
+	public final HashSet<String> selectedDefinitions = new HashSet<>();
 
 	public AstImportDefinition(Position pos, String fileName) {
 		super(pos, fileName);

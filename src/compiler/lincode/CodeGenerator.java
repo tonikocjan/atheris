@@ -75,7 +75,7 @@ public class CodeGenerator {
         storeFunction(fn);
     }
 
-    private  void linearizeCode(ImcCodeChunk codeChunk) {
+    private void linearizeCode(ImcCodeChunk codeChunk) {
         codeChunk.linearize();
     }
 

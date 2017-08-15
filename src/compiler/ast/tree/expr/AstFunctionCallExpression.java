@@ -25,9 +25,9 @@ import compiler.ast.*;
 public class AstFunctionCallExpression extends AstExpression {
 
 	public final String name;
-	public final ArrayList<AstLabeledExpr> arguments;
+	public final List<AstLabeledExpr> arguments;
 
-	public AstFunctionCallExpression(Position pos, String name, ArrayList<AstLabeledExpr> args) {
+	public AstFunctionCallExpression(Position pos, String name, List<AstLabeledExpr> args) {
 		super(pos);
 		
 		this.name = name;

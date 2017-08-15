@@ -17,7 +17,7 @@
 
 package compiler.ast.tree.stmt;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import compiler.Position;
 import compiler.ast.ASTVisitor;
@@ -27,10 +27,10 @@ import compiler.ast.tree.expr.AstExpression;
 
 public class AstCaseStatement extends AstNode {
 
-	public final ArrayList<AstExpression> exprs;
+	public final List<AstExpression> exprs;
 	public final AstStatements body;
 
-	public AstCaseStatement(Position pos, ArrayList<AstExpression> exprs, AstStatements body) {
+	public AstCaseStatement(Position pos, List<AstExpression> exprs, AstStatements body) {
 		super(pos);
 		
 		this.exprs = exprs;

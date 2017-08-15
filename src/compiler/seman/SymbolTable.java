@@ -53,6 +53,28 @@ public class SymbolTable implements SymbolTableMap {
         }
     }
 
+    public void removeDefinitionFromCurrentScope(String name) throws SemIllegalDeleteException {
+        LinkedList<AstDefinition> definitionsForName = mapping.get(name);
+
+        if (definitionsForName == null) {
+            throw new SemIllegalDeleteException();
+        }
+
+        if (isIllegal(definitionsForName)) {
+            Thread.dumpStack();
+            Logger.error("Internal error.");
+            return;
+        }
+
+        if (!isNameDefinedInCurrentOrGreaterScope(definitionsForName)) {
+            throw new SemIllegalDeleteException();
+        }
+
+        definitionsForName.removeFirst();
+        if (definitionsForName.isEmpty())
+            mapping.remove(name);
+    }
+
 	public void insertDefinitionOnCurrentScope(String name, AstDefinition definition) throws SemIllegalInsertException {
 		LinkedList<AstDefinition> definitionsForName = mapping.get(name);
 
@@ -75,28 +97,6 @@ public class SymbolTable implements SymbolTableMap {
 		definitionsForName.addFirst(definition);
         setScopeForDefinition(definition);
 	}
-
-    public void removeDefinitionFromCurrentScope(String name) throws SemIllegalDeleteException {
-        LinkedList<AstDefinition> definitionsForName = mapping.get(name);
-
-        if (definitionsForName == null) {
-            throw new SemIllegalDeleteException();
-        }
-
-        if (isIllegal(definitionsForName)) {
-            Thread.dumpStack();
-            Logger.error("Internal error.");
-            return;
-        }
-
-        if (!isNameDefinedInCurrentOrGreaterScope(definitionsForName)) {
-            throw new SemIllegalDeleteException();
-        }
-
-        definitionsForName.removeFirst();
-        if (definitionsForName.isEmpty())
-            mapping.remove(name);
-    }
 
     public AstDefinition findDefinitionForName(String name) {
         LinkedList<AstDefinition> definitionsForName = mapping.get(name);

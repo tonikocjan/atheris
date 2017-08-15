@@ -5,7 +5,6 @@ import compiler.ast.tree.def.AstDefinition;
 import compiler.seman.type.ClassType;
 
 public interface FrameDescriptionMap {
-
     void setFrame(AstDefinition fun, FrmFrame frame);
     FrmFrame getFrame(AstNode fun);
 

@@ -49,6 +49,94 @@ public class Symbol {
         return tokenType;
     }
 
+    @Override
+    public String toString() {
+        String tokenName = "";
+        switch (tokenType) {
+
+            case EOF          : tokenName = "EOF"       ; break;
+
+            case IDENTIFIER   : tokenName = "IDENTIFIER"; break;
+
+            case LOG_CONST    : tokenName = "LOG_CONST" ; break;
+            case INT_CONST    : tokenName = "INT_CONST" ; break;
+            case STR_CONST    : tokenName = "STR_CONST" ; break;
+            case CHAR_CONST   : tokenName = "CHAR_CONST" ; break;
+            case DOUBLE_CONST : tokenName = "DOUBLE_CONST" ; break;
+
+            case AND       : tokenName = "AND"       ; break;
+            case IOR       : tokenName = "IOR"       ; break;
+            case NOT       : tokenName = "NOT"       ; break;
+
+            case EQU       : tokenName = "EQU"       ; break;
+            case NEQ       : tokenName = "NEQ"       ; break;
+            case LTH       : tokenName = "LTH"       ; break;
+            case GTH       : tokenName = "GTH"       ; break;
+            case LEQ       : tokenName = "LEQ"       ; break;
+            case GEQ       : tokenName = "GEQ"       ; break;
+
+            case MUL       : tokenName = "MUL"       ; break;
+            case DIV       : tokenName = "DIV"       ; break;
+            case MOD       : tokenName = "MOD"       ; break;
+            case ADD       : tokenName = "ADD"       ; break;
+            case SUB       : tokenName = "SUB"       ; break;
+
+            case LPARENT   : tokenName = "LPARENT"   ; break;
+            case RPARENT   : tokenName = "RPARENT"   ; break;
+            case LBRACKET  : tokenName = "LBRACKET"  ; break;
+            case RBRACKET  : tokenName = "RBRACKET"  ; break;
+            case LBRACE    : tokenName = "LBRACE"    ; break;
+            case RBRACE    : tokenName = "RBRACE"    ; break;
+
+            case DOT	     : tokenName = "DOT"     ; break;
+            case COLON     : tokenName = "COLON"     ; break;
+            case SEMIC     : tokenName = "SEMIC"     ; break;
+            case COMMA     : tokenName = "COMMA"     ; break;
+            case ARROW     : tokenName = "->"    	 ; break;
+
+            case KW_STRUCT : tokenName = "STRUCT"    ; break;
+            case KW_CLASS  : tokenName = "CLASS"     ; break;
+            case KW_NULL   : tokenName = "NIL"       ; break;
+
+            case ASSIGN    : tokenName = "ASSIGN"    ; break;
+
+            case KW_ELSE   : tokenName = "ELSE"      ; break;
+            case KW_FOR    : tokenName = "FOR"       ; break;
+            case KW_FUN    : tokenName = "FUNC"      ; break;
+            case KW_IF     : tokenName = "IF"        ; break;
+            case KW_VAR    : tokenName = "VAR"       ; break;
+            case KW_LET    : tokenName = "LET"       ; break;
+            case KW_WHILE  : tokenName = "WHILE"     ; break;
+
+            case KW_IMPORT   : tokenName = "IMPORT"    ; break;
+
+            case NEWLINE   	 : tokenName = "NEWLINE"   ; break;
+            case KW_IN     	 : tokenName = "IN"   	 ; break;
+            case KW_RETURN 	 : tokenName = "RETURN"    ; break;
+            case KW_PUBLIC 	 : tokenName = "PUBLIC"    ; break;
+            case KW_PRIVATE	 : tokenName = "PRIVATE"   ; break;
+            case KW_BREAK	 : tokenName = "BREAK"   ; break;
+            case KW_CONTINUE : tokenName = "CONTINUE"   ; break;
+            case KW_SWITCH   : tokenName = "SWITCH"   ; break;
+            case KW_CASE     : tokenName = "CASE"   ; break;
+            case KW_DEFAULT  : tokenName = "DEFAULT"   ; break;
+            case KW_ENUM     : tokenName = "ENUM"   ; break;
+            case KW_AS       : tokenName = "AS"; break;
+            case KW_INIT     : tokenName = "INIT"; break;
+            case KW_EXTENSION   : tokenName = "EXTENSION"; break;
+            case KW_IS          : tokenName = "IS"; break;
+            case KW_OVERRIDE    : tokenName = "OVERRIDE"; break;
+
+            default:
+                Logger.error("Internal error: tokenType=" + tokenType + " in compiler.lexan.Symbol.toString().");
+        }
+        return tokenName + ":" + lexeme;
+    }
+
+    public boolean isIdentifier() {
+        return tokenType == TokenType.IDENTIFIER;
+    }
+
     public static class Builder {
 
         private TokenType tokenType;
@@ -71,7 +159,6 @@ public class Symbol {
             }
 
             Symbol symbol = new Symbol();
-
             symbol.setLexeme(lexeme);
             symbol.setTokenType(tokenType);
             symbol.setPosition(pos);
@@ -115,99 +202,7 @@ public class Symbol {
         }
     }
 
-	@Override
-	public String toString() {
-		String tokenName = "";
-		switch (tokenType) {
-
-		case EOF          : tokenName = "EOF"       ; break;
-		
-		case IDENTIFIER   : tokenName = "IDENTIFIER"; break;
-
-		case LOG_CONST    : tokenName = "LOG_CONST" ; break;
-		case INT_CONST    : tokenName = "INT_CONST" ; break;
-		case STR_CONST    : tokenName = "STR_CONST" ; break;
-		case CHAR_CONST   : tokenName = "CHAR_CONST" ; break;
-		case DOUBLE_CONST : tokenName = "DOUBLE_CONST" ; break;
-
-		case AND       : tokenName = "AND"       ; break;
-		case IOR       : tokenName = "IOR"       ; break;
-		case NOT       : tokenName = "NOT"       ; break;
-		
-		case EQU       : tokenName = "EQU"       ; break;
-		case NEQ       : tokenName = "NEQ"       ; break;
-		case LTH       : tokenName = "LTH"       ; break;
-		case GTH       : tokenName = "GTH"       ; break;
-		case LEQ       : tokenName = "LEQ"       ; break;
-		case GEQ       : tokenName = "GEQ"       ; break;
-		
-		case MUL       : tokenName = "MUL"       ; break;
-		case DIV       : tokenName = "DIV"       ; break;
-		case MOD       : tokenName = "MOD"       ; break;
-		case ADD       : tokenName = "ADD"       ; break;
-		case SUB       : tokenName = "SUB"       ; break;
-		
-		case LPARENT   : tokenName = "LPARENT"   ; break;
-		case RPARENT   : tokenName = "RPARENT"   ; break;
-		case LBRACKET  : tokenName = "LBRACKET"  ; break;
-		case RBRACKET  : tokenName = "RBRACKET"  ; break;
-		case LBRACE    : tokenName = "LBRACE"    ; break;
-		case RBRACE    : tokenName = "RBRACE"    ; break;
-		
-		case DOT	     : tokenName = "DOT"     ; break;
-		case COLON     : tokenName = "COLON"     ; break;
-		case SEMIC     : tokenName = "SEMIC"     ; break;
-		case COMMA     : tokenName = "COMMA"     ; break;
-		case ARROW     : tokenName = "->"    	 ; break;
-		
-		case KW_STRUCT : tokenName = "STRUCT"    ; break;
-		case KW_CLASS  : tokenName = "CLASS"     ; break;
-		case KW_NULL   : tokenName = "NIL"       ; break;
-		
-		case ASSIGN    : tokenName = "ASSIGN"    ; break;
-		
-//		case BOOL	   : tokenName = "BOOLEAN"	 ; break;
-//		case VOID	   : tokenName = "VOID" 	 ; break;
-//		case INTEGER   : tokenName = "INTEGER"   ; break;
-//		case STRING    : tokenName = "STRING"    ; break;
-//		case CHAR      : tokenName = "CHAR"      ; break;
-//		case DOUBLE    : tokenName = "DOUBLE"    ; break;
-		
-		case KW_ELSE   : tokenName = "ELSE"      ; break;
-		case KW_FOR    : tokenName = "FOR"       ; break;
-		case KW_FUN    : tokenName = "FUNC"      ; break;
-		case KW_IF     : tokenName = "IF"        ; break;
-		case KW_VAR    : tokenName = "VAR"       ; break;
-		case KW_LET    : tokenName = "LET"       ; break;
-		case KW_WHILE  : tokenName = "WHILE"     ; break;
-		
-		case KW_IMPORT   : tokenName = "IMPORT"    ; break;
-		
-		case NEWLINE   	 : tokenName = "NEWLINE"   ; break;
-		case KW_IN     	 : tokenName = "IN"   	 ; break;
-		case KW_RETURN 	 : tokenName = "RETURN"    ; break;
-		case KW_PUBLIC 	 : tokenName = "PUBLIC"    ; break;
-		case KW_PRIVATE	 : tokenName = "PRIVATE"   ; break;
-		case KW_BREAK	 : tokenName = "BREAK"   ; break;
-		case KW_CONTINUE : tokenName = "CONTINUE"   ; break;
-		case KW_SWITCH   : tokenName = "SWITCH"   ; break;
-		case KW_CASE     : tokenName = "CASE"   ; break;
-		case KW_DEFAULT  : tokenName = "DEFAULT"   ; break;
-		case KW_ENUM     : tokenName = "ENUM"   ; break;
-        case KW_AS       : tokenName = "AS"; break;
-        case KW_INIT     : tokenName = "INIT"; break;
-        case KW_EXTENSION   : tokenName = "EXTENSION"; break;
-        case KW_IS          : tokenName = "IS"; break;
-        case KW_OVERRIDE    : tokenName = "OVERRIDE"; break;
-		
-		default:
-			Logger.error("Internal error: tokenType=" + tokenType + " in compiler.lexan.Symbol.toString().");
-		}
-		return tokenName + ":" + lexeme;
-	}
-
-	public boolean isIdentifier() {
-	    return tokenType == TokenType.IDENTIFIER;
+    public static Builder EOF() {
+        return new Builder().setLexeme("$").setTokenType(TokenType.EOF);
     }
-
 }
