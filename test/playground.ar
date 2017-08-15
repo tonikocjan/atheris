@@ -1,0 +1,29 @@
+import stdlib
+
+class Test {
+	
+	var x: Int
+	var y: Int
+	var name: String
+
+	func setX(_ x: Int) Test {
+		self.x = x
+		return self
+	}
+
+	func setY(_ y: Int) Test {
+		self.y = y
+		return self
+	}
+
+	func setName(_ name: String) Test {
+		self.name = name
+		return self
+	}
+}
+
+let test = Test().setX(10).setY(20).setName("Janez")
+
+print(test.x)
+print(test.y)
+print(test.name)

@@ -712,14 +712,13 @@ public class TypeChecker implements ASTVisitor {
                 }
             }
 
-            // TODO: - Issue with tests
-//            for (AtomType atomType: Type.atomTypes) {
-//                for (AstType conformance : atomType.classDefinition.conformances) {
-//                    if (!atomType.conformsTo((InterfaceType) symbolDescription.getTypeForAstNode(conformance))) {
-//                        Logger.error(conformance.position, "Type \"" + atomType.friendlyName() + "\" does not conform to interface \"" + conformance.getName() + "\"");
-//                    }
-//                }
-//            }
+            for (AtomType atomType: Type.atomTypes) {
+                for (AstType conformance : atomType.classDefinition.conformances) {
+                    if (!atomType.conformsTo((InterfaceType) symbolDescription.getTypeForAstNode(conformance))) {
+                        Logger.error(conformance.position, "Type \"" + atomType.friendlyName() + "\" does not conform to interface \"" + conformance.getName() + "\"");
+                    }
+                }
+            }
         }
         else {
             for (AstDefinition s : acceptor.definitions) {
@@ -1200,8 +1199,8 @@ public class TypeChecker implements ASTVisitor {
 	public void visit(AstTupleDefinition acceptor) {
         if (traversalState == TraversalStates.extensions) return;
 
-        LinkedList<Type> types = new LinkedList<>();
-		LinkedList<String> names = new LinkedList<>();
+        ArrayList<Type> types = new ArrayList<>();
+        ArrayList<String> names = new ArrayList<>();
 		
 		for (AstDefinition def : acceptor.definitions.definitions) {
 			def.accept(this);
@@ -1225,9 +1224,9 @@ public class TypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AstTupleExpression acceptor) {
 		acceptor.expressions.accept(this);
-		
-		LinkedList<Type> types = new LinkedList<>();
-		LinkedList<String> names = new LinkedList<>();
+
+        ArrayList<Type> types = new ArrayList<>();
+        ArrayList<String> names = new ArrayList<>();
 
 		for (AstExpression e : acceptor.expressions.expressions) {
 			AstLabeledExpr labeledExpr = (AstLabeledExpr) e;
