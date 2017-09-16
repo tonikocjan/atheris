@@ -118,7 +118,7 @@ public class TypeChecker implements ASTVisitor {
                 }
             }
 
-            // memberType inference
+            // type inference
             for (AstStatement stmt: acceptor.defaultConstructor.functionCode.statements) {
                 AstBinaryExpression initExpr = (AstBinaryExpression) stmt;
                 initExpr.expr2.accept(this);

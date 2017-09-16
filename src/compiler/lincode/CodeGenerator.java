@@ -45,7 +45,7 @@ public class CodeGenerator {
 	public ImcCodeChunk linearize(List<ImcChunk> chunks) {
 		for (ImcChunk chunk : chunks) {
 			if (chunk instanceof ImcCodeChunk) {
-                storeFunctionAndLinearizeCode((ImcCodeChunk) chunk);
+                linearizeCodeAndStoreFunction((ImcCodeChunk) chunk);
                 saveMainCodeChunk((ImcCodeChunk) chunk);
 			}
 			else {
@@ -66,11 +66,11 @@ public class CodeGenerator {
 
 	private void saveMainCodeChunk(ImcCodeChunk chunk) {
         if (chunk.name().equals("__main__")) {
-            mainFrame = (ImcCodeChunk) chunk;
+            mainFrame = chunk;
         }
     }
 
-	private void storeFunctionAndLinearizeCode(ImcCodeChunk fn) {
+	private void linearizeCodeAndStoreFunction(ImcCodeChunk fn) {
         linearizeCode(fn);
         storeFunction(fn);
     }

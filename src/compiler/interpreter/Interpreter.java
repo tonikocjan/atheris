@@ -189,7 +189,6 @@ public class Interpreter {
         if (instruction instanceof ImcMethodCALL) {
             ImcMethodCALL instr = (ImcMethodCALL) instruction;
             int offset = 0;
-
             memory.stM(stackPointer, execute(instr.args.getFirst()));
 
             offset += Constants.Byte;

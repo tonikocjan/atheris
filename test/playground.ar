@@ -1,4 +1,4 @@
-import stdlib
+/*import stdlib
 
 class Test {
 	
@@ -27,3 +27,8 @@ let test = Test().setX(10).setY(20).setName("Janez")
 print(test.x)
 print(test.y)
 print(test.name)
+*/
+
+if true && true && true {
+
+}
