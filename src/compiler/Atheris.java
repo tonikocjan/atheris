@@ -20,6 +20,8 @@ package compiler;
 import compiler.frames.FrameDescriptionMap;
 import compiler.imcode.*;
 import compiler.interpreter.Memory;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 import compiler.seman.*;
 import utils.ArgumentParser;
 import utils.Constants;
@@ -41,6 +43,8 @@ import java.io.PrintStream;
 
 public class Atheris {
 
+    private static LoggerInterface logger = LoggerFactory.logger();
+
     private String sourceFileName;
     private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|interpret)";
     private String execPhase = "interpret";
@@ -61,7 +65,7 @@ public class Atheris {
                 dumpPhases = phase;
             }
             else {
-                Logger.warning(LanguageManager.localize("error_uknown_phase", phase));
+                logger.warning(LanguageManager.localize("error_uknown_phase", phase));
             }
         }
 
@@ -76,7 +80,7 @@ public class Atheris {
                 Interpreter.stackSize = Integer.parseInt(size);
             }
             catch(Exception e) {
-                Logger.warning(LanguageManager.localize("error_invalid_stack_size_parameter"));
+                logger.warning(LanguageManager.localize("error_invalid_stack_size_parameter"));
             }
         }
 
@@ -101,14 +105,14 @@ public class Atheris {
         parseArguments(args);
 
         if (sourceFileName == null) {
-            Logger.error(LanguageManager.localize("error_source_file_not_specified"));
+            logger.error(LanguageManager.localize("error_source_file_not_specified"));
         }
 
         if (dumpPhases != null) {
-            Logger.openDumpFile(sourceFileName);
+            logger.openDumpFile(sourceFileName);
         }
 
-        Logger.fileName = sourceFileName;
+        logger.setFileName(sourceFileName);
 
         ImcCodeChunk mainCodeChunk = null;
 
@@ -175,7 +179,7 @@ public class Atheris {
 
             // Neznana faza prevajanja.
             if (!execPhase.equals("")) {
-                Logger.warning(LanguageManager.localize("error_uknown_phase", execPhase));
+                logger.warning(LanguageManager.localize("error_uknown_phase", execPhase));
             }
         }
 
@@ -185,7 +189,7 @@ public class Atheris {
     }
 
     public Atheris execute() {
-        if (compiledCode == null) Logger.error("Compile source code first!");
+        if (compiledCode == null) logger.error("Compile source code first!");
 
         System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
 
@@ -198,7 +202,7 @@ public class Atheris {
     }
 
     public void exit() {
-        if (dumpPhases != null) Logger.closeDumpFile();
+        if (dumpPhases != null) logger.closeDumpFile();
     }
 
     private void compilationTime(Long startTime) {

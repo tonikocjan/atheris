@@ -17,8 +17,6 @@
 
 package compiler.imcode;
 
-import compiler.*;
-
 /**
  * Dostop do pomnilnika.
  * 
@@ -40,7 +38,7 @@ public class ImcMEM extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "MEM");
+        logger.dump(indent, "MEM");
 		expr.dump(indent + 2);
 	}
 

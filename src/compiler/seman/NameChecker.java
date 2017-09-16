@@ -20,7 +20,8 @@ package compiler.seman;
 import java.util.ArrayList;
 import java.util.List;
 
-import compiler.Logger;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 import compiler.ast.tree.enums.AtomTypeKind;
 import compiler.ast.tree.enums.DefinitionModifier;
 import compiler.ast.tree.expr.*;
@@ -38,7 +39,9 @@ import compiler.lexan.LexAn;
 import compiler.synan.SynAn;
 
 public class NameChecker implements ASTVisitor {
-    
+
+    private static LoggerInterface logger = LoggerFactory.logger();
+
     private SymbolTableMap symbolTable;
     private SymbolDescriptionMap symbolDescription;
     
@@ -67,7 +70,7 @@ public class NameChecker implements ASTVisitor {
         try {
             symbolTable.insertDefinitionOnCurrentScope(acceptor.getName(), acceptor);
         } catch (SemIllegalInsertException e) {
-            Logger.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName() + "\'");
+            logger.error(acceptor.position, "Invalid redeclaration of \'" + acceptor.getName() + "\'");
         }
     }
 
@@ -184,7 +187,7 @@ public class NameChecker implements ASTVisitor {
             }
 
             if (definition == null) {
-                Logger.error(acceptor.position, "Method " + funCallIdentifier + " is undefined");
+                logger.error(acceptor.position, "Method " + funCallIdentifier + " is undefined");
             }
         }
 
@@ -260,7 +263,7 @@ public class NameChecker implements ASTVisitor {
 		AstDefinition definition = symbolTable.findDefinitionForName(acceptor.name);
 
 		if (definition == null) {
-            Logger.error(acceptor.position, "Type \"" + acceptor.name + "\" is undefined");
+            logger.error(acceptor.position, "Type \"" + acceptor.name + "\" is undefined");
         }
 
 		symbolDescription.setDefinitionForAstNode(acceptor, definition);
@@ -291,7 +294,7 @@ public class NameChecker implements ASTVisitor {
 		AstDefinition definition = symbolTable.findDefinitionForName(acceptor.name);
 		
 		if (definition == null) {
-            Logger.error(acceptor.position, "Use of unresolved indentifier \"" + acceptor.name + "\"");
+            logger.error(acceptor.position, "Use of unresolved indentifier \"" + acceptor.name + "\"");
         }
 
 		symbolDescription.setDefinitionForAstNode(acceptor, definition);
@@ -316,8 +319,8 @@ public class NameChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AstImportDefinition acceptor) {
-		String currentFile = Logger.fileName;
-		Logger.fileName = acceptor.getName();
+		String currentFile = logger.getFileName();
+		logger.setFileName(acceptor.getName());
 
         ArrayList<AstDefinition> definitions = new ArrayList<>();
 
@@ -341,7 +344,7 @@ public class NameChecker implements ASTVisitor {
 		acceptor.imports = new AstDefinitions(statements.position, definitions);
 		acceptor.imports.accept(this);
 
-		Logger.fileName = currentFile;
+		logger.setFileName(currentFile);
 	}
 
 	private AstStatements parseFile(String fileName) {

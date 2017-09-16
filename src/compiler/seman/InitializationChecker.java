@@ -18,7 +18,7 @@
 //package compiler.seman;
 //
 //
-//import compiler.Logger;
+//import compiler.LoggerInterface.Logger;
 //import compiler.ast.ASTVisitor;
 //import compiler.ast.tree.AstDefinitions;
 //import compiler.ast.tree.AstExpressions;

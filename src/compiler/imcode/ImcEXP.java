@@ -17,8 +17,6 @@
 
 package compiler.imcode;
 
-import compiler.*;
-
 /**
  * Izraz kot stavek.
  * 
@@ -40,7 +38,7 @@ public class ImcEXP extends ImcStmt {
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "EXP");
+        logger.dump(indent, "EXP");
 		expr.dump(indent + 2);
 	}
 

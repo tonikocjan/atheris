@@ -15,42 +15,50 @@
  *
  */
 
-package compiler;
+package compiler.logger;
+
+import compiler.Position;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-public class Logger {
+public class LoggerImpl implements logger {
 
-	public static boolean reporting = true;
-    public static String fileName = null;
-    private static PrintStream dumpFile = null;
+	public boolean reporting = true;
+    public String fileName = null;
+    private PrintStream dumpFile = null;
 
-	public static void report(String message) {
+	@Override
+    public void report(String message) {
 		if (reporting)
 			System.err.println(":-) " + message);
 	}
 
-	public static void report(Position pos, String message) {
+	@Override
+    public void report(Position pos, String message) {
 		report("[" + pos.toString() + "] " + message);
 	}
 
-	public static void warning(String message) {
+	@Override
+    public void warning(String message) {
 		if (fileName != null)
 			message = fileName + ":" + message;
 		
 		System.err.println(":-o " + message);
 	}
 
-	public static void warning(Position pos, String message) {
+	@Override
+    public void warning(Position pos, String message) {
 		warning("[" + pos.toString() + "] " + message);
 	}
 
-	public static void warning(int line, int column, String message) {
+	@Override
+    public void warning(int line, int column, String message) {
 		warning(new Position(line, column), message);
 	}
 
-	public static void error(String message) {
+	@Override
+    public void error(String message) {
 		if (fileName != null)
 			message = fileName + ": " + message;
 		
@@ -59,43 +67,60 @@ public class Logger {
 		System.exit(1);
 	}
 
-	public static void error(Position pos, String message) {
+	@Override
+    public void error(Position pos, String message) {
 		error("[" + pos.toString() + "] " + message);
 	}
 
-	public static void error(int line, int column, String message) {
+	@Override
+    public void error(int line, int column, String message) {
 		error(new Position(line, column), message);
 	}
 
-	public static void openDumpFile(String sourceFileName) {
+	@Override
+    public void openDumpFile(String sourceFileName) {
 		String dumpFileName = sourceFileName.replaceFirst("\\.prev$", "") + ".log";
 		try {
 			dumpFile = new PrintStream(dumpFileName);
 		} catch (FileNotFoundException __) {
-			Logger.warning("Cannot produce dump file '" + dumpFileName + "'.");
+			warning("Cannot produce dump file '" + dumpFileName + "'.");
 		}
 	}
 
-	public static void closeDumpFile() {
+	@Override
+    public void closeDumpFile() {
 		dumpFile.close();
 		dumpFile = null;
 	}
 
-	public static PrintStream dumpFile() {
+	@Override
+    public PrintStream dumpFile() {
 		if (dumpFile == null)
-			Logger.error ("Internal error: compiler.Logger.dumpFile().");
+			error ("Internal error: compiler.logger.LoggerImpl.dumpFile().");
 		return dumpFile;
 	}
 
-	public static void dump(int indent, String line) {
+	@Override
+    public void dump(int indent, String line) {
 		dump(indent, line, true);
 	}
 
-    public static void dump(int indent, String line, boolean newLine) {
+    @Override
+    public void dump(int indent, String line, boolean newLine) {
         for (int i = 0; i < indent; i++) dumpFile.print(" ");
         if (newLine)
             dumpFile.println(line);
         else
             dumpFile.print(line);
+    }
+
+    @Override
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    @Override
+    public String getFileName() {
+        return fileName;
     }
 }

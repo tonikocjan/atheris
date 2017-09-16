@@ -17,6 +17,9 @@
 
 package compiler.imcode;
 
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
+
 /**
  * Vmesna koda.
  * 
@@ -24,7 +27,9 @@ package compiler.imcode;
  */
 public interface ImcCode {
 
-	/**
+    LoggerInterface logger = LoggerFactory.logger();
+
+    /**
 	 * Izpise drevo vmesne kode na datoteko vmesnih rezultatov.
 	 * 
 	 * @param indent Zamik.

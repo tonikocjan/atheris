@@ -1,6 +1,7 @@
 package compiler.seman.type;
 
-import compiler.Logger;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 import compiler.ast.tree.def.AstClassDefinition;
 import compiler.ast.tree.def.AstDefinition;
 import compiler.ast.tree.def.AstVariableDefinition;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public abstract class ObjectType extends Type {
+
+    private static LoggerInterface logger = LoggerFactory.logger();
 
     public final AstClassDefinition classDefinition;
     protected final ArrayList<String> memberNames;
@@ -23,7 +26,7 @@ public abstract class ObjectType extends Type {
 
     public ObjectType(AstClassDefinition definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass, int reservedSize) {
         if (names.size() != types.size()) {
-            Logger.error("Internal error :: compiler.seman.memberType.ObjectType: "
+            logger.error("Internal error :: compiler.seman.memberType.ObjectType: "
                     + "names elementCount not equal types elementCount");
         }
 

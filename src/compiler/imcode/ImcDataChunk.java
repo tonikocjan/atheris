@@ -17,8 +17,9 @@
 
 package compiler.imcode;
 
-import compiler.*;
 import compiler.frames.*;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 
 /**
  * Fragment podatkov.
@@ -27,7 +28,9 @@ import compiler.frames.*;
  */
 public class ImcDataChunk extends ImcChunk {
 
-	/** Naslov spremenljivke v pomnilniku.  */
+    protected static LoggerInterface logger = LoggerFactory.logger();
+
+    /** Naslov spremenljivke v pomnilniku.  */
 	public FrmLabel label;
 
 	/** Velikost spremenljivke v pomnilniku.  */
@@ -50,7 +53,7 @@ public class ImcDataChunk extends ImcChunk {
 	@Override
 	public void dump() {
 		String tmp =  data == null ? "" : " .BYTE: " + data;
-		Logger.dump(0, "DATA CHUNK: entryLabel=" + label.getName() + " sizeInBytes=" + size + tmp);
+        logger.dump(0, "DATA CHUNK: entryLabel=" + label.getName() + " sizeInBytes=" + size + tmp);
 	}
 
     @Override

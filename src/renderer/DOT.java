@@ -19,7 +19,7 @@ public class DOT {
 		this.generateDOT(outStream);
 	}
 
-	private void <generateDOT(PrintStream outStream) {
+	private void generateDOT(PrintStream outStream) {
 		int intend;
 		
 		/**

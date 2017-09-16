@@ -19,11 +19,15 @@ package compiler.seman.type;
 
 import compiler.ast.tree.enums.AtomTypeKind;
 import compiler.ast.tree.def.AstDefinition;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 
 /**
  * Data memberType description.
  */
 public abstract class Type {
+
+    protected static LoggerInterface logger = LoggerFactory.logger();
 
     private static int TYPE_DESCRIPTOR = 0;
 

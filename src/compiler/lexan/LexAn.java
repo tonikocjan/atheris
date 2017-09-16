@@ -25,11 +25,15 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 import utils.Constants;
 import managers.LanguageManager;
 import compiler.*;
 
 public class LexAn implements LexicalAnalyzer {
+
+    private static LoggerInterface logger = LoggerFactory.logger();
 
     private static final String[] reserverKeywords = new String[]
             {
@@ -81,7 +85,7 @@ public class LexAn implements LexicalAnalyzer {
             System.out.println("    Opening file: " + sourceFileName);
             this.file = new FileInputStream(sourceFileName);
         } catch (FileNotFoundException e) {
-            Logger.error(LanguageManager.localize("lexan_error_opening_file", sourceFileName));
+            logger.error(LanguageManager.localize("lexan_error_opening_file", sourceFileName));
         }
     }
 
@@ -105,7 +109,7 @@ public class LexAn implements LexicalAnalyzer {
 			return symbol;
 
 		} catch (IOException e) {
-			Logger.error(LanguageManager.localize("lexan_error_parsing_file"));
+            logger.error(LanguageManager.localize("lexan_error_parsing_file"));
 		}
 
 		return null;
@@ -219,7 +223,7 @@ public class LexAn implements LexicalAnalyzer {
 			/**
 			 * Unknown character. Logger error.
 			 */
-			Logger.error(new Position(startRow, startCol, startRow, startCol
+            logger.error(new Position(startRow, startCol, startRow, startCol
 					+ currentSymbol.length() + 1), LanguageManager.localize("lexan_error_unknown_token",
 																	(char) nextCharacter));
 		}
@@ -265,7 +269,7 @@ public class LexAn implements LexicalAnalyzer {
                     break;
                 }
 
-                Logger.error(new Position(startRow, startCol, startRow, startCol + currentSymbol.length() + 1),
+                logger.error(new Position(startRow, startCol, startRow, startCol + currentSymbol.length() + 1),
                         LanguageManager.localize("lexan_error_invalid_token_in_string_constant"));
             }
 
@@ -283,7 +287,7 @@ public class LexAn implements LexicalAnalyzer {
         }
         // if last character of the currentSymbol isn't double-quote, report error
         if (!isStringClosed) {
-            Logger.error(new Position(startRow, startCol, startRow,
+            logger.error(new Position(startRow, startCol, startRow,
                             startCol + currentSymbol.length()),
                     LanguageManager.localize("lexan_error_string_not_closed"));
         }
@@ -344,7 +348,7 @@ public class LexAn implements LexicalAnalyzer {
         nextCharacter = file.read();
 
         if (nextCharacter != '\'') {
-            Logger.error(new Position(startRow, startCol, startRow, startCol + currentSymbol.length() + 1),
+            logger.error(new Position(startRow, startCol, startRow, startCol + currentSymbol.length() + 1),
                     LanguageManager.localize("lexan_error_char_literal_not_closed"));
         }
 
@@ -391,7 +395,7 @@ public class LexAn implements LexicalAnalyzer {
             }
 
             if (!isLegalIdentifier(nextCharacter)) {
-                Logger.error(new Position(startRow, startCol, startRow, startCol + currentSymbol.length() + 1),
+                logger.error(new Position(startRow, startCol, startRow, startCol + currentSymbol.length() + 1),
                         LanguageManager.localize("lexan_error_invalid_token", (char) nextCharacter));
             }
         }
@@ -543,12 +547,12 @@ public class LexAn implements LexicalAnalyzer {
 	private void dump(Symbol symb) {
 		if (!dump)
 			return;
-		if (Logger.dumpFile() == null)
+		if (logger.dumpFile() == null)
 			return;
 		if (symb.getTokenType() == TokenType.EOF)
-			Logger.dumpFile().println(symb.toString());
+            logger.dumpFile().println(symb.toString());
 		else
-			Logger.dumpFile().println(
+            logger.dumpFile().println(
 					"[" + symb.getPosition().toString() + "] " + symb.toString());
 	}
 }

@@ -17,13 +17,16 @@
 
 package compiler.seman.type;
 
-import compiler.*;
 import compiler.ast.tree.enums.AtomTypeKind;
 import compiler.ast.tree.def.AstClassDefinition;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 
 import java.util.ArrayList;
 
 public class AtomType extends ObjectType {
+
+    private static LoggerInterface logger = LoggerFactory.logger();
 
 	public final AtomTypeKind type;
     public final CanType staticType;
@@ -54,7 +57,7 @@ public class AtomType extends ObjectType {
 		case CHR: return "Char";
 		case NIL: return "Nil";
 		}
-		Logger.error("Internal error :: compiler.seman.memberType.SemAtomType.toString()");
+        logger.error("Internal error :: compiler.seman.memberType.SemAtomType.toString()");
 		return "";
 	}
 
@@ -73,7 +76,7 @@ public class AtomType extends ObjectType {
 		case DOB:
 			return 8;
 		}
-		Logger.error("Internal error :: compiler.seman.memberType.SemAtomType.sizeInBytes()");
+        logger.error("Internal error :: compiler.seman.memberType.SemAtomType.sizeInBytes()");
 		return 0;
 	}
 

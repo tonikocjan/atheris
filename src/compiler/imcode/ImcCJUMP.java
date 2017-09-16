@@ -17,7 +17,6 @@
 
 package compiler.imcode;
 
-import compiler.*;
 import compiler.frames.*;
 
 /**
@@ -51,7 +50,7 @@ public class ImcCJUMP extends ImcStmt {
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "CJUMP labels=" + trueLabel.getName() + "," + falseLabel.getName());
+        logger.dump(indent, "CJUMP labels=" + trueLabel.getName() + "," + falseLabel.getName());
 		cond.dump(indent + 2);
 	}
 

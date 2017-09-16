@@ -24,10 +24,11 @@ import compiler.ast.tree.enums.ControlTransferKind;
 import compiler.ast.tree.expr.*;
 import compiler.ast.tree.stmt.*;
 import compiler.ast.tree.type.*;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 import compiler.seman.SymbolDescriptionMap;
 import compiler.seman.SymbolTableMap;
 import utils.Constants;
-import compiler.Logger;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.*;
 import compiler.ast.tree.def.*;
@@ -39,6 +40,7 @@ import compiler.frames.*;
 import compiler.seman.type.*;
 
 public class ImcCodeGen implements ASTVisitor {
+    private static LoggerInterface logger = LoggerFactory.logger();
 
     private int virtualTableCount = 0;
     private int currentFunctionScope = 0;
@@ -666,11 +668,11 @@ public class ImcCodeGen implements ASTVisitor {
 			imcDescription.setImcCode(acceptor, not);
 		} else if (acceptor.oper == AstUnaryExpression.MEM) {
 			if (expr instanceof ImcStmt)
-				Logger.error(acceptor.position, "Error");
+                logger.error(acceptor.position, "Error");
 			imcDescription.setImcCode(acceptor, ((ImcMEM) expr).expr);
 		} else if (acceptor.oper == AstUnaryExpression.VAL) {
 			if (expr instanceof ImcStmt)
-				Logger.error(acceptor.position, "Error");
+                logger.error(acceptor.position, "Error");
 			imcDescription.setImcCode(acceptor, new ImcMEM((ImcExpr) expr));
 		} else
 			imcDescription.setImcCode(acceptor, expr);

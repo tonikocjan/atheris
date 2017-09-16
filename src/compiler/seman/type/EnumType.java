@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import compiler.Logger;
 import compiler.ast.tree.def.AstDefinition;
 import compiler.ast.tree.def.AstEnumDefinition;
 import compiler.ast.tree.def.AstEnumMemberDefinition;
@@ -36,7 +35,7 @@ public class EnumType extends Type implements ReferenceType {
 	public EnumType(AstEnumDefinition definition,
 			ArrayList<String> names, ArrayList<ClassType> types) {
 		if (names.size() != types.size())
-			Logger.error("Internal error :: compiler.seman.memberType.EnumType: "
+            logger.error("Internal error :: compiler.seman.memberType.EnumType: "
 					+ "names elementCount not equal types elementCount");
 		
 		this.enumDefinition = definition;

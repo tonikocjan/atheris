@@ -17,8 +17,6 @@
 
 package compiler.imcode;
 
-import compiler.*;
-
 /**
  * Return.
  * 
@@ -40,7 +38,7 @@ public class ImcRETURN extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "RETURN");
+        logger.dump(indent, "RETURN");
 		if (expr != null) expr.dump(indent + 2);
 	}
 

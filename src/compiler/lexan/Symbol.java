@@ -18,10 +18,14 @@
 package compiler.lexan;
 
 import compiler.*;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 
 public class Symbol {
 
-	private TokenType tokenType;
+    private static LoggerInterface logger = LoggerFactory.logger();
+
+    private TokenType tokenType;
 	private String lexeme;
 	private Position position;
 
@@ -128,7 +132,7 @@ public class Symbol {
             case KW_OVERRIDE    : tokenName = "OVERRIDE"; break;
 
             default:
-                Logger.error("Internal error: tokenType=" + tokenType + " in compiler.lexan.Symbol.toString().");
+                logger.error("Internal error: tokenType=" + tokenType + " in compiler.lexan.Symbol.toString().");
         }
         return tokenName + ":" + lexeme;
     }

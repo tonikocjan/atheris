@@ -19,7 +19,6 @@ package compiler.imcode;
 
 import java.util.*;
 
-import compiler.*;
 import compiler.frames.*;
 
 /**
@@ -47,7 +46,7 @@ public class ImcCALL extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "CALL entryLabel=" + label.getName());
+        logger.dump(indent, "CALL entryLabel=" + label.getName());
 		Iterator<ImcExpr> args = this.args.iterator();
 
 		while (args.hasNext()) {

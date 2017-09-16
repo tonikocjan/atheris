@@ -17,8 +17,6 @@
 
 package compiler.imcode;
 
-import compiler.*;
-
 /**
  * Konstanta.
  * 
@@ -40,7 +38,7 @@ public class ImcCONST extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "CONST value=" + value.toString());
+        logger.dump(indent, "CONST value=" + value.toString());
 	}
 
 	@Override

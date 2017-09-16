@@ -17,8 +17,6 @@
 
 package compiler.imcode;
 
-import compiler.*;
-
 /**
  * Prenos.
  * 
@@ -44,7 +42,7 @@ public class ImcMOVE extends ImcStmt {
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "MOVE");
+        logger.dump(indent, "MOVE");
 		dst.dump(indent + 2);
 		src.dump(indent + 2);
 	}

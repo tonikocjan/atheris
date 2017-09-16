@@ -19,33 +19,27 @@ package compiler.imcode;
 
 import java.util.*;
 
-import compiler.*;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 
-/**
- * Zaporedje stavkov.
- * 
- * @author sliva
- */
 public class ImcSEQ extends ImcStmt {
 
-	/* Stavki.  */
+    private static LoggerInterface logger = LoggerFactory.logger();
+
 	public ArrayList<ImcStmt> stmts;
 
-	/**
-	 * Ustvari zaporedje stavkov.
-	 */
 	public ImcSEQ() {
 		stmts = new ArrayList<>();
 	}
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "SEQ");
+        logger.dump(indent, "SEQ");
 		Iterator<ImcStmt> stmts = this.stmts.iterator();
 		int index = 0;
 		while (stmts.hasNext()) {
 			ImcStmt stmt = stmts.next();
-            Logger.dump(indent + 2, "PC [" + index + "]: ", false);
+            logger.dump(indent + 2, "PC [" + index + "]: ", false);
 			stmt.dump(indent + 2);
 			index++;
 		}

@@ -17,7 +17,6 @@
 
 package compiler.imcode;
 
-import compiler.*;
 import compiler.frames.*;
 
 /**
@@ -41,7 +40,7 @@ public class ImcLABEL extends ImcStmt {
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "LABEL entryLabel=" + label.getName());
+        logger.dump(indent, "LABEL entryLabel=" + label.getName());
 	}
 
 	@Override

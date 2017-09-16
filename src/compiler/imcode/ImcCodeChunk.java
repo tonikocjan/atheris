@@ -17,10 +17,13 @@
 
 package compiler.imcode;
 
-import compiler.*;
 import compiler.frames.*;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 
 public class ImcCodeChunk extends ImcChunk {
+
+    private static LoggerInterface logger = LoggerFactory.logger();
 
 	private FrmFrame frame;
 	private ImcStmt imcode;
@@ -50,8 +53,8 @@ public class ImcCodeChunk extends ImcChunk {
 
     @Override
 	public void dump() {
-		Logger.dump(0, "CODE CHUNK: entryLabel=" + frame.entryLabel.getName());
-		Logger.dump(2, frame.toString());
+        logger.dump(0, "CODE CHUNK: entryLabel=" + frame.entryLabel.getName());
+        logger.dump(2, frame.toString());
 		if (lincode == null) imcode.dump(2); else lincode.dump(2);
 	}
 

@@ -17,8 +17,6 @@
 
 package compiler.imcode;
 
-import compiler.Logger;
-
 public class ImcMALLOC extends ImcExpr {
 
 	/** Velikost pomnilnika */
@@ -30,7 +28,7 @@ public class ImcMALLOC extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "MALLOC sizeInBytes: " + size + " BYTES");
+        logger.dump(indent, "MALLOC sizeInBytes: " + size + " BYTES");
 	}
 
 	@Override

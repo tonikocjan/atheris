@@ -1,6 +1,7 @@
 package compiler.interpreter;
 
-import compiler.Logger;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 import compiler.frames.FrmLabel;
 import compiler.frames.FrmTemp;
 
@@ -11,13 +12,15 @@ import static compiler.interpreter.Interpreter.debug;
 
 public class Memory {
 
+    private static LoggerInterface logger = LoggerFactory.logger();
+
     public final HashMap<Integer, Object> memory = new HashMap<>();
     public final HashMap<FrmLabel, Integer> labelToAddressMapping = new HashMap<>();
     public final HashMap<FrmTemp, Object> registers = new HashMap<>();
 
     public void stM(int address, Object value) {
         if (checkMemory && value == null)
-            Logger.error("Storing null is illegal");
+            logger.error("Storing null is illegal");
         if (debug)
             System.out.println(" [" + address + "] <= " + value);
 
@@ -31,7 +34,7 @@ public class Memory {
     }
     public void stT(FrmTemp temp, Object value) {
         if (checkMemory && value == null)
-            Logger.error("Storing null is illegal");
+            logger.error("Storing null is illegal");
         if (debug) System.out.println(" " + temp.getName() + " <= " + value);
         registers.put(temp, value);
     }

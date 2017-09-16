@@ -19,7 +19,8 @@ package compiler.seman;
 
 import java.util.*;
 
-import compiler.Logger;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 import compiler.ast.tree.enums.AtomTypeKind;
 import compiler.ast.tree.enums.DefinitionModifier;
 import compiler.ast.tree.expr.*;
@@ -37,6 +38,8 @@ import compiler.seman.type.*;
 import managers.LanguageManager;
 
 public class TypeChecker implements ASTVisitor {
+
+    private static LoggerInterface logger = LoggerFactory.logger();
 
     private SymbolTableMap symbolTable;
     private SymbolDescriptionMap symbolDescription;
@@ -88,11 +91,11 @@ public class TypeChecker implements ASTVisitor {
 
                 if (acceptor instanceof AstStructureDefinition) {
                     // only classes are allowed to inherit
-                    Logger.error("Structs are not allowed to inherit");
+                    logger.error("Structs are not allowed to inherit");
                 }
 
                 if (!type.isInterfaceType() && (!type.isCanType() || !((CanType) type).childType.isClassType())) {
-                    Logger.error(acceptor.baseClass.position,
+                    logger.error(acceptor.baseClass.position,
                             "Inheritance from non-class memberType \"" + type.friendlyName() + "\" is not allowed");
                 }
 
@@ -110,10 +113,10 @@ public class TypeChecker implements ASTVisitor {
 
                 if (!symbolDescription.getTypeForAstNode(conformance).isInterfaceType()) {
                     if (baseClass != null) {
-                        Logger.error(conformance.position, "Multiple inheritance is not allowed");
+                        logger.error(conformance.position, "Multiple inheritance is not allowed");
                     }
                     else {
-                        Logger.error(conformance.position, "Super class must appear first in inheritance clause");
+                        logger.error(conformance.position, "Super class must appear first in inheritance clause");
                     }
                 }
             }
@@ -132,7 +135,7 @@ public class TypeChecker implements ASTVisitor {
 
             for (AstDefinition def : acceptor.memberDefinitions.definitions) {
                 if (names.contains(def.getName())) {
-                    Logger.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+                    logger.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
                 }
                 else if (baseClass != null) {
                     // check whether inheritance (overriding) is legal
@@ -140,18 +143,18 @@ public class TypeChecker implements ASTVisitor {
                         AstDefinition baseDefinition = baseClass.childType.findMemberDefinitionWithName(def.getName());
 
                         if (baseDefinition == null || baseDefinition.isStatic()) {
-                            Logger.error(def.position, "Method does not override any method from it's super class");
+                            logger.error(def.position, "Method does not override any method from it's super class");
                         }
                         else if (baseDefinition.isFinal()) {
-                            Logger.error(def.position, "Cannot override \"final\" instance method");
+                            logger.error(def.position, "Cannot override \"final\" instance method");
                         }
                     }
                     else if (baseClass.containsMember(def.getName())) {
-                        Logger.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+                        logger.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
                     }
                 }
                 else if (def.isOverriding()) {
-                    Logger.error(def.position, "Method does not override any method from it's super class");
+                    logger.error(def.position, "Method does not override any method from it's super class");
                 }
 
                 def.accept(this);
@@ -219,7 +222,7 @@ public class TypeChecker implements ASTVisitor {
                 InterfaceType interfaceType = (InterfaceType) symbolDescription.getTypeForAstNode(conformance);
 
                 if (!objectType.conformsTo(interfaceType)) {
-                    Logger.error(conformance.position, "Type \"" + objectType.friendlyName() + "\" does not conform to interface \"" + interfaceType.friendlyName() + "\"");
+                    logger.error(conformance.position, "Type \"" + objectType.friendlyName() + "\" does not conform to interface \"" + interfaceType.friendlyName() + "\"");
                 }
             }
 
@@ -316,7 +319,7 @@ public class TypeChecker implements ASTVisitor {
 		 */
 		if (oper == AstBinaryExpression.ARR) {
 			if (!rhs.isBuiltinIntType())
-				Logger.error(acceptor.expr2.position,
+                logger.error(acceptor.expr2.position,
 						LanguageManager.localize("type_error_expected_int_for_subscript"));
 			/**
 			 * expr1 is of memberType ARR(n, t)
@@ -325,7 +328,7 @@ public class TypeChecker implements ASTVisitor {
 				symbolDescription.setTypeForAstNode(acceptor, ((ArrayType) lhs).memberType);
 			}
 			else {
-                Logger.error(acceptor.expr1.position,
+                logger.error(acceptor.expr1.position,
                         LanguageManager.localize("type_error_type_has_no_subscripts",
                                 lhs.toString()));
             }
@@ -348,7 +351,7 @@ public class TypeChecker implements ASTVisitor {
 				symbolDescription.setTypeForAstNode(symbolDescription.getDefinitionForAstNode(acceptor.expr1), rhs);
 
 				if (rhs.isArrayType() && ((ArrayType) rhs).memberType.sameStructureAs(Type.anyType)) {
-				    Logger.warning(acceptor.expr2.position, "Implicitly inferred Any memberType");
+                    logger.warning(acceptor.expr2.position, "Implicitly inferred Any memberType");
                 }
 
 				success = true;
@@ -378,7 +381,7 @@ public class TypeChecker implements ASTVisitor {
 			}
 			
 			if (!success) {
-                Logger.error(acceptor.position,
+                logger.error(acceptor.position,
                         LanguageManager.localize("type_error_cannot_convert_type",
                                 rhs.friendlyName(), lhs.friendlyName()));
             }
@@ -401,7 +404,7 @@ public class TypeChecker implements ASTVisitor {
                 memberName = ((AstAtomConstExpression) acceptor.expr2).value;
             }
             else if (acceptor.expr2 instanceof AstBinaryExpression) {
-                Logger.error(acceptor.position, "Not yet supported");
+                logger.error(acceptor.position, "Not yet supported");
             }
 
 			/**
@@ -410,12 +413,12 @@ public class TypeChecker implements ASTVisitor {
 			// FIXME: - remove this in the future
 			if (lhs.isArrayType()) {
 				if (!memberName.equals("elementCount"))
-                    Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
 				symbolDescription.setTypeForAstNode(acceptor, Type.intType);
 				return;
 			}
             if (lhs.isOptionalType()) {
-			    Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" not unwrapped");
+                logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" not unwrapped");
             }
 
 			if (lhs.isObjectType()) {
@@ -430,7 +433,7 @@ public class TypeChecker implements ASTVisitor {
                 }
 
 				if (!lhs.containsMember(memberName)) {
-                    Logger.error(acceptor.expr2.position,
+                    logger.error(acceptor.expr2.position,
                             LanguageManager.localize(
                                     "type_error_member_not_found",
                                     lhs.friendlyName(),
@@ -443,7 +446,7 @@ public class TypeChecker implements ASTVisitor {
 				// check for access control (if object's getName is not "self")
                 if (!objectDefinition.name.equals(Constants.selfParameterIdentifier)) {
                     if (definition.isPrivate()) {
-                        Logger.error(acceptor.expr2.position,
+                        logger.error(acceptor.expr2.position,
                                 "Member '" + memberName + "' is inaccessible due to it's private protection staticLevel");
                     }
                 }
@@ -469,7 +472,7 @@ public class TypeChecker implements ASTVisitor {
 
                 if (enumType.selectedMember == null) {
                     if (!enumType.containsMember(memberName))
-                        Logger.error(acceptor.expr2.position,
+                        logger.error(acceptor.expr2.position,
                                 LanguageManager.localize("type_error_member_not_found",
                                         enumType.friendlyName(),
                                         memberName));
@@ -477,7 +480,7 @@ public class TypeChecker implements ASTVisitor {
                     AstDefinition definition = enumType.findMemberDefinitionWithName(memberName);
 
                     if (definition.isPrivate())
-                        Logger.error(acceptor.expr2.position,
+                        logger.error(acceptor.expr2.position,
                                 "Member '" + memberName + "' is inaccessible due to it's private protection staticLevel");
 
                     symbolDescription.setDefinitionForAstNode(acceptor.expr2, definition);
@@ -492,7 +495,7 @@ public class TypeChecker implements ASTVisitor {
                     ClassType memberType = enumType.getMemberTypeForName(enumType.selectedMember);
 
                     if (!memberType.containsMember(memberName))
-                        Logger.error(acceptor.expr2.position,
+                        logger.error(acceptor.expr2.position,
                                 LanguageManager.localize("type_error_member_not_found",
                                         lhs.toString(),
                                         memberName));
@@ -529,7 +532,7 @@ public class TypeChecker implements ASTVisitor {
                 }
 
 			    if (!canType.containsStaticMember(memberName)) {
-                    Logger.error(acceptor.expr2.position,
+                    logger.error(acceptor.expr2.position,
                             LanguageManager.localize("type_error_member_not_found",
                                     lhs.friendlyName(),
                                     memberName));
@@ -544,7 +547,7 @@ public class TypeChecker implements ASTVisitor {
                 AstDefinition definition = canType.findStaticMemberForName(memberName);
 
                 if (definition.isPrivate()) {
-                    Logger.error(acceptor.expr2.position,
+                    logger.error(acceptor.expr2.position,
                             "Member '" + memberName + "' is inaccessible due to it's private protection staticLevel");
                 }
 
@@ -573,11 +576,11 @@ public class TypeChecker implements ASTVisitor {
                     }
                 }
                 else {
-                    Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
                 AstDefinition def = interfaceType.findMemberDefinitionWithName(memberName);
 			    if (def == null) {
-                    Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
 
                 FunctionType functionType = (FunctionType) symbolDescription.getTypeForAstNode(def);
@@ -586,7 +589,7 @@ public class TypeChecker implements ASTVisitor {
                 symbolDescription.setTypeForAstNode(acceptor.expr2, functionType);
             }
             else {
-                Logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
             }
 		}
 
@@ -624,7 +627,7 @@ public class TypeChecker implements ASTVisitor {
                 symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
 			else {
-                Logger.error(
+                logger.error(
                         acceptor.position,
                         "Numeric operations \"+\", \"-\", \"*\", \"/\" and \"%\" are undefined for memberType Bool");
             }
@@ -642,7 +645,7 @@ public class TypeChecker implements ASTVisitor {
                 symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
 			else {
-                Logger.error(acceptor.position,
+                logger.error(acceptor.position,
                         "Logical operations \"&\" and \"|\" are undefined for memberType Int");
             }
 		}
@@ -659,7 +662,7 @@ public class TypeChecker implements ASTVisitor {
                 symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
 			else {
-                Logger.error(acceptor.position,
+                logger.error(acceptor.position,
                         "Logical operations \"&\" and \"|\" are undefined for memberType Double");
             }
 		}
@@ -677,7 +680,7 @@ public class TypeChecker implements ASTVisitor {
                 symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
 			else {
-                Logger.error(acceptor.position,
+                logger.error(acceptor.position,
                         "Logical operations \"&\" and \"|\" are undefined for memberType Double");
             }
 		}
@@ -690,12 +693,12 @@ public class TypeChecker implements ASTVisitor {
                 symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
             }
 			else {
-                Logger.error(acceptor.position,
+                logger.error(acceptor.position,
                         "Operator cannot be applied to operands of memberType \"" + lhs.toString() + "\" and \"" + rhs.toString() + "\"");
             }
 		}
 		else {
-			Logger.error(acceptor.position, "No viable operation for types " + lhs.friendlyName() + " and " + rhs.friendlyName());
+            logger.error(acceptor.position, "No viable operation for types " + lhs.friendlyName() + " and " + rhs.friendlyName());
 		}
 	}
 
@@ -715,7 +718,7 @@ public class TypeChecker implements ASTVisitor {
             for (AtomType atomType: Type.atomTypes) {
                 for (AstType conformance : atomType.classDefinition.conformances) {
                     if (!atomType.conformsTo((InterfaceType) symbolDescription.getTypeForAstNode(conformance))) {
-                        Logger.error(conformance.position, "Type \"" + atomType.friendlyName() + "\" does not conform to interface \"" + conformance.getName() + "\"");
+                        logger.error(conformance.position, "Type \"" + atomType.friendlyName() + "\" does not conform to interface \"" + conformance.getName() + "\"");
                     }
                 }
             }
@@ -775,7 +778,7 @@ public class TypeChecker implements ASTVisitor {
             if (argType == null) return;
 
 			if (!(funType.getTypeForParameterAtIndex(i).sameStructureAs(argType))) {
-				Logger.error(arg.position, "Cannot assigningToVariable value of memberType \"" +
+                logger.error(arg.position, "Cannot assigningToVariable value of memberType \"" +
                         argType.friendlyName() + "\" to memberType \"" + funType.getTypeForParameterAtIndex(i).friendlyName() + "\"");
 			}
 		}
@@ -805,7 +808,7 @@ public class TypeChecker implements ASTVisitor {
 					Type t = symbolDescription.getTypeForAstNode(stmt);
 
 					if (!t.sameStructureAs(funType.resultType)) {
-                        Logger.error(stmt.position,
+                        logger.error(stmt.position,
                                 "Return memberType doesn't match, expected \""
                                         + funType.resultType.friendlyName()
                                         + "\", got \""
@@ -826,7 +829,7 @@ public class TypeChecker implements ASTVisitor {
 			if (symbolDescription.getTypeForAstNode(c.condition).sameStructureAs(Type.boolType))
 				symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
 			else
-				Logger.error(c.condition.position,
+                logger.error(c.condition.position,
 						"Condition must be of memberType Bool");
 		}
 
@@ -872,12 +875,12 @@ public class TypeChecker implements ASTVisitor {
 		AstDefinition definition = symbolDescription.getDefinitionForAstNode(acceptor);
 		
 		if (!(definition instanceof AstTypeDefinition))
-			Logger.error(acceptor.position, "Use of undeclared memberType \'" + definition.name + "\'");
+            logger.error(acceptor.position, "Use of undeclared memberType \'" + definition.name + "\'");
 
 		Type type = symbolDescription.getTypeForAstNode(definition);
 
 		if (type == null)
-			Logger.error(acceptor.position, "Type \"" + acceptor.name
+            logger.error(acceptor.position, "Type \"" + acceptor.name
 					+ "\" is undefined");
 
 		symbolDescription.setTypeForAstNode(acceptor, type);
@@ -892,13 +895,13 @@ public class TypeChecker implements ASTVisitor {
 			if (type.sameStructureAs(Type.boolType))
 				symbolDescription.setTypeForAstNode(acceptor, Type.boolType);
 			else
-				Logger.error(acceptor.position,
+                logger.error(acceptor.position,
 						"Operator \"!\" is not defined for memberType " + type);
 		} else if (acceptor.oper == AstUnaryExpression.ADD || acceptor.oper == AstUnaryExpression.SUB) {
 			if (type.isBuiltinIntType() || type.canBeCastedToType(Type.intType))
 				symbolDescription.setTypeForAstNode(acceptor, type);
 			else
-				Logger.error(acceptor.position,
+                logger.error(acceptor.position,
 						"Operators \"+\" and \"-\" are not defined for memberType "
 								+ type);
 		}
@@ -963,20 +966,17 @@ public class TypeChecker implements ASTVisitor {
             symbolDescription.setTypeForAstNode(acceptor, Type.voidType);
         }
 		else {
-            Logger.error(acceptor.condition.position, "Condition must be typed as Boolean");
+            logger.error(acceptor.condition.position, "Condition must be typed as Boolean");
         }
 	}
 
 	@Override
 	public void visit(AstImportDefinition importDef) {
 	    if (traversalState == TraversalStates.extensions) {
-            String currentFile = Logger.fileName;
-
-            Logger.fileName = importDef.getName();
-
+            String currentFile = logger.getFileName();
+            logger.setFileName(importDef.getName());
             importDef.imports.accept(new TypeChecker(symbolTable, symbolDescription));
-
-            Logger.fileName = currentFile;
+            logger.setFileName(currentFile);
         }
 	}
 
@@ -1079,7 +1079,7 @@ public class TypeChecker implements ASTVisitor {
 			for (AstExpression e : singleCase.exprs) {
 				Type caseType = symbolDescription.getTypeForAstNode(e);
 				if (!caseType.sameStructureAs(switchType))
-					Logger.error(e.position,
+                    logger.error(e.position,
 							"Expression of memberType \"" + caseType.toString() +
 							"\" cannot match values of memberType \"" + switchType.toString() +"\"");
 			}
@@ -1126,7 +1126,7 @@ public class TypeChecker implements ASTVisitor {
 				
 				if (enumRawValueType != null && enumMemberDef.value == null) {
 					if (!enumRawValueType.isBuiltinStringType() && !enumRawValueType.isBuiltinIntType())
-						Logger.error(enumMemberDef.position,
+                        logger.error(enumMemberDef.position,
 								"Enum members require explicit raw values when "
 								+ "the raw memberType is not Int or String literal");
 					
@@ -1154,13 +1154,13 @@ public class TypeChecker implements ASTVisitor {
 					Type rawValueType = defType.getTypeOfMemberWithName("rawValue");
 					
 					if (enumRawValueType == null)
-						Logger.error(enumMemberDef.value.position,
+                        logger.error(enumMemberDef.value.position,
 								"Enum member cannot have a raw value "
 								+ "if the enums doesn't have a raw memberType");
 					
 					
 					if (!rawValueType.sameStructureAs(enumRawValueType))
-						Logger.error(enumMemberDef.value.position,
+                        logger.error(enumMemberDef.value.position,
 								"Cannot assigningToVariable value of memberType \"" +
 								rawValueType.toString() + "\" to memberType \"" +
 								enumRawValueType.toString() + "\"");
@@ -1274,7 +1274,7 @@ public class TypeChecker implements ASTVisitor {
             symbolDescription.setTypeForAstNode(acceptor, ((OptionalType) type).childType);
         }
 		else {
-            Logger.error(acceptor.position,
+            logger.error(acceptor.position,
                     "Cannot unwrap value of non-optional memberType '" + type.toString() + "'");
         }
 	}
@@ -1300,7 +1300,7 @@ public class TypeChecker implements ASTVisitor {
             symbolDescription.setTypeForAstNode(acceptor, type);
 
             if (!type.isCanType() || !((CanType) type).childType.isObjectType()) {
-                Logger.error(acceptor.position, "Only classes can be extended (for now)");
+                logger.error(acceptor.position, "Only classes can be extended (for now)");
             }
 
             ObjectType extendingType = (ObjectType) ((CanType) type).childType;
@@ -1320,19 +1320,19 @@ public class TypeChecker implements ASTVisitor {
 
                 if (def.isStatic()) {
                     if (!((CanType) type).addStaticMember(def, memberName, memberType)) {
-                        Logger.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
+                        logger.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
                     }
                 }
                 else {
                     if (!extendingType.addMember(def, memberName, memberType)) {
-                        Logger.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
+                        logger.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
                     }
                 }
             }
 
             for (AstType conformance : acceptor.conformances) {
                 if (!extendingType.addConformance(conformance)) {
-                    Logger.error(conformance.position, "Redundant conformance \"" + conformance.getName() + "\"");
+                    logger.error(conformance.position, "Redundant conformance \"" + conformance.getName() + "\"");
                 }
             }
 

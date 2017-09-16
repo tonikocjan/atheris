@@ -19,39 +19,23 @@ package compiler.imcode;
 
 import java.util.*;
 
-import compiler.*;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 
-/**
- * Izracun fragmentov vmesne kode.
- * 
- * @author sliva
- */
 public class ImCode {
 
-	/** Ali se izpisujejo vmesni rezultati. */
+    private static LoggerInterface logger = LoggerFactory.logger();
+
 	private boolean dump;
 
-	/**
-	 * Izracun fragmentov vmesne kode.
-	 * 
-	 * @param dump
-	 *            Ali se izpisujejo vmesni rezultati.
-	 */
 	public ImCode(boolean dump) {
 		this.dump = dump;
 	}
-	
-	/**
-	 * Izpise fragmente vmesne kode na datoteko vmesnih rezultatov.
-	 * 
-	 * @param chunks
-	 *            Seznam fragmentov vmesne kode.
-	 */
+
 	public void dump(List<ImcChunk> chunks) {
 		if (! dump) return;
-		if (Logger.dumpFile() == null) return;
+		if (logger.dumpFile() == null) return;
 		for (int chunk = 0; chunk < chunks.size(); chunk++)
 			chunks.get(chunk).dump();
 	}
-
 }

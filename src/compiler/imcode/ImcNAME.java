@@ -17,7 +17,6 @@
 
 package compiler.imcode;
 
-import compiler.*;
 import compiler.frames.*;
 
 /**
@@ -41,7 +40,7 @@ public class ImcNAME extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "NAME entryLabel=" + label.getName());
+        logger.dump(indent, "NAME entryLabel=" + label.getName());
 	}
 
 	@Override

@@ -20,12 +20,15 @@ package compiler.interpreter;
 import java.io.PrintStream;
 import java.util.*;
 
-import compiler.*;
 import compiler.frames.*;
 import compiler.imcode.*;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 import utils.Constants;
 
 public class Interpreter {
+
+    private static LoggerInterface logger = LoggerFactory.logger();
 
 	public static boolean debug = false;
 	public static boolean printMemory = false;
@@ -43,7 +46,7 @@ public class Interpreter {
 	    int address = 0;
 		for (int i = 0; i < memory.memory.size(); i++, address += 1) {
 		    if (address > stackSize + Constants.Byte)
-		        Logger.error("Memory overflow");
+                logger.error("Memory overflow");
 
 		    Object value = memory.ldM(address);
 		    if (value == null) {
@@ -64,7 +67,7 @@ public class Interpreter {
 		stackPointer = stackPointer - frame.size();
 
 		if (stackPointer < 0) {
-			Logger.error("Error, stack overflow");
+            logger.error("Error, stack overflow");
 		}
 
 		if (debug) {
@@ -149,7 +152,7 @@ public class Interpreter {
 			case ImcBINOP.MOD:
 				return (((Integer) fstSubValue).intValue() % ((Integer) sndSubValue).intValue());
 			}
-			Logger.error("Internal error.");
+            logger.error("Internal error.");
 			return null;
 		}
 		
@@ -240,7 +243,7 @@ public class Interpreter {
 			ImcMEM instr = (ImcMEM) instruction;
 			Integer address = (Integer) execute(instr.expr);
 			if (address == 0)
-				Logger.error("Null pointer exception");
+                logger.error("Null pointer exception");
 			return memory.ldM(address);
 		}
 		

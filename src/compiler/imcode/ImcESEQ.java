@@ -17,8 +17,6 @@
 
 package compiler.imcode;
 
-import compiler.*;
-
 /**
  * Stavki v izrazu.
  * 
@@ -45,7 +43,7 @@ public class ImcESEQ extends ImcExpr {
 
 	@Override
 	public void dump(int indent) {
-		Logger.dump(indent, "ESEQ");
+        logger.dump(indent, "ESEQ");
 		stmt.dump(indent + 2);
 		expr.dump(indent + 2);
 	}

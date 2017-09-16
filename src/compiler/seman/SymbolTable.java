@@ -19,12 +19,15 @@ package compiler.seman;
 
 import java.util.*;
 
-import compiler.*;
 import compiler.ast.tree.def.AstDefinition;
+import compiler.logger.LoggerFactory;
+import compiler.logger.LoggerInterface;
 
 public class SymbolTable implements SymbolTableMap {
 
-	private HashMap<String, LinkedList<AstDefinition>> mapping = new HashMap<>();
+    private static LoggerInterface logger = LoggerFactory.logger();
+
+    private HashMap<String, LinkedList<AstDefinition>> mapping = new HashMap<>();
 	private int currentScopeDepth = 0;
 	private SymbolDescriptionMap symbolDescription;
 
@@ -62,7 +65,7 @@ public class SymbolTable implements SymbolTableMap {
 
         if (isIllegal(definitionsForName)) {
             Thread.dumpStack();
-            Logger.error("Internal error.");
+            logger.error("Internal error.");
             return;
         }
 
@@ -86,7 +89,7 @@ public class SymbolTable implements SymbolTableMap {
 
 		if (isIllegal(definitionsForName)) {
 			Thread.dumpStack();
-			Logger.error("Internal error.");
+            logger.error("Internal error.");
 			return;
 		}
 
