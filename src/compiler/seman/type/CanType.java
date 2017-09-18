@@ -28,7 +28,7 @@ public class CanType extends Type {
 
 	public final Type childType;
 
-	/** Static selectedDefinitions in childType */
+	/** Static efinitions in childType */
 	private final LinkedList<AstDefinition> staticDefinitions = new LinkedList<>();
     private final LinkedList<Type> staticTypes = new LinkedList<>();
     private final LinkedList<String> staticNames = new LinkedList<>();

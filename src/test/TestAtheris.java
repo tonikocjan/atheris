@@ -31,6 +31,10 @@ import static org.junit.Assert.assertTrue;
 
 public class TestAtheris {
 
+    public TestAtheris() {
+        System.out.println();
+    }
+
     @Test
     public void testBasics() {
         test("1.Basics.ar");
@@ -64,7 +68,7 @@ public class TestAtheris {
     private void test(String sourceFileName) {
         String[] args = new String[3];
 
-        args[0] = "test/" + sourceFileName;
+        args[0] = "test/demo/" + sourceFileName;
         args[1] = "--phase=interpret";
         args[2] = "--testing=true";
 

@@ -22,7 +22,7 @@ import compiler.Position;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-public class LoggerImpl implements logger {
+public class Logger implements LoggerInterface {
 
 	public boolean reporting = true;
     public String fileName = null;
@@ -96,7 +96,7 @@ public class LoggerImpl implements logger {
 	@Override
     public PrintStream dumpFile() {
 		if (dumpFile == null)
-			error ("Internal error: compiler.logger.LoggerImpl.dumpFile().");
+			error ("Internal error: compiler.LoggerInterface.Logger.dumpFile().");
 		return dumpFile;
 	}
 

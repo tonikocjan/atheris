@@ -22,9 +22,6 @@ import compiler.ast.tree.def.AstDefinition;
 import compiler.logger.LoggerFactory;
 import compiler.logger.LoggerInterface;
 
-/**
- * Data memberType description.
- */
 public abstract class Type {
 
     protected static LoggerInterface logger = LoggerFactory.logger();
@@ -35,7 +32,7 @@ public abstract class Type {
         return TYPE_DESCRIPTOR++;
     }
 
-    /** Descriptor for this memberType is automatically assigned when new memberType is instantiated  */
+    // Descriptor for this memberType is automatically assigned when new memberType is instantiated
     public final int descriptor = getTypeDescriptor();
 
 	public abstract boolean sameStructureAs(Type type);

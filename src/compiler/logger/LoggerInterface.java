@@ -10,6 +10,7 @@ import java.io.PrintStream;
  */
 
 public interface LoggerInterface {
+
     void report(String message);
 
     void report(Position pos, String message);

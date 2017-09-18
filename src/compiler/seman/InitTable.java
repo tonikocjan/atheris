@@ -78,7 +78,7 @@ public class InitTable {
 	 * Remove all initializations in current scope and go to previous scope
 	 */
 	public static void oldScope() {
-		// TODO: - O(n), should increase speed? 
+		// TODO: - O(n), could increase speed?
 		Iterator<Map.Entry<AstDefinition, HashSet<Integer>>> iter = scopes.entrySet().iterator();
 
 		while (iter.hasNext()) {

@@ -8,7 +8,7 @@ package compiler.logger;
 public class LoggerFactory {
 
     private static LoggerInterface logger;
-    private static Class loggerImpl;
+    private static Class<? extends LoggerInterface> loggerImpl;
 
     public static LoggerInterface logger() {
         if (logger == null) initLogger();
@@ -18,17 +18,12 @@ public class LoggerFactory {
     private static void initLogger() {
         loggerImpl = Logger.class;
         try {
-            logger = ((LoggerInterface) loggerImpl.newInstance());
+            logger = (loggerImpl.newInstance());
         }
-        catch (InstantiationException e) {
-
-        }
-        catch (IllegalAccessException e) {
-
-        }
+        catch (Exception e) {}
     }
 
-    public static<T extends LoggerInterface> void setLoggerImplementation(Class<T> impl) {
-        loggerImpl = impl;
+    public static void setLoggerImpl(Class<? extends LoggerInterface> loggerImpl) {
+        LoggerFactory.loggerImpl = loggerImpl;
     }
 }
