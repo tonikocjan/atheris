@@ -47,12 +47,12 @@ public class LanguageManager {
 	}
 
 	private void parseLine(String line) {
-        String[] splittedString = line.split(delimiter);
+        String[] splitedString = line.split(delimiter);
 
-        if (!isLegal(splittedString)) return;
+        if (!isLegal(splitedString)) return;
 
-        String key = splittedString[0].substring(1, splittedString[0].indexOf('"', 1));
-        String value = splittedString[1].substring(1, splittedString[1].length() - 2);
+        String key = splitedString[0].substring(1, splitedString[0].indexOf('"', 1));
+        String value = splitedString[1].substring(1, splitedString[1].length() - 2);
 
         translationMapping.put(key, value);
     }

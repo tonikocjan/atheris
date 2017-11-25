@@ -5,7 +5,9 @@
 \contentsline {chapter}{Abstract}{}{chapter*.3}
 \select@language {slovene}
 \contentsline {chapter}{\numberline {1}Uvod}{1}{chapter.1}
-\contentsline {chapter}{\numberline {2}Osnovni gradniki \LaTeX {a}}{3}{chapter.2}
+\contentsline {chapter}{\numberline {2}Prevajalniki}{3}{chapter.2}
+\contentsline {subsection}{\numberline {2.0.1}Programski jezik}{3}{subsection.2.0.1}
+\contentsline {subsection}{\numberline {2.0.2}Struktura}{4}{subsection.2.0.2}
 \contentsline {chapter}{\numberline {3}Matemati\IeC {\v c}no okolje in sklicevanje na besedilne konstrukte}{5}{chapter.3}
 \contentsline {chapter}{\numberline {4}Plovke: slike in tabele}{7}{chapter.4}
 \contentsline {section}{\numberline {4.1}Formati slik}{8}{section.4.1}

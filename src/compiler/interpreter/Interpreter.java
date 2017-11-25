@@ -38,7 +38,7 @@ public class Interpreter {
     public static int stackSize = 1000;
     private static int framePointer = stackSize;
     private static int stackPointer = stackSize;
-    public static Memory memory; // TODO: - How to make sure that memory is initialized?
+    public static Memory memory; // TODO: - How to make sure this is initialized?
 
     public static int getFP() { return framePointer; }
 	

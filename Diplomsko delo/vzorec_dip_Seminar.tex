@@ -36,6 +36,7 @@
 %\usepackage{hyperxmp}
 \usepackage[hyphens]{url}  % dodal Solina
 \usepackage{comment}       % dodal Solina
+\usepackage{listings}
 
 \usepackage[pdftex, colorlinks=true,
 						citecolor=black, filecolor=black, 
@@ -358,47 +359,49 @@ A proper abstract should contain around 100 words which makes this one way too s
 \pagestyle{fancy}
 
 \chapter{Uvod}
-Prvi koristen nasvet v zvezi uporabo \LaTeX{a} je, da ta dokument preberete v celoti!
 
-Datoteka {\tt vzorec\_dip\_Seminar.tex} na kratko opisuje, kako se pisanja diplomskega dela lotimo z uporabo programskega okolja \LaTeX~\cite{lamport,nenajkrajsi}. 
-V tem dokumentu bomo predstavili nekaj njegovih prednosti in hib. 
-Kar se slednjih tiče, nam pride na misel ena sama. 
-Ko se srečamo z njim prvič nam izgleda morda kot kislo jabolko, nismo prepričani, ali bi želeli vanj ugrizniti. 
-Toda prav iz kislih jabolk lahko pripravimo odličen jabolčni zavitek in s praktičnim preizkusom \LaTeX a najlažje pridemo na njegov pravi okus.
+Razvoj prevajalnikov, ter s tem tudi programskih jezikov, je, po mojem mnenju, izjemno pomembna panoga v računalništvu. Prevajalniki razvijalcem omogočajo, da se med razvojem programske opreme ne rabijo osredotočati na nizkovojske detajle, ampak se lahko posvetijo reševanju praktičnih problemov. Naloga prevajalnika je, da pretvori človeku berljivo kodo v računalniku razumljivo zaporedje strojnih ukazov. \\
+Dandanes lahko za razvoj programske opreme izbiramo med zelo veliko popularnih programskih jezikov. Trenutno eni izmed najbolj popularnih so JavaScript, Java, Python in C++, popularnost pa dobivajo tudi novejši jeziki, kot so GoLang, Swift, Kotlin in podobni. [1] \\
+S prevajalniki sem se prvič spoznal pri predmetu Prevajalniki in Navidezni Stroji (PINS) v drugem letnik na Fakulteti za Računalništvo in Informatiko. Tekom diplomske naloge bom predstavil programski jezik Atheris ter prevajalnik zanj. Prevajalnik je nastal kot nagradnja prevajalnika jezika PINS, pravila programskega jezika pa sem postavil sam.
 
-\LaTeX\ omogoča logično urejanje besedil, ki ima v primerjavi z vizualnim urejanjem številne prednosti, saj se problema urejanja besedil loti s programerskega stališča.
-Logično urejanje besedil omogoča večjo konsistentnost, uniformnost in  prenosljivost besedil. 
-Vsebinska struktura nekega besedila pa se odraža v strukturiranem \LaTeX ovem kodiranju besedila.
-
-V \ref{ch0}.~poglavju bomo spoznali osnovne gradnike \LaTeX{a}.
-V \ref{ch1}.~poglavju bomo na hitro spoznali besedilne konstrukte kot so izreki, enačbe in dokazi. 
-Naučili se bomo, kako se na njih sklicujemo. 
-\ref{ch2}.~poglavje bo predstavilo vključevanje plovk: slik in tabel. 
-Poglavje \ref{stroka} na kratko predstavi tipične sestavne dele strokovnega besedila.
-V \ref{slo}.~poglavju omenjamo nekaj najpogostejših slovničnih napak, ki jih delamo v slovenščini.
-V \ref{latex}.~poglavju je še nekaj koristnih nasvetov v zvezi z uporabo \LaTeX{a}.
-V \ref{lit}.~poglavju se bomo srečali s sklicevanjem na literaturo,
-\ref{PDF}.~poglavje pa govori o formatu PDF/A, v katerem morate svojo diplomo oddati v sistemu STUDIS.
-Sledil bo samo še zaključek.
-
-\chapter{Osnovni gradniki \LaTeX{a}}
+\chapter{Prevajalniki}
 \label{ch0}
 
-\LaTeX\ bi lahko najbolj preprosto opisali kot programski jezik namenjen oblikovanju besedil.
-Tako kot vsak visokonivojski programski jezik ima tudi \LaTeX\  številne ukaze za oblikovanje  besedila in okolja, ki omogočajo strukturiranje besedila.
+\subsection{Programski jezik}
 
-Vsi \LaTeX ovi ukazi se začnejo z levo poševnico  \verb=\=, okolja pa definiramo bodisi s parom zavitih oklepajev \{ in \} ali z ukazoma \verb=\begin{ }= in   \verb=\end{ }=.
-Ukazi imajo lahko tudi argumente, obvezni argumenti so podani v zavitih oklepajih, opcijski argumenti pa v oglatih oklepajih.
+Programski jezik je zapis za opisovanje računskih modelov ljudem in računalnikom. Svet kot ga poznamo danes je odvisen od programskih jezikov, saj je vsa programska oprema, ki se trenutno izvaja, napisana v nekem prog. jeziku. Toda preden lahko program zaženemo, je potrebno izvesti prevod v računalniku razumljivo obliko. Programski sistemi, ki skrbijo za translacijo, se imenujejo \textit{prevajalniki}. [2]\\
+Nekaj definicij:
+\begin{enumerate}  
+	\item \textbf{Računski model (angl. computational model):} zbirka vrednosti in računskih operacij 
+	\item \textbf{Izračun (angl. computation)}: zaporodje operacij nad vrednostjo (ali več vrednosti), ki vrne nek rezultat
+	\item \textbf{Program:} specifikacija izračuna
+	\item \textbf{Programski jezik:} zapis (notacija) za pisanje programov
+\end{enumerate}
+[3]
 
-Z ukazi torej definiramo naslov in imena avtorjev besedila, poglavja in podpoglavja in po potrebi bolj podrobno strukturiramo besedila na spiske, navedke itd.
-Posebna okolja so namenjena zapisu matematičnih izrazov, kratki primeri so v naslednjem poglavju.
+Program lahko predstavimo kot funkcijo, pri kateri je rezultat (angl. output) funkcija vhodnih parametrov (angl. input):
+\begin{lstlisting}
+	rezultat = program(vhodni parametri)
+\end{lstlisting}
 
-Vse besedilne konstrukte lahko poimenujemo in se s pomočjo teh imen nato  kjerkoli v besedilu na njih  tudi sklicujemo.
+Iz drugega zornega kota si lahko program predstavljamo tudi kot model problemske domene, kjer je instanca izvedbe programa simulacija problema:
+\begin{lstlisting}
+	program = model problemske domene
+	izvedba programa = simulacija problema
+\end{lstlisting}
+[4]
 
-\LaTeX\ sam razporeja besede v odstavke tako, da optimizira razmike med besedami v celotnem odstavku.
-Nov odstavek začnemo tako, da izpustimo v izvornem besedilu prazno vrstico. Da besedilo skoči v novo vrstico pa ukažemo z dvema levima poševnicama.
-Število presledkov med besedami v izvornem besedilo ni pomembno.
+\subsection{Struktura}
 
+Sodobni prevajalniki so pogosto organizirani v več posameznih faz, vsaka izmed njih pa operira na različnem nivoju abstrakcije jezika. [5]
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=1\textwidth]{resources/compilerPhases.jpg}
+	\end{center}
+	\caption{Faze prevajalnika ter vmesniki, ki jih povezujejo med seboj.}
+	\label{pic1}
+\end{figure}
 
 \chapter{Matematično okolje in sklicevanje na besedilne konstrukte}
 \label{ch1}
