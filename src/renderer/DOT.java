@@ -36,9 +36,8 @@ public class DOT {
 			tmp = tmp.substring(tmp.indexOf(':') + 1, tmp.length());
 			tmp = tmp.substring(tmp.indexOf(':') + 1, tmp.length());
 			tmp = tmp.substring(tmp.indexOf(':') + 1, tmp.length());
-			line = line + "\n" + tmp;
-			
-			Pair p = new Pair(line, intend);
+
+			Pair p = new Pair(line + tmp, intend);
 			tree.put(id, p);
 			
 			id++;
