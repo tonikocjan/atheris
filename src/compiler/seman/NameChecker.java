@@ -136,6 +136,11 @@ public class NameChecker implements ASTVisitor {
 		if (acceptor.oper != AstBinaryExpression.DOT) {
             acceptor.expr2.accept(this);
 		}
+		else if (acceptor.expr2 instanceof AstFunctionCallExpression) {
+            for (AstExpression arg: ((AstFunctionCallExpression) acceptor.expr2).arguments) {
+                arg.accept(this);
+            }
+        }
 	}
 
 	@Override
