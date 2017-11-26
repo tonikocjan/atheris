@@ -189,14 +189,18 @@ public class Atheris {
     }
 
     public Atheris execute() {
-        if (compiledCode == null) logger.error("Compile source code first!");
+        if (execPhase.equals("interpret")) {
+            if (compiledCode == null) {
+                logger.error("Compile source code first!");
+            }
 
-        System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
+            System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
 
-        Interpreter.memory = memory;
+            Interpreter.memory = memory;
 
-        memory.stM(Interpreter.getFP() + Constants.Byte, 0);
-        new Interpreter(compiledCode.getFrame(), compiledCode.getLincode());
+            memory.stM(Interpreter.getFP() + Constants.Byte, 0);
+            new Interpreter(compiledCode.getFrame(), compiledCode.getLincode());
+        }
 
         return this;
     }
