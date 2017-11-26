@@ -593,18 +593,13 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AstFunctionDefinition acceptor) {
-	    Type resultType = ((FunctionType) symbolDescription.getTypeForAstNode(acceptor)).resultType;
 		returnExprFrameStack.push(frameDescription.getFrame(acceptor));
 
 		acceptor.functionCode.accept(this);
 		
 		ImcSEQ code = (ImcSEQ) imcDescription.getImcCode(acceptor.functionCode);
 		code.stmts.add(new ImcLABEL(returnExprFrameStack.peek().endLabel));
-
-		if (resultType.isVoidType()) {
-		    code.stmts.add(0, new ImcMOVE(new ImcTEMP(returnExprFrameStack.peek().RV), new ImcCONST(-555)));
-        }
-
+        code.stmts.add(0, new ImcMOVE(new ImcTEMP(returnExprFrameStack.peek().RV), new ImcCONST(-555)));
 		chunks.add(new ImcCodeChunk(returnExprFrameStack.peek(), code));
 		
 		returnExprFrameStack.pop();
