@@ -485,7 +485,11 @@ public class PrintAstVisitor implements ASTVisitor {
             if (typ != null)
                 logger.dump(indent + 2, "#typed as " + typ.toString());
         }
-        indent += 2; importDef.imports.accept(this); indent -= 2;
+        if (importDef.imports != null) {
+            indent += 2;
+            importDef.imports.accept(this);
+            indent -= 2;
+        }
 	}
 
 	@Override

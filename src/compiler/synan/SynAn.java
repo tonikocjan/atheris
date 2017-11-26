@@ -79,7 +79,6 @@ public class SynAn {
 			return new AstStatements(symbol.getPosition(), astStatements);
 
 		AstStatement statement = parseStatement();
-
         astStatements.add(statement);
 		astStatements.addAll(parseStatements_(statement));
 
@@ -989,8 +988,6 @@ public class SynAn {
 	}
 
 	private Vector<AstExpression> parseExpressions() {
-		AstExpression e = null;
-
 		switch (symbol.getTokenType()) {
 		case ADD:
 		case SUB:
@@ -1008,12 +1005,10 @@ public class SynAn {
 		case IDENTIFIER:
 		case KW_RETURN:
 			dump("expressions -> expression expression'");
-			e = parseExpression();
-
+            AstExpression e = parseExpression();
 			Vector<AstExpression> expressions = new Vector<>();
 			expressions.add(e);
 			expressions.addAll(parseExpressions_());
-
 			return expressions;
 		default:
             logger.error(symbol.getPosition(), "Syntax error on tokenType \""
@@ -1069,8 +1064,7 @@ public class SynAn {
 			dump("expression -> logical_ior_expression");
 			return parseExpression_(parseIorExpression());
 		default:
-            logger.error(symbol.getPosition(), "Syntax error on tokenType \""
-					+ symbol.getLexeme() + "\", delete this tokenType");
+            logger.error(symbol.getPosition(), "Syntax error on tokenType \"" + symbol.getLexeme() + "\", delete this tokenType");
 		}
 
 		return null;
@@ -1123,7 +1117,6 @@ public class SynAn {
 		case IDENTIFIER:
 		case KW_RETURN:
 			dump("logical_ior_expression -> logical_and_expression logical_ior_expression'");
-
 			return parseIorExpression_(parseAndExpression());
 		default:
             logger.error(symbol.getPosition(), "Syntax error on tokenType \""
@@ -1139,8 +1132,7 @@ public class SynAn {
 			dump("logical_ior_expression' -> | log_ior_expression");
 			getNextSymbol();
 			AstExpression expr = parseAndExpression();
-			return parseIorExpression_(new AstBinaryExpression(new Position(e.position,
-					expr.position), AstBinaryExpression.IOR, e, expr));
+			return parseIorExpression_(new AstBinaryExpression(new Position(e.position, expr.position), AstBinaryExpression.IOR, e, expr));
 		case SEMIC:
 		case COLON:
 		case NEWLINE:
@@ -1183,7 +1175,6 @@ public class SynAn {
 		case IDENTIFIER:
 		case KW_RETURN:
 			dump("logical_and_expression -> logical_compare_expression logical_and_expression'");
-
 			return parseAndExpression_(parseCmpExpression());
 		default:
             logger.error(symbol.getPosition(), "Syntax error on tokenType \""
@@ -1195,23 +1186,12 @@ public class SynAn {
 
 	private AstExpression parseAndExpression_(AstExpression e) {
 		switch (symbol.getTokenType()) {
-            case LOG_CONST:
-                break;
-            case INT_CONST:
-                break;
-            case STR_CONST:
-                break;
-            case DOUBLE_CONST:
-                break;
-            case CHAR_CONST:
-                break;
-            case AND:
+        case AND:
 			dump("logical_and_expression' -> & logical_and_expression");
 			getNextSymbol();
 
 			AstExpression expr = parseCmpExpression();
-			return parseAndExpression_(new AstBinaryExpression(new Position(e.position,
-					expr.position), AstBinaryExpression.AND, e, expr));
+			return parseAndExpression_(new AstBinaryExpression(new Position(e.position, expr.position), AstBinaryExpression.AND, e, expr));
         case IOR:
 		case SEMIC:
 		case NEWLINE:
@@ -1269,6 +1249,11 @@ public class SynAn {
         case KW_DEFAULT:
         case KW_ENUM:
         case KW_INIT:
+        case LOG_CONST:
+        case INT_CONST:
+        case STR_CONST:
+        case DOUBLE_CONST:
+        case CHAR_CONST:
             break;
         default:
             logger.error(symbol.getPosition(), "Syntax error on tokenType \""
@@ -1297,11 +1282,9 @@ public class SynAn {
 		case IDENTIFIER:
 		case KW_RETURN:
 			dump("compare_expression -> add_expression compare_expression'");
-
 			return parseCmpExpression_(parseAddExpression());
 		default:
-            logger.error(symbol.getPosition(), "Syntax error on tokenType \""
-					+ symbol.getLexeme() + "\", delete this tokenType");
+            logger.error(symbol.getPosition(), "Syntax error on tokenType \"" + symbol.getLexeme() + "\", delete this tokenType");
 		}
 
 		return null;
@@ -1389,8 +1372,7 @@ public class SynAn {
 			oper = AstBinaryExpression.LEQ;
 			break;
 		default:
-            logger.error(symbol.getPosition(), "Syntax error on tokenType \""
-					+ symbol.getLexeme() + "\", delete this tokenType");
+            logger.error(symbol.getPosition(), "Syntax error on tokenType \"" + symbol.getLexeme() + "\", delete this tokenType");
 		}
 
 		return new AstBinaryExpression(new Position(e.position, expr.position), oper, e, expr);

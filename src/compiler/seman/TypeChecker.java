@@ -48,7 +48,9 @@ public class TypeChecker implements ASTVisitor {
     private boolean assigningToVariable = false;
     private Stack<Type> lhsTypes = new Stack<>();
     private Stack<CanType> declarationContext = new Stack<>();
+    private Stack<Type> functionReturnTypes = new Stack<>();
     private boolean resolveTypeOnly = false;
+    private boolean typeCheckingClass = false;
 
     private enum TraversalStates {
         extensions, normal
@@ -73,6 +75,7 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AstClassDefinition acceptor) {
+        typeCheckingClass = true;
 	    if (traversalState == TraversalStates.extensions) {
             ArrayList<Type> types = new ArrayList<>();
             ArrayList<String> names = new ArrayList<>();
@@ -282,6 +285,7 @@ public class TypeChecker implements ASTVisitor {
 
 //            objectType.debugPrint();
         }
+        typeCheckingClass = false;
 	}
 
 	@Override
@@ -756,7 +760,12 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AstFunctionCallExpression acceptor) {
-		AstFunctionDefinition definition = (AstFunctionDefinition) symbolTable.findDefinitionForName(acceptor.getStringRepresentation());
+        String funCallIdentifier = acceptor.getStringRepresentation();
+		AstFunctionDefinition definition = (AstFunctionDefinition) symbolTable.findDefinitionForName(funCallIdentifier);
+		if (definition == null) {
+            logger.error(acceptor.position, "Method " + funCallIdentifier + " is undefined");
+        }
+
 		FunctionType funType = (FunctionType) symbolDescription.getTypeForAstNode(definition);
 
 		symbolDescription.setTypeForAstNode(acceptor, funType.resultType);
@@ -774,7 +783,6 @@ public class TypeChecker implements ASTVisitor {
 			arg.accept(this);
 
 			Type argType = symbolDescription.getTypeForAstNode(arg);
-
             if (argType == null) return;
 
 			if (!(funType.getTypeForParameterAtIndex(i).sameStructureAs(argType))) {
@@ -787,38 +795,23 @@ public class TypeChecker implements ASTVisitor {
 	@Override
 	public void visit(AstFunctionDefinition acceptor) {
         Vector<Type> parameters = new Vector<>();
-
         for (AstParameterDefinition par : acceptor.getParamaters()) {
             par.accept(this);
             parameters.add(symbolDescription.getTypeForAstNode(par));
         }
 
         acceptor.returnType.accept(this);
-        Type returnType = symbolDescription.getTypeForAstNode(acceptor.returnType);
 
+        Type returnType = symbolDescription.getTypeForAstNode(acceptor.returnType);
         FunctionType funType = new FunctionType(parameters, returnType, acceptor);
         symbolDescription.setTypeForAstNode(acceptor, funType);
 
-        if (!resolveTypeOnly){
-			// check if return memberType matches
-			for (AstStatement stmt : acceptor.functionCode.statements) {
-			    stmt.accept(this);
-
-				if (stmt instanceof AstReturnExpression) {
-					Type t = symbolDescription.getTypeForAstNode(stmt);
-
-					if (!t.sameStructureAs(funType.resultType)) {
-                        logger.error(stmt.position,
-                                "Return memberType doesn't match, expected \""
-                                        + funType.resultType.friendlyName()
-                                        + "\", got \""
-                                        + t.friendlyName()
-                                        + "\" instead");
-                    }
-				}
-			}
-		}
-	}
+        functionReturnTypes.push(returnType);
+        if (!resolveTypeOnly) {
+            acceptor.functionCode.accept(this);
+        }
+        functionReturnTypes.pop();
+    }
 
 	@Override
 	public void visit(AstIfStatement acceptor) {
@@ -945,6 +938,9 @@ public class TypeChecker implements ASTVisitor {
 
         Type type = symbolDescription.getTypeForAstNode(symbolDescription.getDefinitionForAstNode(acceptor));
 
+        if (type == null) {
+            System.out.println();
+        }
         if (!assigningToVariable && type.isOptionalType()) {
             OptionalType optionalType = (OptionalType) type;
 
@@ -1005,14 +1001,25 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AstReturnExpression returnExpr) {
+        Type returnType;
 		if (returnExpr.expr != null) {
 			returnExpr.expr.accept(this);
-
-			symbolDescription.setTypeForAstNode(returnExpr, symbolDescription.getTypeForAstNode(returnExpr.expr));
+            returnType = symbolDescription.getTypeForAstNode(returnExpr.expr);
 		}
 		else {
-            symbolDescription.setTypeForAstNode(returnExpr, Type.voidType);
+            returnType = Type.voidType;
         }
+
+        Type currentFunctionReturnType = functionReturnTypes.peek();
+        if (!returnType.sameStructureAs(currentFunctionReturnType)) {
+            logger.error(returnExpr.position,
+                    "Return type doesn't match, expected \""
+                            + currentFunctionReturnType.friendlyName()
+                            + "\", got \""
+                            + returnType.friendlyName()
+                            + "\" instead");
+        }
+        symbolDescription.setTypeForAstNode(returnExpr, returnType);
 	}
 
 	@Override
