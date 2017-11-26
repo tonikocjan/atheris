@@ -101,8 +101,8 @@ public class LexAn implements LexicalAnalyzer {
                 symbol = Symbol.EOF()
                         .setStartRow(startRow)
                         .setStartCol(startCol)
-                        .setStartRow(startRow)
-                        .setStartCol(startCol + 1).build();
+                        .setEndRow(startRow)
+                        .setEndCol(startCol + 1).build();
             }
 
 			dump(symbol);
@@ -150,8 +150,8 @@ public class LexAn implements LexicalAnalyzer {
                             .setLexeme("/")
                             .setStartRow(startRow)
                             .setStartCol(startCol)
-                            .setStartRow(startRow)
-                            .setStartCol(startCol + 1)
+                            .setEndRow(startRow)
+                            .setEndCol(startCol + 1)
                             .build();
                 }
 
@@ -165,8 +165,8 @@ public class LexAn implements LexicalAnalyzer {
                 return Symbol.EOF()
                         .setStartRow(startRow)
                         .setStartCol(startCol)
-                        .setStartRow(startRow)
-                        .setStartCol(startCol)
+                        .setEndRow(startRow)
+                        .setEndCol(startCol)
                         .build();
             }
 
@@ -297,8 +297,8 @@ public class LexAn implements LexicalAnalyzer {
                 .setLexeme(currentSymbol.toString())
                 .setStartRow(startRow)
                 .setStartCol(startCol)
-                .setStartRow(startRow)
-                .setStartCol(startCol + currentSymbol.length())
+                .setEndRow(startRow)
+                .setEndCol(startCol + currentSymbol.length())
                 .build();
     }
 
@@ -330,8 +330,8 @@ public class LexAn implements LexicalAnalyzer {
                 .setLexeme(currentSymbol.toString())
                 .setStartRow(startRow)
                 .setStartCol(startCol)
-                .setStartRow(startRow)
-                .setStartCol(startCol + currentSymbol.length())
+                .setEndRow(startRow)
+                .setEndCol(startCol + currentSymbol.length())
                 .build();
     }
 
@@ -342,8 +342,8 @@ public class LexAn implements LexicalAnalyzer {
                 .setLexeme("" + (char) nextCharacter)
                 .setStartRow(startRow)
                 .setStartCol(startCol)
-                .setStartRow(startRow)
-                .setStartCol(startCol + 2)
+                .setEndRow(startRow)
+                .setEndCol(startCol + 2)
                 .build();
         nextCharacter = file.read();
 
@@ -389,8 +389,8 @@ public class LexAn implements LexicalAnalyzer {
                         .setLexeme(currentSymbol.toString())
                         .setStartRow(startRow)
                         .setStartCol(startCol)
-                        .setStartRow(startRow)
-                        .setStartCol(startCol + currentSymbol.length())
+                        .setEndRow(startRow)
+                        .setEndCol(startCol + currentSymbol.length())
                         .build();
             }
 
@@ -486,7 +486,7 @@ public class LexAn implements LexicalAnalyzer {
             builder.setTokenType(TokenType.EMARK);
         if (ch == '\n')
             builder.setTokenType(TokenType.NEWLINE)
-                    .setLexeme("\\n");
+                   .setLexeme("\\n");
 		
 		return builder.build();
 	}
@@ -494,10 +494,10 @@ public class LexAn implements LexicalAnalyzer {
 	private Symbol isComposedOperator(int ch1, int ch2) {
         Symbol.Builder builder = new Symbol.Builder();
         builder.setStartRow(startRow)
-                .setStartCol(startCol)
-                .setEndRow(startRow)
-                .setEndCol(startCol + 1)
-                .setLexeme(String.valueOf((char) ch1) + String.valueOf((char) ch2));
+               .setStartCol(startCol)
+               .setEndRow(startRow)
+               .setEndCol(startCol + 1)
+               .setLexeme(String.valueOf((char) ch1) + String.valueOf((char) ch2));
 
         if (ch1 == '=' && ch2 == '=')
             builder.setTokenType(TokenType.EQU);
