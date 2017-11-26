@@ -13,6 +13,7 @@
 \contentsline {subsection}{\numberline {2.2.2}Sintaksna analiza}{6}{subsection.2.2.2}
 \contentsline {subsection}{\numberline {2.2.3}Semanti\IeC {\v c}na analiza}{7}{subsection.2.2.3}
 \contentsline {subsubsection}{Simbolna tabela}{8}{section*.6}
+\contentsline {subsection}{\numberline {2.2.4}Klicni zapisi}{9}{subsection.2.2.4}
 \contentsline {chapter}{\numberline {3}Matemati\IeC {\v c}no okolje in sklicevanje na besedilne konstrukte}{11}{chapter.3}
 \contentsline {chapter}{\numberline {4}Plovke: slike in tabele}{13}{chapter.4}
 \contentsline {section}{\numberline {4.1}Formati slik}{14}{section.4.1}
