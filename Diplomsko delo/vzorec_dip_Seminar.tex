@@ -25,8 +25,6 @@
 \documentclass[a4paper, 12pt]{book}
 %\documentclass[a4paper, 12pt, draft]{book}  Nalogo preverite tudi z opcijo draft, ki vam bo pokazala, katere vrstice so predolge!
 
-
-
 \usepackage[utf8x]{inputenc}   % omogoča uporabo slovenskih črk kodiranih v formatu UTF-8
 \usepackage[slovene,english]{babel}    % naloži, med drugim, slovenske delilne vzorce
 \usepackage[pdftex]{graphicx}  % omogoča vlaganje slik različnih formatov
@@ -46,17 +44,18 @@
 
 \usepackage{color}       % dodal Solina
 \usepackage{soul}       % dodal Solina
+\include{swift}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %	DIPLOMA INFO
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\ttitle}{Vzorec diplomskega dela}
+\newcommand{\ttitle}{Vgradnja objektno usmerjenih gradnikov v programski jezik PINS}
 \newcommand{\ttitleEn}{Diploma thesis sample}
 \newcommand{\tsubject}{\ttitle}
 \newcommand{\tsubjectEn}{\ttitleEn}
-\newcommand{\tauthor}{Matjaž Kralj}
-\newcommand{\tkeywords}{računalnik, računalnik, računalnik}
-\newcommand{\tkeywordsEn}{computer, computer, computer}
+\newcommand{\tauthor}{Toni Kocjan}
+\newcommand{\tkeywords}{prevajalnik, programski jezik, sintaksa, semantika, Java, Swift}
+\newcommand{\tkeywordsEn}{compiler, programming language, syntax, semantics, Java, Swift}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,7 +63,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hypersetup{pdftitle={\ttitle}}
 \hypersetup{pdfsubject=\ttitleEn}
-\hypersetup{pdfauthor={\tauthor, matjaz.kralj@fri.uni-lj.si}}
+\hypersetup{pdfauthor={\tauthor, tk3152@student.uni-lj.si}}
 \hypersetup{pdfkeywords=\tkeywordsEn}
 
 
@@ -119,7 +118,7 @@
 % define medatata
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \def\Title{\ttitle}
-\def\Author{\tauthor, matjaz.kralj@fri.uni-lj.si}
+\def\Author{\tauthor, tk3152@student.uni-lj.si}
 \def\Subject{\ttitleEn}
 \def\Keywords{\tkeywordsEn}
 
@@ -194,15 +193,14 @@
     {\autfont \tauthor\par}%
     {\titfont \ttitle \par}%
     {\vskip 3em \textsc{DIPLOMSKO DELO\\[5mm]         % dodal Solina za ostale študijske programe
-%    VISOKOŠOLSKI STROKOVNI ŠTUDIJSKI PROGRAM\\ PRVE STOPNJE\\ RAČUNALNIŠTVO IN INFORMATIKA}\par}%
-    UNIVERZITETNI  ŠTUDIJSKI PROGRAM\\ PRVE STOPNJE\\ RAČUNALNIŠTVO IN INFORMATIKA}\par}%
+	   VISOKOŠOLSKI STROKOVNI ŠTUDIJSKI PROGRAM\\ PRVE STOPNJE\\ RAČUNALNIŠTVO IN INFORMATIKA}\par}%
+%    UNIVERZITETNI  ŠTUDIJSKI PROGRAM\\ PRVE STOPNJE\\ RAČUNALNIŠTVO IN INFORMATIKA}\par}%
 %    INTERDISCIPLINARNI UNIVERZITETNI\\ ŠTUDIJSKI PROGRAM PRVE STOPNJE\\ RAČUNALNIŠTVO IN MATEMATIKA}\par}%
 %    INTERDISCIPLINARNI UNIVERZITETNI\\ ŠTUDIJSKI PROGRAM PRVE STOPNJE\\ UPRAVNA INFORMATIKA}\par}%
 %    INTERDISCIPLINARNI UNIVERZITETNI\\ ŠTUDIJSKI PROGRAM PRVE STOPNJE\\ MULTIMEDIJA}\par}%
     \vfill\null%
-    {\large \textsc{Mentor}: doc.\ dr.  Peter Klepec\par}%
-   {\large \textsc{Somentor}:  izr.\ prof.\ dr. Martin Krpan \par}%
-    {\vskip 2em \large Ljubljana, 2016 \par}%
+    {\large \textsc{Mentor}: doc.\ dr.  Bištjan Slivnik\par}%
+    {\vskip 2em \large Ljubljana, 2017 \par}%
 \end{center}
 % prazna stran
 %\clearemptydoublepage      % dodal Solina (izjava o licencah itd. se izpiše na hrbtni strani naslovnice)
@@ -322,8 +320,10 @@ Svoji dragi Alenčici.
 \bigskip
 
 %\noindent\textbf{Povzetek:} 
-\noindent V vzorcu je predstavljen postopek priprave diplomskega dela z uporabo okolja \LaTeX. Vaš povzetek mora sicer vsebovati približno 100 besed, ta tukaj je odločno prekratek.
-Dober povzetek vključuje: (1) kratek opis obravnavanega problema, (2) kratek opis vašega pristopa za reševanje tega problema in (3) (najbolj uspešen) rezultat ali prispevek magistrske naloge.
+V diplomskem delu bom predstavil programski jezik Atheris, ki je nastal kot nadgradnja programskega jezika PINS. Prog. jezik PINS, oz. prevajalnik zanj, je bil zgrajen tekom semestra pri predmetu prevajalniki in navidezni stroji. Ker mi je bilo delo na prevajalniku izjemno zanimivo, sem se odločil, da ustvarim svoj programski jezik in sam določim pravila zanj.\\
+\indent V diplomskem delu na kratko predstavim prevajalnike in programske jezike, kaj sploh so in kaj je njihov namen. Opišem kakšne so sodobne prakse pri ravoju prevajalnikov, s kakšnimi probleme se prevajalnik sooča ter kako je zgrajen. \\
+
+\noindent 
 
 \bigskip
 
@@ -360,16 +360,16 @@ A proper abstract should contain around 100 words which makes this one way too s
 
 \chapter{Uvod}
 
-Razvoj prevajalnikov, ter s tem tudi programskih jezikov, je, po mojem mnenju, izjemno pomembna panoga v računalništvu. Prevajalniki razvijalcem omogočajo, da se med razvojem programske opreme ne rabijo osredotočati na nizkovojske detajle, ampak se lahko posvetijo reševanju praktičnih problemov. Naloga prevajalnika je, da pretvori človeku berljivo kodo v računalniku razumljivo zaporedje strojnih ukazov. \\
-Dandanes lahko za razvoj programske opreme izbiramo med zelo veliko popularnih programskih jezikov. Trenutno eni izmed najbolj popularnih so JavaScript, Java, Python in C++, popularnost pa dobivajo tudi novejši jeziki, kot so GoLang, Swift, Kotlin in podobni. [1] \\
-S prevajalniki sem se prvič spoznal pri predmetu Prevajalniki in Navidezni Stroji (PINS) v drugem letnik na Fakulteti za Računalništvo in Informatiko. Tekom diplomske naloge bom predstavil programski jezik Atheris ter prevajalnik zanj. Prevajalnik je nastal kot nagradnja prevajalnika jezika PINS, pravila programskega jezika pa sem postavil sam.
+Razvoj prevajalnikov, ter s tem tudi programskih jezikov, je, po mojem mnenju, izjemno pomembna panoga v računalništvu. Programski jezik je medij, preko katerega komuniciramo z računalnikom. Prevajalniki razvijalcem omogočajo, da se med razvojem programske opreme ne rabijo osredotočati na nizkovojske detajle, ampak se lahko posvetijo reševanju praktičnih problemov. Naloga prevajalnika je, da pretvori človeku berljivo kodo v računalniku razumljivo zaporedje strojnih ukazov. \\
+\indent Dandanes lahko za razvoj programske opreme izbiramo med veliko količino programskih jezikov. Trenutno eni izmed najbolj popularnih so JavaScript, Java, Python in C++, popularnost pa dobivajo tudi novejši jeziki, kot so GoLang, Swift, Kotlin in podobni. [1] \\
+\indent S prevajalniki sem se prvič spoznal pri predmetu Prevajalniki in Navidezni Stroji (PINS) v drugem letnik na Fakulteti za Računalništvo in Informatiko. Tekom diplomske naloge bom predstavil programski jezik Atheris ter prevajalnik zanj. Prevajalnik je nastal kot nagradnja prevajalnika jezika PINS in obsega predvsem vgradnjo objektno usmerjenih gradnikov ter popolnoma spremenjeno sintakso.
 
 \chapter{Prevajalniki}
 \label{ch0}
 
-\subsection{Programski jezik}
+\section{Uvod v prevajalnike in programske jezike}
 
-Programski jezik je zapis za opisovanje računskih modelov ljudem in računalnikom. Svet kot ga poznamo danes je odvisen od programskih jezikov, saj je vsa programska oprema, ki se trenutno izvaja, napisana v nekem prog. jeziku. Toda preden lahko program zaženemo, je potrebno izvesti prevod v računalniku razumljivo obliko. Programski sistemi, ki skrbijo za translacijo, se imenujejo \textit{prevajalniki}. [2]\\
+Programski jezik je poseben jezik, ki se uporabljaja za razvoj programske opreme. Programski sistemi, ki poskrbijo, da se izvede pretvorba kode, napisane v programskem jeziku, v računalniku razumljivo obliko, se imenujejo \textit{prevajalniki}. \\
 Nekaj definicij:
 \begin{enumerate}  
 	\item \textbf{Računski model (angl. computational model):} zbirka vrednosti in računskih operacij 
@@ -377,9 +377,9 @@ Nekaj definicij:
 	\item \textbf{Program:} specifikacija izračuna
 	\item \textbf{Programski jezik:} zapis (notacija) za pisanje programov
 \end{enumerate}
-[3]
+\cite{computationalModel}
 
-Program lahko predstavimo kot funkcijo, pri kateri je rezultat (angl. output) funkcija vhodnih parametrov (angl. input):
+Program lahko predstavimo kot funkcijo, pri kateri je rezultat (angl. \textit{output}) funkcija vhodnih parametrov (angl. \textit{input}):
 \begin{lstlisting}
 	rezultat = program(vhodni parametri)
 \end{lstlisting}
@@ -389,11 +389,11 @@ Iz drugega zornega kota si lahko program predstavljamo tudi kot model problemske
 	program = model problemske domene
 	izvedba programa = simulacija problema
 \end{lstlisting}
-[4]
+\cite{computationalModel}
 
-\subsection{Struktura}
+\section{Zgradba prevajalnika}
 
-Sodobni prevajalniki so pogosto organizirani v več posameznih faz, vsaka izmed njih pa operira na različnem nivoju abstrakcije jezika. [5]
+Sodobni prevajalniki so pogosto organizirani v več posameznih faz, vsaka izmed njih pa operira na različnem nivoju abstrakcije jezika. \cite{modernCompiler}
 
 \begin{figure}[h]
 	\begin{center}
@@ -401,6 +401,129 @@ Sodobni prevajalniki so pogosto organizirani v več posameznih faz, vsaka izmed 
 	\end{center}
 	\caption{Faze prevajalnika ter vmesniki, ki jih povezujejo med seboj.}
 	\label{pic1}
+\end{figure}
+
+Prevajalnik, da lahko program prevede iz ene oblike v drugo, mora program najprej analizirati, razumeti njegovo strukturo ter pomen, ter ga nato sestaviti nazaj v drugačno obliko.  \\
+Analizo programa običajno delimo v naslednje korake:
+\begin{enumerate}
+	\item \textbf{Leksikalna analiza} (angl. \textit{lexical analysis})
+	\item \textbf{Sintaksna analiza} (angl. \textit{syntax analysis})
+	\item \textbf{Semantična analiza} (angl. \textit{semantic analysis})
+\end{enumerate}
+\cite{modernCompiler}
+
+\subsection{Leksikalna analiza}
+
+Tako imenovani leksikalni analizator (modul, ki izvede leksikalno analizo) kot vhod prejme tok znakov (angl. \textit{stream of characters}), kot izhod pa vrne tok v naprej definiranih žetonov (angl. \textit{stream of tokens}). Žeton je običajno zgrajen iz imena, vrednosti (t.i. \textit{lexeme}) ter lokacije v izvorni datoteki.  \cite{modernCompiler}
+
+\subsubsection{Leksikalni žetoni:}
+\begin{table}
+	\begin{center}
+		\begin{tabular}{l|c|c}
+			\textbf{vrsta žetona} & \textbf{angl.} & \textbf{primeri} \\ \hline\hline
+			ime & identifier & x	foo		bar		thisIsAnIdentifier \\
+			rezervirana beseda & keyword & while	for		if		public	override \\
+			operator & operator & , 	. 		\&\& 	=		== \\
+			niz znakov & string & "this is a string" \\
+			znak & character & 'a' 		'x' 	'@' \\
+			celo št. & integer & 10 	125 	082 \\
+			decimalno št. & real & 201.5 	3.14	1.2e10
+		\end{tabular}
+	\end{center}
+	\caption{Primeri žetonov v programskem jeziku Java}
+	\label{tabel:vrsteZetonov}
+\end{table}
+Žeton (ali simbol) je zaporedje znakov, ki ga interpretiramo kot samostojno enoto v slovnici programskega jezika. \cite{modernCompiler}\\ 
+Tabela \ref{tabel:vrsteZetonov} prikazuje nekaj vrst simbolov ter primere.\\
+\newpage
+\begin{lstlisting}[caption={Primer programa v programskem jeziku Atheris},label={lst:atherisCode}, captionpos=b]
+	let x: Int
+	let y: Int
+	x * y
+\end{lstlisting}
+Rezultat:
+\begin{lstlisting}[caption={Rezultat leksikalne analize za program ~\ref{lst:atherisCode}},captionpos=b]
+	[1:1-1:4] 	LET:let
+	[1:5-1:6] 	IDENTIFIER:x
+	[1:6-1:7] 	COLON::
+	[1:8-1:11] 	IDENTIFIER:Int
+	[1:11-1:12] 	NEWLINE:\n
+	[2:1-2:4] 	LET:let
+	[2:5-2:6] 	IDENTIFIER:y
+	[2:6-2:7] 	COLON::
+	[2:8-2:11] 	IDENTIFIER:Int
+	[2:11-2:12] 	NEWLINE:\n
+	[3:1-3:2] 	IDENTIFIER:x
+	[3:3-3:4] 	MUL:*
+	[3:5-3:6] 	IDENTIFIER:y
+	EOF:$
+\end{lstlisting}
+
+\subsection{Sintaksna analiza}
+
+Druga faza prevajanja je sintaksna analiza (angl. \textit{syntax analysis} ali \textit{parsing}). Naloga te faze je, da zagotovi, da je napisan program slovnično pravilen in v skladu s sintaksnimi pravili. Sintaksni analizator prejme kot vhod tok žetonov, ki ga zgenerira prejšnja faza, rezultat pa je abstraktno sintaksno drevo.\\
+\indent\textbf{Abstraktno sintaksno drevo} (AST) je drevesna podatkovna struktura, ki predstavlja slovnično strukturo programa. Vsako vozlišče drevesa ponazarja konstrukt v programski kodi.\\
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=1\textwidth]{resources/ast.png}
+	\end{center}
+	\caption{Abstraktno sintaksno drevo za program ~\ref{lst:atherisCode}.}
+	\label{image:ast}
+\end{figure}
+
+Iz slike ~\ref{image:ast} lahko razberemo, da gre za dve definiciji spremenljivk in množenje.\\
+\indent Abstraktno sintaksno drevo je bistvenega pomena, saj nadaljne faze operirajo izključno nad njim.
+
+\subsection{Semantična analiza}
+
+Semantična analiza poveže definicije spremenljivk z njihovimi uporabami ter preveri, ali so vsi izrazi pravilnih podatkovnih tipov. \cite{modernCompiler}\\
+\indent Običajno semantično analizo razdelimo na dve pod-fazi:
+\begin{enumerate}
+	\item \textbf{Razreševanje imen:} zagotovi, da za vsako uporabo imena obstaja znotraj trenutnega območja vidnosti definicija z istim imenom, ter uporabo poveže z definicijo
+	\item \textbf{Preverjanje tipov:} vsakemu vozlišču v AST določi podatkovni tip, ter na podlagi postavljenih semantičnih pravil zagotovi, da so vsi izrazi pravilnih tipov
+\end{enumerate}
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=1\textwidth]{resources/astSeman.png}
+	\end{center}
+	\caption{Rezultat semantične analize za program ~\ref{lst:atherisCode}}
+	\label{image:astSeman}
+\end{figure}
+
+Pri implementaciji semantične analize nam pomaga \textit{simbolna tabela}.
+
+\subsubsection{Simbolna tabela}
+
+Simbolna tabela je podatkovna struktura, ki mapira imena v njihove definicije in podatkovne tipe. \cite{modernCompiler} Ker običajno programi vsebujejo več tisoč unikatnih definicij imen, mora podatkovna struktura omogočati učinkovito poizvedovanje. Iz slike ~\ref{image:astSeman} lahko razberemo, kaj se med izvajanjem semantične analize zgodi v ozadju: puščice predstavljajo povezave med definicijami in uporabami, evaluacija podatkovnih tipov pa je pri vseh vozliščih \textit{Integer}, razen pri korenu, ki nima tipa oz. je tipa \textit{Void}.\\
+\indent Kot sem omenil, semantična analiza zagotovi, da za vsako uporabo imena obstaja njena definicija, in da so podatkovni tipi pravilni. Sledita dva primera, kjer to ne drži:
+
+\begin{lstlisting}[caption={Primer programa, kjer spremenljivka \textit{y} ni definirana},label={lst:atherisCodeNameError},captionpos=b]
+	let x: Int
+	print(y)
+\end{lstlisting}
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=1\textwidth]{resources/astSemanNameError.png}
+	\end{center}
+	\caption{Napaka v programu ~\ref{lst:atherisCodeNameError}. Spremenljivka \textit{y} ni definirana.}
+	\label{image:astSemanCodeNameError}
+\end{figure}
+
+\begin{lstlisting}[caption={Primer programa, kjer je napaka v podatkovnih tipih},label={lst:atherisCodeTypeError},captionpos=b]
+	let x: Int
+	let s: String
+	x + s
+\end{lstlisting}
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=1\textwidth]{resources/astSemanTypeError.png}
+	\end{center}
+	\caption{Napaka v programu ~\ref{lst:atherisCodeTypeError}. Seštevanje med podatkovnima tipoma \textit{Integer} in \textit{String} ni dovoljeno.}
+	\label{image:astSemanTypeError}
 \end{figure}
 
 \chapter{Matematično okolje in sklicevanje na besedilne konstrukte}
@@ -499,9 +622,9 @@ Spustni meni na Sliki~\ref{pic2} odkriva uporabo \LaTeX{}a v njegovi pdf inkarna
 \includegraphics[width=10cm]{pic2.png}
 \end{center}
 \caption{Kateri dialekt uporabljati?}
-\label{pic2}
+\label{pic3}
 \end{figure}
-Vključena slika~\ref{pic2} je seveda bitna.
+Vključena slika~\ref{pic3} je seveda bitna.
 
 Na vse tabele se moramo v besedilu, podobno kot na slike, tudi sklicevati, saj kot plovke v oblikovanem besedilo niso nujno na istem mestu kot v izvornem besedilu.
 

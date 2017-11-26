@@ -6,6 +6,19 @@ Michael~Riis Andersen, Thomas Jensen, Pavel Lisouski, Anders~Krogh Mortensen,
 \newblock Kinect depth sensor evaluation for computer vision applications.
 \newblock Technical report, Department of Engineering, Aarhus University, 2012.
 
+\bibitem{computationalModel}
+A complete description of a programming language includes the computational
+  model, the syntax and semantics of programs, and the pragmatic considerations
+  that shape the language.
+\newblock Dosegljivo:
+  \url{http://www.emu.edu.tr/aelci/Courses/D-318/D-318-Files/plbook/intro.htm}.
+\newblock [Dostopano: 26.11.2017].
+
+\bibitem{modernCompiler}
+Andrew~W. Appel and Jens Palsberg.
+\newblock {\em Modern Compiler Implementation in Java, Second Edition}.
+\newblock Cambridge University Press, 2002.
+
 \bibitem{diploma}
 Andreja Balon.
 \newblock Vizualizacija.
@@ -28,13 +41,6 @@ Donald~E Knuth and Peter~B Bendix.
 Leslie Lamport.
 \newblock {\em LaTEX: A Document Preparation System}.
 \newblock Addison-Wesley, 1986.
-
-\bibitem{nenajkrajsi}
-Tobias Oetiker, Hubert Partl, Irene Hyna, and Elisabeth Schlegl.
-\newblock Ne najkraj\v{s}i uvod v {\LaTeX 2$\epsilon$}.
-\newblock Dosegljivo:
-  \url{http://www-lp.fmf.uni-lj.si/plestenjak/vaje/latex/lshort.pdf}, 2006.
-\newblock [Dostopano: 1. 10. 2016].
 
 \bibitem{bib}
 Oren Patashnik.
