@@ -5,29 +5,18 @@ import compiler.frames.FrmTemp;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-/**
- * Created by toni on 11/04/2017.
- */
 public class ImcMethodCALL extends ImcExpr {
 
-    /** Temporary holding method's frame.  */
     public final FrmTemp temp;
-
-    /** Argumenti funkcijskega klica (vkljucno s FP).  */
     public LinkedList<ImcExpr> args;
 
-    /**
-     * Ustvari nov klic funkcije.
-     *
-     * @param temp Labela funkcije.
-     */
     public ImcMethodCALL(FrmTemp temp) {
         this.temp = temp;
     }
 
     @Override
     public void dump(int indent) {
-        logger.dump(indent, "METHOD CALL temp=" + temp.getName());
+        logger.dump(indent, "DYNAMIC CALL temp=" + temp.getName());
         Iterator<ImcExpr> args = this.args.iterator();
 
         while (args.hasNext()) {

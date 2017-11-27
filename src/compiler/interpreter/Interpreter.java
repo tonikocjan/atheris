@@ -261,7 +261,6 @@ public class Interpreter {
                 FrmTemp temp = ((ImcTEMP) instr.dst).temp;
                 Object srcValue = execute(instr.src);
                 memory.stT(temp, srcValue);
-
                 return srcValue;
             }
             if (instr.dst instanceof ImcMEM) {
@@ -274,10 +273,12 @@ public class Interpreter {
 		
 		if (instruction instanceof ImcNAME) {
 			ImcNAME instr = (ImcNAME) instruction;
-
-			if (instr.label.getName().equals("FP")) return framePointer;
-			if (instr.label.getName().equals("SP")) return stackPointer;
-
+			if (instr.label.getName().equals("FP")) {
+			    return framePointer;
+            }
+			if (instr.label.getName().equals("SP")) {
+			    return stackPointer;
+            }
 			return memory.labelToAddressMapping.get(instr.label);
 		}
 		

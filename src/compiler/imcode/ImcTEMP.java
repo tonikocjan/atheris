@@ -19,28 +19,17 @@ package compiler.imcode;
 
 import compiler.frames.*;
 
-/**
- * Zacasna spremenljivka.
- * 
- * @author sliva
- */
 public class ImcTEMP extends ImcExpr {
 
-	/** Zacasna spremenljivka.  */
 	public FrmTemp temp;
 
-	/**
-	 * Ustvari novo zacasno spremenljivko.
-	 * 
-	 * @param temp Zacasna spremenljivka.
-	 */
 	public ImcTEMP(FrmTemp temp) {
 		this.temp = temp;
 	}
 
 	@Override
 	public void dump(int indent) {
-        logger.dump(indent, "TEMP getName=" + temp.getName());
+        logger.dump(indent, "TEMP name=" + temp.getName());
 	}
 
 	@Override

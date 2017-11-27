@@ -61,6 +61,11 @@ public class TestAtheris {
     }
 
     @Test
+    public void testNestedClasses() {
+        test("11.NestedClasses.ar");
+    }
+
+    @Test
     public void testInheritance() {
         test("10.Inheritance.ar");
     }

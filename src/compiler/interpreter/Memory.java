@@ -41,7 +41,6 @@ public class Memory {
 
     public Object ldT(FrmTemp temp) {
         Object value = registers.get(temp);
-
         if (debug) System.out.println(" " + temp.getName() + " => " + value);
         return value;
     }

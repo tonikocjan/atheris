@@ -26,23 +26,23 @@ print(xyz.z.x)
 print(xyz.z.a.x)
 xyz.test()
 
-/*
-class A {
+
+class E {
     let x = 10
 }
 
-class B {
+class F {
 
 }
 
-class C: A {
+class G: E {
 
 }
 
-let a = A()
-print(a is A)
-print(a is B)
-let c = C()
-print(c is A)
-print(a.x)
-print(c.x)*/
+let e = E()
+print(e is E)
+print(e is F)
+let g = E()
+print(g is E)
+print(e.x)
+print(g.x)

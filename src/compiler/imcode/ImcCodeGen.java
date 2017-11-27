@@ -406,33 +406,7 @@ public class ImcCodeGen implements ASTVisitor {
                     }
                 }
 				else {
-//				    if (acceptor.expr2 instanceof AstBinaryExpression) {
-//				        AstBinaryExpression rightSide = ((AstBinaryExpression) acceptor.expr2);
-//                        ImcMEM mem = null;
-//                        while (true) {
-//                            ImcBINOP binop = (ImcBINOP) ((ImcMEM) e2).expr;
-//                            ImcCONST leftOffset = (ImcCONST) binop.limc;
-//                            ImcCONST rightOffset = (ImcCONST) binop.rimc;
-//                            ImcBINOP binop1 = new ImcBINOP(
-//                                    ImcBINOP.ADD,
-//                                    new ImcMEM(
-//                                            new ImcBINOP(
-//                                                    ImcBINOP.ADD,
-//                                                    e1,
-//                                                    leftOffset)),
-//                                    rightOffset);
-//                            ImcMEM newMem = new ImcMEM(binop1);
-//                            if (mem == null) mem = newMem;
-//                            else mem = new ImcMEM(newMem);
-//
-//                            if (!(rightSide.expr2 instanceof AstBinaryExpression)) break;
-//                        }
-//
-//                        code = mem;
-//                    }
-//                    else {
-                        code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, e2));
-//                    }
+                    code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, e2));
                 }
 			}
 
@@ -610,9 +584,8 @@ public class ImcCodeGen implements ASTVisitor {
 		for (AstExpression arg : acceptor.arguments) {
             // skip first ("self") argument if function is constructor
             if (isConstructor && arg == acceptor.arguments.get(0)) {
-                ImcCONST noData = new ImcCONST(0);
-                fnCall.args.add(noData);
-
+                ImcCONST nil = new ImcCONST(0);
+                fnCall.args.add(nil);
                 continue;
             }
 

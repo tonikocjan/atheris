@@ -202,7 +202,6 @@ public class NameChecker implements ASTVisitor {
 	private void addImplicitSelfParameterToFunctionCall(AstFunctionCallExpression acceptor) {
         AstVariableNameExpression selfArgExpr = new AstVariableNameExpression(acceptor.position, Constants.selfParameterIdentifier);
         AstLabeledExpr selfArg = new AstLabeledExpr(acceptor.position, selfArgExpr, Constants.selfParameterIdentifier);
-
         acceptor.addArgument(selfArg);
     }
 
