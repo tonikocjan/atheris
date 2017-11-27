@@ -50,7 +50,6 @@ public class TypeChecker implements ASTVisitor {
     private Stack<CanType> declarationContext = new Stack<>();
     private Stack<Type> functionReturnTypes = new Stack<>();
     private boolean resolveTypeOnly = false;
-    private boolean typeCheckingClass = false;
 
     private enum TraversalStates {
         extensions, normal
@@ -75,7 +74,6 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AstClassDefinition acceptor) {
-        typeCheckingClass = true;
 	    if (traversalState == TraversalStates.extensions) {
             ArrayList<Type> types = new ArrayList<>();
             ArrayList<String> names = new ArrayList<>();
@@ -285,7 +283,6 @@ public class TypeChecker implements ASTVisitor {
 
 //            objectType.debugPrint();
         }
-        typeCheckingClass = false;
 	}
 
 	@Override
@@ -306,7 +303,7 @@ public class TypeChecker implements ASTVisitor {
         Type lhs = symbolDescription.getTypeForAstNode(acceptor.expr1);
 
 		lhsTypes.push(lhs);
-		
+
 		if (acceptor.oper != AstBinaryExpression.DOT)
 			acceptor.expr2.accept(this);
 
@@ -394,21 +391,24 @@ public class TypeChecker implements ASTVisitor {
 		}
 
 		/**
-		 * identifier.identifier
+		 * exspression.expression
 		 */
 		else if (oper == AstBinaryExpression.DOT) {
             String memberName = null;
-            if (acceptor.expr2 instanceof AstVariableNameExpression) {
-                memberName = ((AstVariableNameExpression) acceptor.expr2).name;
+            AstExpression memberExpression = acceptor.expr2;
+
+            if (memberExpression instanceof AstVariableNameExpression) {
+                memberName = ((AstVariableNameExpression) memberExpression).name;
             }
-            else if (acceptor.expr2 instanceof AstFunctionCallExpression) {
-                memberName = ((AstFunctionCallExpression) acceptor.expr2).getStringRepresentation();
+            else if (memberExpression instanceof AstFunctionCallExpression) {
+                memberName = ((AstFunctionCallExpression) memberExpression).getStringRepresentation();
             }
-            else if (acceptor.expr2 instanceof AstAtomConstExpression) {
-                memberName = ((AstAtomConstExpression) acceptor.expr2).value;
+            else if (memberExpression instanceof AstAtomConstExpression) {
+                memberName = ((AstAtomConstExpression) memberExpression).value;
             }
-            else if (acceptor.expr2 instanceof AstBinaryExpression) {
-                logger.error(acceptor.position, "Not yet supported");
+
+            if (memberName == null) {
+                logger.error("Something went terribly wrong!");
             }
 
 			/**
@@ -455,11 +455,11 @@ public class TypeChecker implements ASTVisitor {
                     }
                 }
 				
-				symbolDescription.setDefinitionForAstNode(acceptor.expr2, definition);
+				symbolDescription.setDefinitionForAstNode(memberExpression, definition);
 				symbolDescription.setDefinitionForAstNode(acceptor, definition);
 
-				if (acceptor.expr2 instanceof AstFunctionCallExpression) {
-                    for (AstExpression arg: ((AstFunctionCallExpression) acceptor.expr2).arguments) {
+				if (memberExpression instanceof AstFunctionCallExpression) {
+                    for (AstExpression arg: ((AstFunctionCallExpression) memberExpression).arguments) {
                         arg.accept(this);
                     }
                 }
@@ -467,7 +467,7 @@ public class TypeChecker implements ASTVisitor {
 				Type memberType = ((ObjectType) lhs).getTypeOfMemberWithName(memberName);
 				Type acceptorType = memberType.isFunctionType() ? ((FunctionType) memberType).resultType : memberType;
 
-                symbolDescription.setTypeForAstNode(acceptor.expr2, memberType);
+                symbolDescription.setTypeForAstNode(memberExpression, memberType);
 				symbolDescription.setTypeForAstNode(acceptor, acceptorType);
 			}
 			
@@ -595,6 +595,8 @@ public class TypeChecker implements ASTVisitor {
             else {
                 logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
             }
+
+//            acceptor.expr2.accept(this);
 		}
 
         /**
@@ -762,9 +764,6 @@ public class TypeChecker implements ASTVisitor {
 	public void visit(AstFunctionCallExpression acceptor) {
         String funCallIdentifier = acceptor.getStringRepresentation();
 		AstFunctionDefinition definition = (AstFunctionDefinition) symbolTable.findDefinitionForName(funCallIdentifier);
-		if (definition == null) {
-            logger.error(acceptor.position, "Method " + funCallIdentifier + " is undefined");
-        }
 
 		FunctionType funType = (FunctionType) symbolDescription.getTypeForAstNode(definition);
 
@@ -786,8 +785,8 @@ public class TypeChecker implements ASTVisitor {
             if (argType == null) return;
 
 			if (!(funType.getTypeForParameterAtIndex(i).sameStructureAs(argType))) {
-                logger.error(arg.position, "Cannot assigningToVariable value of memberType \"" +
-                        argType.friendlyName() + "\" to memberType \"" + funType.getTypeForParameterAtIndex(i).friendlyName() + "\"");
+                logger.error(arg.position, "Cannot assign value of type \"" +
+                        argType.friendlyName() + "\" to type \"" + funType.getTypeForParameterAtIndex(i).friendlyName() + "\"");
 			}
 		}
 	}
@@ -938,10 +937,10 @@ public class TypeChecker implements ASTVisitor {
 
         Type type = symbolDescription.getTypeForAstNode(symbolDescription.getDefinitionForAstNode(acceptor));
 
-        if (type == null) {
+        if (type == null && !assigningToVariable) {
             System.out.println();
         }
-        if (!assigningToVariable && type.isOptionalType()) {
+        if (!assigningToVariable && type != null && type.isOptionalType()) {
             OptionalType optionalType = (OptionalType) type;
 
             // implicitly force forced OptionalTyped

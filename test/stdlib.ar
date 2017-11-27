@@ -7,7 +7,7 @@ interface Hashable {
 
 extension Int: Hashable {
 	func hash() Int {
-		return self % 12
+		return 12
 	}
 }
 

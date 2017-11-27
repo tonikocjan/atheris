@@ -1,0 +1,48 @@
+import stdlib
+
+class A {
+    let x = 3000
+}
+
+class Z {
+    let x = 55555
+    let a: A = A()
+}
+
+class X {
+    let x = 66666
+    let z: Z = Z()
+
+    func test() {
+        print(20)
+    }
+
+}
+
+let xyz = X()
+
+print(xyz.x)
+print(xyz.z.x)
+print(xyz.z.a.x)
+xyz.test()
+
+/*
+class A {
+    let x = 10
+}
+
+class B {
+
+}
+
+class C: A {
+
+}
+
+let a = A()
+print(a is A)
+print(a is B)
+let c = C()
+print(c is A)
+print(a.x)
+print(c.x)*/

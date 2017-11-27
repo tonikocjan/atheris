@@ -75,7 +75,7 @@ public class ImcCodeGen implements ASTVisitor {
         CanType type = (CanType) symbolDescription.getTypeForAstNode(acceptor);
         FrmVirtualTableAccess virtualTableAccess = (FrmVirtualTableAccess) frameDescription.getAccess(acceptor);
 
-        Integer virtualTablePointer = null;
+        Integer virtualTablePointer = 0;
 
         if (virtualTableAccess != null) {
             // create static instance (singleton)
@@ -115,9 +115,7 @@ public class ImcCodeGen implements ASTVisitor {
             constructorCode.stmts.add(0, new ImcMOVE(location, new ImcMALLOC(size)));
 
             // assign pointer to vtable
-            if (virtualTablePointer != null) {
-                constructorCode.stmts.add(1, new ImcMOVE(new ImcMEM(location), new ImcCONST(virtualTablePointer)));
-            }
+            constructorCode.stmts.add(1, new ImcMOVE(new ImcMEM(location), new ImcCONST(virtualTablePointer)));
 
             // return new object
             constructorCode.stmts.add(new ImcMOVE(new ImcTEMP(constructorFrame.RV), location));
@@ -133,12 +131,10 @@ public class ImcCodeGen implements ASTVisitor {
 	@Override
 	public void visit(AstAtomConstExpression acceptor) {
 		if (acceptor.type == AtomTypeKind.INT) {
-            imcDescription.setImcCode(acceptor,
-                    new ImcCONST(Integer.parseInt(acceptor.value)));
+            imcDescription.setImcCode(acceptor, new ImcCONST(Integer.parseInt(acceptor.value)));
         }
 		else if (acceptor.type == AtomTypeKind.LOG) {
-            imcDescription.setImcCode(acceptor,
-                    new ImcCONST(acceptor.value.equals("true") ? 1 : 0));
+            imcDescription.setImcCode(acceptor, new ImcCONST(acceptor.value.equals("true") ? 1 : 0));
         }
 		else if (acceptor.type == AtomTypeKind.STR) {
 			FrmLabel l = FrmLabel.newAnonymousLabel();
@@ -151,8 +147,7 @@ public class ImcCodeGen implements ASTVisitor {
 			imcDescription.setImcCode(acceptor, new ImcCONST(acceptor.value.charAt(0)));
 		}
 		else if (acceptor.type == AtomTypeKind.DOB) {
-			imcDescription.setImcCode(acceptor,
-					new ImcCONST(Double.parseDouble(acceptor.value)));
+			imcDescription.setImcCode(acceptor, new ImcCONST(Double.parseDouble(acceptor.value)));
 		}
 		else if (acceptor.type == AtomTypeKind.NIL) {
 			imcDescription.setImcCode(acceptor, new ImcCONST(0));
@@ -214,7 +209,7 @@ public class ImcCodeGen implements ASTVisitor {
                     while (types.hasNext()) {
                         Type t = types.next();
 
-                        // FIXME: - This won't work for variables with function memberType
+                        // FIXME: - This won't work for variables with function type
                         if (t.isFunctionType()) continue;
 
                         ImcMEM dst = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcCONST(offset)));
@@ -335,14 +330,29 @@ public class ImcCodeGen implements ASTVisitor {
 		} 
 		else if (acceptor.oper == AstBinaryExpression.DOT) {
 			Type t = symbolDescription.getTypeForAstNode(acceptor.expr1);
-			
-			String memberName;
-			if (acceptor.expr2 instanceof AstVariableNameExpression)
-				memberName = ((AstVariableNameExpression) acceptor.expr2).name;
-			else if (acceptor.expr2 instanceof AstFunctionCallExpression)
-				memberName = ((AstFunctionCallExpression) acceptor.expr2).name;
-			else
-				memberName = ((AstAtomConstExpression) acceptor.expr2).value;
+
+			String memberName = null;
+            AstExpression memberExpression;
+            if (acceptor.expr2 instanceof AstBinaryExpression) {
+                memberExpression = ((AstBinaryExpression) acceptor.expr2).expr1;
+            }
+            else {
+                memberExpression = acceptor.expr2;
+            }
+
+            if (memberExpression instanceof AstVariableNameExpression) {
+                memberName = ((AstVariableNameExpression) memberExpression).name;
+            }
+            else if (memberExpression instanceof AstFunctionCallExpression) {
+                memberName = ((AstFunctionCallExpression) memberExpression).getStringRepresentation();
+            }
+            else if (memberExpression instanceof AstAtomConstExpression) {
+                memberName = ((AstAtomConstExpression) memberExpression).value;
+            }
+
+            if (memberName == null) {
+                logger.error("Something went terribly wrong!");
+            }
 
 			/**
 			 * Handle enumerations.
@@ -364,13 +374,13 @@ public class ImcCodeGen implements ASTVisitor {
 			else if (t.isObjectType()) {
 				// member access code
 				if (acceptor.expr2 instanceof AstFunctionCallExpression) {
-                    boolean isDynamic = symbolDescription.getDefinitionForAstNode(acceptor.expr2).isDynamic();
+                    boolean isDynamic = symbolDescription.getDefinitionForAstNode(memberExpression).isDynamic();
 
                     if (isDynamic) {
                         // dynamic dispatch
                         ClassType classType = (ClassType) t;
 
-                        int indexForMember = classType.indexForMember(((AstFunctionCallExpression) acceptor.expr2).getStringRepresentation());
+                        int indexForMember = classType.indexForMember(((AstFunctionCallExpression) memberExpression).getStringRepresentation());
                         int offset = (indexForMember + 2) * Constants.Byte;
 
                         FrmTemp frmTemp = new FrmTemp();
@@ -396,10 +406,32 @@ public class ImcCodeGen implements ASTVisitor {
                     }
                 }
 				else {
-                    code = new ImcBINOP(ImcBINOP.ADD, e1, e2);
-
-//                    if (t.isReferenceType()) {
-                        code = new ImcMEM((ImcBINOP) code);
+//				    if (acceptor.expr2 instanceof AstBinaryExpression) {
+//				        AstBinaryExpression rightSide = ((AstBinaryExpression) acceptor.expr2);
+//                        ImcMEM mem = null;
+//                        while (true) {
+//                            ImcBINOP binop = (ImcBINOP) ((ImcMEM) e2).expr;
+//                            ImcCONST leftOffset = (ImcCONST) binop.limc;
+//                            ImcCONST rightOffset = (ImcCONST) binop.rimc;
+//                            ImcBINOP binop1 = new ImcBINOP(
+//                                    ImcBINOP.ADD,
+//                                    new ImcMEM(
+//                                            new ImcBINOP(
+//                                                    ImcBINOP.ADD,
+//                                                    e1,
+//                                                    leftOffset)),
+//                                    rightOffset);
+//                            ImcMEM newMem = new ImcMEM(binop1);
+//                            if (mem == null) mem = newMem;
+//                            else mem = new ImcMEM(newMem);
+//
+//                            if (!(rightSide.expr2 instanceof AstBinaryExpression)) break;
+//                        }
+//
+//                        code = mem;
+//                    }
+//                    else {
+                        code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, e2));
 //                    }
                 }
 			}
@@ -654,23 +686,28 @@ public class ImcCodeGen implements ASTVisitor {
 		ImcCode expr = imcDescription.getImcCode(acceptor.expr);
 
 		if (acceptor.oper == AstUnaryExpression.SUB) {
-			imcDescription.setImcCode(acceptor, new ImcBINOP(ImcBINOP.SUB,
-					new ImcCONST(0), (ImcExpr) expr));
-		} else if (acceptor.oper == AstUnaryExpression.NOT) {
-			ImcBINOP mul = new ImcBINOP(ImcBINOP.MUL, (ImcExpr) expr,
-					new ImcCONST(1));
+			imcDescription.setImcCode(acceptor, new ImcBINOP(ImcBINOP.SUB, new ImcCONST(0), (ImcExpr) expr));
+		}
+		else if (acceptor.oper == AstUnaryExpression.NOT) {
+			ImcBINOP mul = new ImcBINOP(ImcBINOP.MUL, (ImcExpr) expr, new ImcCONST(1));
 			ImcBINOP not = new ImcBINOP(ImcBINOP.ADD, mul, new ImcCONST(1));
 			imcDescription.setImcCode(acceptor, not);
-		} else if (acceptor.oper == AstUnaryExpression.MEM) {
-			if (expr instanceof ImcStmt)
+		}
+		else if (acceptor.oper == AstUnaryExpression.MEM) {
+			if (expr instanceof ImcStmt) {
                 logger.error(acceptor.position, "Error");
+            }
 			imcDescription.setImcCode(acceptor, ((ImcMEM) expr).expr);
-		} else if (acceptor.oper == AstUnaryExpression.VAL) {
-			if (expr instanceof ImcStmt)
+		}
+		else if (acceptor.oper == AstUnaryExpression.VAL) {
+			if (expr instanceof ImcStmt) {
                 logger.error(acceptor.position, "Error");
+            }
 			imcDescription.setImcCode(acceptor, new ImcMEM((ImcExpr) expr));
-		} else
-			imcDescription.setImcCode(acceptor, expr);
+		}
+		else {
+            imcDescription.setImcCode(acceptor, expr);
+        }
 	}
 
 	@Override

@@ -62,4 +62,9 @@ public class ImcCodeChunk extends ImcChunk {
     public String name() {
         return frame.toString();
     }
+
+    @Override
+    public String toString() {
+        return name();
+    }
 }

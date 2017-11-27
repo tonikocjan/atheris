@@ -1,34 +1,36 @@
+import stdlib
+
+class B {
+    let x = 55555
+}
+
+class A {
+    let x = 66666
+    let b: B = B()
+
+    func test() {
+        print(20)
+    }
+
+}
+
+let a = A()
+print(a.x)
+print(a.b.x)
+
 /*import stdlib
 
-class Test {
-	
-	var x: Int
-	var y: Int
-	var name: String
-
-	func setX(_ x: Int) Test {
-		self.x = x
-		return self
-	}
-
-	func setY(_ y: Int) Test {
-		self.y = y
-		return self
-	}
-
-	func setName(_ name: String) Test {
-		self.name = name
-		return self
-	}
+class A {
+    func fact(x: Int) Int {
+        if x == 0 {
+            return 1
+        }
+        else {
+            return x * self.fact(x: x - 1)
+        }
+    }
 }
 
-let test = Test().setX(10).setY(20).setName("Janez")
-
-print(test.x)
-print(test.y)
-print(test.name)
-*/
-
-if true && true && true {
-
-}
+for i in [3] {
+    print(A().fact(x: i))
+}*/

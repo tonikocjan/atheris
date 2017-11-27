@@ -1476,7 +1476,6 @@ public class SynAn {
 		case IDENTIFIER:
 		case KW_RETURN:
 			dump("multiplicative_expression -> prefix_expression multiplicative_expression'");
-
 			return parseMulExpression_(parsePrefixExpression());
 		default:
             logger.error(symbol.getPosition(), "Syntax error on tokenType \""
@@ -1536,13 +1535,6 @@ public class SynAn {
 			getNextSymbol();
 			expr = parsePrefixExpression();
 			break;
-		case DOT:
-			oper = AstBinaryExpression.DOT;
-			dump("multiplicative_expression' -> prefix_expression multiplicative_expression'");
-			getNextSymbol();
-			expr = parsePrefixExpression();
-
-			break;
 		default:
             logger.error(symbol.getPosition(), "Syntax error on tokenType \""
 					+ symbol.getLexeme() + "\", delete this tokenType");
@@ -1550,27 +1542,26 @@ public class SynAn {
 
 		expr = new AstBinaryExpression(new Position(e.position, expr.position), oper, e, expr);
 
-        if (expr instanceof AstBinaryExpression) {
-            AstBinaryExpression binExpr = (AstBinaryExpression) expr;
-
-            // TODO: - Fix this (object.data[index] is not parsed in the right way at the moment
-            // so this is a temporary solution
-            if (binExpr.oper == AstBinaryExpression.DOT && binExpr.expr2 instanceof AstBinaryExpression) {
-                AstBinaryExpression binExpr2 = (AstBinaryExpression) binExpr.expr2;
-
-                if (binExpr2.oper == AstBinaryExpression.ARR) {
-                    expr = new AstBinaryExpression(binExpr.position, AstBinaryExpression.ARR,
-                            new AstBinaryExpression(binExpr.expr1.position, AstBinaryExpression.DOT, binExpr.expr1, binExpr2.expr1), binExpr2.expr2);
-                }
-            }
-        }
-
+//        if (expr instanceof AstBinaryExpression) {
+//            AstBinaryExpression binExpr = (AstBinaryExpression) expr;
+//
+//            // TODO: - Fix this (object.data[index] is not parsed in the right way at the moment
+//            // so this is a temporary solution
+//            if (binExpr.oper == AstBinaryExpression.DOT && binExpr.expr2 instanceof AstBinaryExpression) {
+//                AstBinaryExpression binExpr2 = (AstBinaryExpression) binExpr.expr2;
+//
+//                if (binExpr2.oper == AstBinaryExpression.ARR) {
+//                    expr = new AstBinaryExpression(binExpr.position, AstBinaryExpression.ARR,
+//                            new AstBinaryExpression(binExpr.expr1.position, AstBinaryExpression.DOT, binExpr.expr1, binExpr2.expr1), binExpr2.expr2);
+//                }
+//            }
+//        }
 
         return parseMulExpression_(expr);
 	}
 
 	private AstExpression parsePrefixExpression() {
-		AstExpression e = null;
+		AstExpression e;
 		Symbol op = symbol;
 
 		switch (symbol.getTokenType()) {
@@ -1579,36 +1570,31 @@ public class SynAn {
 			getNextSymbol();
 
 			e = parsePrefixExpression();
-			return new AstUnaryExpression(new Position(op.getPosition(), e.position),
-					AstUnaryExpression.ADD, e);
+			return new AstUnaryExpression(new Position(op.getPosition(), e.position), AstUnaryExpression.ADD, e);
 		case SUB:
 			dump("prefix_expression -> - prefix_expression");
 			getNextSymbol();
 
 			e = parsePrefixExpression();
-			return new AstUnaryExpression(new Position(op.getPosition(), e.position),
-					AstUnaryExpression.SUB, e);
+			return new AstUnaryExpression(new Position(op.getPosition(), e.position), AstUnaryExpression.SUB, e);
 		case NOT:
 			dump("prefix_expression -> ! prefix_expression");
 			getNextSymbol();
 
 			e = parsePrefixExpression();
-			return new AstUnaryExpression(new Position(op.getPosition(), e.position),
-					AstUnaryExpression.NOT, e);
+			return new AstUnaryExpression(new Position(op.getPosition(), e.position), AstUnaryExpression.NOT, e);
 		case AND:
 			dump("prefix_expression -> & prefix_expression");
 			getNextSymbol();
 
 			e = parsePrefixExpression();
-			return new AstUnaryExpression(new Position(op.getPosition(), e.position),
-					AstUnaryExpression.MEM, e);
+			return new AstUnaryExpression(new Position(op.getPosition(), e.position), AstUnaryExpression.MEM, e);
 		case MUL:
 			dump("prefix_expression -> * prefix_expression");
 			getNextSymbol();
 
 			e = parsePrefixExpression();
-			return new AstUnaryExpression(new Position(op.getPosition(), e.position),
-					AstUnaryExpression.VAL, e);
+			return new AstUnaryExpression(new Position(op.getPosition(), e.position), AstUnaryExpression.VAL, e);
 		case LOG_CONST:
 		case INT_CONST:
 		case STR_CONST:
@@ -1650,8 +1636,7 @@ public class SynAn {
 		case QMARK:
 		case EMARK:
 			dump("postfix_expression -> atom_expression postfix_expression'");
-
-			return parsePostfixExpression_(parseAtomExpression());
+			return parsePostfixExpression_(parseDotExpression());
 		default:
             logger.error(symbol.getPosition(), "Syntax error on tokenType \""
 					+ symbol.getLexeme() + "\", delete this tokenType");
@@ -1691,7 +1676,6 @@ public class SynAn {
 		case MUL:
 		case DIV:
 		case MOD:
-		case DOT:
 		case KW_FOR:
 			dump("postfix_expression' -> e");
 			return e;
@@ -1704,8 +1688,7 @@ public class SynAn {
 						"Syntax error, insert \"]\" to complete expression");
 			getNextSymbol();
 
-			return parsePostfixExpression_(new AstBinaryExpression(new Position(
-					e.position, expr.position), AstBinaryExpression.ARR, e, expr));
+			return parsePostfixExpression_(new AstBinaryExpression(new Position(e.position, expr.position), AstBinaryExpression.ARR, e, expr));
 		case QMARK:
 			dump("postfix_expression' -> optional evaluation expression");
 			getNextSymbol();
@@ -1713,8 +1696,8 @@ public class SynAn {
 		case NOT:
 			dump("postfix_expression' -> force value expression");
 			getNextSymbol();
-			return new AstForceValueExpression(
-					new Position(e.position, symbolPos), e);
+			return new AstForceValueExpression(new Position(e.position, symbolPos), e);
+        case DOT:
 		default:
             logger.error(symbol.getPosition(), "Syntax error on tokenType \""
 					+ symbol.getLexeme() + "\", delete this tokenType");
@@ -1723,7 +1706,97 @@ public class SynAn {
 		return null;
 	}
 
-	private AstExpression parseAtomExpression() {
+	private AstExpression parseDotExpression() {
+        switch (symbol.getTokenType()) {
+            case LOG_CONST:
+            case INT_CONST:
+            case STR_CONST:
+            case CHAR_CONST:
+            case DOUBLE_CONST:
+            case KW_NULL:
+            case LBRACKET:
+            case KW_IF:
+            case KW_WHILE:
+            case KW_FOR:
+            case LPARENT:
+            case IDENTIFIER:
+            case KW_RETURN:
+            case QMARK:
+            case EMARK:
+                dump("dot_expression -> atom_expression dot_expression'");
+                return parseDotExpression_(parseAtomExpression());
+            default:
+                logger.error(symbol.getPosition(), "Syntax error on tokenType \""
+                        + symbol.getLexeme() + "\", delete this tokenType");
+        }
+
+        return null;
+    }
+
+    private AstExpression parseDotExpression_(AstExpression e) {
+        Position symbolPos = symbol.getPosition();
+
+        switch (symbol.getTokenType()) {
+            case AND:
+            case IOR:
+            case SEMIC:
+            case NEWLINE:
+            case COLON:
+            case RPARENT:
+            case IDENTIFIER:
+            case ASSIGN:
+            case RBRACE:
+            case LBRACE:
+            case RBRACKET:
+            case KW_ELSE:
+            case COMMA:
+            case EOF:
+            case EQU:
+            case KW_IS:
+            case KW_AS:
+            case NEQ:
+            case GTH:
+            case LTH:
+            case GEQ:
+            case LEQ:
+            case ADD:
+            case SUB:
+            case MUL:
+            case DIV:
+            case MOD:
+            case KW_FOR:
+                dump("dot_expression' -> e");
+                return e;
+            case DOT:
+//                dump("dot_expression' -> atom_expression dot'");
+                getNextSymbol();
+                AstExpression expr = parseAtomExpression();
+                AstBinaryExpression bin = new AstBinaryExpression(new Position(e.position, expr.position), AstBinaryExpression.DOT, e, expr);
+                while(symbol.getTokenType() == TokenType.DOT) {
+                    getNextSymbol();
+                    expr = parseAtomExpression();
+                    bin = new AstBinaryExpression(new Position(bin.position, expr.position), AstBinaryExpression.DOT, bin, expr);
+                }
+                return bin;
+            case LBRACKET:
+                dump("postfix_expression' -> [ expression ] postfix_expression'");
+                getNextSymbol();
+                expr = parseExpression();
+                if (symbol.getTokenType() != TokenType.RBRACKET)
+                    logger.error(previous.getPosition(),
+                            "Syntax error, insert \"]\" to complete expression");
+                getNextSymbol();
+
+                return parsePostfixExpression_(new AstBinaryExpression(new Position(e.position, expr.position), AstBinaryExpression.ARR, e, expr));
+            default:
+                logger.error(symbol.getPosition(), "Syntax error on tokenType \""
+                        + symbol.getLexeme() + "\", delete this tokenType");
+        }
+
+        return null;
+    }
+
+    private AstExpression parseAtomExpression() {
 		Symbol current = symbol;
 
 		switch (symbol.getTokenType()) {

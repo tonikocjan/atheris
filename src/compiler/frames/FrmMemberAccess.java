@@ -36,6 +36,6 @@ public class FrmMemberAccess extends FrmAccess {
 
 	@Override
 	public String toString() {
-		return "Member (" + memberDefinition.name + ", framePointerOffset: " + offsetForMember() + ")";
+		return "Member (" + memberDefinition.name + ", offset: " + offsetForMember() + ")";
 	}
 }

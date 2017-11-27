@@ -6,6 +6,7 @@ import compiler.ast.tree.def.AstClassDefinition;
 import compiler.ast.tree.def.AstDefinition;
 import compiler.ast.tree.def.AstVariableDefinition;
 import compiler.ast.tree.type.AstType;
+import utils.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,8 +27,7 @@ public abstract class ObjectType extends Type {
 
     public ObjectType(AstClassDefinition definition, ArrayList<String> names, ArrayList<Type> types, CanType baseClass, int reservedSize) {
         if (names.size() != types.size()) {
-            logger.error("Internal error :: compiler.seman.memberType.ObjectType: "
-                    + "names elementCount not equal types elementCount");
+            logger.error("Internal error :: compiler.seman.memberType.ObjectType: " + "names elementCount not equal types elementCount");
         }
 
         int size = 0;
@@ -35,7 +35,8 @@ public abstract class ObjectType extends Type {
             definitions.put(names.get(i), definition.memberDefinitions.definitions.get(i));
 
             if (definition.memberDefinitions.definitions.get(i) instanceof AstVariableDefinition) {
-                size += types.get(i).sizeInBytes();
+                Type type = types.get(i);
+                size += type.isReferenceType() ? Constants.Byte : type.sizeInBytes();
             }
         }
 
