@@ -56,6 +56,7 @@ public class Interpreter {
             System.out.println("Address [" + address + "]: " + value);
         }
 	}
+
 	public Interpreter(FrmFrame frame, ImcSEQ code) {
 		if (debug) {
 			System.out.println("[START OF " + frame.entryLabel.getName() + "]");
@@ -158,15 +159,10 @@ public class Interpreter {
 		
 		if (instruction instanceof ImcCALL) {
 			ImcCALL instr = (ImcCALL) instruction;
-			int offset = 0;
-
 			memory.stM(stackPointer, execute(instr.args.getFirst()));
 			
-			offset += Constants.Byte;
-			
 			for (int i = 1; i < instr.args.size(); i++) {
-				memory.stM(stackPointer + offset, execute(instr.args.get(i)));
-				offset += Constants.Byte;
+				memory.stM(stackPointer + Constants.Byte*i, execute(instr.args.get(i)));
 			}
 
 			if (instr.label.getName().equals("_print")) {

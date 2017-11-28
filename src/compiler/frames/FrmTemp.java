@@ -34,4 +34,9 @@ public class FrmTemp {
     public boolean equals(Object t) {
         return identifier == ((FrmTemp) t).identifier;
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
