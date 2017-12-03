@@ -322,6 +322,7 @@ Svoji dragi Alenčici.
 %\noindent\textbf{Povzetek:} 
 V diplomskem delu bom predstavil programski jezik Atheris, ki je nastal kot nadgradnja programskega jezika PINS. Prog. jezik PINS, oz. prevajalnik zanj, je bil zgrajen tekom semestra pri predmetu prevajalniki in navidezni stroji. Ker mi je bilo delo na prevajalniku izjemno zanimivo, sem se odločil, da ustvarim svoj programski jezik in sam določim pravila zanj.\\
 \indent V diplomskem delu na kratko predstavim prevajalnike in programske jezike, kaj sploh so in kaj je njihov namen. Opišem kakšne so sodobne prakse pri ravoju prevajalnikov, s kakšnimi probleme se prevajalnik sooča ter kako je zgrajen. \\
+\indent Podrobneje bom obrazložil nadgradnje jezika PINS, s kakšnimi problemi sem se tekom razvoja soočal ter kako sem jih reševal. Pokazal bom nekaj primerov programov v mojem jeziku ter primerjal z drugimi jeziki.
 
 \noindent 
 
@@ -528,9 +529,58 @@ Simbolna tabela je podatkovna struktura, ki mapira imena v njihove definicije in
 
 \subsection{Klicni zapisi}
 
-V skoraj vsakem modernem programskem jeziku ima lahko funkcija \textit{lokalne} spremenljivke, ki so kreirane ob vstopu v funkcijo. Hkrati lahko naenkrat obstaja več zapisov iste funkcije, zato je pomembno, da ima vsak zapis lastne instance lokalnih spremenljivk. \cite{modernCompiler}\\
-\indent Primer lahko demonstriramo z naslednjo rekurzivno funkcijo:
+V skoraj vsakem modernem programskem jeziku ima lahko funkcija \textit{lokalne} spremenljivke, ki so kreirane ob vstopu v funkcijo. Hkrati lahko naenkrat obstaja več zapisov iste funkcije, zato je pomembno, da ima vsak zapis lastne instance lokalnih spremenljivk. \cite{modernCompiler} \\
+\indent V funkciji 
+\begin{lstlisting}
+let x: Int
+let y: Int
+x * y
+\end{lstlisting}
 
+se za vsak njen klic ustvari nova instanca x, ki jo inicializira klicalec funkcije. Ker je funkcija rekurzivna, živi v pomnilniku naenkrat veliko x-ev. Podobno se ob vsakem vstopu v jedro funkcije ustvari tudi nova instanca y. \cite{modernCompiler}\\
+
+\subsubsection{Sklad}
+
+Klicni zapisi funkcij se shranjujejo na sklad. Sklad je v pomnilniku predstavljen kot velika tabela s posebnik registrimo imenovanim \textit{stack pointer} oz. kazalec na sklad, ki kaže na konec sklada. Ob vsakem klicu funkcije se sklad poveča za velikost klicnega zapisa klicane funkcije. Podobno se ob vrnitvi funkcije zmanjša za enako vrednost. Prostor v klicnem zapisu namenjen hrambi vhodnih parametrov, lokalnih spremenljivk in ostalih registrov se imenuje \textit{activation record}. \cite{modernCompiler}
+\\\\
+\textbf{Kazalec na klicni zapis}
+
+Predpostavimo da funkcija \textit{g} kliče funkcijo \textit{f}. Ob vstopu v f kazalec na sklad (SP) kaže na prvi vhodni argument funkciji f. Nov prostor na skladu je rezerviran tako, da se od SP odšteje velikost klicnega zapisa f. Tako SP sedaj kaže na konec sklada. Stara vrednost SP postane nova vrednost kazalca na klicni zapis (\textit{angl. frame pointer}). V programskih jezikih, kjer je velikost klicnega zapisa za posamezno funkcijo konstantna, je vrednost kazalca na klicni (FP) zapis vedno izračunljiva, zato si je ni potrebno posebaj shranjevati na sklad. FP = SP + velikost sklada. \cite{modernCompiler}
+
+\textbf{Prenos parametrov}
+
+Standarden način klicanja funkcij je, da klicoča funkcija rezervira prostor na skladu za prenosih njenih izhodnih parametrov (oz. vhodnih parametrov za klicano funkcijo). \cite{modernCompiler} \\
+\indent Prostor za njih se običajno nahaja pred SP. Klicana funkcija tako naslov njenega i-tega parametra izračuna z enačbo 
+\begin{lstlisting}
+	argumentAddress(i) = FP + (4 * i)
+\end{lstlisting}
+
+\textbf{Lokalne spremenljivke}
+
+Prevajalnik mora na skladu alocirati dovolj prostora za vse lokalne spremenljivke. 
+
+\textbf{Static link}
+
+V jezikih, ki podpirajo gnezdenje funkcij, lahko gnezdene funkcije dostopajo do spremenljivk, ki se nahajajo v zunanjih funkcijah. Da lahko gnezdena funkcija dostopa do spremenljivk, ki niso na njenem skladu, ji ob klicu poleg ostalih parametrov posredujemo FP funkcije, ki jo neposredno definira. Temu kazalcu rečemo \textit{static link}. 
+
+\begin{lstlisting}[caption={Primer gnezdenih funkcij}, captionpos=b, label={lst:nestedFunctions}]
+    func f() {
+        var x: Int = 10
+       
+        func e() {
+            var z: Int = 100
+        }
+        
+        func g() {
+            var y: Int = 20
+            func h() {
+                print(y, x)
+            }
+        }
+    }
+\end{lstlisting}
+
+Primer ~\ref{lst:nestedFunctions} vsebuje dve gnezdeni funkciji \textit{g} in \textit{h}. Funkcija h lahko dostopa do vseh spremenljivk, ki so definirane v 
 
 \chapter{Matematično okolje in sklicevanje na besedilne konstrukte}
 \label{ch1}

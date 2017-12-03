@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.5)  26 NOV 2017 12:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.5)  29 NOV 2017 22:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -550,14 +550,14 @@ l.270 \clearemptydoublepage
 
 ] (./vzorec_dip_Seminar.toc
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 28.
+(babel)             in language  on input line 29.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 28.
+(babel)             in language  on input line 29.
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.28 ...ne {10}Sklepne ugotovitve}{31}{chapter.10}
+l.29 ...ne {10}Sklepne ugotovitve}{33}{chapter.10}
                                                    [9
 
 ])
@@ -610,154 +610,149 @@ l.309 \clearemptydoublepage
 ]
 Package babel Info: Redefining slovene shorthand "|
 (babel)             in language  on input line 313.
-
-Underfull \hbox (badness 10000) in paragraph at lines 323--325
-
- []
-
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 332.
+(babel)             in language  on input line 333.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 332.
+(babel)             in language  on input line 333.
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.332 \clearemptydoublepage
+l.333 \clearemptydoublepage
                             [13
 
 ]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 332.
+(babel)             in language  on input line 333.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 332.
+(babel)             in language  on input line 333.
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.332 \clearemptydoublepage
+l.333 \clearemptydoublepage
                             [14
 
 ]
-Overfull \hbox (3.05353pt too wide) in paragraph at lines 351--354
+Overfull \hbox (3.05353pt too wide) in paragraph at lines 352--355
 \OT1/cmr/bx/n/12 Keywords: \OT1/cmr/m/n/12 com-piler, pro-gram-ming lan-guage, 
 syn-tax, se-man-tics, Java, Swift.
  []
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 354.
+(babel)             in language  on input line 355.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 354.
+(babel)             in language  on input line 355.
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.354 \clearemptydoublepage
+l.355 \clearemptydoublepage
                             [15
 
 ]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 354.
+(babel)             in language  on input line 355.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 354.
+(babel)             in language  on input line 355.
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.354 \clearemptydoublepage
+l.355 \clearemptydoublepage
                             [16
 
 ]
 Poglavje 1.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 361.
+(babel)             in language  on input line 362.
 
-Overfull \hbox (1.95427pt too wide) in paragraph at lines 363--366
+Overfull \hbox (1.95427pt too wide) in paragraph at lines 364--367
 []\OT1/cmr/m/n/12 Dandanes lahko za ra-zvoj pro-gram-ske opreme iz-bi-ramo med 
 ve-liko koli^^Tcino
  []
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 367.
+(babel)             in language  on input line 368.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 367.
+(babel)             in language  on input line 368.
 [1
 
 
 ]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 367.
+(babel)             in language  on input line 368.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 367.
+(babel)             in language  on input line 368.
  [2
 
 ]
 Poglavje 2.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 367.
+(babel)             in language  on input line 368.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 370.
+(babel)             in language  on input line 371.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 388.
+(babel)             in language  on input line 389.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 388.
+(babel)             in language  on input line 389.
 [3]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 394.
+(babel)             in language  on input line 395.
  <resources/compilerPhases.jpg, id=182, 1003.75pt x 644.4075pt>
 File: resources/compilerPhases.jpg Graphic file (type jpg)
 
 <use resources/compilerPhases.jpg>
-Package pdftex.def Info: resources/compilerPhases.jpg used on input line 400.
+Package pdftex.def Info: resources/compilerPhases.jpg used on input line 401.
 (pdftex.def)             Requested size: 390.0pt x 250.38379pt.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 410.
+(babel)             in language  on input line 411.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 410.
+(babel)             in language  on input line 411.
  [4 <./resources/compilerPhases.jpg>]
-Underfull \hbox (badness 10000) in paragraph at lines 436--438
+Underfull \hbox (badness 10000) in paragraph at lines 437--439
 
  []
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 438.
+(babel)             in language  on input line 439.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 438.
+(babel)             in language  on input line 439.
 [5]
-Underfull \hbox (badness 10000) in paragraph at lines 464--466
+Underfull \hbox (badness 10000) in paragraph at lines 465--467
 
  []
 
 <resources/ast.png, id=207, 986.68625pt x 251.94125pt>
 File: resources/ast.png Graphic file (type png)
  <use resources/ast.png>
-Package pdftex.def Info: resources/ast.png used on input line 469.
+Package pdftex.def Info: resources/ast.png used on input line 470.
 (pdftex.def)             Requested size: 390.0pt x 99.58298pt.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 473.
+(babel)             in language  on input line 474.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 473.
+(babel)             in language  on input line 474.
 
 [6] <resources/astSeman.png, id=236, 986.68625pt x 251.94125pt>
 File: resources/astSeman.png Graphic file (type png)
 
 <use resources/astSeman.png>
-Package pdftex.def Info: resources/astSeman.png used on input line 489.
+Package pdftex.def Info: resources/astSeman.png used on input line 490.
 (pdftex.def)             Requested size: 390.0pt x 99.58298pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 501.
+(babel)             in language  on input line 502.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 501.
+(babel)             in language  on input line 502.
 [7 <./resources/ast.png>]
 <resources/astSemanNameError.png, id=249, 647.41875pt x 348.30125pt>
 File: resources/astSemanNameError.png Graphic file (type png)
 
 <use resources/astSemanNameError.png>
-Package pdftex.def Info: resources/astSemanNameError.png used on input line 509
+Package pdftex.def Info: resources/astSemanNameError.png used on input line 510
 .
 (pdftex.def)             Requested size: 390.0pt x 209.81676pt.
 
@@ -768,7 +763,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 File: resources/astSemanTypeError.png Graphic file (type png)
 
 <use resources/astSemanTypeError.png>
-Package pdftex.def Info: resources/astSemanTypeError.png used on input line 523
+Package pdftex.def Info: resources/astSemanTypeError.png used on input line 524
 .
 (pdftex.def)             Requested size: 390.0pt x 98.77951pt.
 
@@ -779,112 +774,135 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 Underfull \vbox (badness 2970) has occurred while \output is active []
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 532.
+(babel)             in language  on input line 534.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 532.
+(babel)             in language  on input line 534.
  [8 <./resources/astSeman.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 540--541
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 544--547
+
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 533.
+(babel)             in language  on input line 547.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 533.
+(babel)             in language  on input line 547.
  [9 <./resources/astSemanNameError.png>]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 533.
+(babel)             in language  on input line 554.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 533.
+(babel)             in language  on input line 554.
  [10 <./resources/astSemanTypeError.png>]
+Package babel Info: Redefining slovene shorthand "|
+(babel)             in language  on input line 585.
+Package babel Info: Redefining slovene shorthand "|
+(babel)             in language  on input line 585.
+ [11]
+Package babel Info: Redefining slovene shorthand "|
+(babel)             in language  on input line 585.
+Package babel Info: Redefining slovene shorthand "|
+(babel)             in language  on input line 585.
+
+[12
+
+]
 Poglavje 3.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 533.
+(babel)             in language  on input line 585.
 
 Package hyperref Warning: Composite letter `\textasciicaron+c'
 (hyperref)                not defined in PD1 encoding,
-(hyperref)                removing `\textasciicaron' on input line 533.
+(hyperref)                removing `\textasciicaron' on input line 585.
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 562.
+(babel)             in language  on input line 614.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 562.
-[11
-
-]
+(babel)             in language  on input line 614.
+[13]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 566.
+(babel)             in language  on input line 618.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 566.
- [12]
+(babel)             in language  on input line 618.
+ [14]
 Poglavje 4.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 566.
+(babel)             in language  on input line 618.
 
 Underfull \vbox (badness 2689) has occurred while \output is active []
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 584.
+(babel)             in language  on input line 636.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 584.
- [13
+(babel)             in language  on input line 636.
+ [15
 
 ]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 589.
+(babel)             in language  on input line 641.
 
-<pic1.pdf, id=312, 455.24379pt x 341.4326pt>
+<pic1.pdf, id=348, 455.24379pt x 341.4326pt>
 File: pic1.pdf Graphic file (type pdf)
  <use pic1.pdf>
-Package pdftex.def Info: pic1.pdf used on input line 595.
+Package pdftex.def Info: pic1.pdf used on input line 647.
 (pdftex.def)             Requested size: 234.00238pt x 175.50371pt.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 621.
+(babel)             in language  on input line 673.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 621.
- [14 <./pic1.pdf>]
+(babel)             in language  on input line 673.
+ [16 <./pic1.pdf>]
 
-LaTeX Warning: Reference `pic2' on page 15 undefined on input line 623.
+LaTeX Warning: Reference `pic2' on page 17 undefined on input line 675.
 
-<pic2.png, id=395, 405.515pt x 347.2975pt>
+<pic2.png, id=431, 405.515pt x 347.2975pt>
 File: pic2.png Graphic file (type png)
  <use pic2.png>
-Package pdftex.def Info: pic2.png used on input line 626.
+Package pdftex.def Info: pic2.png used on input line 678.
 (pdftex.def)             Requested size: 284.52756pt x 243.6842pt.
 
 Underfull \vbox (badness 3724) has occurred while \output is active []
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 640.
+(babel)             in language  on input line 692.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 640.
- [15 <./pic2.png>]
+(babel)             in language  on input line 692.
+ [17 <./pic2.png>]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 644.
+(babel)             in language  on input line 696.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 644.
- [16]
+(babel)             in language  on input line 696.
+ [18]
 Poglavje 5.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 644.
+(babel)             in language  on input line 696.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 661.
+(babel)             in language  on input line 713.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 661.
-[17
+(babel)             in language  on input line 713.
+[19
 
 ]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 673.
+(babel)             in language  on input line 725.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 673.
- [18]
+(babel)             in language  on input line 725.
+ [20]
 Poglavje 6.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 673.
+(babel)             in language  on input line 725.
 
 Package hyperref Warning: Composite letter `\textasciicaron+c'
 (hyperref)                not defined in PD1 encoding,
-(hyperref)                removing `\textasciicaron' on input line 673.
+(hyperref)                removing `\textasciicaron' on input line 725.
 
 
-Overfull \hbox (0.94252pt too wide) in paragraph at lines 684--687
+Overfull \hbox (0.94252pt too wide) in paragraph at lines 736--739
 \OT1/cmr/m/n/12 ven-ske na-re-ko-vaje je v tej La-TeXovi pre-dlogi de-fi-ni-ran
  nov ukaz [] []\OT1/cmtt/m/n/12 \sn{ ... }[]\OT1/cmr/m/n/12 . 
  []
@@ -893,120 +911,120 @@ Overfull \hbox (0.94252pt too wide) in paragraph at lines 684--687
 File: uni-32.def 2013/05/13 UCS: Unicode data U+2000..U+20FF
 )
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 700.
+(babel)             in language  on input line 752.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 700.
- [19
+(babel)             in language  on input line 752.
+ [21
 
 ]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 708.
+(babel)             in language  on input line 760.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 708.
+(babel)             in language  on input line 760.
 
-[20]
+[22]
 Poglavje 7.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 708.
+(babel)             in language  on input line 760.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 729.
+(babel)             in language  on input line 781.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 729.
-[21
+(babel)             in language  on input line 781.
+[23
 
 ]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 743.
+(babel)             in language  on input line 795.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 758.
+(babel)             in language  on input line 810.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 758.
- [22]
+(babel)             in language  on input line 810.
+ [24]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 770.
+(babel)             in language  on input line 822.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 770.
- [23]
+(babel)             in language  on input line 822.
+ [25]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 770.
+(babel)             in language  on input line 822.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 770.
- [24
+(babel)             in language  on input line 822.
+ [26
 
 ]
 Poglavje 8.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 770.
+(babel)             in language  on input line 822.
 
 Underfull \vbox (badness 1558) has occurred while \output is active []
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 791.
+(babel)             in language  on input line 843.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 791.
- [25]
-Overfull \hbox (2.6261pt too wide) in paragraph at lines 791--798
+(babel)             in language  on input line 843.
+ [27]
+Overfull \hbox (2.6261pt too wide) in paragraph at lines 843--850
 []\OT1/cmr/m/n/12 Z upo-rabo \OT1/cmr/m/sc/12 Bib\OT1/cmr/m/n/12 T[]Xa v slo-ve
 n^^Ts^^Tcini je ^^Tse ne-kaj ne-do-sle-dno-sti, saj so pomo^^Tzne
  []
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 814.
+(babel)             in language  on input line 866.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 820.
+(babel)             in language  on input line 872.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 820.
- [26]
+(babel)             in language  on input line 872.
+ [28]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 831.
+(babel)             in language  on input line 883.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 831.
+(babel)             in language  on input line 883.
 
-[27]
+[29]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 831.
+(babel)             in language  on input line 883.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 831.
- [28
+(babel)             in language  on input line 883.
+ [30
 
 ]
 Poglavje 9.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 831.
+(babel)             in language  on input line 883.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 848.
+(babel)             in language  on input line 900.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 848.
-[29]
+(babel)             in language  on input line 900.
+[31]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 848.
+(babel)             in language  on input line 900.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 848.
- [30
+(babel)             in language  on input line 900.
+ [32
 
 ]
 Poglavje 10.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 848.
+(babel)             in language  on input line 900.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 858.
+(babel)             in language  on input line 910.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 858.
-[31]
-Underfull \hbox (badness 10000) in paragraph at lines 859--860
+(babel)             in language  on input line 910.
+[33]
+Underfull \hbox (badness 10000) in paragraph at lines 911--912
 
  []
 
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 860.
+(babel)             in language  on input line 912.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 860.
-[32]
+(babel)             in language  on input line 912.
+[34]
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 861.
+(babel)             in language  on input line 913.
  (./vzorec_dip_Seminar.bbl
 Underfull \hbox (badness 7415) in paragraph at lines 10--16
 []\OT1/cmr/m/n/12 A com-plete de-scrip-tion of a pro-gram-ming lan-gu-age in-cl
@@ -1031,20 +1049,20 @@ Package babel Info: Redefining slovene shorthand "|
 (babel)             in language  on input line 50.
 Package babel Info: Redefining slovene shorthand "|
 (babel)             in language  on input line 50.
-[33
+[35
 
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 866.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 918.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 866.
+(babel)             in language  on input line 918.
 Package babel Info: Redefining slovene shorthand "|
-(babel)             in language  on input line 866.
- [34]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 866.
+(babel)             in language  on input line 918.
+ [36]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 918.
  (./vzorec_dip_Seminar.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 866.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 866.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 918.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 918.
 Package rerunfilecheck Info: File `vzorec_dip_Seminar.out' has not changed.
 (rerunfilecheck)             Checksum: 99D688773B0FC5D550A7911DFECD1396;1109.
 
@@ -1054,21 +1072,21 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 866.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 918.
  )
 (\end occurred inside a group at level 2)
 
-### simple group (level 2) entered at line 759 ({)
-### simple group (level 1) entered at line 750 ({)
+### simple group (level 2) entered at line 811 ({)
+### simple group (level 1) entered at line 802 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 10900 strings out of 492995
- 147931 string characters out of 6132705
- 253630 words of memory out of 5000000
- 14162 multiletter control sequences out of 15000+600000
+ 10933 strings out of 492995
+ 148354 string characters out of 6132705
+ 253685 words of memory out of 5000000
+ 14171 multiletter control sequences out of 15000+600000
  17915 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 29i,11n,43p,606b,1087s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 29i,11n,43p,668b,1087s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmbx12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmbx8.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm
@@ -1085,10 +1103,10 @@ b></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb
 sr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb></us
 r/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb>
 
-Output written on vzorec_dip_Seminar.pdf (50 pages, 612856 bytes).
+Output written on vzorec_dip_Seminar.pdf (52 pages, 617116 bytes).
 PDF statistics:
- 603 PDF objects out of 1000 (max. 8388607)
- 483 compressed objects within 5 object streams
- 129 named destinations out of 1000 (max. 500000)
+ 644 PDF objects out of 1000 (max. 8388607)
+ 521 compressed objects within 6 object streams
+ 153 named destinations out of 1000 (max. 500000)
  184 words of extra memory for PDF output out of 10000 (max. 10000000)
 
