@@ -15,16 +15,38 @@
 \contentsline {subsubsection}{Simbolna tabela}{8}{section*.6}
 \contentsline {subsection}{\numberline {2.2.4}Klicni zapisi}{9}{subsection.2.2.4}
 \contentsline {subsubsection}{Sklad}{10}{section*.7}
-\contentsline {chapter}{\numberline {3}Matemati\IeC {\v c}no okolje in sklicevanje na besedilne konstrukte}{13}{chapter.3}
-\contentsline {chapter}{\numberline {4}Plovke: slike in tabele}{15}{chapter.4}
-\contentsline {section}{\numberline {4.1}Formati slik}{16}{section.4.1}
-\contentsline {subsection}{\numberline {4.1.1}Podnapisi k slikam in tabelam}{18}{subsection.4.1.1}
-\contentsline {chapter}{\numberline {5}Struktura strokovnih besedil}{19}{chapter.5}
-\contentsline {chapter}{\numberline {6}Pogoste napake pri pisanju v sloven\IeC {\v s}\IeC {\v c}ini}{21}{chapter.6}
-\contentsline {chapter}{\numberline {7}Koristni nasveti pri pisanju v \LaTeX {u}}{23}{chapter.7}
-\contentsline {section}{\numberline {7.1}Pisave v \LaTeX u}{24}{section.7.1}
-\contentsline {chapter}{\numberline {8}Kaj pa literatura?}{27}{chapter.8}
-\contentsline {section}{\numberline {8.1}Izbiranje virov za spisek literature}{29}{section.8.1}
-\contentsline {chapter}{\numberline {9}Sistem STUDIS in PDF/A}{31}{chapter.9}
-\contentsline {chapter}{\numberline {10}Sklepne ugotovitve}{33}{chapter.10}
-\contentsline {chapter}{Literatura}{35}{chapter.10}
+\contentsline {subsection}{\numberline {2.2.5}Generiranje vmesne kode}{12}{subsection.2.2.5}
+\contentsline {subsubsection}{Vmesna koda}{12}{section*.8}
+\contentsline {subsubsection}{Vmesno predstavitveno drevo}{12}{section*.9}
+\contentsline {chapter}{\numberline {3}Programski jezik PINS}{15}{chapter.3}
+\contentsline {section}{\numberline {3.1}Leksikalna pravila}{15}{section.3.1}
+\contentsline {section}{\numberline {3.2}Sintaksna pravila}{16}{section.3.2}
+\contentsline {section}{\numberline {3.3}Semanti\IeC {\v c}na pravila}{17}{section.3.3}
+\contentsline {subsubsection}{Obmo\IeC {\v c}ja vidnosti}{17}{section*.10}
+\contentsline {subsubsection}{Tipiziranost}{17}{section*.11}
+\contentsline {subsubsection}{Deklaracije}{18}{section*.12}
+\contentsline {section}{\numberline {3.4}Spremembe in raz\IeC {\v s}iritve}{18}{section.3.4}
+\contentsline {subsubsection}{Sintaksa}{18}{section*.13}
+\contentsline {subsubsection}{Podatkovni tipi}{19}{section*.14}
+\contentsline {subsubsection}{Enumeracije}{20}{section*.15}
+\contentsline {subsubsection}{Terke}{20}{section*.16}
+\contentsline {subsubsection}{Razredi in vmesniki}{21}{section*.17}
+\contentsline {chapter}{\numberline {4}Programski jezik Atheris}{23}{chapter.4}
+\contentsline {section}{\numberline {4.1}Sintaksa}{23}{section.4.1}
+\contentsline {section}{\numberline {4.2}Funkcije}{26}{section.4.2}
+\contentsline {section}{\numberline {4.3}Enumeracije}{27}{section.4.3}
+\contentsline {section}{\numberline {4.4}Terke}{29}{section.4.4}
+\contentsline {section}{\numberline {4.5}Razredi}{30}{section.4.5}
+\contentsline {subsection}{\numberline {4.5.1}Dostop do \IeC {\v c}lanov in nadzor dostopa}{30}{subsection.4.5.1}
+\contentsline {subsection}{\numberline {4.5.2}Instan\IeC {\v c}ne funkcije}{31}{subsection.4.5.2}
+\contentsline {subsection}{\numberline {4.5.3}Konstruktorji}{32}{subsection.4.5.3}
+\contentsline {subsection}{\numberline {4.5.4}Stati\IeC {\v c}ni \IeC {\v c}lani razreda}{33}{subsection.4.5.4}
+\contentsline {section}{\numberline {4.6}Dedovanje in polimorfizem}{35}{section.4.6}
+\contentsline {subsection}{\numberline {4.6.1}Dynamic Dispatch}{35}{subsection.4.6.1}
+\contentsline {subsubsection}{Virtualne tabele}{36}{section*.18}
+\contentsline {subsection}{\numberline {4.6.2}Realizacija}{37}{subsection.4.6.2}
+\contentsline {section}{\numberline {4.7}Instance of operator}{37}{section.4.7}
+\contentsline {section}{\numberline {4.8}Pretvarjanje tipov}{38}{section.4.8}
+\contentsline {section}{\numberline {4.9}Vmesniki}{39}{section.4.9}
+\contentsline {chapter}{\numberline {5}Sklepne ugotovitve}{41}{chapter.5}
+\contentsline {chapter}{Literatura}{42}{chapter.5}

@@ -4,15 +4,20 @@
 \BOOKMARK [0][-]{chapter.2}{Prevajalniki}{}% 4
 \BOOKMARK [1][-]{section.2.1}{Uvod v prevajalnike in programske jezike}{chapter.2}% 5
 \BOOKMARK [1][-]{section.2.2}{Zgradba prevajalnika}{chapter.2}% 6
-\BOOKMARK [0][-]{chapter.3}{Matematicno okolje in sklicevanje na besedilne konstrukte}{}% 7
-\BOOKMARK [0][-]{chapter.4}{Plovke: slike in tabele}{}% 8
-\BOOKMARK [1][-]{section.4.1}{Formati slik}{chapter.4}% 9
-\BOOKMARK [0][-]{chapter.5}{Struktura strokovnih besedil}{}% 10
-\BOOKMARK [0][-]{chapter.6}{Pogoste napake pri pisanju v sloven\235cini}{}% 11
-\BOOKMARK [0][-]{chapter.7}{Koristni nasveti pri pisanju v LaTeXu}{}% 12
-\BOOKMARK [1][-]{section.7.1}{Pisave v LaTeXu}{chapter.7}% 13
-\BOOKMARK [0][-]{chapter.8}{Kaj pa literatura?}{}% 14
-\BOOKMARK [1][-]{section.8.1}{Izbiranje virov za spisek literature}{chapter.8}% 15
-\BOOKMARK [0][-]{chapter.9}{Sistem STUDIS in PDF/A}{}% 16
-\BOOKMARK [0][-]{chapter.10}{Sklepne ugotovitve}{}% 17
-\BOOKMARK [0][-]{chapter.10}{Literatura}{}% 18
+\BOOKMARK [0][-]{chapter.3}{Programski jezik PINS}{}% 7
+\BOOKMARK [1][-]{section.3.1}{Leksikalna pravila}{chapter.3}% 8
+\BOOKMARK [1][-]{section.3.2}{Sintaksna pravila}{chapter.3}% 9
+\BOOKMARK [1][-]{section.3.3}{Semanticna pravila}{chapter.3}% 10
+\BOOKMARK [1][-]{section.3.4}{Spremembe in raz\235iritve}{chapter.3}% 11
+\BOOKMARK [0][-]{chapter.4}{Programski jezik Atheris}{}% 12
+\BOOKMARK [1][-]{section.4.1}{Sintaksa}{chapter.4}% 13
+\BOOKMARK [1][-]{section.4.2}{Funkcije}{chapter.4}% 14
+\BOOKMARK [1][-]{section.4.3}{Enumeracije}{chapter.4}% 15
+\BOOKMARK [1][-]{section.4.4}{Terke}{chapter.4}% 16
+\BOOKMARK [1][-]{section.4.5}{Razredi}{chapter.4}% 17
+\BOOKMARK [1][-]{section.4.6}{Dedovanje in polimorfizem}{chapter.4}% 18
+\BOOKMARK [1][-]{section.4.7}{Instance of operator}{chapter.4}% 19
+\BOOKMARK [1][-]{section.4.8}{Pretvarjanje tipov}{chapter.4}% 20
+\BOOKMARK [1][-]{section.4.9}{Vmesniki}{chapter.4}% 21
+\BOOKMARK [0][-]{chapter.5}{Sklepne ugotovitve}{}% 22
+\BOOKMARK [0][-]{chapter.5}{Literatura}{}% 23

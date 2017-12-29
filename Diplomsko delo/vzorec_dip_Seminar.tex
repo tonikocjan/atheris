@@ -541,7 +541,7 @@ se za vsak njen klic ustvari nova instanca x, ki jo inicializira klicalec funkci
 
 \subsubsection{Sklad}
 
-Klicni zapisi funkcij se shranjujejo na sklad. Sklad je v pomnilniku predstavljen kot velika tabela s posebnik registrimo imenovanim \textit{stack pointer} oz. kazalec na sklad, ki kaže na konec sklada. Ob vsakem klicu funkcije se sklad poveča za velikost klicnega zapisa klicane funkcije. Podobno se ob vrnitvi funkcije zmanjša za enako vrednost. Prostor v klicnem zapisu namenjen hrambi vhodnih parametrov, lokalnih spremenljivk in ostalih registrov se imenuje \textit{activation record}. \cite{modernCompiler}
+Klicni zapisi funkcij se shranjujejo na sklad. Sklad je v pomnilniku predstavljen kot velika tabela s posebnim registrom imenovanim \textit{stack pointer} oz. kazalec na sklad, ki kaže na konec sklada. Ob vsakem klicu funkcije se sklad poveča za velikost klicnega zapisa klicane funkcije. Podobno se ob vrnitvi funkcije zmanjša za enako vrednost. Prostor v klicnem zapisu namenjen hrambi vhodnih parametrov, lokalnih spremenljivk in ostalih registrov se imenuje \textit{activation record}. \cite{modernCompiler}
 \\\\
 \textbf{Kazalec na klicni zapis}
 
@@ -566,11 +566,9 @@ V jezikih, ki podpirajo gnezdenje funkcij, lahko gnezdene funkcije dostopajo do 
 \begin{lstlisting}[caption={Primer gnezdenih funkcij}, captionpos=b, label={lst:nestedFunctions}]
     func f() {
         var x: Int = 10
-       
         func e() {
             var z: Int = 100
         }
-        
         func g() {
             var y: Int = 20
             func h() {
@@ -580,321 +578,587 @@ V jezikih, ki podpirajo gnezdenje funkcij, lahko gnezdene funkcije dostopajo do 
     }
 \end{lstlisting}
 
-Primer ~\ref{lst:nestedFunctions} vsebuje dve gnezdeni funkciji \textit{g} in \textit{h}. Funkcija h lahko dostopa do vseh spremenljivk, ki so definirane v 
+Primer ~\ref{lst:nestedFunctions} vsebuje dve gnezdeni funkciji \textit{g} in \textit{h}. Funkcija h lahko dostopa do spremenljivk definiranih v \textit{g} in \textit{f}, ne pa tudi tistih v \textit{e}.
 
-\chapter{Matematično okolje in sklicevanje na besedilne konstrukte}
+\subsection{Generiranje vmesne kode}   
+
+\subsubsection{Vmesna koda}
+
+Vmesna koda (\textit{angl. intermidiate representation}) je abstraktna predstavitev strojnega jezika in predstavlja ukaze, brez da bi poznali arhitekturo ciljne naprave. Poleg tega je vmesna koda neodvisna od izvornega jezika. \cite{modernCompiler} \\
+
+\subsubsection{Vmesno predstavitveno drevo}
+
+\indent Dobra predstavitev vmesne kode ima naslednje lastnosti:
+
+\begin{enumerate}
+	\item Njegovo generiranje mora biti priročno
+	\item Generiranje strojne kode v dejansko strojno kodo mora biti priročno za vse ciljne arhitekture
+	\item Vsak gradnik mora imeti jasen pomen, da so lahko optimizacijske transformacije enostavno implementirane
+\end{enumerate}
+\cite{modernCompiler}
+
+Posamezni deli abstraktnega sintaksnega drevesa so lahko kompleksne stvari, na primer zanke, klici funkcij, itd., ki jih ne moremo neposredno mapirati v strojne ukaze. Zato morajo gradniki vmesne kode predstavljati le enostavne operacije, kot so npr. LOAD (preberi vrednost iz pomnilnika), STORE (shrani vrednost v pomnilnik), ADD (seštej dve vrednosti), itd. Tako lahko vsak posamezen del AST prevedemo v ravno pravo zsaporedje ukazov abstraktne vmesne kode. \cite{modernCompiler} \\ 
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{resources/ir.png}
+	\end{center}
+	\caption{Primer vmesne kode za dostop do spremenljivke na klicnem zapisu.}
+	\label{pic1}
+\end{figure}
+
+\chapter{Programski jezik PINS}
+
+Programski jezik PINS je učni programski jezik, zato je tudi dokaj preprost. Prevajalnik zanj smo implementiral v sklopu večih domačih nalog pri predmetu Prevajalniki in navidezni stroji.
+
+\section{Leksikalna pravila}
+
+Programski jezik PINS podpira tri atomarne podatkovne tipe: \textit{integer}, \textit{logical}, \textit{string}, za katere so rezervirane istoimenske besede. Celoštevilske konstante so poljubno predznačeno zaporedje števk, logične konstante so ali \textit{true} ali \textit{false}, znakovne konstante pa so definirane kot poljubno (lahko prazno) zaporedje znakov z ASCII kodami med vključno 32 in 126, ki je obdano z enojnima navednicama (ASCII koda 39); izjema je en sam enojni narekovaj, ki je podvojen. \\
+\indent Imena so definirana kot poljubno zaporedje črtk, številk in podčrtajev, ki se ne začne s številko in ni rezervirana beseda ali kakšna od prej naštetih konstant. \\
+\indent Belo besedilo (\textit{angl. whitespace}) so presledki (ASCII 32), tabulatorji (ASCII 9) in znaka za konec vrstice (ASCII 10 in 13). \\
+\indent Komentarji se začnejo z '\#' (ASCII 35) in se raztezajo do konca vrstice.
+
+\section{Sintaksna pravila}
+
+Celotna izvorna koda je sestavljena iz seznama definicij. Vsaka definicija je lahko:
+
+\begin{enumerate}
+	\item Definicija tipa (oz. sklic na tip - \textit{typealias})
+	\item Definicija spremenljivke
+	\item Definicija funkcije
+\end{enumerate}
+
+Kot sem že omenil, podpira PINS tri osnovne podatkovne tipe, vendar sintaksa omogoča tudi definicijo tabel (\textit{angl. array}) s fiksno velikostjo. \\
+\indent Definicija funkcije je sestavljena iz imena, seznama parametrov, tipa, ki ga funkcija vrača, ter \textit{izraza} oz. jedra funkcije. Zanimivo pri PINSu je to, da izven funkcij ne moremo početi ničesar drugega, kot ustvarjati definicije (podobno kot pri Javi). \\
+\indent Izraz (\textit{angl. expression}) je lahko:
+\begin{enumerate}
+	\item Logični izraz
+	\item Primerjalni izraz
+	\item Seštevalni izraz
+	\item Multiplikativni izraz
+	\item Seštevalni izraz
+	\item Prefiksni izraz
+	\item Postfiksni izraz
+	\item Atomarni izraz
+\end{enumerate}
+
+Atomarni izraz se še naprej deli in je lahko:
+\begin{enumerate}
+	\item Logična konstanta
+	\item Celoštevilska konstanta
+	\item Znakovna konstanta
+	\item Ime
+	\item Klic funkcije
+	\item If stavek
+	\item If else stavek
+	\item While stavek
+	\item Zaporedje izrazov
+\end{enumerate}
+
+Vsakemu izrazu lahko sledijo tudi definicije gnezdene znotraj zavitih oklepajev.
+
+\section{Semantična pravila}
+
+\subsubsection{Območja vidnosti}
+
+Imena so vidna v celotnem območju vidnosti, ne glede na mesto definicije. Izraz \textit{expression \{ WHERE definitions \}} ustvari novo vgnezdeno območje vidnosti. To pomeni, da definicije znotraj zavitih oklepajev niso vidne navzven. Tudi definicija funkcije ustvari novo vgnezdeno območje vidnosti, ki se začne za imenom in se razteza do konca funkcije..
+
+\subsubsection{Tipiziranost}
+
+\begin{enumerate}
+	\item \textit{integer}, \textit{logical}, \textit{string} opisujejo podatkovne tipe INTEGER, LOGICAL in STRING, zaporedoma
+	\item izraz 
+\begin{lstlisting}[]
+	arr [ n ] type
+\end{lstlisting}
+	opisuje podatkovni tip ARR(n, type), kjer je \textit{n} celoštevilska konstanta 
+\end{enumerate}
+
+\subsubsection{Deklaracije}
+
+\begin{enumerate}
+	\item Deklaracija tipa
+\begin{lstlisting}[]
+typ identifier : type
+\end{lstlisting}
+	ustvari sklic na podatkovni tip \textit{type} z imenom \textit{identifier}
+	\item Deklaracija funkcije
+\begin{lstlisting}[]
+fun identifier ( identifier_1 : type_1, ..., identifier_n : type_n ) : type = expression 
+\end{lstlisting}
+	določa funkcijo, ki je tipa $type_1 x ... x type_n \,\to\, type $
+	\item Deklaracija spremenljivke
+\begin{lstlisting}[]
+var identifier : type
+\end{lstlisting}
+določa spremeljivko tipa $type$
+	\item Deklaracija parametra
+\begin{lstlisting}[]
+identifier : type
+\end{lstlisting}
+določa parameter tipa $type$
+\end{enumerate}
+
+\section{Spremembe in razširitve}
+
+\subsubsection{Sintaksa}
+
+Sintaksa je, v primerjavi s sintakso jezika PINS, popolnoma spremenjena. Pravzaprav je sintaksa skoraj identična programskemu jeziku Swift. \\
+\indent Med drugim nova sintaksa omogoča definiranje kompleksnejših podatkovnih tipov z uporabo razredov, vmesnikov, terk in enumeracij. \\
+\indent Posamezni stavki so med seboj ločeni z novimi vrsticami (Python, Swift), vendar pa omogoča njihovo ločevanje tudi s podpičjem ';' (C++, Java). \\
+\indent Komentarji se lahko začnejo bodisi z '\#' in se raztezajo do konca vrstice (Python, PINS), bodisi z '/*' in končajo z '*/' (Java, C++). \\
+\indent Podprt je tudi \textit{switch} kontrolni stavek s sintakso identične tej od Swifta.\\
+\indent Definicije funkcij ter klici funkcij so spremenjeni; parametri funkcije so sedaj sestavljeni iz labele ter imena parametra (Swift). Pri klicu funkcije se uprabi labela parametra, znotraj jedra funkcije pa se uporablja ime.
+
+\subsubsection{Podatkovni tipi}
+
+Podprti atomarni podatkovni tipi so: \textit{integer, double, string, char} in \textit{bool}. Poleg atomarnih tipov pa so podprti tudi sestavljeni podatkovni tipi:
+
+\begin{enumerate}
+	\item Razredi
+	\item Enumeracije
+	\item Terke
+\end{enumerate}
+
+Poleg naštetih podatkovnih tipov obstaja še podatkovni tip, ki ga ni mogoče eksplicitno uporabljati. To je kazalec (\textit{angl. pointer}). Spremenljivka, ki je tipa \textit{kazalec}, ne hrani dejanske vrednosti, temveč v sebi hrani naslov na neko lokacijo v pomnilniku. Ena izmed prednosti kazalcev je v tem, da lahko do kompleksnejših objektov, ki v pomnilniku zasedejo veliko prostora, dostopamo preko njihovega naslova s kazalcem, namesto kopiranja celotne vsebine (na primer pri pošiljanju objekta kot argument funkciji). \\
+\indent Prevajalnik omogoča tudi t.i. avtomatsko prepoznavanje tipov, oz. angl. \textit{type inference}. To pomeni, da izrazom, kjer prevajalnik lahko implicitno prepozna podatkovni tip, le-tega ni potrebno eksplicitno navajti.
+
+\begin{lstlisting}[caption={Primer deklaracij spremenljivk, kjer je njun tip prepoznan avtomastsko}, captionpos=b]
+	let x = 120
+	let y = "To je niz"
+\end{lstlisting}
+
+\subsubsection{Enumeracije}
+
+Enumeracija je sestavljen podatkovni tip, ki vsebuje določeno število konstant. Enumeracije, za razliko od tistih v Javi, omogočajo, da ima vsaka konstanta tudi \textit{surovo vrednost} (\textit{angl. raw value}). Podatkovni tip surovih vrednosti je definiran v naprej in je pri vseh kostantah enak. (Swift)
+
+\begin{lstlisting}[caption=Enumeracija brez surovih vrednosti, captionpos=b, label={lst:languagesEnumeration}]
+enum Languages {
+  case Cpp
+  case Java
+  case ObjectiveC, Swift
+}
+\end{lstlisting}
+
+\indent Vrednosti surovih vrednosti morajo biti eksplicitno navedene pri vseh konstantah, razen v primeru, ko je podatkovni tip \textit{int} ali \textit{string}. Če je podatkovni tip int in vrednosti niso eksplicitno navedene, se implicitno dodeli zaporedni indeks konstante (začenši z 0).\\
+\indent Če je podatkovni tip string, potem je implicitna vrednost konstante kar njeno ime.
+ 
+\begin{lstlisting}[caption=Enumeracija s surovimi vrednostmi tipa String, captionpos=b]
+enum CarBrands: String {
+  case Audi, Renault, VW="Volks Wagen"
+  case None="Izbrali niste nobene znamke"
+}
+\end{lstlisting}
+
+ 
+ \subsubsection{Terke}
+ 
+Terka je podatkovna struktura sestavljena iz poljubnega števila elementov, ki so lahko različnih podatkovnih tipov. Terke poznajo jeziki, kot sta Python in Swift, medtem ko jih Java in C++ ne poznata.\\
+\indent Terka je definirana kot zaporedje izrazov znotraj oklepajev. Do posameznih elementov terke dostopamo podobno kot dostopamo do elementov v razredu, s to razliko, da je ime elementa njegov indeks v terki. 
+
+\begin{lstlisting}[caption={Terka, sestavljena in dveh vrednosti (Int in Double)}, captionpos=b]
+	let x = (10, 5.5) 
+	print(x.0)
+	print(x.1)
+\end{lstlisting} 
+
+Možno pa je tudi, da pri definiciji tipa terke specificiramo imena elementov, in potem do njih dostopamo preko njih. (Swift)
+
+\begin{lstlisting}[caption={Terka, v kateri je en element poimenovan, drugi pa ne}, captionpos=b]
+	let y = (x: "Lorem", "Ipsum")
+	print(y.x)
+	print(y.1)
+\end{lstlisting}
+
+
+\subsubsection{Razredi in vmesniki}
+
+Razred je sestavljena podatkovna struktura, ki lahko, za razliko od tabel, v sebi hrani spremenljivke različnih podatkovnih tipov. \\
+\indent Vmesnik \textit{angl. interface} je abstraktna podatkovna struktura, ki definira poljubno število metod, ki jih mora implementirajoči se razred implementirati. Instanc vmesnikov ne moremo kreirati neposredno.\\
+\indent Vsak razred lahko vsebuje poljubno število atributov (spremenljivk) ter poljubno število metod - to so člani rezreda. Atributi in metode so lahko statični, kar pomeni, da niso del posamezne instance razreda, ampak živijo v statični instanci, ki je kreirana avtomatsko. Poleg tega so lahko člani razreda \textit{privatni} ali \textit{javni}. Razlika je v tem, da do privatnih članov ni možno dostopati izven razreda. Metodam lahko dodamo še modifikator \textit{final}, kar prepreči, da bi bila funkcija re-implementirana v dedujočem se razredu. Če želimo, da metoda re-implementira metodo v starševkem razredu, ji moramo dodati modifikator \textit{overriding}. \\
+
+\indent  \textbf{Dedovanje} \\
+\noindent Vsak razred lahko deduje največ en razred (lahko tudi nobenega), implementira pa lahko poljubno število vmesnikov. Identično je dedovanje narejeno tudi v Javi in Swiftu, za razliko od C++, ki omogoča večkratno dedovanje in ne pozna vmesnikov. \\
+
+\indent  \textbf{Razširitve} \\
+\noindent Podprte so tudi razširitve nad razredi, ki omogočajo, da obstoječim razredom dodamo nove metode (vzeto iz Swifta). Razširitve so predsvem uporabne takrat, ko želimo razredom, do katerih nimamo dostopa (npr. razredi v zunanjih knjižnicah), dodati uporabne funkcionalnosti. V jezikih, ki tega ne podpirajo, je ponavadi praksa, da se ustvarijo \textit{utilty} razredi (npr. v Javi). \\
+\indent Razširitve omogočajo tudi to, da razredom dodamo implementacijo vmesnikov, čemur se reče \textit{interface extension}. \\
+
+\begin{lstlisting}[caption=Primer razširitve tipa Int z vmesnikom Hashable, captionpos=b]
+	interface Hashable {
+		func hash() Int
+	}
+
+	extension Int: Hashable {
+		func hash() Int {
+			return self % 21632
+		}
+	}
+\end{lstlisting}
+
+
+\chapter{Programski jezik Atheris}
 \label{ch1}
 
 
+\section{Sintaksa}
 
-Matematična ali popolna indukcija je eno prvih orodij, ki jih spoznamo za dokazovanje trditev pri matematičnih predmetih.
-\begin{izrek}
-\label{iz:1}
-Za vsako naravno število $n$ velja
-\begin{equation}
-n < 2^n.
-\label{eq:1}
-\end{equation}
-\end{izrek}
-\begin{dokaz}
-Dokazovanje z indukcijo zahteva, da neenakost~\eqref{eq:1} najprej preverimo za najmanjše naravno število -- $0$. 
-Res, ker je $0 < 1 = 2^0$, je neenačba~\eqref{eq:1} za $n=0$ izpolnjena.
+Celoten program v jeziku PINS je sestavljen iz seznama definicij, definicija pa je lahko definicija spremenljivke, definicija tipa ali definicija funkcije. Sintaksa programskega jezika Atheris se razlikuje v tem, da je program sestavljen iz zaporedja stavkov, stavek pa je lahko \textit{izraz} ali \textit{definicija}. Definicije so predstavljene z naslednjimi konteksno neodvisnimi gramatikami:
 
-Sledi indukcijski korak. S predpostavko, da je neenakost~\eqref{eq:1} veljavna pri nekem naravnem številu $n$, je potrebno pokazati, da je ista neenakost v veljavi tudi pri njegovem nasledniku -- naravnem številu $n+1$. 
-Računajmo.
-\begin{align}
-n+1 & < 2^n + 1       \label{eq:2}\\
-       & \le 2^n + 2^n \label{eq:3}\\
-       & = 2^{n+1}       \nonumber
-\end{align}
-Neenakost~\eqref{eq:2} je posledica indukcijske predpostavke, neenakost~\eqref{eq:3} pa enostavno dejstvo, da je za vsako naravno število $n$ izraz $2^n$ vsaj tako velik kot 1. 
-S tem je dokaz Izreka~\ref{iz:1} zaključen.
-\end{dokaz}
+\begin{enumerate}
+	\item Spremenljivke
+\begin{lstlisting}[]
+var_def -> visibility var identifier 
+var_def -> visibility var identifier = expression
+var_def -> visibility var identifier: type 
+var_def -> visibility var identifier: type = expression 
 
-Opazimo, da je \LaTeX\ številko izreka podredil številki poglavja.
-Na podoben način se lahko sklicujemo tudi na druge besedilne konstrukte, kot so med drugim poglavja, podpoglavja in plovke, ki jih bomo spoznali v naslednjem poglavju.
+visibility -> public
+visibility -> private
+visibility -> $
+\end{lstlisting}
+	\item Funkcije
+\begin{lstlisting}[]
+func_def -> func identifier ( parameters ) { statements }
+func_def -> func identifier ( parameters ) 
+type { statements }
+
+parameters -> $
+parameters -> paramater
+parameters -> paramaters, paramater
+
+parameter -> identifier : type
+parameter -> identifier identifier : type
+\end{lstlisting}	
+	\item Enumeracije
+	
+\begin{lstlisting}
+enum_def -> enum { enum_defs }
+
+enum_defs -> $
+enum_defs -> enum_member_def
+enum_defs -> enum_defs, enum_member_def
+
+enum_member_def -> case identifier
+enum_member_def -> case identifier = expression (literal)
+enum_member_def -> enum_member_def, enum_member_def // todo
+\end{lstlisting}
+	\item Terke
+\begin{lstlisting}
+todo
+\end{lstlisting}
+	\item Razredi
+\begin{lstlisting}
+class_def -> class { definitions }
+\end{lstlisting}
+
+\end{enumerate} 
+
+Sintakse izrazov so skoraj identične, razen izrazov za nadzor toka (angl. \textit{control flow}):
+
+\begin{enumerate}
+	\item If stavek
+\begin{lstlisting}[]
+if_expression { statements } if_expression'
+if_expression' -> $
+if_expression' -> else if { statements } if_expression'
+if_expression' -> else { statements }
+\end{lstlisting}
+	\item Switch stavek
+\begin{lstlisting}[]
+switch_expression { cases }
+
+cases -> case expressions : statements cases'
+cases' -> $
+cases' -> cases
+cases' -> default : statements
+\end{lstlisting}
+	\item While stavek
+\begin{lstlisting}[]
+while_expression -> while expression { statements }
+\end{lstlisting}
+	\item For stavek
+\begin{lstlisting}[]
+for_expression -> for identifier in expression 
+{ statements }
+\end{lstlisting}
+\end{enumerate} 
+
+Kot sem že omenil, omogoča sintaksa programskega jezika Atheris, da so posamezni stavki ločeni bodisi z ';' bodisi z novo vrstico. Da sem lahko to implementiral, sem razširil leksikalni analizator z novo vrsto simbola \textit{newline}. V primeru, da je v izvorni kodi več zaporednih novih vrstic, jih leksikalni analizator \textit{požre} in vedno vrne samo en zaporedni \textit{newline} simbol. To naredi sintaksno analizo enostavnejšo. Ločevanje posameznih stavkov z novo vrstico je tako trivialno, potrebno je samo paziti na primere, kjer so stavki ločeni z obema ločiloma. 
+
+\section{Funkcije}
+
+Programski jezik Atheris zahteva, da ob klicu funkcij, poleg imena funkcije, navedemo tudi imena parametrov. Podobno kot to dela tudi Swift. \\
+\indent Ob deklaraciji funkcije lahko opcijsko definiramo poljubno število poimenovanih ter tipiziranih vrednosti, ki jim skupaj rečemo parametri funkcije. Poleg tega lahko opcijsko navedemo še podatkovni tip vrednosti, ki jo bo funkcija vračala (privzeto so funkcije tipa \textbf{Void}). \\
+\indent Imena parametrov so sestavljena iz dveh delov: labele argumenta ter imena parametra. Labele argumentov se uporabljajo ob klicu funkcije, medtem ko se imena parametrov uporabljajo v sami implementaciji funkcije. Privzeto so labele iste kot imena.
+
+\begin{lstlisting}[caption={Primer definicije in klica funkcije v programskem jeziku Atheris}, captionpos=b]
+func someFunction(firstParameterName: Int, secondParameterName: Int) {
+  /* znotraj telesa funkcije, sta firstParameterName in secondParameterName referenci na vrednosti argumentov za prvi in drugi parameter. */
+}
+someFunction(firstParameterName: 1, secondParameterName: 2)
+\end{lstlisting}
+
+\textbf{Določanje label argumentov}
+
+Če želimo, da sta labela in ime različne, navedemo labelo argumenta pred imenom:
+
+\begin{lstlisting}[caption={Labela argumenta in ime parametra se razlikujeta}, captionpos=b]
+func someFunction(argumentLabel parameterName: Int) {
+/* znotraj telesa funkcije, se parameterName sklicuje na vrednost argumentza funkciji */
+}
+someFunction(argumentLabel: 1) 
+\end{lstlisting}
+
+Podprta je tudi možnost, da se izognemo navajanju imen argumentov pri klicanju funkcij. To storimo tako, da označimo labelo argumenta z '\_'.
+
+\begin{lstlisting}[caption={}, captionpos=b]
+func someFunction(_ firstParameterName: Int, _ secondParameterName: Int) {
+  ///
+}
+someFunction(1, 2)
+\end{lstlisting}
+
+V ozadju so opisane funkcionalnosti implementirane tako, da se v simbolno tabelo ne shrani samo \textit{ime} funkcije, ampak se celotna definicija pretvori v posebno znakovno predstavitev, ki je sestavljena iz imena ter label argumentov, ki so med sabo ločena z dvopičjem. Funkcije iz zgornjih primerov se pretvorijo v:
+\begin{lstlisting}[caption={Znakovne predstavitve funkcij}, captionpos=b]
+someFunction(firstParameterName:secondParameterName)
+someFunction(argumentLabel)
+someFunction(_:_)
+\end{lstlisting}
+
+T.i. \textit{overloadanje} funkcij sedaj ni problem, saj čeprav imajo funkcije ista imena, vsako izmed njih predstavimo z drugim imenom, zato jih lahko v simbolni tabeli ustrezno poiščemo. Seveda je potrebno v podobni obliki predstaviti tudi klice funkcij (logika je popolnoma identična).
 
 
-\chapter{Plovke: slike in tabele}
-\label{ch2}
+\section{Enumeracije}
 
-Slike in daljše tabele praviloma vključujemo v dokument kot plovke. 
-Pozicija plovke v končnem izdelku ni pogojena s tekom besedila, temveč z izgledom strani. 
-\LaTeX\ bo skušal plovko postaviti samostojno, praviloma na mestu, kjer se pojavi v izvornem besedilu, sicer pa na 
-vrhu strani, na kateri se na takšno plovko prvič sklicujemo. 
-Pri tem pa bo na vsako stran končnega izdelka želel postaviti tudi sorazmerno velik del besedila. 
-V skrajnem primeru, če imamo res preveč plovk na enem mestu besedila, ali če je plovka previsoka, se bo \LaTeX\ odločil za stran popolnoma zapolnjeno s plovkami.
+V primeru, da enumeracija nima surovih vrednosti, je semantična analiza dokaj preprosta. Kompleksnejša postane kadar so surove vrednosti prisotne, saj je potrebno zagotoviti, da so ustreznega podatkovnega tipa. Poleg tega je potrebno določiti implicitne vrednosti, v primeru, da niso eksplicitno navedene. Vendar samo takrat, ko je surova vrednost tipa \textbf{Int} ali \textbf{String}. Če je katerega koli drugega podatkovnega tipa, prevajalnik vrne napako. \\
+\indent Privzeto so surove vrednosti za \textbf{Int} zaporedna števila začenši z 0. V primeru, da je vrednost eksplicitno navedena, je vrednost naslednje surove vrednosti naslednje zaporedno število od prejšnje vrednosti.
 
-Poleg tega, da na položaj plovke vplivamo s tem, kam jo umestimo v izvorno besedilo, lahko na položaj plovke na posamezni strani prevedenega besedila dodatno vplivamo z opcijami \texttt{here, top} in \texttt{bottom}.
-Zelo velike slike je najbolje postaviti na posebno stran z opcijo \texttt{page}.
-Skaliranje slik po njihovi širini lahko prilagodimo širini strani tako, da kot enoto za dolžino uporabimo kar širino strani, npr. \verb=0.5\textwidth= bo raztegnilo sliko na polovico širine strani.
+\begin{lstlisting}[caption={Enumeracija s surovimi vrednostmi tipa Int}, captionpos=b]
+enum Days: Int {
+  case Monday // vrednost = 0
+  case Tuesday = 10 // vrednost = 10
+  case Wednesday // vrednost = 11
+  case Thursday = 100 // vrednost = 100
+  case Friday // vrednost = 101
+}
+\end{lstlisting}
 
-Na vse plovke se moramo v besedilu sklicevati, saj kot beseda pove, plovke plujejo po besedilu in se ne pojavijo točno tam, kjer nastopajo v izvornem besedilu.
-Sklic na plovko v besedilu in sama plovka naj bosta čimbližje skupaj, tako da bralcu ne bo potrebno listati po diplomi. 
-Upoštevajte pa, da se naloge tiska dvostransko in da se hkrati vidi dve strani v dokumentu!
-Na to, kje se bo slika ali druga plovka pojavila v postavljenem besedilu torej najbolj vplivamo tako, da v izvorni kodi plovko premikamo po besedilu nazaj ali naprej!
+\indent Za \textbf{String} so privzete surove vrednosti imena članov enumeracije.
 
-Tabele ja najbolje oblikovati kar neposredno v \LaTeX u, saj za oblikovanje tabel obstaja zelo fleksibilno okolje \texttt{tabular} (glej tabelo~\ref{tbl:1}).
-Slike po drugi strani pa je bolje oblikovati oziroma izdelati z drugimi orodji in programi in se v \LaTeX u le sklicevati na ustrezno slikovno datoteko.
+\begin{lstlisting}[caption={Enumeracija s surovimi vrednostmi tipa String}, captionpos=b, label={lst:fruitEnumeration}]
+enum Fruit {
+  case Apple // privzeta vrednost = "Apple"
+  case Orange = "Annoying Orange"
+  case Strawberry // privzeta vrednost = "Strawberry"
+}
+\end{lstlisting}
 
+Do posameznih elementov enumeracije dostopamo z \textit{DOT} operatorjem ('.'), kjer je na levi strani ime enumeracije, na desni pa ime elementa. Podobno dostopamo tudi do surovih vrednosti z uporabo imena \textit{rawValue}. Operator DOT bom podrobneje opisal na razdelku razredov, za zdaj lahko povem, da preveri, ali v sestavljenem podaktovnem tipu, ki se nahaja na levi strani, obstaja član z imenom na desni strani.
 
-\section{Formati slik}
+\begin{lstlisting}[caption={Primer dostopa do elementov enumeracije ~\ref{lst:fruitEnumeration}}, captionpos=b]
+  print(Fruit.Apple.rawValue) // 'Apple'
+  print(Fruit.Orange.rawValue)  // 'Annoying Orange'
+  print(Fruit.Strawberry.rawValue)  // 'Strawberry'
+\end{lstlisting}
 
-Bitne slike, vektorske slike, kakršnekoli slike, z \LaTeX{}om lahko vključimo vse.
-Slika~\ref{pic1} je v {\tt .pdf} formatu.
+Člane enumeracije lahko prirejamo spremenljivkam, ter nad njimi izvajamo logične operacije primerjanja vrednosti. 
+
+\begin{lstlisting}[caption={Izvajanje logike na podlagi vrednosti enumeracije \ref{lst:languagesEnumeration}}, captionpos=b]
+let x: Languages = Languages.Cpp
+if x == Languages.Java {
+  print("Java")
+}
+else {
+  print("Some other language")
+}
+\end{lstlisting}
+
+\section{Terke}
+
+Terka je zaporedje izrazov ločenih z dvopičjem ':' obdano z oklepaji. Vsakemu izrazu znotraj terke lahko opcijsko določimo tudi ime. V primeru, da ime ni eksplicitno določeno, se za ime uporabi indeks izraza v terki (začenši z 0). \\
+\indent Do elementov prav tako dostopamo z uporabo DOT operatorja, ki zagotovi, da terka vsebuje izraz z željenim imenom.\\
+\indent V pomnilniku so terke predstavljene skoraj identično kot tabele, s to razliko, da se podatkovni tipi elementov med sabo lahko razlikujejo. Odmik posameznega elementa od začetnega naslova terke izračunamo tako, da seštejemo velikost podaktovnih tipov vseh elementov pred tem elementom
+
+%\[ offset ( element_i )  = sum ( size ( element_0 ), size( element_1 ), ..., size ( element_n_-_1)) \]
+
+\section{Razredi}
+
+Razred je kompleksna podatkovna struktura in je sestavljena iz poljubnega števila poljubnih definicij. Tako lahko znotraj razreda definiramo nove razrede, enumeracije, vmesnike ter seveda funkcije (znotraj razredov jih imenujemo metode) in spremenljivke. \\
+\indent V pomnilniku je instanca razreda (objekt) predstavljena podobno kot terka, t.j. kot tabela z vrednostmi različnih podatkovnih tipov. Zato tudi odmik elementov izračunamo podobno kot pri terkah.
+
+\subsection{Dostop do članov in nadzor dostopa}
+
+Do članov razreda dostopamo preko DOT operatorja. DOT operator je binarni operator in je sestavljen iz dveh izrazov, ki ju povezuje pika '.'. \\
+\indent Običajno se izvaja povezovanje uporab spremenljivk z definicijami v fazi razreševanja imen, vendar to pri sestavljenih podatkovnih strukturah (vključno z enumeracijami in terkami) ni mogoče. Problem je namreč v tem, da se definicija nahaja znotraj \textbf{dejanskega podatkovnga tipa}, ki pa ga v fazi razreševanja imen še ne poznamo. Zato se s tem ne ukvarjamo v razreševanju imen, ampak problem prepostimo razreševanju tipov. Razreševanje tipov zato delimo na dve pod-fazi, oz. dva sprehoda po AST. V prvem sprehodu poberemo vse informacije o definiranih podatkovnih tipih ter razredom in ostalim definicijam pripišemo dejanske podatkovne tipe. \\
+\indent Razred (v prevajalniku), ki opisuje podatkovne tipe za razrede (v programu), hrani imena vseh članov razreda, njihove definicije ter podatkovne tipe. Vsebuje tudi pomožne metode, s lahko preverjamo, ali razred vsebuje člana z nekim imenom, pridobimo podatkovni tip člana, odmik člana v razredu, itd. \\
+\indent Sedaj imamo dovolj informacij, da lahko razrešimo imena znotraj DOT operatorja. Na levi se nahaja sestavljen podatkovni tip, za katerega natanko vemo, katere elemente vsebuje, zato ni težko preveriti, če se ime na desni strani nahaja znotraj tipa na desni.
+
+\textbf{Nadzor dostopa}
+
+Nadzor dostopa omejuje dostop do članov razreda izven definicije, če to eksplicitno navedemo z uporabo modifikatorja \textit{\textbf{private}}. Privzeto so vsi člani \textit{\textbf{public}}. Programski jezik Atheris trenutno pozna samo public in private modifikatorja; public modifikator omogoča dostop do in spreminjanje vrednosti člana razreda kodi, ki se ne nahaja v razredu, za razliko od modifikatorja private, ko to prepoveduje. Java in C++ poznata še modifikator vidnosti  \textbf{\textit{protected}}, medtem ko jih Swift pozna še nekaj več: \textbf{\textit{fileprivate}}, \textbf{\textit{internal}}, \textbf{\textit{private(set)}}.
+
+\subsection{Instančne funkcije}
+
+Razred ima lahko v sebi definirane funkcije, ki se jim v OOP žargonu pogosto reče \textit{metode}. Metoda se od ostalih funkcij (ki niso definirane v razredu) razlikuje v tem, da vsebujejo impliciten parameter, ki ga prevajalnik vstavi avtomatsko, vrednost parametra pa je kazalec in kaže na objekt, ki funkcijo kliče. V C++ in Javi se ta parameter imenuje \textbf{\textit{this}}, v Pythonu, Swiftu, in s tem tudi v Atherisu, pa \textbf{\textit{self}}. V Pythonu je ta razlika, da je parameter potrebno eksplicitno navesti, če ga ne, se funkcija / metoda smatra kot statična (več o statičnih metodah v nadaljevanju). \\
+\indent Prevajalnik mora implicitni \textit{self} parameter avtomatsko vstaviti v vse metode razreda. To stori v prvi fazi semantične analize - razreševanje imen. Podatkovni tip parametra še ni znan, zato se mora nastaviti šele v fazi razreševanja tipov. Če se znotraj metode sklicujemo na self parameter, uporabo ni težko povezati z definicijo, saj je sedaj del funkcije. \\
+\indent V C++, Javi in Swiftu se ni potrebno eksplicitno sklicevati na this / self parameter, da bi dostopali do članov objekta, vendar to zaenkrat še ni podprto v Atherisu. \\
+\indent Pri generiranju vmesne kode mora prevajalnik poskrbeti, da se v parameter prenese naslov na objekt, ki kliče metodo. Naslov objekta je znan, v parameter je potrebno je  presesti naslov spremenljivke, ki se nahaja na levi strani DOT operatorja.
+
+\subsection{Konstruktorji}
+
+Konstruktor je statična metoda razreda, njegova naloga pa je kreacija objekta ter inicializacija atributov. Podobno kot instančne metode tudi konstruktorju prevajalnik implicitno vstavi \textit{self} parameter, vendar pa z drugačnim namenom. \\
+\indent Naloga konstruktorja je, da na kopici, t.j. del pomnilnika, kamor shranjujemo dinamično alicirane objekte (za razliko od sklada, kamor shranjujemo statične), alocira prostor kamor bo shranjen objekt. Za dinamično alociranje pomnilnika se uporabi gradnik vmesne kode \textbf{ImcMALLOC}. Ta gradnik na kopici rezervira željeno velikost pomnilnika ter vrne naslov. \\
+\indent Pri generiranju vmesne kode prevajalnik doda na začetek kode funkcije MALLOC gradnik, ki bo rezerviral prostor za objekt. Nato bo prevajalnik shranil vrnjen naslov na sklad v parameter \textit{self}, zato da lahko znotraj konstruktorja nastavimo vrednosti ostalih atributov razreda. Na koncu bo ta naslov konstruktor tudi vrnil. Vrnjen naslov je referenca na objekt in jo lahko uporabljamo za nadaljne operacije nad objektom. \\
+\indent Razred ima lahko poljubno število konstruktorjev, ki jih definiramo z uporabo ključne besede \textit{\textbf{init}}.
+
+\begin{lstlisting}[caption={Konsturktorji}, captionpos=b]
+	class Atheris {
+	    var x: Int
+	    init() {
+	        self.x = 0
+	    }
+	    init(x: Int) {
+	        self.x = x
+	    }
+	}
+\end{lstlisting}
+
+\indent Poleg eksplicitnih konstruktorjev prevajalnik zgenerira tudi impliciten \textit{privzeti} konstruktor. Vanj je vstavljena koda za inicializacijo atributov, ki so inicializirani ob definiciji. 
+
+\begin{lstlisting}[caption={Implicitni privzeti konstruktor}, captionpos=b]
+	class Atheris {
+	    var x: Int = 10
+	    var y: Int = 20
+	}
+	
+	print(Atheris().x) // 10
+	print(Atheris().y) // 20
+\end{lstlisting}
+
+V primeru, da je v razredu privzeti konstruktor tudi eksplicitno definiran, bo poleg svoje kode vseboval tudi kodo implicitnega.
+
+\begin{lstlisting}[caption={Eksplicitni privzeti konstruktor}, captionpos=b]
+	class Atheris {
+	    var x: Int = 10
+	    var y: Int = 20
+	    init() { // privzeti konstruktor
+	        y = 100
+	    }
+	}
+	
+	print(Atheris().x) // 10
+	print(Atheris().y) // 100
+\end{lstlisting}
+
+\subsection{Statični člani razreda}
+
+Statični člani razreda so tisti člani, ki ne živijo znotraj posameznih instanc, ampak živijo v globalni statični instanci razreda. Definiramo jih z uporabo modifikatorja \textit{\textbf{static}}. Statična instanca razreda je naložena v pomnilnik avtomatsko ob zagonu programa. Do statičnih članov dostopamo preko imena razreda. Ker statične funkcije niso del instance razreda, ne vsebujejo \textit{self} parametra.
+
+\begin{lstlisting}[caption={Klicanje statične funkcije}, captionpos=b]
+	class Static {
+   	    static func foo() {
+	         print("I am a static function")
+	    }
+	} 
+	Static.foo()
+\end{lstlisting}
+
+\indent V času razreševanja tipov so statične definicije razreda shranjene v ločeno podatkovno strukturo od instančnih. Vozlišču AST, ki definira razred (\textit{AstClassDefinition}), v simbolno tabelo ne pripišemo razredni podatkovni tip, ampak \textit{statični / kanonični} tip, ki hrani podatke o statičnih definicijah razreda ter referenco na dejanski instačni podatkovni tip. Ko se sklicujemo na člane statične instance preko DOT operatorja, prevajalnik preveri, ali statični tip vsebuje iskan član.\\
+\indent Razredi lahko vsebujejo tudi enumeracije in gnezdene razrede. Definicije enumeracij in razredov se smatrajo privzeto kot statične, zato do njih dostopamo enako kot do statičnih članov. 
+
+\begin{lstlisting}[caption={Enumeracija znotraj razreda}, captionpos=b]
+	class Static {
+	    enum Languages: Int {
+	        case Cpp, Java
+	    }
+	}
+	let x = Static.Languages.Java
+	print(x.rawValue) // '1'
+\end{lstlisting}
+
+Da lahko kreiramo gnezdene razrede, prevajalnik konstruktorje gnezdenih razredov potisne v kanonični tip razreda, sicer ne bi bilo možno do njih dostopati. 
+
+\begin{lstlisting}[caption={Gnezden razred}, captionpos=b]
+	class Atheris {
+	    class NestedClass {
+	        var x = 20
+	    }
+	}
+	print(Atheris.NestedClass().x) // '20'
+\end{lstlisting}
+
+\section{Dedovanje in polimorfizem}
+
+Dedovanje in polimorfizem, sta, poleg enkapsulacije in abstrakcije, zelo pomembna OOP koncepta. Dedovanje je mehanizem, s katerim objekt pridobi (podeduje) nakatere ali vse lastnosti drugega objekta, medtem ko je polimorfizem sposobnost predstaviti isto funkcionalnost z različnimi implementacijami. Programski jezik Atheris omogoča enkratno dedovanje, tako kot Java in Swift, medtem ko C++ dovoli večkratno. \\ 
+\indent Tekom preverjanja tipov prevajalnik zagotovi, da je dedovan podatkovni tip razred, saj dedovanje od drugih tipov ni dovoljeno. Prevajalnik za vsako definicijo preveri, ali že obstaja v nadrazredu. V primeru da ja, javi napako. Prekrivanje je dovoljeno samo za definicije označene z modifikatorjem \textit{\textbf{override}} in je trenutno mogoče samo za metode. \\
+\indent V pomnilniku se atributi dedovanega razreda nahajajo pred atributi dedujočega se razreda. Enačba za izračun velikosti razreda (koliko prostora porabi objekt v pomnilniku) postane kompleksnejša, saj je potrebno rekurzivno prišteti velikosti nadrazradov. Prav tako postane komleksnejši izračun odmikov atributov od začetnega naslova. 
+
+\subsection{Dynamic Dispatch}
+
+Dynamic dispatch je proces izbira implementacije polimorfizne metode v času \textbf{izvajanja programa}. Razlog zakaj proces izbire ni možno opraviti tekom prevajanja, se skriva v tem, da lahko obstaja več različnih implementacij iste metode (\text{overridanje} metod). Statično izbiranje (t.j. v času prevajanja) je možno za statične metode. \\
+\indent Dynamic dispatch je možno implementirati na različne načine. Rešitev v tem prevajalniku temelji na rešitvi, ki jo ima tipično C++, in sicer s podatkovno strukturo \textit{\textbf{v-table}} oz. virtualna tabela. 
+
+\subsubsection{Virtualne tabele}
+
+Virtualna tabela je podatkovna stuktura, ki vsebuje kazalce na funkcije implementirane v danem razredu. Prevajalnik zgenerira, in shrani v pomnilnik, za vsak definiran razred unikatno v-tabelo. Vsaka instanca razreda vsebuje, polen njenih spremenljivk, še kazalec na ustrezno tabelo. 
+
 \begin{figure}[h]
-\begin{center}
-\includegraphics[width=0.6\textwidth]{pic1.pdf}
-\end{center}
-\caption{Herschelov graf, vektorska grafika.}
-\label{pic1}
+	\begin{center}
+		\includegraphics[width=1\textwidth]{resources/v-tables.png}
+	\end{center}
+	\caption{Virtualne tabele za dane razrede.}
+	\label{vtables}
 \end{figure}
-Pa res lahko vključimo slike katerihkoli formatov? 
-Žal ne. 
-Programski paket \LaTeX\ lahko uporabljamo v več dialektih. 
-Ukaz {\tt latex} ne mara vključenih slik v formatu Portable Document Format {\tt .pdf}, ukaz {\tt pdflatex} pa ne prebavi slik v Encapsulated Postscript Formatu {\tt .eps}.
-Strnjeno je vključevanje različnih vrst slikovnih datotek prikazano v tabeli~\ref{tbl:1}.
 
-\begin{table}
-\begin{center}
-\begin{tabular}{l|ccc}
-ukaz/format & {\tt .pdf} & {\tt .eps} & ostali formati \\ \hline
-{\tt pdflatex} & da & ne & da \\
-{\tt latex}   & ne & da  & da
-\end{tabular}
-\end{center}
-\caption{}
-\label{tbl:1}
-\end{table}
+Virtualna tabela vsebuje kazalce na naslove, kjer se nahajajo vse ne-statične metode, ki so implementirane v razredu. Vsaka tabela vsebuje še kazalec na virtualno tabelo nadrazreda (ali null, če ga nima), ter unikatni identifikator tipa. Identifikator je pozitivno celo število, ki ga prevajalnik dodeli vsakemu tipu. \\
 
-Nasvet? 
-Odločite se za uporabo ukaza {\tt pdflatex}. Vaš izdelek bo brez vmesnih stopenj na voljo v {.pdf} formatu in ga lahko odnesete v vsako tiskarno. 
-Če morate na vsak način vključiti sliko, ki jo imate v {\tt .eps} formatu, jo vnaprej pretvorite v alternativni format, denimo {\tt .pdf}.
+\subsection{Realizacija}
 
-Včasih se da v okolju za uporabo programskega paketa \LaTeX\ nastaviti na kakšen način bomo prebavljali vhodne dokumente. 
-Spustni meni na Sliki~\ref{pic2} odkriva uporabo \LaTeX{}a v njegovi pdf inkarnaciji --- {\tt pdflatex}.
-\begin{figure}[t]
-\begin{center}
-\includegraphics[width=10cm]{pic2.png}
-\end{center}
-\caption{Kateri dialekt uporabljati?}
-\label{pic3}
-\end{figure}
-Vključena slika~\ref{pic3} je seveda bitna.
+V času prevajanja imamo na voljo informacijo o tem, katera po vrsti je metoda definirana v razredu, kar se izkaže, da je dovolj. V virtualni tabeli namreč prevajalnik na točno isti indeks, na katerem je motoda definirana, shrani kazalec na implementacijo. Prevajalnik nato zgenerira vmesno kodo, ki izračuna naslov funkcije z naslednjo enačbo:
 
-Na vse tabele se moramo v besedilu, podobno kot na slike, tudi sklicevati, saj kot plovke v oblikovanem besedilo niso nujno na istem mestu kot v izvornem besedilu.
+\[ address(method_i) = adress(vtable) + (i * sizeof(void*)) + 8 \]
 
+kjer je \[address(vtable)\]\ lokacija tabele v pomnilniku, \[(i * sizeof(void*)) + 8\] indeks pomnožen z velikostjo kazalca (običajno 4 byti) plus odmik od začetka tabele zaradi prej opisanih dodatnih podatkov v tabeli, ter \[ address(method_i)\] naslov metode na indeksu i. Ko interpreter tekom izvajanja kode izračuna naslov metode, njeno kodo naloži iz izračunanega naslova, ter jo izvede.
 
-\subsection{Podnapisi k slikam in tabelam}
+\section{Instance of operator}
 
-Vsaki sliki ali tabeli moramo dodati podnapis, ki na kratko pojasnuje, kaj je na sliki ali tabeli. 
-Če nekdo le prelista diplomsko delo, naj bi že iz slik in njihovih podnapisov lahko na grobo razbral, kakšno temo naloga obravnava.
+Instance of operator je operator, ki v času izvajanja programa preveri, ali je objekt instanca danega razreda. To naredi z uporabo virtualne tabele. Kot sem omenil, vsaka tabela vsebuje unikatni deskriptor njenega razreda. Preko deskriptorja lahko preverimo, ali se dva podatkovna tipa ujemata. \\
+\indent V programskem jeziku Atheris se operator namesto \textit{instance of} imenuje \textit{is}.
 
-Če slike povzamemo iz drugih virov, potem se moramo v podnapisu k taki sliki sklicevati na ta vir!
+\begin{lstlisting}[caption={Uporaba operatorja \textit{is} za razrede iz sheme ~\ref{vtables}}, captionpos=b]
+	var object: A
+	object = B()
+	print(object is A) // 'true'
+	print(object is B) // 'true'
+	print(object is C) // 'false'
+\end{lstlisting}
 
+Izračun je malenkost kompleksnejši kot sem opisal zgoraj, saj če želimo preveriti, ali je objekt instanca razreda, ki se lahko po dedovani verigi nahaja daleč navzgor, je potrebno preverjanje izvesti rekurzivno po celotni hiearhiji razredov. \\
 
-\chapter{Struktura strokovnih besedil}
-\label{stroka}
+\begin{lstlisting}[caption={Algoritem za izračun ali je objekt instanca danega razeda}, captionpos=b]
+todo
+\end{lstlisting}
 
-Strokovna besedila imajo ustaljeno strukturo, da bi lahko hitreje in lažje brali in predvsem razumeli taka besedila, saj načeloma vemo vnaprej, 
-kje v besedilu se naj bi nahajale določene informacije.
+\section{Pretvarjanje tipov}
 
-Najbolj osnovna struktura strokovnega besedila je:
-\begin{description}
-\item[naslov besedila,] ki naj bo sicer kratek, a kljub temu dovolj poveden o vsebini besedila,
-\item[imena avtorjev] so običajno navedena po teži prispevka, prvi avtor je tisti, ki je besedilo dejansko pisal, zadnji pa tisti, ki je raziskavo vodil,
-\item[kontaktni podatki] -- poleg imena in naslova institucije je potreben vsaj naslov elektronske pošte,
-\item[povzetek] je kratko besedilo, ki povsem samostojno povzame vsebino in izpostavi predvsem  glavne rezultate ali zaključke,
-\item[ključne besede] so tudi namenjene iskanju vsebin med množico člankov,
-\item[uvodno poglavje] uvede bralca v tematiko besedila, razloži kaj je namen besedila, predstavi področje o katerem besedilo piše 
-(če temu ni namenjeno v celoti posebno poglavje) ter na kratko predstavi strukturo celotnega besedila,
-\item[poglavja] tvorijo zaokrožene celote, ki se po potrebi še nadalje členijo na podpoglavja, namenjena so recimo opisu orodij, 
-ki smo jih uporabili pri delu, teoretičnim rezultatom ali predstavitvi rezultatov, ki smo jih dosegli,
-\item[zaključek] še enkrat izpostavi glavne rezultate ali ugotovitve, jih primerja z dosedanjimi in morebiti poda tudi ideje za nadaljne delo,
-\item[literatura] je seznam vseh virov, na katere smo se pri svojem delu opirali, oziroma smo se na njih sklicevali v svojem besedilu.
-\end{description}
+Mehanizem pretvarjanja iz enega tipa v drug (angl. \textit{type casting}) deluje po zelo podobnem principu kot \textit{as} operator. Razlikuje se samo v tem, da je rezultat operacije, če pretvorba uspe naslov objekta, sicer 'null'. Takemu tipu pretvarjanja rečemo \textit{safe casting}, saj program nadaljuje z izvajanjem tudi če pretvorba ni uspešna. Za razliko od \textit{non-safe castanja}, kjer bi program vrnil \textit{null pointer exception}.
 
-Strokovna besedila običajno pišemo v prvi osebi množine, v nevtralnem in umirjenem tonu. 
-Uporaba sopomenk ni zaželjena, saj želimo zaradi lažjega razumevanja za iste pojme vseskozi uporabljati iste besede.
-Najpomenbnejše ugotovitve je smiselno večkrat zapisati, na primer v povzetku, uvodu, glavnem delu in zaključku.
-Vse trditve naj bi temeljile bodisi na lastnih ugotovitvah (izpeljavah, preizkusih, testiranjih) ali pa z navajanjem ustreznih virov.
+\begin{lstlisting}[caption={Pretvorba razrede iz sheme ~\ref{vtables}}, captionpos=b]
+	var object: A = B()
+	let casted = object as B // pretvorba iz 'A' v 'B' je uspesna
+	if casted == null {
+	    print("cast failed")
+	}
+	else {
+	    print("cast succeeded")
+	}
+\end{lstlisting}
 
-Največ se lahko naučimo s skrbnim branjem dobrih zgledov takih besedil.
+\section{Vmesniki}
 
-
-\chapter{Pogoste napake pri pisanju v slovenščini}  % poglavje dodal Solina
-\label{slo}
-
-V slovenščini moramo paziti  pri uporabi pridevnikov, ki se ne sklanjajo kot so npr. kratice. 
-Pravilno pišemo model CAD in \textbf{ne} CAD model!
-
-Pri sklanjanju tujih imen ne uporabljamo vezajev, pravilno je Applov operacijski sistem in \textbf{ne} Apple-ov.
-
-Pika, klicaj in vprašaj so levostični: pred njimi ni presledka, za njimi pa. 
-Klicajev in vprašajev se v strokovnih besedilih načeloma izogibamo. Oklepaji so desnostični in zaklepaji levostični (takole).
-
-V slovenščini pišemo narekovaje drugače kot v angleščini!   
-Običajno uporabljamo dvojne spodnje-zgornje narekovaje:  \sn{slovenski narekovaji}.
-Za slovenske narekovaje je v tej LaTeXovi predlogi definiran nov ukaz \verb+ \sn{ ... }+.
-
-Vezaj  je levo in desno stičen: \verb=slovensko-angleški slovar= in ga pišemo z enim pomišljajem.
-
-V slovenščini je pred in po pomišljaju presledek, ki ga v LaTeXu pišemo z dvema pomišljajema: \verb=Pozor -- hud pes!=
-V angleščini pa je za razliko pomišljaj levo in desno stičen in se v LaTeXu piše s tremi  pomišljaji: \verb=---=.
-S stičnim pomišljajem pa lahko nadomeščamo predlog od \dots do, denimo pri navajanju strani, npr. preberite strani 7--11 (\verb=7--11=).
-
-
-
-\sn{Pred ki, ko, ker, da, če vejica skače}. To osnovnošolsko pravilo smo v življenju po potrebi uporabljali, dopolnili, morda celo pozabili. 
-Pravilo sicer drži, ampak samo če je izpolnjenih kar nekaj pogojev (npr. da so ti vezniki samostojni, enobesedni, ne gre za vrivek itd.).
-Povedki so med seboj ločeni z vejicami, razen če so zvezani z in, pa, ter, ne–ne, niti–niti, ali, bodisi, oziroma.
-Sicer pa je bolje pisati kratke stavke kot pretirano dolge.
-
-V računalništvu se stalno pojavljajo novi pojmi in nove besede, za katere pogosto še ne obstajajo uveljavljeni slovenski izrazi.
-Kadar smo v dvomih, kateri slovenski izraz je primeren, si lahko pomagamo z Računalniškim slovarčkom~\cite{slovarcek}.
-
-
-
-
-
-\chapter{Koristni nasveti pri pisanju v \LaTeX{u}}   % poglavje dodal Solina
-\label{latex}
-
-Programski paket \LaTeX\ je bil prvotno predstavljen v priročniku~\cite{lamport} in je v resnici nadgradnja sistema \TeX\ avtorja Donalda Knutha~\cite{knuth}, 
-znanega po svojih knjigah o umetnosti programiranja, 
-ter Knuth-Bendixovem algoritmu~\cite{knuth1983simple}.
-
-Različnih implementacij \LaTeX{}a je cela vrsta.
-Za OS X priporočamo TeXShop, za Windows PC pa MikTeX. Spletna verzija, ki poenostavi sodelovanje pri pisanju, je npr. ShareLaTeX.
-
-Včasih smo si pri pisanju v \LaTeX{}u  pomagali predvsem s tiskanimi pri\-ro\-čni\-ki, danes pa je enostavneje in hitreje, da ob vsakem problemu za pomoč enostavno povprašamo Google, 
-saj je na spletu cela vrsta forumov za pomoč pri \TeX{}iranju.
-
-\LaTeX\ včasih ne zna deliti slovenskih besed, ki vsebujejo črke s strešicami. 
-Če taka beseda štrli preko desnega roba,  \LaTeX{}u pokažemo, kje lahko tako besedo deli, takole: \verb=ra\-ču\-nal\-ni\-štvo=.
-Katere vrstice štrlijo preko desnega roba, se lahko prepričamo tako, da dokument prevedemo s vključeno opcijo \texttt{draft}: \verb=\documentclass[a4paper, 12pt, draft]{book}=.
-
-
-Predlagamo, da v izvornem besedilu začenjate vsak stavek v novi vrstici, saj \LaTeX\ sam razporeja besede po vrsticah postavljenega besedila. 
-Bo pa zato iskanje po izvornem besedilu in popravljanje veliko hitrejše. 
-Večina sistemov za \TeX{}iranje sicer omogoča s klikanjem enostavno prestopanje  iz prevedenega besedila na ustrezno mesto v izvornem besedilu in obratno.
-
-Boljšo preglednost dosežemo, tako kot pri pisanju programske kode, tudi z izpuščanjem praznih vrstic za boljšo preglednost strukture izvornega besedila.
-
-S pomočjo  okolja \verb=\begin{comment} ... \end{comment}= lahko  hkrati zakomentiramo več vrstic izvornega besedila.
-
-Pri spreminjanju in dodajanju izvornega besedila je najbolje pogosto prevajati, da se sproti prepričamo, če so naši nameni izpolnjeni pravilno.
-
-Kadar besedilo, ki je že bilo napisano z nekim vizualnim urejevalnikom (npr. z Wordom), želimo prenesti v \LaTeX, je tudi najbolje to delati postopoma s posameznimi bloki besedila, 
-tako da lahko morebitne napake hitro identificiramo in odpravimo.
-Za prevajanje Wordovih datotek v \LaTeX\ sicer obstajajo prevajalniki, ki pa običajno ne generirajo tako čisto logično strukturo besedila, kot jo  \LaTeX\ omogoča.
-Hiter in enostaven način prevedbe besedila, ki  zahteva sicer ročne dopolnitve, poteka tako, da besedilo urejeno z vizualnim urejevalnikom najprej shranimo v formatu pdf, 
-nato pa to besedilo uvozimo v urejevalnik, kjer urejamo izvorno besedilo v formatu \LaTeX.
-
-
-\section{Pisave v \LaTeX u}
-
-V  \LaTeX ovem okolju lahko načeloma uporabljamo poljubne pisave. 
-Izbira poljubne pisave pa ni tako enostavna kot v vizualnih urejevalnikih besedil.
-Posamezne oblikovno medseboj usklajene pisave so običajno združene v družine pisav.
-V \LaTeX u se privzeta družina pisav imenuje Computer Modern,
-kjer so poleg navadnih črk (roman v \LaTeX u) na voljo tudi kurzivne črke (\textit{italic} v \LaTeX u), 
-krepke (\textbf{bold} v \LaTeX u), kapitelke (\textsc{small caps} v \LaTeX u), linearne črke ({\textsf{san serif} v \LaTeX u)                                                                                                                                                                                                                                                                                                                         
-in druge pisave.
-V istem dokumentu zaradi skladnega izleda uporabljamo običajno le pisave ene družine. 
-
-Ko začenjamo uporabljati \LaTeX, je zato najbolj smiselno uporabljati kar privzete pisave, s katerimi je napisan tudi ta dokument.
-Z ustreznimi ukazi  lahko nato preklapljamo med navadnimi, kurzivnimi, krepkimi in drugimi pisavami. 
-Zelo enostavna je tudi izbira velikosti črk.
-\LaTeX\  odlično podpira večjezičnost, tudi v sklopu istega dokumenta, saj obstajajo pisave za praktično vse jezike, tudi take, ki ne uporabljajo latinskih črk.
-
-Za prikaz programske kode se pogosto uporablja pisava, kjer imajo vse črke enako širino, kot so  črke na mehanskem pisalnem stroju ({\texttt{typewriter} v \LaTeX u).
-
-Najbolj priročno okolje za pisanje kratkih izsekov programske kode je okolje \texttt{verbatim}, saj ta ohranja vizualno organizacijo izvornega besedila in ima privzeto pisavo pisalnega stroja.
-
-\begin{verbatim}
-for (i = 0; i < 100; i++)
-   for (j = i; j < 10; j++)
-      some_function(i, j);
-\end{verbatim}
-
-
-\chapter{Kaj pa literatura?}
-\label{lit}
-
-Kot smo omenili že v uvodu, je pravi način za citiranje literature uporaba \BibTeX{}a~\cite{bib}. 
-\BibTeX\ zagotovi, da nobene obvezne informacije pri določeni vrsti literature ne izpustimo in da vse informacije o določeni vrsti vira dosledno navajamo na enak način.
-
-Osnovna ideja \BibTeX{a} je, da vse informacije o literaturi zapisujemo v posebno datoteko, v našem primeru je to \texttt{literatura.bib}.
-Vsakemu viru v tej datoteki določimo simbolično ime.
-V  našem primeru je v tej datoteki nekaj najbolj značilnih zvrsti literature, kot so knjige~\cite{lamport}, 
-članki v revijah~\cite{leonardo} in zbornikih konferenc~\cite{poglavje_springer}, 
-spletni viri~\cite{bib,slovarcek,video}, 
-tehnično poročilo~\cite{andersen2012kinect}, 
-diplome~\cite{diploma} itd.
-Diploma~\cite{diploma} iz leta 1990 je bila prva diploma na Fakulteti za elektrotehniko in računalništvo, ki je bila oblikovana z \LaTeX om!
-
-Po vsaki spremembi pri sklicu na literaturo moramo najprej prevesti izvorno besedilo s prevajalnikom \LaTeX, nato s prevajalnikom  \BibTeX, ki ustvari datoteko  {\tt vzorec\_dip\_Seminar.bbl}, in nato še dvakrat s prevajalnikom  \LaTeX.
-
-Kako natančno se spisek literature nato izpiše (ali po vrstnem redu sklicevanja, ali po abecedi priimkov prvih avtorjev, ali se imena avtorjev pišejo pred priimki itd.) je odvisno od stilske datoteke.
-V diplomi bomo uporabili osnovno stilsko datoteko \texttt{plain}, ki vire razporedi po abecedi.
-Zato je potrebno pri določenih zvrsteh literature, ki nima avtorjev, dodati polje \texttt{key}, ki določi vrstni red vira po abecedi.
-
-Z uporabo \BibTeX{a} v slovenščini je še nekaj nedoslednosti, saj so pomožne besede, ki jih \BibTeX\ sam doda,  kot so \textit{editor},  \textit{pages} in besedica  \textit{and} pred zadnjim avtorjem, 
-če ima vir več avtorjev~\cite{andersen2012kinect}, zapisane v angleščini,
-čeprav smo izbrali opcijo \texttt{slovene} pri paketu \texttt{babel}.
-To nedoslednost je možno popraviti z ročnim urejanjem datoteke {\tt vzorec\_dip\_Seminar.bbl}, 
-kar pa je smiselno šele potem, ko bibliografije v datoteki \texttt{literatura.bib} ne bomo več spreminjali,
-oziroma ne bomo več dodajali novih sklicev na literaturo v izvornem besedilu.
-Vsebino datoteke {\tt vzorec\_dip\_Seminar.bbl} lahko na koncu urejanja tudi vključimo kar v izvorno besedilo diplome, tako da je vso besedilo, vključno z literaturo, zajeto le v eni datoteki.
-
-Ko začenjamo uporabljati \BibTeX\ je lažje, če za urejanje datoteke .bib uporabljamo kar isti urejevalnik kot za urejanje datotek .tex, 
-čeprav obstajajo tudi posebni urejevalniki oziroma programi za delo z \BibTeX om.
-
-Le če se bomo na določen vir v besedilu tudi sklicevali, se bo pojavil tudi v spisku literature.
-Tako je avtomatično zagotovljeno, da se na vsak vir v seznamu literature tudi sklicujemo v besedilu diplome.
-V datoteki \texttt{.bib} imamo sicer lahko veliko več virov za literaturo, kot jih bomo uporabili v diplomi.
-
-Vire v formatu \BibTeX\ lahko enostavno poiščemo in prekopiramo iz akademskih spletnih portalov za iskanje znanstvene literature v našo datoteko \texttt{.bib}, na primer v Google učenjaku.
-Izvoz v Google učenjaku še dodatno poenostavimo, če v nastavitvah izberemo \BibTeX\ kot želeni format za izvoz navedb.
-Navedbe, ki jih na tak način prekopiramo, pa moramo pred uporabo vseeno preveriti, saj so taki navedki običajno generirani povsem avtomatično.
-
-Pri sklicevanju na literaturo na koncu stavka moramo paziti, da je pika po ukazu \verb=\cite{ }=.
-Da \LaTeX\ ne bi delil vrstico ravno tako, da bi sklic na literaturo v oglatih oklepajih začel novo vrstico, lahko pred sklicem na literaturo dodamo nedeljiv presledek: \verb=~\cite{ }=.
-
-
-\section{Izbiranje virov za spisek literature}
-
-Dandanes  se skoraj  vsi pri iskanju informacij vedno najprej lotimo iskanja preko svetovnega spleta.
-Rezultati takega iskanja pa so pogosto spletne strani, ki danes obstajajo, jutri pa jih morda ne bo več, ali pa vsaj ne v taki obliki, kot smo jo prebrali.
-Smisel navajanja literature pa je, da tudi po dolgih letih nekdo, ki bo bral vašo diplomo, lahko poišče vire, ki jih navajate v diplomi.
-Taki viri pa so predvsem članki v znanstvenih revijah, ki se arhivirajo v knjižnicah, založniki teh revij pa večinoma omogočajo tudi elektronski dostop do arhiva vseh njihovih člankov.
-
-Znanstveni rezultati, ki so objavljeni v obliki recenziranih člankov, bodisi v konferenčnih zbornikih, še bolje pa v znanstvenih revijah, so veliko bolj izčiščen in zanesljiv vir informacij, saj
-so taki članki šli skozi recenzijski postopek.
-Zato na svetovnem spletu začenjamo iskati vire za strokovna besedila predvsem preko akademskih spletnih portalov, kot so npr. Google učenjak, Research Gate ali Academia, saj
-so na teh portalih rezultati iskanja le akademske publikacije.
-Če je za dostop do nekega članka potrebno plačati, se obrnemo za pomoč in dodatne informacije na  našo knjižnico.
-
-Če res ne gre drugače, pa je pomembno, da pri sklicevanju na spletni vir, vedno navedemo tudi datum, kdaj smo dostopali do tega vira.
-
-
-
-\chapter{Sistem STUDIS in PDF/A}
-\label{PDF}
-
-Elektronsko verzijo diplome moramo oddati preko sistema STUDIS v formatu PDF/A ~\cite{pdfa}.
-Natančneje v formatu PDF/A-1b. 
-
-\LaTeX\ in omenjeni format imata še nekaj težav s sobivanjem. 
-Paket \texttt{pdfx.sty}, ki naj bi \LaTeX{u} omogočal podporo formatu PDF/A ne deluje v skladu s pričakovanji. 
-Ta predloga delno ustreza formatu, vsekakor dovolj, da jo študentski informacijski sistem sprejme. 
-Znaten del rešitve je prispeval Damjan Cvetan.
-
-V predlogi, poleg izvornega  dokumenta \texttt{.tex} in vloženih slik \texttt{pic1.pdf} in \texttt{pic2.png}, 
-potrebujemo še predlogo datoteke z metapodatki \texttt{pdfa-1b.xmp} in datoteko z barvnim profilom \texttt{sRGBIEC1966-2.1.icm}.
-
-
+Vmesnik je abstraken opis akcij, ki jih lahko izvede objekt. Tekom prevajanja mora prevajalnik zagotoviti, da razred vsebuje vse metode v vmesnikih, ki jih implementira. Razred lahko implementira poljubno število vmesnikov. \\
+\indent 
 
 
 \chapter{Sklepne ugotovitve}
@@ -908,7 +1172,7 @@ Pri kakršnihkoli nadaljnih vprašanjih ali napakah pa svetujem uporabo Googla, 
 
 
 \newpage %dodaj po potrebi, da bo številka strani za Literaturo v Kazalu pravilna!
-\ \\
+
 \clearpage
 \addcontentsline{toc}{chapter}{Literatura}
 \bibliographystyle{plain}
