@@ -1,15 +1,34 @@
 import stdlib
 
-a is A
-
-int* virtualTablePointer; // naslov virtualne tabele
-const int typeDescriptor; // deskriptor razreda
-bool result; // končni rezultat
-
-do {
-    if (typeDescriptor == *virtualTablePointer) {
-        result = true;
-        break;
+interface I {
+    func foo()
+}
+class A: I {
+    func foo() {
+        print("A's implementation of foo")
     }
-    virtualTablePointer = *(virtualTablePointer + 4);
-} while (virtualTablePointer != NULL);
+}
+class B: I {
+    func foo() {
+        print("B's implementation of foo")
+    }
+}
+
+var x: I
+x = A()
+x.foo()
+x = B()
+x.foo()
+
+/*var array: [I] = [A(), B(), A()]
+for i in array {
+    print("kle")
+    i.foo()
+}*/
+
+	extension A {
+	    func toString() {
+	        self.foo()
+	    }
+	}
+	A().toString()

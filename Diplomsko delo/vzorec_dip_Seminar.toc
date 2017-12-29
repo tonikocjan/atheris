@@ -45,8 +45,9 @@
 \contentsline {subsection}{\numberline {4.6.1}Dynamic Dispatch}{35}{subsection.4.6.1}
 \contentsline {subsubsection}{Virtualne tabele}{36}{section*.18}
 \contentsline {subsection}{\numberline {4.6.2}Realizacija}{37}{subsection.4.6.2}
-\contentsline {section}{\numberline {4.7}Instance of operator}{37}{section.4.7}
+\contentsline {section}{\numberline {4.7}Instance of operator}{38}{section.4.7}
 \contentsline {section}{\numberline {4.8}Pretvarjanje tipov}{38}{section.4.8}
 \contentsline {section}{\numberline {4.9}Vmesniki}{39}{section.4.9}
+\contentsline {section}{\numberline {4.10}Raz\IeC {\v s}iritve}{40}{section.4.10}
 \contentsline {chapter}{\numberline {5}Sklepne ugotovitve}{41}{chapter.5}
 \contentsline {chapter}{Literatura}{42}{chapter.5}

@@ -947,7 +947,7 @@ enum Days: Int {
 \indent Za \textbf{String} so privzete surove vrednosti imena članov enumeracije.
 
 \begin{lstlisting}[caption={Enumeracija s surovimi vrednostmi tipa String}, captionpos=b, label={lst:fruitEnumeration}]
-enum Fruit {
+enum Fruit: String {
   case Apple // privzeta vrednost = "Apple"
   case Orange = "Annoying Orange"
   case Strawberry // privzeta vrednost = "Strawberry"
@@ -1094,7 +1094,7 @@ Dedovanje in polimorfizem, sta, poleg enkapsulacije in abstrakcije, zelo pomembn
 \indent Tekom preverjanja tipov prevajalnik zagotovi, da je dedovan podatkovni tip razred, saj dedovanje od drugih tipov ni dovoljeno. Prevajalnik za vsako definicijo preveri, ali že obstaja v nadrazredu. V primeru da ja, javi napako. Prekrivanje je dovoljeno samo za definicije označene z modifikatorjem \textit{\textbf{override}} in je trenutno mogoče samo za metode. \\
 \indent V pomnilniku se atributi dedovanega razreda nahajajo pred atributi dedujočega se razreda. Enačba za izračun velikosti razreda (koliko prostora porabi objekt v pomnilniku) postane kompleksnejša, saj je potrebno rekurzivno prišteti velikosti nadrazradov. Prav tako postane komleksnejši izračun odmikov atributov od začetnega naslova. 
 
-\subsection{Dynamic Dispatch}
+\subsection{Dynamic Dispatch} \label{dynamicDispatch}
 
 Dynamic dispatch je proces izbira implementacije polimorfizne metode v času \textbf{izvajanja programa}. Razlog zakaj proces izbire ni možno opraviti tekom prevajanja, se skriva v tem, da lahko obstaja več različnih implementacij iste metode (\text{overridanje} metod). Statično izbiranje (t.j. v času prevajanja) je možno za statične metode. \\
 \indent Dynamic dispatch je možno implementirati na različne načine. Rešitev v tem prevajalniku temelji na rešitvi, ki jo ima tipično C++, in sicer s podatkovno strukturo \textit{\textbf{v-table}} oz. virtualna tabela. 
@@ -1120,6 +1120,7 @@ V času prevajanja imamo na voljo informacijo o tem, katera po vrsti je metoda d
 \[ address(method_i) = adress(vtable) + (i * sizeof(void*)) + 8 \]
 
 kjer je \[address(vtable)\]\ lokacija tabele v pomnilniku, \[(i * sizeof(void*)) + 8\] indeks pomnožen z velikostjo kazalca (običajno 4 byti) plus odmik od začetka tabele zaradi prej opisanih dodatnih podatkov v tabeli, ter \[ address(method_i)\] naslov metode na indeksu i. Ko interpreter tekom izvajanja kode izračuna naslov metode, njeno kodo naloži iz izračunanega naslova, ter jo izvede.
+\newpage
 
 \section{Instance of operator}
 
@@ -1140,6 +1141,7 @@ Izračun je malenkost kompleksnejši kot sem opisal zgoraj, saj če želimo prev
 todo
 \end{lstlisting}
 
+
 \section{Pretvarjanje tipov}
 
 Mehanizem pretvarjanja iz enega tipa v drug (angl. \textit{type casting}) deluje po zelo podobnem principu kot \textit{as} operator. Razlikuje se samo v tem, da je rezultat operacije, če pretvorba uspe naslov objekta, sicer 'null'. Takemu tipu pretvarjanja rečemo \textit{safe casting}, saj program nadaljuje z izvajanjem tudi če pretvorba ni uspešna. Za razliko od \textit{non-safe castanja}, kjer bi program vrnil \textit{null pointer exception}.
@@ -1157,8 +1159,41 @@ Mehanizem pretvarjanja iz enega tipa v drug (angl. \textit{type casting}) deluje
 
 \section{Vmesniki}
 
-Vmesnik je abstraken opis akcij, ki jih lahko izvede objekt. Tekom prevajanja mora prevajalnik zagotoviti, da razred vsebuje vse metode v vmesnikih, ki jih implementira. Razred lahko implementira poljubno število vmesnikov. \\
-\indent 
+Vmesnik je abstraken opis akcij, ki jih lahko izvede objekt. Tekom prevajanja prevajalnik zagotovi, da razred vsebuje vse metode v vmesnikih, ki jih želi implementirati. Ker je vmesnik abstraktna podatkovna struktura, ne moremo kreirati instance neposredno, lahko pa spremeljivki priredimo instanco razreda, če razred implementira vmesnik. Vse metode so klicane dinamično, po postoku opisanem v razdelku \ref{dynamicDispatch}.
+
+\begin{lstlisting}[caption={Vmesniki}, label={lst:interfaces}, captionpos=b]
+	interface I {
+	    func foo()
+	}
+	class A: I {
+	    func foo() {
+	        print("A's implementation of foo")
+	    }
+	}
+	class B: I {
+	    func foo() {
+	        print("B's implementation of foo")
+	    }
+	}
+	var x: I
+	x = A()
+	x.foo() // 'A's implementation of foo'
+	x = B()
+	x.foo() // 'B's implementation of foo'
+\end{lstlisting}
+
+\section{Razširitve}
+
+Razširitev (angl. \textit{extension}) je mehanizem, ki omogoča dodajanje funkcionalnosti obstoječim razredom. 
+
+\begin{lstlisting}[caption={Razširitev razreda iz ~\ref{lbl:interfaces}}, captionpos=b]
+	extension A {
+	    func toString() {
+	        print("ext::toString()")
+	    }
+	}
+	A().toString()
+\end{lstlisting}
 
 
 \chapter{Sklepne ugotovitve}

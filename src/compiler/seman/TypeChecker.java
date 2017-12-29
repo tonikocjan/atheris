@@ -417,12 +417,12 @@ public class TypeChecker implements ASTVisitor {
 			// FIXME: - remove this in the future
 			if (lhs.isArrayType()) {
 				if (!memberName.equals("elementCount"))
-                    logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
 				symbolDescription.setTypeForAstNode(acceptor, Type.intType);
 				return;
 			}
             if (lhs.isOptionalType()) {
-                logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" not unwrapped");
+                logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" not unwrapped");
             }
 
 			if (lhs.isObjectType()) {
@@ -580,11 +580,11 @@ public class TypeChecker implements ASTVisitor {
                     }
                 }
                 else {
-                    logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
                 AstDefinition def = interfaceType.findMemberDefinitionWithName(memberName);
 			    if (def == null) {
-                    logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                    logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
                 }
 
                 FunctionType functionType = (FunctionType) symbolDescription.getTypeForAstNode(def);
@@ -593,7 +593,7 @@ public class TypeChecker implements ASTVisitor {
                 symbolDescription.setTypeForAstNode(acceptor.expr2, functionType);
             }
             else {
-                logger.error(acceptor.position, "Value of memberType \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
+                logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
             }
 
 //            acceptor.expr2.accept(this);
@@ -1165,14 +1165,14 @@ public class TypeChecker implements ASTVisitor {
 					
 					if (enumRawValueType == null) {
                         logger.error(enumMemberDef.value.position,
-                                "Enum member cannot have a raw value if the enums doesn't have a raw memberType");
+                                "Enum member cannot have a raw value if the enums doesn't have a raw type");
                     }
 					
 					
 					if (!rawValueType.sameStructureAs(enumRawValueType))
                         logger.error(enumMemberDef.value.position,
-								"Cannot assigningToVariable value of memberType \"" +
-								rawValueType.toString() + "\" to memberType \"" +
+								"Cannot assigningToVariable value of type \"" +
+								rawValueType.toString() + "\" to type \"" +
 								enumRawValueType.toString() + "\"");
 
 					previousValue = enumMemberDef.value.value;

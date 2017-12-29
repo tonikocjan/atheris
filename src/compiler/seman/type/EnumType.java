@@ -35,7 +35,7 @@ public class EnumType extends Type implements ReferenceType {
 	public EnumType(AstEnumDefinition definition,
 			ArrayList<String> names, ArrayList<ClassType> types) {
 		if (names.size() != types.size())
-            logger.error("Internal error :: compiler.seman.memberType.EnumType: "
+            logger.error("Internal error :: compiler.seman.type.EnumType: "
 					+ "names elementCount not equal types elementCount");
 		
 		this.enumDefinition = definition;
