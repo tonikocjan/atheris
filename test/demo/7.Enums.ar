@@ -46,4 +46,3 @@ enum CarBrands: String {
 print(CarBrands.Audi.rawValue)
 print(CarBrands.VW.rawValue)
 print(CarBrands.None.rawValue)
-

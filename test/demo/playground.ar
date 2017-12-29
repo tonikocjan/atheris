@@ -1,36 +1,15 @@
 import stdlib
 
-class B {
-    let x = 55555
-}
+a is A
 
-class A {
-    let x = 66666
-    let b: B = B()
+int* virtualTablePointer; // naslov virtualne tabele
+const int typeDescriptor; // deskriptor razreda
+bool result; // končni rezultat
 
-    func test() {
-        print(20)
+do {
+    if (typeDescriptor == *virtualTablePointer) {
+        result = true;
+        break;
     }
-
-}
-
-let a = A()
-print(a.x)
-print(a.b.x)
-
-/*import stdlib
-
-class A {
-    func fact(x: Int) Int {
-        if x == 0 {
-            return 1
-        }
-        else {
-            return x * self.fact(x: x - 1)
-        }
-    }
-}
-
-for i in [3] {
-    print(A().fact(x: i))
-}*/
+    virtualTablePointer = *(virtualTablePointer + 4);
+} while (virtualTablePointer != NULL);

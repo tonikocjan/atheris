@@ -51,15 +51,13 @@ public class ImcCodeGen implements ASTVisitor {
     private Stack<FrmLabel> controlTransferEndLabelStack = new Stack<>();
     private Stack<ImcExpr> switchSubjectExprs = new Stack<>();
     
-    private SymbolTableMap symbolTable;
     private SymbolDescriptionMap symbolDescription;
     private FrameDescriptionMap frameDescription;
     private ImcDescriptionMap imcDescription;
 
-	public ImcCodeGen(FrmFrame entryPoint, SymbolTableMap symbolTable, SymbolDescriptionMap symbolDescription, FrameDescriptionMap frameDescription, ImcDescriptionMap imcDescription) {
+	public ImcCodeGen(FrmFrame entryPoint, SymbolDescriptionMap symbolDescription, FrameDescriptionMap frameDescription, ImcDescriptionMap imcDescription) {
 		returnExprFrameStack.add(entryPoint);
 		chunks = new ArrayList<>();
-        this.symbolTable = symbolTable;
         this.symbolDescription = symbolDescription;
         this.frameDescription = frameDescription;
         this.imcDescription = imcDescription;
@@ -77,7 +75,7 @@ public class ImcCodeGen implements ASTVisitor {
 
         Integer virtualTablePointer = 0;
 
-        if (virtualTableAccess != null) {
+        if (virtualTableAccess != null) { // structures don't have virtual tables
             // create static instance (singleton)
             ImcDataChunk staticInstance = new ImcDataChunk(virtualTableAccess.label, type.staticSize());
             chunks.add(staticInstance);
@@ -689,11 +687,13 @@ public class ImcCodeGen implements ASTVisitor {
 		Type varType = symbolDescription.getTypeForAstNode(acceptor);
 		
 		int size = varType.sizeInBytes();
-		if (varType.isReferenceType())
-			size = 4;
+		if (varType.isReferenceType()) {
+            size = 4;
+        }
 
-		if (access instanceof FrmVarAccess)
-			chunks.add(new ImcDataChunk(((FrmVarAccess) access).label, size));
+		if (access instanceof FrmVarAccess) {
+            chunks.add(new ImcDataChunk(((FrmVarAccess) access).label, size));
+        }
 	}
 
 	@Override
@@ -710,18 +710,18 @@ public class ImcCodeGen implements ASTVisitor {
         }
 		else if (access instanceof FrmLocAccess) {
 			FrmLocAccess loc = (FrmLocAccess) access;
-			int diff = returnExprFrameStack.peek().staticLevel - loc.frame.staticLevel;
+            int diff = returnExprFrameStack.peek().staticLevel - loc.frame.staticLevel;
 
-			ImcExpr fp = new ImcTEMP(returnExprFrameStack.peek().FP);
-			for (int i = 0; i < diff; i++)
-				fp = new ImcMEM(fp);
+            ImcExpr fp = new ImcTEMP(returnExprFrameStack.peek().FP);
+            for (int i = 0; i < diff; i++) {
+                fp = new ImcMEM(fp);
+            }
 
-			expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, fp, new ImcCONST(
-					loc.framePointerOffset)));
+            expr = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, fp, new ImcCONST(loc.framePointerOffset)));
 		} 
 		else if (access instanceof FrmMemberAccess) {
-			FrmMemberAccess member = (FrmMemberAccess) access;
-			expr = new ImcCONST(member.offsetForMember());
+			FrmMemberAccess memberAccess = (FrmMemberAccess) access;
+			expr = new ImcCONST(memberAccess.offsetForMember());
 		}
         else if (access instanceof FrmStaticAccess) {
             FrmStaticAccess staticAccess = (FrmStaticAccess) access;
@@ -791,10 +791,12 @@ public class ImcCodeGen implements ASTVisitor {
 			if (code != null) {
 				ImcStmt s = null;
 
-				if (code instanceof ImcStmt)
-					s = (ImcStmt) code;
-				else
-					s = new ImcEXP((ImcExpr) code);
+				if (code instanceof ImcStmt) {
+                    s = (ImcStmt) code;
+                }
+				else {
+                    s = new ImcEXP((ImcExpr) code);
+                }
 
 				seq.stmts.add(s);
 			}
@@ -867,13 +869,13 @@ public class ImcCodeGen implements ASTVisitor {
 	public void visit(AstControlTransferStatement acceptor) {
 		if (acceptor.control == ControlTransferKind.Continue) {
 			if (!controlTransferStartLabelStack.isEmpty()) {
-                // Jump to continue entryLabel (beginning of the loop)
+                // Jump to continue label (beginning of the loop)
                 imcDescription.setImcCode(acceptor, new ImcJUMP(controlTransferStartLabelStack.peek()));
             }
 		}
 		else {
 			if (!controlTransferEndLabelStack.isEmpty()) {
-                // Jump to break entryLabel
+                // Jump to break label
                 imcDescription.setImcCode(acceptor, new ImcJUMP(controlTransferEndLabelStack.peek()));
             }
 		}

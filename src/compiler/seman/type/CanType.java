@@ -23,12 +23,12 @@ import compiler.ast.tree.def.AstVariableDefinition;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-// TODO: What should this memberType be called?
+// TODO: What should this type be called?
 public class CanType extends Type {
 
 	public final Type childType;
 
-	/** Static efinitions in childType */
+	/** Static definitions in childType */
 	private final LinkedList<AstDefinition> staticDefinitions = new LinkedList<>();
     private final LinkedList<Type> staticTypes = new LinkedList<>();
     private final LinkedList<String> staticNames = new LinkedList<>();

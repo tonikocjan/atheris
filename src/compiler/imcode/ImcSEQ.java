@@ -39,7 +39,7 @@ public class ImcSEQ extends ImcStmt {
 		int index = 0;
 		while (stmts.hasNext()) {
 			ImcStmt stmt = stmts.next();
-            logger.dump(indent + 2, "PC [" + index + "]: ", false);
+//            logger.dump(indent + 2, "PC [" + index + "]: ", false);
 			stmt.dump(indent + 2);
 			index++;
 		}

@@ -159,7 +159,7 @@ public class Atheris {
             if (execPhase.equals("frames")) break;
 
             // Generiranje vmesne kode.
-            ImcCodeGen imcodegen = new ImcCodeGen(frmEval.entryPoint, symbolTable, symbolDescription, frameDescription, imcDescription);
+            ImcCodeGen imcodegen = new ImcCodeGen(frmEval.entryPoint, symbolDescription, frameDescription, imcDescription);
             source.accept(imcodegen);
 
             // Linearizacija vmesne kode.

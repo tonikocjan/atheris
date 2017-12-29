@@ -97,7 +97,7 @@ public class TypeChecker implements ASTVisitor {
 
                 if (!type.isInterfaceType() && (!type.isCanType() || !((CanType) type).childType.isClassType())) {
                     logger.error(acceptor.baseClass.position,
-                            "Inheritance from non-class memberType \"" + type.friendlyName() + "\" is not allowed");
+                            "Inheritance from non-class type \"" + type.friendlyName() + "\" is not allowed");
                 }
 
                 if (type.isInterfaceType()) {
@@ -113,11 +113,11 @@ public class TypeChecker implements ASTVisitor {
                 conformance.accept(this);
 
                 if (!symbolDescription.getTypeForAstNode(conformance).isInterfaceType()) {
-                    if (baseClass != null) {
-                        logger.error(conformance.position, "Multiple inheritance is not allowed");
+                    if (baseClass == null) {
+                        logger.error(conformance.position, "Super class must appear first in inheritance clause");
                     }
                     else {
-                        logger.error(conformance.position, "Super class must appear first in inheritance clause");
+                        logger.error(conformance.position, "Multiple inheritance is not allowed");
                     }
                 }
             }
@@ -1131,26 +1131,30 @@ public class TypeChecker implements ASTVisitor {
 				AstEnumMemberDefinition enumMemberDef = (AstEnumMemberDefinition) def;
 				
 				if (enumRawValueType != null && enumMemberDef.value == null) {
-					if (!enumRawValueType.isBuiltinStringType() && !enumRawValueType.isBuiltinIntType())
+					if (enumRawValueType.isBuiltinStringType() || enumRawValueType.isBuiltinIntType()) {
+                        String value = null;
+
+                        if (enumRawValueType.isBuiltinStringType()) {
+                            value = "\"" + enumMemberDef.name.name + "\"";
+                        }
+                        else if (enumRawValueType.isBuiltinIntType()) {
+                            if (previousValue == null) {
+                                value = "" + iterator;
+                            }
+                            else {
+                                value = "" + (Integer.parseInt(previousValue) + 1);
+                            }
+                        }
+
+                        enumMemberDef.value = new AstAtomConstExpression(enumMemberDef.position, enumRawValueType.type, value);
+
+                        previousValue = value;
+                        iterator++;
+                    }
+                    else {
                         logger.error(enumMemberDef.position,
-								"Enum members require explicit raw values when "
-								+ "the raw memberType is not Int or String literal");
-					
-					String value = null;
-					
-					if (enumRawValueType.type == AtomTypeKind.STR)
-						value = "\"" + enumMemberDef.name.name + "\"";
-					else if (enumRawValueType.type == AtomTypeKind.INT) {
-						if (previousValue == null)
-							value = "" + iterator;
-						else
-							value = "" + (Integer.parseInt(previousValue) + 1);
-					}
-					
-					enumMemberDef.value = new AstAtomConstExpression(enumMemberDef.position, enumRawValueType.type, value);
-	
-					previousValue = value;
-					iterator++;
+                                "Enum members require explicit raw values when raw member type is not Int or String");
+                    }
 				}
 
 				def.accept(this);
@@ -1159,10 +1163,10 @@ public class TypeChecker implements ASTVisitor {
 				if (defType.containsMember("rawValue")) {
 					Type rawValueType = defType.getTypeOfMemberWithName("rawValue");
 					
-					if (enumRawValueType == null)
+					if (enumRawValueType == null) {
                         logger.error(enumMemberDef.value.position,
-								"Enum member cannot have a raw value "
-								+ "if the enums doesn't have a raw memberType");
+                                "Enum member cannot have a raw value if the enums doesn't have a raw memberType");
+                    }
 					
 					
 					if (!rawValueType.sameStructureAs(enumRawValueType))

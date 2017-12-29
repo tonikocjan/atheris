@@ -39,9 +39,10 @@ public class ClassType extends ObjectType implements ReferenceType {
 
         // first check in base class
         if (base != null) {
-            index = ((ClassType) base).indexForMember(name);
+            ClassType baseClass = ((ClassType) base);
+            index = baseClass.indexForMember(name);
 
-            if (index < ((ClassType) base).instanceMethodCount())
+            if (index < baseClass.instanceMethodCount())
                 return index;
         }
 
