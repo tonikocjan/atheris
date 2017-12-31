@@ -1315,7 +1315,7 @@ public class TypeChecker implements ASTVisitor {
             resolveTypeOnly = true;
 
             for (AstDefinition def : acceptor.definitions.definitions) {
-                if (extendingType.isAtomType()) {
+                if (((CanType) extendingType).childType.isAtomType()) {
                     // atomic types methods are always final (not dynamic)
                     def.setModifier(DefinitionModifier.isFinal);
                 }
