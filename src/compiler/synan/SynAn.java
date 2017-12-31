@@ -19,7 +19,9 @@ package compiler.synan;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import compiler.logger.LoggerFactory;
 import compiler.logger.LoggerInterface;
@@ -809,10 +811,13 @@ public class SynAn {
 
         getNextSymbol();
 
+        List<AstDefinition> variableDefinitions = defs.definitions.stream().filter(def -> def instanceof AstVariableDefinition).collect(Collectors.toList());
+        if (!variableDefinitions.isEmpty()) {
+            logger.error(variableDefinitions.get(0).position, "Extension cannot contain variable definitions");
+        }
+
         return new AstExtensionDefinition(
-                new Position(
-                        symbol.getPosition(),
-                        defs.position),
+                new Position(symbol.getPosition(), defs.position),
                 type.getName(),
                 type,
                 defs,

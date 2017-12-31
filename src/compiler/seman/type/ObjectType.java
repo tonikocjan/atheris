@@ -11,6 +11,7 @@ import utils.Constants;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 public abstract class ObjectType extends Type {
 
@@ -166,6 +167,34 @@ public abstract class ObjectType extends Type {
         }
 
         return isDescendantOf((ObjectType) type);
+    }
+
+    @Override
+    public Type commonBaseClass(Type other) {
+        Type commonBaseType = super.commonBaseClass(other);
+        if (other.isObjectType()) {
+            ObjectType objectType = (ObjectType) other;
+            List<ObjectType> otherHierarchy = objectType.generateHierarchy();
+            List<ObjectType> thisHierarchy = this.generateHierarchy();
+
+            for (int i = 0; i < otherHierarchy.size(); i++) {
+                if (thisHierarchy.size() <= i) break;
+                if (otherHierarchy.get(i).sameStructureAs(thisHierarchy.get(i))) {
+                    commonBaseType = otherHierarchy.get(i);
+                }
+            }
+        }
+        return commonBaseType;
+    }
+
+    public List<ObjectType> generateHierarchy() {
+        List<ObjectType> baseClasses = new ArrayList<>();
+        ObjectType baseClass = base;
+        while (baseClass != null) {
+            baseClasses.add(baseClass);
+            baseClass = baseClass.base;
+        }
+        return baseClasses;
     }
 
     @Override

@@ -227,7 +227,7 @@ public class TypeChecker implements ASTVisitor {
                 }
             }
 
-            // add implicit "self: classType" parameter to constructors
+            // set type for implicit "self"
             for (AstFunctionDefinition constructor : acceptor.construstors) {
                 AstParameterDefinition selfParDef = constructor.getParameterAtIndex(0);
                 selfParDef.type = new AstTypeName(selfParDef.position, acceptor.name);
@@ -250,7 +250,7 @@ public class TypeChecker implements ASTVisitor {
 
             for (AstDefinition def : acceptor.memberDefinitions.definitions) {
                 if (!def.isStatic() && def instanceof AstFunctionDefinition) {
-                    // add implicit "self: classType" parameter to instance methods
+                    // set type for implicit "self"
                     AstFunctionDefinition funDef = (AstFunctionDefinition) def;
                     AstParameterDefinition selfParDef = funDef.getParameterAtIndex(0);
                     selfParDef.type = new AstTypeName(selfParDef.position, acceptor.name);
@@ -345,7 +345,7 @@ public class TypeChecker implements ASTVisitor {
                 System.out.println();
             }
 
-            // memberType inference: if lhs doesn't have memberType, assigningToVariable rhs memberType
+            // type inference: if lhs doesn't have a type, assign it rhs type
 			if (lhs == null) {
                 symbolDescription.setTypeForAstNode(acceptor, rhs);
 				symbolDescription.setTypeForAstNode(acceptor.expr1, rhs);
@@ -1041,13 +1041,12 @@ public class TypeChecker implements ASTVisitor {
 			if (base == null) {
 			    base = t;
             }
-			else if (t.sameStructureAs(base) || t.canBeCastedToType(base)) {}
-            else {
+			else if (!(t.sameStructureAs(base) || t.canBeCastedToType(base))) {
                 if (base.canBeCastedToType(t)) {
                     base = t;
                 }
                 else {
-                    base = Type.anyType;
+                    base = t.commonBaseClass(base);
                 }
             }
 
@@ -1298,27 +1297,25 @@ public class TypeChecker implements ASTVisitor {
                 conformance.accept(this);
             }
 
-            Type type = symbolDescription.getTypeForAstNode(acceptor.extendingType);
-            boolean isAtomType = false;
+            Type extendingType = symbolDescription.getTypeForAstNode(acceptor.extendingType);
 
-            if (type.isAtomType()) {
-                AtomType atomType = (AtomType) type;
-                type = atomType.staticType;
-                isAtomType = true;
+            if (extendingType.isAtomType()) {
+                extendingType = ((AtomType) extendingType).staticType;
             }
 
-            symbolDescription.setTypeForAstNode(acceptor, type);
+            symbolDescription.setTypeForAstNode(acceptor, extendingType);
 
-            if (!type.isCanType() || !((CanType) type).childType.isObjectType()) {
+            if (!extendingType.isCanType() || !((CanType) extendingType).childType.isObjectType()) {
                 logger.error(acceptor.position, "Only classes can be extended (for now)");
             }
 
-            ObjectType extendingType = (ObjectType) ((CanType) type).childType;
+            CanType staticType = (CanType) extendingType;
+            ObjectType objectType = (ObjectType) staticType.childType;
 
             resolveTypeOnly = true;
 
             for (AstDefinition def : acceptor.definitions.definitions) {
-                if (isAtomType) {
+                if (extendingType.isAtomType()) {
                     // atomic types methods are always final (not dynamic)
                     def.setModifier(DefinitionModifier.isFinal);
                 }
@@ -1329,19 +1326,21 @@ public class TypeChecker implements ASTVisitor {
                 Type memberType = symbolDescription.getTypeForAstNode(def);
 
                 if (def.isStatic()) {
-                    if (!((CanType) type).addStaticMember(def, memberName, memberType)) {
+                    boolean successfullyAdded = staticType.addStaticMember(def, memberName, memberType);
+                    if (!successfullyAdded) {
                         logger.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
                     }
                 }
                 else {
-                    if (!extendingType.addMember(def, memberName, memberType)) {
+                    boolean successfullyAdded = objectType.addMember(def, memberName, memberType);
+                    if (!successfullyAdded) {
                         logger.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
                     }
                 }
             }
 
             for (AstType conformance : acceptor.conformances) {
-                if (!extendingType.addConformance(conformance)) {
+                if (!objectType.addConformance(conformance)) {
                     logger.error(conformance.position, "Redundant conformance \"" + conformance.getName() + "\"");
                 }
             }
@@ -1352,7 +1351,7 @@ public class TypeChecker implements ASTVisitor {
             for (AstDefinition def : acceptor.definitions.definitions) {
                 if (def instanceof AstFunctionDefinition) {
                     if (!def.isStatic()) {
-                        // add implicit "self: classType" parameter to instance methods
+                        // set type for implicit "self" parameter
                         AstFunctionDefinition funDef = (AstFunctionDefinition) def;
                         AstParameterDefinition selfParDef = funDef.getParameterAtIndex(0);
                         selfParDef.type = new AstTypeName(selfParDef.position, acceptor.getName());

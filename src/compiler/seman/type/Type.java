@@ -32,12 +32,14 @@ public abstract class Type {
         return TYPE_DESCRIPTOR++;
     }
 
-    // Descriptor for this memberType is automatically assigned when new memberType is instantiated
+    // Descriptor for this type is automatically assigned when new type is instantiated
     public final int descriptor = getTypeDescriptor();
 
 	public abstract boolean sameStructureAs(Type type);
 
 	public abstract boolean canBeCastedToType(Type type);
+
+	public Type commonBaseClass(Type other) { return anyType; }
 
 	public abstract int sizeInBytes();
 
@@ -131,6 +133,7 @@ public abstract class Type {
 
     // TODO: Bad design!!
 	public static void clean() {
+        TYPE_DESCRIPTOR = 0;
         intType = new AtomType(AtomTypeKind.INT);
         charType = new AtomType(AtomTypeKind.CHR);
         doubleType = new AtomType(AtomTypeKind.DOB);
@@ -138,7 +141,6 @@ public abstract class Type {
         boolType = new AtomType(AtomTypeKind.LOG);
         voidType = new AtomType(AtomTypeKind.VOID);
         nilType = new AtomType(AtomTypeKind.NIL);
-        TYPE_DESCRIPTOR = 0;
     }
 
 	/// Static members
