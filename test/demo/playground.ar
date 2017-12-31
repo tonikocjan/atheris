@@ -1,24 +1,20 @@
 import stdlib
 
+/*class A {}
 interface I {
     func foo()
 }
-class A: I {
+class B: A, I {
     func foo() {
         print("A's implementation of foo")
     }
 }
-class B: I {
+class C: A, I {
     func foo() {
         print("B's implementation of foo")
     }
 }
 
-var x: I
-x = A()
-x.foo()
-x = B()
-x.foo()
 
 /*var array: [I] = [A(), B(), A()]
 for i in array {
@@ -28,7 +24,22 @@ for i in array {
 
 	extension A {
 	    func toString() {
-	        self.foo()
+	        print("q")
+	    }
+	    class B {
+	        var x = 20
 	    }
 	}
-	A().toString()
+
+#let array = [C(), B(), C(), C()]
+let array = [10, "string", A(), 3.14]*/
+
+class Collection {}
+interface Iterable {
+    func next() -> Any
+}
+extension Collection: Iterable {
+   func next() -> Any {
+       return nil
+   }
+}

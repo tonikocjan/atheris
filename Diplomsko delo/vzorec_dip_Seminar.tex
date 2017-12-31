@@ -362,8 +362,8 @@ A proper abstract should contain around 100 words which makes this one way too s
 \chapter{Uvod}
 
 Razvoj prevajalnikov, ter s tem tudi programskih jezikov, je, po mojem mnenju, izjemno pomembna panoga v računalništvu. Programski jezik je medij, preko katerega komuniciramo z računalnikom. Prevajalniki razvijalcem omogočajo, da se med razvojem programske opreme ne rabijo osredotočati na nizkovojske detajle, ampak se lahko posvetijo reševanju praktičnih problemov. Naloga prevajalnika je, da pretvori človeku berljivo kodo v računalniku razumljivo zaporedje strojnih ukazov. \\
-\indent Dandanes lahko za razvoj programske opreme izbiramo med veliko količino programskih jezikov. Trenutno eni izmed najbolj popularnih so JavaScript, Java, Python in C++, popularnost pa dobivajo tudi novejši jeziki, kot so GoLang, Swift, Kotlin in podobni. [1] \\
-\indent S prevajalniki sem se prvič spoznal pri predmetu Prevajalniki in Navidezni Stroji (PINS) v drugem letnik na Fakulteti za Računalništvo in Informatiko. Tekom diplomske naloge bom predstavil programski jezik Atheris ter prevajalnik zanj. Prevajalnik je nastal kot nagradnja prevajalnika jezika PINS in obsega predvsem vgradnjo objektno usmerjenih gradnikov ter popolnoma spremenjeno sintakso.
+\indent Dandanes lahko za razvoj programske opreme izbiramo med veliko programskih jezikov. Trenutno eni izmed najbolj popularnih so JavaScript, Java, Python in C++, popularnost pa dobivajo tudi novejši jeziki, kot so GoLang, Swift, Kotlin in podobni. [1] \\
+\indent S prevajalniki sem se začel ukvarjati pri predmetu Prevajalniki in Navidezni Stroji (PINS) v drugem letnik na Fakulteti za Računalništvo in Informatiko. Tekom diplomske naloge bom predstavil programski jezik Atheris ter prevajalnik zanj. Osredotočil se bom predvsem na vgradnjo objektno usmerjenih gradnikov v programski jezik.
 
 \chapter{Prevajalniki}
 \label{ch0}
@@ -561,7 +561,7 @@ Prevajalnik mora na skladu alocirati dovolj prostora za vse lokalne spremenljivk
 
 \textbf{Static link}
 
-V jezikih, ki podpirajo gnezdenje funkcij, lahko gnezdene funkcije dostopajo do spremenljivk, ki se nahajajo v zunanjih funkcijah. Da lahko gnezdena funkcija dostopa do spremenljivk, ki niso na njenem skladu, ji ob klicu poleg ostalih parametrov posredujemo FP funkcije, ki jo neposredno definira. Temu kazalcu rečemo \textit{static link}. 
+V jezikih, ki podpirajo gnezdenje funkcij, lahko gnezdene funkcije dostopajo do spremenljivk, ki se nahajajo v zunanjih funkcijah. Da lahko gnezdena funkcija dostopa do spremenljivk, ki niso na njenem klicnem zapisu, ji ob klicu poleg ostalih parametrov posredujemo FP funkcije, ki jo neposredno definira. Temu kazalcu rečemo \textit{static link}. 
 
 \begin{lstlisting}[caption={Primer gnezdenih funkcij}, captionpos=b, label={lst:nestedFunctions}]
     func f() {
@@ -599,17 +599,9 @@ Vmesna koda (\textit{angl. intermidiate representation}) je abstraktna predstavi
 
 Posamezni deli abstraktnega sintaksnega drevesa so lahko kompleksne stvari, na primer zanke, klici funkcij, itd., ki jih ne moremo neposredno mapirati v strojne ukaze. Zato morajo gradniki vmesne kode predstavljati le enostavne operacije, kot so npr. LOAD (preberi vrednost iz pomnilnika), STORE (shrani vrednost v pomnilnik), ADD (seštej dve vrednosti), itd. Tako lahko vsak posamezen del AST prevedemo v ravno pravo zsaporedje ukazov abstraktne vmesne kode. \cite{modernCompiler} \\ 
 
-\begin{figure}[h]
-	\begin{center}
-		\includegraphics[width=0.5\textwidth]{resources/ir.png}
-	\end{center}
-	\caption{Primer vmesne kode za dostop do spremenljivke na klicnem zapisu.}
-	\label{pic1}
-\end{figure}
-
 \chapter{Programski jezik PINS}
 
-Programski jezik PINS je učni programski jezik, zato je tudi dokaj preprost. Prevajalnik zanj smo implementiral v sklopu večih domačih nalog pri predmetu Prevajalniki in navidezni stroji.
+Programski jezik PINS je učni programski jezik, zato je tudi dokaj preprost. Prevajalnik zanj smo implementiral v sklopu domačih nalog pri predmetu Prevajalniki in navidezni stroji.
 
 \section{Leksikalna pravila}
 
@@ -629,7 +621,7 @@ Celotna izvorna koda je sestavljena iz seznama definicij. Vsaka definicija je la
 \end{enumerate}
 
 Kot sem že omenil, podpira PINS tri osnovne podatkovne tipe, vendar sintaksa omogoča tudi definicijo tabel (\textit{angl. array}) s fiksno velikostjo. \\
-\indent Definicija funkcije je sestavljena iz imena, seznama parametrov, tipa, ki ga funkcija vrača, ter \textit{izraza} oz. jedra funkcije. Zanimivo pri PINSu je to, da izven funkcij ne moremo početi ničesar drugega, kot ustvarjati definicije (podobno kot pri Javi). \\
+\indent Definicija funkcije je sestavljena iz imena, seznama parametrov, tipa ki ga funkcija vrača, ter \textit{izraza} oz. jedra funkcije. Zanimivo pri PINSu je to, da izven funkcij ne moremo početi ničesar drugega, kot ustvarjati definicije (podobno kot pri Javi). \\
 \indent Izraz (\textit{angl. expression}) je lahko:
 \begin{enumerate}
 	\item Logični izraz
@@ -678,24 +670,25 @@ Imena so vidna v celotnem območju vidnosti, ne glede na mesto definicije. Izraz
 
 \begin{enumerate}
 	\item Deklaracija tipa
-\begin{lstlisting}[]
-typ identifier : type
-\end{lstlisting}
+\[
+typ\quad  identifier\quad  :\quad  type
+\]
 	ustvari sklic na podatkovni tip \textit{type} z imenom \textit{identifier}
 	\item Deklaracija funkcije
-\begin{lstlisting}[]
-fun identifier ( identifier_1 : type_1, ..., identifier_n : type_n ) : type = expression 
-\end{lstlisting}
-	določa funkcijo, ki je tipa $type_1 x ... x type_n \,\to\, type $
+%\begin{lstlisting}[]
+\[ fun\quad identifier  ( identifier_1 : type_1, ..., identifier_n : type_n ) : type = expression \]
+%\end{lstlisting}
+	določa funkcijo, ki je tipa \[type_1 \quad *, \quad  ..., \quad *\quad  type_n \,\to\, type \]
 	\item Deklaracija spremenljivke
-\begin{lstlisting}[]
-var identifier : type
-\end{lstlisting}
+\[
+var \quad identifier\quad :\quad type
+\]
+
 določa spremeljivko tipa $type$
 	\item Deklaracija parametra
-\begin{lstlisting}[]
-identifier : type
-\end{lstlisting}
+\[
+identifier \quad :\quad type
+\]
 določa parameter tipa $type$
 \end{enumerate}
 
@@ -703,12 +696,12 @@ določa parameter tipa $type$
 
 \subsubsection{Sintaksa}
 
-Sintaksa je, v primerjavi s sintakso jezika PINS, popolnoma spremenjena. Pravzaprav je sintaksa skoraj identična programskemu jeziku Swift. \\
+Sintaksa je v primerjavi s sintakso jezika PINS popolnoma spremenjena. Pravzaprav je sintaksa skoraj identična programskemu jeziku Swift. \\
 \indent Med drugim nova sintaksa omogoča definiranje kompleksnejših podatkovnih tipov z uporabo razredov, vmesnikov, terk in enumeracij. \\
-\indent Posamezni stavki so med seboj ločeni z novimi vrsticami (Python, Swift), vendar pa omogoča njihovo ločevanje tudi s podpičjem ';' (C++, Java). \\
+\indent Posamezni stavki so med seboj ločeni z novimi vrsticami (Python, Swift), vendar pa prevajalnik omogoča njihovo ločevanje tudi s podpičjem ';' (C++, Java). \\
 \indent Komentarji se lahko začnejo bodisi z '\#' in se raztezajo do konca vrstice (Python, PINS), bodisi z '/*' in končajo z '*/' (Java, C++). \\
 \indent Podprt je tudi \textit{switch} kontrolni stavek s sintakso identične tej od Swifta.\\
-\indent Definicije funkcij ter klici funkcij so spremenjeni; parametri funkcije so sedaj sestavljeni iz labele ter imena parametra (Swift). Pri klicu funkcije se uprabi labela parametra, znotraj jedra funkcije pa se uporablja ime.
+\indent Definicije funkcij ter klici funkcij so spremenjeni; parametri funkcije so sedaj sestavljeni iz labele ter imena parametra (tako kot v Swiftu). Pri klicu funkcije se uprabi labela parametra, znotraj jedra funkcije pa se uporablja ime.
 
 \subsubsection{Podatkovni tipi}
 
@@ -721,7 +714,7 @@ Podprti atomarni podatkovni tipi so: \textit{integer, double, string, char} in \
 \end{enumerate}
 
 Poleg naštetih podatkovnih tipov obstaja še podatkovni tip, ki ga ni mogoče eksplicitno uporabljati. To je kazalec (\textit{angl. pointer}). Spremenljivka, ki je tipa \textit{kazalec}, ne hrani dejanske vrednosti, temveč v sebi hrani naslov na neko lokacijo v pomnilniku. Ena izmed prednosti kazalcev je v tem, da lahko do kompleksnejših objektov, ki v pomnilniku zasedejo veliko prostora, dostopamo preko njihovega naslova s kazalcem, namesto kopiranja celotne vsebine (na primer pri pošiljanju objekta kot argument funkciji). \\
-\indent Prevajalnik omogoča tudi t.i. avtomatsko prepoznavanje tipov, oz. angl. \textit{type inference}. To pomeni, da izrazom, kjer prevajalnik lahko implicitno prepozna podatkovni tip, le-tega ni potrebno eksplicitno navajti.
+\indent Prevajalnik omogoča tudi t.i. avtomatsko prepoznavanje tipov, oz. angl. \textit{type inference}. To pomeni, da izrazom, kjer prevajalnik lahko implicitno prepozna podatkovni tip, le-tega ni potrebno eksplicitno navajati.
 
 \begin{lstlisting}[caption={Primer deklaracij spremenljivk, kjer je njun tip prepoznan avtomastsko}, captionpos=b]
 	let x = 120
@@ -1186,7 +1179,7 @@ Vmesnik je abstraken opis akcij, ki jih lahko izvede objekt. Tekom prevajanja pr
 
 Razširitev (angl. \textit{extension}) je mehanizem, ki omogoča dodajanje funkcionalnosti obstoječim razredom. 
 
-\begin{lstlisting}[caption={Razširitev razreda iz ~\ref{lbl:interfaces}}, captionpos=b]
+\begin{lstlisting}[caption={Razširitev razreda A}, captionpos=b]
 	extension A {
 	    func toString() {
 	        print("ext::toString()")
@@ -1195,6 +1188,48 @@ Razširitev (angl. \textit{extension}) je mehanizem, ki omogoča dodajanje funkc
 	A().toString()
 \end{lstlisting}
 
+Razred lahko razširimo z metodami, enumeracijami in razredi. 
+
+\subsection{Razširitev z vmesnikom}
+
+Razredom lahko preko razširitev dodamo tudi implementacijo vmesnikov, čemur rečemo \textit{interface extension}.
+
+\begin{lstlisting}[caption=Razširitev z vmesnikom, captionpos=b]
+	class Collection {}
+	interface Iterable {
+	    func next() -> Any
+	}
+	extension Collection: Iterable {
+	    func next() -> Any {
+	        return nil
+	    }
+	}
+	let iterable: Iterable = Collection()
+	print(iterable.next())
+\end{lstlisting}
+
+\section{Type inference}
+
+Type inference omogoča prevajalniku, da avtomatsko prepozna podatkovni tip izraza, na podlagi vrednosti, ki so v izrazu. To je posebej uporabno pri definicijah spremeljivk, ki jim pogosto nastavimo vrednost ob sami definiciji.
+
+\begin{lstlisting}[caption={Type inference}, captionpos=b]
+	let meaningOfLife = 42
+	// meaningOfLife je tipa Int
+	let pi = 3.14159
+	// pi je tipa Double
+	let anotherPi = 3 + 0.14159
+	// anotherPi je tudi tipa Double
+\end{lstlisting}
+
+Prepoznavanje tipov postane malenkost kompleksnejše pri tabelah, kadar njeni elementi niso istih tipov. Prevajalnik tekom razreševanja tipov vedno poišče najmanjši možen tip, ki je skupen tipom elementov tabele. V primeru, da so v tabeli objekti, ki jim je skupen nadrazred \textit{A}, bo tudi tabela tipa \textit{A}. V primeru, da elementi nimajo nobenega skupnega tipa, prevajalnik tabeli dodeli poseben abstrakten tip \textit{\textbf{Any}}, ki je definiran v standardni knjižnici. \textit{Any} je v programskem jeziku Atheris to, kar je v Javi \textit{Object}, s to razliko, da je \textit{Object} razred, \textit{Any} pa vmesnik. Vsak podatkovni tip je implicitno tipa \textit{Any} .
+
+\begin{lstlisting}[caption={Elementi tabele s skupnim nadrazredom}, captionpos=b]
+	let array = [C(), B(), C(), C()] // spremenljivka array = tipa ARR ( A )
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Elementi tabele nimajo skupnega tipa}, captionpos=b]
+	let array = [10, "string", A(), 3.14] // spremenljivka array = tipa ARR ( Any )
+\end{lstlisting}
 
 \chapter{Sklepne ugotovitve}
 
