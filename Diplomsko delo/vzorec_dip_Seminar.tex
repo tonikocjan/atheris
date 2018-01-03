@@ -404,7 +404,7 @@ Sodobni prevajalniki so pogosto organizirani v več posameznih faz, vsaka izmed 
 	\label{pic1}
 \end{figure}
 
-Prevajalnik, da lahko program prevede iz ene oblike v drugo, mora program najprej analizirati, razumeti njegovo strukturo ter pomen, ter ga nato sestaviti nazaj v drugačno obliko.  \\
+Zato da lahko prevajalnik program prevede iz ene oblike v drugo, ga mora najprej analizirati, razumeti njegovo strukturo ter pomen, šele nato ga pretvori nazaj v drugačno obliko.  \\
 Analizo programa običajno delimo v naslednje korake:
 \begin{enumerate}
 	\item \textbf{Leksikalna analiza} (angl. \textit{lexical analysis})
@@ -415,9 +415,13 @@ Analizo programa običajno delimo v naslednje korake:
 
 \subsection{Leksikalna analiza}
 
-Tako imenovani leksikalni analizator (modul, ki izvede leksikalno analizo) kot vhod prejme tok znakov (angl. \textit{stream of characters}), kot izhod pa vrne tok v naprej definiranih žetonov (angl. \textit{stream of tokens}). Žeton je običajno zgrajen iz imena, vrednosti (t.i. \textit{lexeme}) ter lokacije v izvorni datoteki.  \cite{modernCompiler}
+Tako imenovani leksikalni analizator kot vhod prejme tok znakov (angl. \textit{stream of characters}), kot izhod pa vrne tok v naprej definiranih žetonov (angl. \textit{stream of tokens}). Žeton je običajno zgrajen iz imena, vrednosti (t.i. \textit{lexeme}) ter lokacije v izvorni datoteki.  \cite{modernCompiler}
 
 \subsubsection{Leksikalni žetoni:}
+
+Žeton (ali simbol) je zaporedje znakov, ki ga interpretiramo kot samostojno enoto v slovnici programskega jezika. \cite{modernCompiler}\\ 
+Tabela \ref{tabel:vrsteZetonov} prikazuje nekaj vrst simbolov ter primere.\\
+
 \begin{table}
 	\begin{center}
 		\begin{tabular}{l|c|c}
@@ -434,9 +438,9 @@ Tako imenovani leksikalni analizator (modul, ki izvede leksikalno analizo) kot v
 	\caption{Primeri žetonov v programskem jeziku Java}
 	\label{tabel:vrsteZetonov}
 \end{table}
-Žeton (ali simbol) je zaporedje znakov, ki ga interpretiramo kot samostojno enoto v slovnici programskega jezika. \cite{modernCompiler}\\ 
-Tabela \ref{tabel:vrsteZetonov} prikazuje nekaj vrst simbolov ter primere.\\
+
 \newpage
+
 \begin{lstlisting}[caption={Primer programa v programskem jeziku Atheris},label={lst:atherisCode}, captionpos=b]
 	let x: Int
 	let y: Int
@@ -507,7 +511,7 @@ Simbolna tabela je podatkovna struktura, ki mapira imena v njihove definicije in
 
 \begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=1\textwidth]{resources/astSemanNameError.png}
+		\includegraphics[width=0.9\textwidth]{resources/astSemanNameError.png}
 	\end{center}
 	\caption{Napaka v programu ~\ref{lst:atherisCodeNameError}. Spremenljivka \textit{y} ni definirana.}
 	\label{image:astSemanCodeNameError}
@@ -521,7 +525,7 @@ Simbolna tabela je podatkovna struktura, ki mapira imena v njihove definicije in
 
 \begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=1\textwidth]{resources/astSemanTypeError.png}
+		\includegraphics[width=0.9\textwidth]{resources/astSemanTypeError.png}
 	\end{center}
 	\caption{Napaka v programu ~\ref{lst:atherisCodeTypeError}. Seštevanje med podatkovnima tipoma \textit{Integer} in \textit{String} ni dovoljeno.}
 	\label{image:astSemanTypeError}
@@ -532,16 +536,14 @@ Simbolna tabela je podatkovna struktura, ki mapira imena v njihove definicije in
 V skoraj vsakem modernem programskem jeziku ima lahko funkcija \textit{lokalne} spremenljivke, ki so kreirane ob vstopu v funkcijo. Hkrati lahko naenkrat obstaja več zapisov iste funkcije, zato je pomembno, da ima vsak zapis lastne instance lokalnih spremenljivk. \cite{modernCompiler} \\
 \indent V funkciji 
 \begin{lstlisting}
-let x: Int
-let y: Int
-x * y
+todo
 \end{lstlisting}
 
 se za vsak njen klic ustvari nova instanca x, ki jo inicializira klicalec funkcije. Ker je funkcija rekurzivna, živi v pomnilniku naenkrat veliko x-ev. Podobno se ob vsakem vstopu v jedro funkcije ustvari tudi nova instanca y. \cite{modernCompiler}\\
 
 \subsubsection{Sklad}
 
-Klicni zapisi funkcij se shranjujejo na sklad. Sklad je v pomnilniku predstavljen kot velika tabela s posebnim registrom imenovanim \textit{stack pointer} oz. kazalec na sklad, ki kaže na konec sklada. Ob vsakem klicu funkcije se sklad poveča za velikost klicnega zapisa klicane funkcije. Podobno se ob vrnitvi funkcije zmanjša za enako vrednost. Prostor v klicnem zapisu namenjen hrambi vhodnih parametrov, lokalnih spremenljivk in ostalih registrov se imenuje \textit{activation record}. \cite{modernCompiler}
+Klicni zapisi funkcij se shranjujejo na sklad. Sklad je v pomnilniku predstavljen kot velika tabela s posebnim registrom imenovanim \textit{stack pointer}, ki kaže na konec sklada. Ob vsakem klicu funkcije se sklad poveča za velikost klicnega zapisa klicane funkcije. Podobno se ob vrnitvi funkcije zmanjša za enako vrednost. Prostor v klicnem zapisu namenjen hrambi vhodnih parametrov, lokalnih spremenljivk in ostalih registrov se imenuje \textit{activation record}. \cite{modernCompiler}
 \\\\
 \textbf{Kazalec na klicni zapis}
 
@@ -557,7 +559,7 @@ Standarden način klicanja funkcij je, da klicoča funkcija rezervira prostor na
 
 \textbf{Lokalne spremenljivke}
 
-Prevajalnik mora na skladu alocirati dovolj prostora za vse lokalne spremenljivke. 
+Prevajalnik mora na skladu alocirati dovolj prostora za vse lokalne spremenljivke. todo
 
 \textbf{Static link}
 
@@ -585,9 +587,6 @@ Primer ~\ref{lst:nestedFunctions} vsebuje dve gnezdeni funkciji \textit{g} in \t
 \subsubsection{Vmesna koda}
 
 Vmesna koda (\textit{angl. intermidiate representation}) je abstraktna predstavitev strojnega jezika in predstavlja ukaze, brez da bi poznali arhitekturo ciljne naprave. Poleg tega je vmesna koda neodvisna od izvornega jezika. \cite{modernCompiler} \\
-
-\subsubsection{Vmesno predstavitveno drevo}
-
 \indent Dobra predstavitev vmesne kode ima naslednje lastnosti:
 
 \begin{enumerate}
@@ -621,7 +620,7 @@ Celotna izvorna koda je sestavljena iz seznama definicij. Vsaka definicija je la
 \end{enumerate}
 
 Kot sem že omenil, podpira PINS tri osnovne podatkovne tipe, vendar sintaksa omogoča tudi definicijo tabel (\textit{angl. array}) s fiksno velikostjo. \\
-\indent Definicija funkcije je sestavljena iz imena, seznama parametrov, tipa ki ga funkcija vrača, ter \textit{izraza} oz. jedra funkcije. Zanimivo pri PINSu je to, da izven funkcij ne moremo početi ničesar drugega, kot ustvarjati definicije (podobno kot pri Javi). \\
+\indent Definicija funkcije je sestavljena iz imena, seznama parametrov, tipa ki ga funkcija vrača, ter \textit{izraza} oz. jedra funkcije. Zanimivo pri PINSu je to, da izven jedra funkcij ne moremo početi ničesar drugega, kot ustvarjati definicije (podobno kot pri Javi). \\
 \indent Izraz (\textit{angl. expression}) je lahko:
 \begin{enumerate}
 	\item Logični izraz
@@ -723,7 +722,7 @@ Poleg naštetih podatkovnih tipov obstaja še podatkovni tip, ki ga ni mogoče e
 
 \subsubsection{Enumeracije}
 
-Enumeracija je sestavljen podatkovni tip, ki vsebuje določeno število konstant. Enumeracije, za razliko od tistih v Javi, omogočajo, da ima vsaka konstanta tudi \textit{surovo vrednost} (\textit{angl. raw value}). Podatkovni tip surovih vrednosti je definiran v naprej in je pri vseh kostantah enak. (Swift)
+Enumeracija je sestavljen podatkovni tip, ki vsebuje določeno število konstant. Enumeracije omogočajo, da ima vsaka konstanta \textit{surovo vrednost} (\textit{angl. raw value}). Podatkovni tip surovih vrednosti je definiran v naprej in je pri vseh kostantah enak.
 
 \begin{lstlisting}[caption=Enumeracija brez surovih vrednosti, captionpos=b, label={lst:languagesEnumeration}]
 enum Languages {
@@ -774,18 +773,18 @@ Razred je sestavljena podatkovna struktura, ki lahko, za razliko od tabel, v seb
 \noindent Vsak razred lahko deduje največ en razred (lahko tudi nobenega), implementira pa lahko poljubno število vmesnikov. Identično je dedovanje narejeno tudi v Javi in Swiftu, za razliko od C++, ki omogoča večkratno dedovanje in ne pozna vmesnikov. \\
 
 \indent  \textbf{Razširitve} \\
-\noindent Podprte so tudi razširitve nad razredi, ki omogočajo, da obstoječim razredom dodamo nove metode (vzeto iz Swifta). Razširitve so predsvem uporabne takrat, ko želimo razredom, do katerih nimamo dostopa (npr. razredi v zunanjih knjižnicah), dodati uporabne funkcionalnosti. V jezikih, ki tega ne podpirajo, je ponavadi praksa, da se ustvarijo \textit{utilty} razredi (npr. v Javi). \\
+\noindent Podprte so tudi razširitve nad podatkovnimi tipi, ki omogočajo, da obstoječim razredom (in tudi atomarnim tipom) dodamo nove funkcionalnosti. Razširitve so predsvem uporabne takrat, ko želimo razredom, do katerih nimamo dostopa (npr. razredi iz knjižnic), dodati uporabne funkcionalnosti. V jezikih, ki tega ne podpirajo, je ponavadi praksa, da se ustvarijo \textit{utilty} razredi (npr. v Javi). \\
 \indent Razširitve omogočajo tudi to, da razredom dodamo implementacijo vmesnikov, čemur se reče \textit{interface extension}. \\
 
 \begin{lstlisting}[caption=Primer razširitve tipa Int z vmesnikom Hashable, captionpos=b]
 	interface Hashable {
-		func hash() Int
+	    func hash() Int
 	}
 
 	extension Int: Hashable {
-		func hash() Int {
-			return self % 21632
-		}
+	    func hash() Int {
+	        return self % 21632
+	    }
 	}
 \end{lstlisting}
 
@@ -877,24 +876,25 @@ for_expression -> for identifier in expression
 \end{lstlisting}
 \end{enumerate} 
 
-Kot sem že omenil, omogoča sintaksa programskega jezika Atheris, da so posamezni stavki ločeni bodisi z ';' bodisi z novo vrstico. Da sem lahko to implementiral, sem razširil leksikalni analizator z novo vrsto simbola \textit{newline}. V primeru, da je v izvorni kodi več zaporednih novih vrstic, jih leksikalni analizator \textit{požre} in vedno vrne samo en zaporedni \textit{newline} simbol. To naredi sintaksno analizo enostavnejšo. Ločevanje posameznih stavkov z novo vrstico je tako trivialno, potrebno je samo paziti na primere, kjer so stavki ločeni z obema ločiloma. 
+Kot sem že omenil, omogoča sintaksa programskega jezika Atheris, da so posamezni stavki ločeni bodisi s ';' bodisi z novo vrstico. Za ta namen je dodan nov tip žetona, ki predstavlja novo vrstico v izvorni kodi (pred tem se je znak za novo vrstico štel kot belo besedilo). V primeru, da je v izvorni kodi več zaporednih novih vrstic, jih leksikalni analizator \textit{požre} in vedno vrne samo en zaporedni \textit{newline} simbol. To naredi sintaksno analizo enostavnejšo. Ločevanje posameznih stavkov z novo vrstico je tako trivialno, potrebno je samo paziti na primere, kjer so stavki ločeni z obema ločiloma. 
 
 \section{Funkcije}
 
-Programski jezik Atheris zahteva, da ob klicu funkcij, poleg imena funkcije, navedemo tudi imena parametrov. Podobno kot to dela tudi Swift. \\
-\indent Ob deklaraciji funkcije lahko opcijsko definiramo poljubno število poimenovanih ter tipiziranih vrednosti, ki jim skupaj rečemo parametri funkcije. Poleg tega lahko opcijsko navedemo še podatkovni tip vrednosti, ki jo bo funkcija vračala (privzeto so funkcije tipa \textbf{Void}). \\
-\indent Imena parametrov so sestavljena iz dveh delov: labele argumenta ter imena parametra. Labele argumentov se uporabljajo ob klicu funkcije, medtem ko se imena parametrov uporabljajo v sami implementaciji funkcije. Privzeto so labele iste kot imena.
+Programski jezik Atheris zahteva, da ob klicu funkcij, poleg imena funkcije, navedemo tudi imena parametrov. Podobno kot to zahteva tudi Swift. \\
+\indent Ob deklaraciji funkcije lahko opcijsko definiramo poljubno število poimenovanih ter tipiziranih vrednosti, ki jim skupaj rečemo parametri funkcije. Poleg tega lahko opcijsko navedemo še podatkovni tip vrednosti, ki jo bo funkcija vračala (privzeto funkcije ne vračajo ničesar - \textit{Void}. \\
+\indent Imena parametrov so sestavljena iz dveh delov: labele argumenta ter imena parametra. Labele argumentov se uporabljajo ob klicu funkcije, medtem ko se imena parametrov uporabljajo znotraj jedra funkcije. Labele so privzeto identične imenom.
 
-\begin{lstlisting}[caption={Primer definicije in klica funkcije v programskem jeziku Atheris}, captionpos=b]
+\begin{lstlisting}[caption={Primer definicije in klica funkcije}, captionpos=b]
 func someFunction(firstParameterName: Int, secondParameterName: Int) {
   /* znotraj telesa funkcije, sta firstParameterName in secondParameterName referenci na vrednosti argumentov za prvi in drugi parameter. */
 }
 someFunction(firstParameterName: 1, secondParameterName: 2)
 \end{lstlisting}
+\newpage
 
 \textbf{Določanje label argumentov}
 
-Če želimo, da sta labela in ime različne, navedemo labelo argumenta pred imenom:
+Če želimo, da sta labela in ime različna, navedemo labelo argumenta pred imenom:
 
 \begin{lstlisting}[caption={Labela argumenta in ime parametra se razlikujeta}, captionpos=b]
 func someFunction(argumentLabel parameterName: Int) {
@@ -912,98 +912,103 @@ func someFunction(_ firstParameterName: Int, _ secondParameterName: Int) {
 someFunction(1, 2)
 \end{lstlisting}
 
-V ozadju so opisane funkcionalnosti implementirane tako, da se v simbolno tabelo ne shrani samo \textit{ime} funkcije, ampak se celotna definicija pretvori v posebno znakovno predstavitev, ki je sestavljena iz imena ter label argumentov, ki so med sabo ločena z dvopičjem. Funkcije iz zgornjih primerov se pretvorijo v:
+V ozadju so opisane funkcionalnosti implementirane tako, da se v simbolno tabelo ne shrani samo \textit{ime} funkcije, ampak se celotna definicija pretvori v posebno znakovno predstavitev, ki je sestavljena iz imena ter label argumentov. Funkcije z istim imenom, a različnimi imeni parametrov, lahko tako shranimo v simbolno tabelo brez težav. Znakovne predstavitve zgornjih funkcij izgledajo tako:
+
 \begin{lstlisting}[caption={Znakovne predstavitve funkcij}, captionpos=b]
 someFunction(firstParameterName:secondParameterName)
 someFunction(argumentLabel)
 someFunction(_:_)
 \end{lstlisting}
 
-T.i. \textit{overloadanje} funkcij sedaj ni problem, saj čeprav imajo funkcije ista imena, vsako izmed njih predstavimo z drugim imenom, zato jih lahko v simbolni tabeli ustrezno poiščemo. Seveda je potrebno v podobni obliki predstaviti tudi klice funkcij (logika je popolnoma identična).
+T.i. \textit{overloadanje} funkcij sedaj ni problem, saj čeprav imajo funkcije ista imena, vsako izmed njih predstavimo z drugim imenom, zato jih lahko v simbolni tabeli ustrezno poiščemo. Seveda je potrebno v podobni obliki predstaviti tudi klice funkcij.
 
 
 \section{Enumeracije}
 
-V primeru, da enumeracija nima surovih vrednosti, je semantična analiza dokaj preprosta. Kompleksnejša postane kadar so surove vrednosti prisotne, saj je potrebno zagotoviti, da so ustreznega podatkovnega tipa. Poleg tega je potrebno določiti implicitne vrednosti, v primeru, da niso eksplicitno navedene. Vendar samo takrat, ko je surova vrednost tipa \textbf{Int} ali \textbf{String}. Če je katerega koli drugega podatkovnega tipa, prevajalnik vrne napako. \\
+V primeru, da enumeracija nima surovih vrednosti, je semantična analiza dokaj preprosta. Kompleksnejša postane kadar so surove vrednosti prisotne, saj je potrebno zagotoviti, da so ustreznega podatkovnega tipa. V primeru, da surove vrednosti niso eksplicitno navedene, jih prevajalnik skuša določiti sam. To lahko stori samo v primeru, če so surove vrednosti tipa \textbf{Int} ali \textbf{String}. \\
 \indent Privzeto so surove vrednosti za \textbf{Int} zaporedna števila začenši z 0. V primeru, da je vrednost eksplicitno navedena, je vrednost naslednje surove vrednosti naslednje zaporedno število od prejšnje vrednosti.
 
 \begin{lstlisting}[caption={Enumeracija s surovimi vrednostmi tipa Int}, captionpos=b]
-enum Days: Int {
-  case Monday // vrednost = 0
-  case Tuesday = 10 // vrednost = 10
-  case Wednesday // vrednost = 11
-  case Thursday = 100 // vrednost = 100
-  case Friday // vrednost = 101
-}
+	enum Days: Int {
+	  case Monday // vrednost = 0
+	  case Tuesday = 10 // vrednost = 10
+	  case Wednesday // vrednost = 11
+	  case Thursday = 100 // vrednost = 100
+	  case Friday // vrednost = 101
+	}
 \end{lstlisting}
 
 \indent Za \textbf{String} so privzete surove vrednosti imena članov enumeracije.
 
 \begin{lstlisting}[caption={Enumeracija s surovimi vrednostmi tipa String}, captionpos=b, label={lst:fruitEnumeration}]
-enum Fruit: String {
-  case Apple // privzeta vrednost = "Apple"
-  case Orange = "Annoying Orange"
-  case Strawberry // privzeta vrednost = "Strawberry"
-}
+	enum Fruit: String {
+	  case Apple // privzeta vrednost = "Apple"
+	  case Orange = "Annoying Orange"
+	  case Strawberry // privzeta vrednost = "Strawberry"
+	}
 \end{lstlisting}
 
-Do posameznih elementov enumeracije dostopamo z \textit{DOT} operatorjem ('.'), kjer je na levi strani ime enumeracije, na desni pa ime elementa. Podobno dostopamo tudi do surovih vrednosti z uporabo imena \textit{rawValue}. Operator DOT bom podrobneje opisal na razdelku razredov, za zdaj lahko povem, da preveri, ali v sestavljenem podaktovnem tipu, ki se nahaja na levi strani, obstaja član z imenom na desni strani.
+Do posameznih elementov enumeracije dostopamo z \textit{DOT} operatorjem ('.'), kjer je na levi strani ime enumeracije, na desni pa ime elementa. Podobno dostopamo tudi do surovih vrednosti z uporabo imena \textit{rawValue}. Operator DOT bom podrobneje opisal na razdelku razredov, za zdaj lahko povem da je njegova naloga to, da zagotovi, da v sestavljenem podaktovnem tipu na levi strani obstaja član z imenom na desni strani.
 
 \begin{lstlisting}[caption={Primer dostopa do elementov enumeracije ~\ref{lst:fruitEnumeration}}, captionpos=b]
-  print(Fruit.Apple.rawValue) // 'Apple'
-  print(Fruit.Orange.rawValue)  // 'Annoying Orange'
-  print(Fruit.Strawberry.rawValue)  // 'Strawberry'
+	print(Fruit.Apple.rawValue) // 'Apple'
+	print(Fruit.Orange.rawValue)  // 'Annoying Orange'
+	print(Fruit.Strawberry.rawValue)  // 'Strawberry'
 \end{lstlisting}
 
-Člane enumeracije lahko prirejamo spremenljivkam, ter nad njimi izvajamo logične operacije primerjanja vrednosti. 
+Člane enumeracije lahko prirejamo spremenljivkam ter nad njimi izvajamo logični operaciji primerjanja vrednosti. 
 
-\begin{lstlisting}[caption={Izvajanje logike na podlagi vrednosti enumeracije \ref{lst:languagesEnumeration}}, captionpos=b]
-let x: Languages = Languages.Cpp
-if x == Languages.Java {
-  print("Java")
-}
-else {
-  print("Some other language")
-}
+\begin{lstlisting}[caption={}, captionpos=b]
+	let x: Languages = Languages.Cpp
+	if x == Languages.Java {
+	    print("Java")
+	}
+	else {
+	    print("Some other language")
+	}
 \end{lstlisting}
 
+Da lahko realiziramo \textit{runtime} operacije nad člani enumeracije, prevajalnik vsak član enumeracije nadomesti z njegovim indeksom v definiciji enumeracije. Za zgornji primer bo tako spremeljivka \textit{x} vsebovala vrednost 0. V \textit{if} stavku primerjamo vrednosti 0 in 1, iz česar sledi, da se bo izvedel \textit{else} blok.
+
+\newpage
 \section{Terke}
 
 Terka je zaporedje izrazov ločenih z dvopičjem ':' obdano z oklepaji. Vsakemu izrazu znotraj terke lahko opcijsko določimo tudi ime. V primeru, da ime ni eksplicitno določeno, se za ime uporabi indeks izraza v terki (začenši z 0). \\
 \indent Do elementov prav tako dostopamo z uporabo DOT operatorja, ki zagotovi, da terka vsebuje izraz z željenim imenom.\\
-\indent V pomnilniku so terke predstavljene skoraj identično kot tabele, s to razliko, da se podatkovni tipi elementov med sabo lahko razlikujejo. Odmik posameznega elementa od začetnega naslova terke izračunamo tako, da seštejemo velikost podaktovnih tipov vseh elementov pred tem elementom
+\indent V pomnilniku so terke predstavljene skoraj identično kot tabele, s to razliko, da se podatkovni tipi elementov med sabo lahko razlikujejo. Ravno zaradi tega ne moremo odmika izračunati na enak način kot pri tabelah. Pri terkah odmik posameznega elementa od začetnega naslova terke izračunamo tako, da seštejemo velikosti podaktovnih tipov vseh elementov pred željenim elementom:
 
-%\[ offset ( element_i )  = sum ( size ( element_0 ), size( element_1 ), ..., size ( element_n_-_1)) \]
+\[ offset ( element_i )  = sum ( size ( element_0 ), size( element_1 ), ..., size ( element_n-1)) \]
 
 \section{Razredi}
 
-Razred je kompleksna podatkovna struktura in je sestavljena iz poljubnega števila poljubnih definicij. Tako lahko znotraj razreda definiramo nove razrede, enumeracije, vmesnike ter seveda funkcije (znotraj razredov jih imenujemo metode) in spremenljivke. \\
+Razred je kompleksna podatkovna struktura in je sestavljena iz atributov, ki so lastnosti razreda, ter funkcij (oz. metod), ki predstavljajo operacije nad atributi. To so člani razreda.  \\
+\indent Poleg atributov in metod lahko razred vsebuje tudi definicije gnezdenih razredov, enumeracij ter vmesnikov.\\
 \indent V pomnilniku je instanca razreda (objekt) predstavljena podobno kot terka, t.j. kot tabela z vrednostmi različnih podatkovnih tipov. Zato tudi odmik elementov izračunamo podobno kot pri terkah.
-
+\newpage
 \subsection{Dostop do članov in nadzor dostopa}
 
 Do članov razreda dostopamo preko DOT operatorja. DOT operator je binarni operator in je sestavljen iz dveh izrazov, ki ju povezuje pika '.'. \\
-\indent Običajno se izvaja povezovanje uporab spremenljivk z definicijami v fazi razreševanja imen, vendar to pri sestavljenih podatkovnih strukturah (vključno z enumeracijami in terkami) ni mogoče. Problem je namreč v tem, da se definicija nahaja znotraj \textbf{dejanskega podatkovnga tipa}, ki pa ga v fazi razreševanja imen še ne poznamo. Zato se s tem ne ukvarjamo v razreševanju imen, ampak problem prepostimo razreševanju tipov. Razreševanje tipov zato delimo na dve pod-fazi, oz. dva sprehoda po AST. V prvem sprehodu poberemo vse informacije o definiranih podatkovnih tipih ter razredom in ostalim definicijam pripišemo dejanske podatkovne tipe. \\
-\indent Razred (v prevajalniku), ki opisuje podatkovne tipe za razrede (v programu), hrani imena vseh članov razreda, njihove definicije ter podatkovne tipe. Vsebuje tudi pomožne metode, s lahko preverjamo, ali razred vsebuje člana z nekim imenom, pridobimo podatkovni tip člana, odmik člana v razredu, itd. \\
-\indent Sedaj imamo dovolj informacij, da lahko razrešimo imena znotraj DOT operatorja. Na levi se nahaja sestavljen podatkovni tip, za katerega natanko vemo, katere elemente vsebuje, zato ni težko preveriti, če se ime na desni strani nahaja znotraj tipa na desni.
+\indent Običajno se izvaja povezovanje uporab spremenljivk z definicijami v fazi razreševanja imen, vendar to pri sestavljenih podatkovnih strukturah (vključno z enumeracijami in terkami) ni mogoče.\\
+\indent Zato se s tem ne ukvarjamo v razreševanju imen, ampak problem prepustimo razreševanju tipov. Razreševanje tipov zato delimo na dve pod-fazi (dva sprehoda po AST). V prvem sprehodu nas zanimajo samo podatkovni tipi definicij, izraze zaenkrat pustimo pri miru. Ko zberemo vse potrebne informacije o podatkovnih tipih članov razreda, lahko zgradimo razredni tip, ki predstavlja razred in njegove definicije. \\
+\indent Sedaj imamo dovolj informacij, da razrešimo imena znotraj DOT operatorja, kar storimo v drugem sprehodu.\\
 
 \textbf{Nadzor dostopa}
 
-Nadzor dostopa omejuje dostop do članov razreda izven definicije, če to eksplicitno navedemo z uporabo modifikatorja \textit{\textbf{private}}. Privzeto so vsi člani \textit{\textbf{public}}. Programski jezik Atheris trenutno pozna samo public in private modifikatorja; public modifikator omogoča dostop do in spreminjanje vrednosti člana razreda kodi, ki se ne nahaja v razredu, za razliko od modifikatorja private, ko to prepoveduje. Java in C++ poznata še modifikator vidnosti  \textbf{\textit{protected}}, medtem ko jih Swift pozna še nekaj več: \textbf{\textit{fileprivate}}, \textbf{\textit{internal}}, \textbf{\textit{private(set)}}.
+Nadzor dostopa omejuje dostop do članov razreda izven definicije, če to eksplicitno navedemo z uporabo modifikatorja \textit{\textbf{private}}. Privzeto so vsi člani \textit{\textbf{public}}. Programski jezik Atheris trenutno pozna samo public in private modifikatorja; public modifikator omogoča dostop do in spreminjanje vrednosti člana razreda kodi, ki se ne nahaja v razredu, za razliko od modifikatorja private, ko to prepoveduje. 
 
 \subsection{Instančne funkcije}
 
-Razred ima lahko v sebi definirane funkcije, ki se jim v OOP žargonu pogosto reče \textit{metode}. Metoda se od ostalih funkcij (ki niso definirane v razredu) razlikuje v tem, da vsebujejo impliciten parameter, ki ga prevajalnik vstavi avtomatsko, vrednost parametra pa je kazalec in kaže na objekt, ki funkcijo kliče. V C++ in Javi se ta parameter imenuje \textbf{\textit{this}}, v Pythonu, Swiftu, in s tem tudi v Atherisu, pa \textbf{\textit{self}}. V Pythonu je ta razlika, da je parameter potrebno eksplicitno navesti, če ga ne, se funkcija / metoda smatra kot statična (več o statičnih metodah v nadaljevanju). \\
-\indent Prevajalnik mora implicitni \textit{self} parameter avtomatsko vstaviti v vse metode razreda. To stori v prvi fazi semantične analize - razreševanje imen. Podatkovni tip parametra še ni znan, zato se mora nastaviti šele v fazi razreševanja tipov. Če se znotraj metode sklicujemo na self parameter, uporabo ni težko povezati z definicijo, saj je sedaj del funkcije. \\
-\indent V C++, Javi in Swiftu se ni potrebno eksplicitno sklicevati na this / self parameter, da bi dostopali do članov objekta, vendar to zaenkrat še ni podprto v Atherisu. \\
-\indent Pri generiranju vmesne kode mora prevajalnik poskrbeti, da se v parameter prenese naslov na objekt, ki kliče metodo. Naslov objekta je znan, v parameter je potrebno je  presesti naslov spremenljivke, ki se nahaja na levi strani DOT operatorja.
+Razred ima lahko v sebi definirane funkcije, ki se jim v OOP žargonu pogosto reče \textit{metode}. Metode se od funkcij, ki niso definirane v razredu, razlikuje v tem, da vsebujejo impliciten parameter, ki je referenca na objekt, ki metodo kliče. Ta parameter prevajalnik v metodo vstavi avtomatsko. \\
+\indent V C++ in Javi se ta parameter imenuje \textbf{\textit{this}}, v Pythonu, Swiftu in v Atherisu pa \textbf{\textit{self}}. V Pythonu je ta razlika, da je parameter potrebno eksplicitno navesti, če ga ne, se funkcija / metoda smatra kot statična (več o statičnih metodah v nadaljevanju). \\
+\indent Prevajalnik mora implicitni \textit{self} parameter avtomatsko vstaviti v vse metode razreda. Delno to stori tekom razreševanja imen, ko definiciji funkcije vstavi nov parameter, delno pa tekom razreševanja tipov, ko parametru nastavi tip razreda. \\
 
 \subsection{Konstruktorji}
 
-Konstruktor je statična metoda razreda, njegova naloga pa je kreacija objekta ter inicializacija atributov. Podobno kot instančne metode tudi konstruktorju prevajalnik implicitno vstavi \textit{self} parameter, vendar pa z drugačnim namenom. \\
-\indent Naloga konstruktorja je, da na kopici, t.j. del pomnilnika, kamor shranjujemo dinamično alicirane objekte (za razliko od sklada, kamor shranjujemo statične), alocira prostor kamor bo shranjen objekt. Za dinamično alociranje pomnilnika se uporabi gradnik vmesne kode \textbf{ImcMALLOC}. Ta gradnik na kopici rezervira željeno velikost pomnilnika ter vrne naslov. \\
-\indent Pri generiranju vmesne kode prevajalnik doda na začetek kode funkcije MALLOC gradnik, ki bo rezerviral prostor za objekt. Nato bo prevajalnik shranil vrnjen naslov na sklad v parameter \textit{self}, zato da lahko znotraj konstruktorja nastavimo vrednosti ostalih atributov razreda. Na koncu bo ta naslov konstruktor tudi vrnil. Vrnjen naslov je referenca na objekt in jo lahko uporabljamo za nadaljne operacije nad objektom. \\
-\indent Razred ima lahko poljubno število konstruktorjev, ki jih definiramo z uporabo ključne besede \textit{\textbf{init}}.
+Konstruktorji so posebne vrste metod, njihova naloga pa je kreacija objektov ter inicializacija atributov. Podobno kot ostalim metodam razreda tudi konstruktorju prevajalnik implicitno vstavi \textit{self} parameter. \\
+\indent Naloga konstruktorja je, da na kopici, t.j. delu pomnilnika, kamor shranjujemo dinamično alicirane objekte (za razliko od sklada, kamor shranjujemo statične), alocira prostor, kjer bo shranjen objekt. Za dinamično alociranje pomnilnika se uporabi gradnik vmesne kode \textbf{ImcMALLOC}. Ta gradnik na kopici rezervira željeno velikost pomnilnika ter vrne naslov. \\
+\indent Pri generiranju vmesne kode prevajalnik vstavi na začetek kode funkcije MALLOC gradnik, ki bo rezerviral prostor za objekt. Nato bo prevajalnik vrnjen naslov shranil na sklad v parameter \textit{self}, zato da lahko znotraj konstruktorja nastavimo vrednosti ostalih atributov razreda. Na koncu bo ta naslov konstruktor tudi vrnil. Vrnjen naslov je referenca na objekt in ga uporabljamo za nadaljne operacije nad objektom. \\
+\indent Razred ima lahko poljubno število konstruktorjev, ki jih definiramo z uporabo ključne besede \textit{\textbf{init}}. 
+\newpage
 
 \begin{lstlisting}[caption={Konsturktorji}, captionpos=b]
 	class Atheris {
@@ -1030,6 +1035,7 @@ Konstruktor je statična metoda razreda, njegova naloga pa je kreacija objekta t
 \end{lstlisting}
 
 V primeru, da je v razredu privzeti konstruktor tudi eksplicitno definiran, bo poleg svoje kode vseboval tudi kodo implicitnega.
+\newpage
 
 \begin{lstlisting}[caption={Eksplicitni privzeti konstruktor}, captionpos=b]
 	class Atheris {
@@ -1070,7 +1076,7 @@ Statični člani razreda so tisti člani, ki ne živijo znotraj posameznih insta
 	print(x.rawValue) // '1'
 \end{lstlisting}
 
-Da lahko kreiramo gnezdene razrede, prevajalnik konstruktorje gnezdenih razredov potisne v kanonični tip razreda, sicer ne bi bilo možno do njih dostopati. 
+Da lahko dostopamo do konstruktorjev znotraj gnezdenih razredov, jih prevajalnik smatra, kot da so to statične metode.
 
 \begin{lstlisting}[caption={Gnezden razred}, captionpos=b]
 	class Atheris {
@@ -1080,45 +1086,65 @@ Da lahko kreiramo gnezdene razrede, prevajalnik konstruktorje gnezdenih razredov
 	}
 	print(Atheris.NestedClass().x) // '20'
 \end{lstlisting}
+\newpage
 
 \section{Dedovanje in polimorfizem}
 
-Dedovanje in polimorfizem, sta, poleg enkapsulacije in abstrakcije, zelo pomembna OOP koncepta. Dedovanje je mehanizem, s katerim objekt pridobi (podeduje) nakatere ali vse lastnosti drugega objekta, medtem ko je polimorfizem sposobnost predstaviti isto funkcionalnost z različnimi implementacijami. Programski jezik Atheris omogoča enkratno dedovanje, tako kot Java in Swift, medtem ko C++ dovoli večkratno. \\ 
-\indent Tekom preverjanja tipov prevajalnik zagotovi, da je dedovan podatkovni tip razred, saj dedovanje od drugih tipov ni dovoljeno. Prevajalnik za vsako definicijo preveri, ali že obstaja v nadrazredu. V primeru da ja, javi napako. Prekrivanje je dovoljeno samo za definicije označene z modifikatorjem \textit{\textbf{override}} in je trenutno mogoče samo za metode. \\
+Dedovanje in polimorfizem sta, poleg enkapsulacije in abstrakcije, najpomembnejša koncepta OOP programiranja. Dedovanje je mehanizem, s katerim objekt pridobi (podeduje) nakatere ali vse lastnosti drugega objekta, medtem ko je polimorfizem sposobnost predstaviti isto funkcionalnost z različnimi implementacijami. Programski jezik Atheris omogoča enkratno dedovanje, tako kot Java in Swift. \\
 \indent V pomnilniku se atributi dedovanega razreda nahajajo pred atributi dedujočega se razreda. Enačba za izračun velikosti razreda (koliko prostora porabi objekt v pomnilniku) postane kompleksnejša, saj je potrebno rekurzivno prišteti velikosti nadrazradov. Prav tako postane komleksnejši izračun odmikov atributov od začetnega naslova. 
 
 \subsection{Dynamic Dispatch} \label{dynamicDispatch}
 
-Dynamic dispatch je proces izbira implementacije polimorfizne metode v času \textbf{izvajanja programa}. Razlog zakaj proces izbire ni možno opraviti tekom prevajanja, se skriva v tem, da lahko obstaja več različnih implementacij iste metode (\text{overridanje} metod). Statično izbiranje (t.j. v času prevajanja) je možno za statične metode. \\
-\indent Dynamic dispatch je možno implementirati na različne načine. Rešitev v tem prevajalniku temelji na rešitvi, ki jo ima tipično C++, in sicer s podatkovno strukturo \textit{\textbf{v-table}} oz. virtualna tabela. 
+Dynamic dispatch je proces izbire, katera implementacija polimorfne operacije naj se izvede v času \textbf{izvajanja programa}. Običajno lahko pri klicih funkcij že v času prevajanja izberemo, katera \textit{implementacija} funkcije naj se kliče, saj obstaja samo ena. Pri razredih nastane problem, kadar dovolimo, da imajo lahko dedujoči se razredi svoje implementacije funkcij (oz. metod), kot je razvidno v spodnjem primeru: 
 
-\subsubsection{Virtualne tabele}
+\begin{lstlisting}[caption={Več implementacij za isto funkcionalnost}, captionpos=b]
+	class Fruit {
+	    func kind() {
+	        print("I am a Fruit!")
+	    }
+	}
+	class Apple: Fruit {
+	    override func kind() {
+	        print("I am an Apple!")
+	    }
+	}
+	class Orange: Fruit {
+	    override func kind() {
+	        print("I am an Orange!")
+	    }
+	}
+\end{lstlisting}
 
-Virtualna tabela je podatkovna stuktura, ki vsebuje kazalce na funkcije implementirane v danem razredu. Prevajalnik zgenerira, in shrani v pomnilnik, za vsak definiran razred unikatno v-tabelo. Vsaka instanca razreda vsebuje, polen njenih spremenljivk, še kazalec na ustrezno tabelo. 
+\indent Problem je možno rešiti na več načinov. Rešitev prevajalnika za Atheris temelji na rešitvi, ki jo ima tipično C++, t.j. z uporabo podatkovne strukture \textit{\textbf{v-table}}. 
+
+\subsubsection{Virtualna tabela}
+
+Virtualna tabela je podatkovna stuktura, ki vsebuje kazalce na funkcije implementirane v danem razredu. Prevajalnik za vsak razred zgenerira in shrani v pomnilnik unikatno virtualno tabelo. \\
+\indent Vsak objekt v pomnilniku, poleg svojih atributov, hrani še kazalec na lastno virtualno tabelo.
 
 \begin{figure}[h]
 	\begin{center}
 		\includegraphics[width=1\textwidth]{resources/v-tables.png}
 	\end{center}
-	\caption{Virtualne tabele za dane razrede.}
+	\caption{Virtualne tabele za dane razrede. (todo popravi shemo da uporabiš razrede iz zgornjega primera)}
 	\label{vtables}
 \end{figure}
 
-Virtualna tabela vsebuje kazalce na naslove, kjer se nahajajo vse ne-statične metode, ki so implementirane v razredu. Vsaka tabela vsebuje še kazalec na virtualno tabelo nadrazreda (ali null, če ga nima), ter unikatni identifikator tipa. Identifikator je pozitivno celo število, ki ga prevajalnik dodeli vsakemu tipu. \\
+Virtualna tabela vsebuje kazalce na naslove, kjer se nahajajo vse ne-statične metode, ki so implementirane v razredu. Vsaka tabela vsebuje še kazalec na virtualno tabelo nadrazreda (ali \textit{null}, če ga nima), ter unikatni identifikator tipa. Identifikator je pozitivno celo število, ki ga prevajalnik dodeli vsakemu tipu in je unikaten za vsak tip. \\
 
 \subsection{Realizacija}
 
-V času prevajanja imamo na voljo informacijo o tem, katera po vrsti je metoda definirana v razredu, kar se izkaže, da je dovolj. V virtualni tabeli namreč prevajalnik na točno isti indeks, na katerem je motoda definirana, shrani kazalec na implementacijo. Prevajalnik nato zgenerira vmesno kodo, ki izračuna naslov funkcije z naslednjo enačbo:
+Problem rešimo tako, da kazalec na metodo shranimo v virtualno tabelo na tisti indeks, na katerem je motoda definirana v razredu. Prevajalnik za klic funkcije zgenerira vmesno kodo, ki izračuna naslov metode z naslednjo enačbo:
 
-\[ address(method_i) = adress(vtable) + (i * sizeof(void*)) + 8 \]
+\[ address(method_i) = adress(vtable) + (i * sizeof(void*) + 8) \]
 
-kjer je \[address(vtable)\]\ lokacija tabele v pomnilniku, \[(i * sizeof(void*)) + 8\] indeks pomnožen z velikostjo kazalca (običajno 4 byti) plus odmik od začetka tabele zaradi prej opisanih dodatnih podatkov v tabeli, ter \[ address(method_i)\] naslov metode na indeksu i. Ko interpreter tekom izvajanja kode izračuna naslov metode, njeno kodo naloži iz izračunanega naslova, ter jo izvede.
+kjer je \[address(vtable)\]\ lokacija tabele v pomnilniku, \[(i * sizeof(void*) + 8)\] indeks pomnožen z velikostjo kazalca (običajno 4 byti) plus odmik od začetka tabele zaradi prej opisanih dodatnih podatkov v tabeli in \[ address(method_i)\] naslov metode na indeksu i.
 \newpage
 
 \section{Instance of operator}
 
 Instance of operator je operator, ki v času izvajanja programa preveri, ali je objekt instanca danega razreda. To naredi z uporabo virtualne tabele. Kot sem omenil, vsaka tabela vsebuje unikatni deskriptor njenega razreda. Preko deskriptorja lahko preverimo, ali se dva podatkovna tipa ujemata. \\
-\indent V programskem jeziku Atheris se operator namesto \textit{instance of} imenuje \textit{is}.
+\indent V programskem jeziku Atheris se operator imenuje \textit{is}.
 
 \begin{lstlisting}[caption={Uporaba operatorja \textit{is} za razrede iz sheme ~\ref{vtables}}, captionpos=b]
 	var object: A
@@ -1128,27 +1154,29 @@ Instance of operator je operator, ki v času izvajanja programa preveri, ali je 
 	print(object is C) // 'false'
 \end{lstlisting}
 
-Izračun je malenkost kompleksnejši kot sem opisal zgoraj, saj če želimo preveriti, ali je objekt instanca razreda, ki se lahko po dedovani verigi nahaja daleč navzgor, je potrebno preverjanje izvesti rekurzivno po celotni hiearhiji razredov. \\
+Dejanski algoritem za preverjanje, ali je objekt instanca danega razreda, je  kompleksnejši kot sem opisal zgoraj, saj je lahko razredna hiearhija obsežna in je zato potrebno preverjanje izvesti rekurzivno po celotni hiearhiji.
 
 \begin{lstlisting}[caption={Algoritem za izračun ali je objekt instanca danega razeda}, captionpos=b]
 todo
 \end{lstlisting}
 
+\newpage
 
 \section{Pretvarjanje tipov}
 
-Mehanizem pretvarjanja iz enega tipa v drug (angl. \textit{type casting}) deluje po zelo podobnem principu kot \textit{as} operator. Razlikuje se samo v tem, da je rezultat operacije, če pretvorba uspe naslov objekta, sicer 'null'. Takemu tipu pretvarjanja rečemo \textit{safe casting}, saj program nadaljuje z izvajanjem tudi če pretvorba ni uspešna. Za razliko od \textit{non-safe castanja}, kjer bi program vrnil \textit{null pointer exception}.
+Mehanizem pretvarjanja iz enega tipa v drug (angl. \textit{type casting}) deluje po zelo podobnem principu kot \textit{as} operator. Razlikujeta se predvsem v njunem rezultatu. Rezultat \textit{as} operatorja je \textit{true} ali \textit{false}, medtem ko je pri neuspešnem pretvarjanju rezultat \textit{null}, pri uspešnem pa objekt, pretvorjen v željen tip. Takemu tipu pretvarjanja rečemo \textit{safe casting}, saj program nadaljuje z izvajanjem tudi če pretvorba ni uspešna. Za razliko od \textit{non-safe castanja}, kjer bi program vrnil \textit{null pointer exception}.
 
-\begin{lstlisting}[caption={Pretvorba razrede iz sheme ~\ref{vtables}}, captionpos=b]
+\begin{lstlisting}[caption={Pretvorba za razrede iz sheme ~\ref{vtables}}, captionpos=b]
 	var object: A = B()
-	let casted = object as B // pretvorba iz 'A' v 'B' je uspesna
-	if casted == null {
+	let casted = object as B
 	    print("cast failed")
 	}
 	else {
-	    print("cast succeeded")
+	    print("cast succeeded") // izvede se 'else' blok
 	}
 \end{lstlisting}
+
+\newpage
 
 \section{Vmesniki}
 
@@ -1197,10 +1225,10 @@ Razredom lahko preko razširitev dodamo tudi implementacijo vmesnikov, čemur re
 \begin{lstlisting}[caption=Razširitev z vmesnikom, captionpos=b]
 	class Collection {}
 	interface Iterable {
-	    func next() -> Any
+	    func next() Any
 	}
 	extension Collection: Iterable {
-	    func next() -> Any {
+	    func next() Any {
 	        return nil
 	    }
 	}
@@ -1210,9 +1238,10 @@ Razredom lahko preko razširitev dodamo tudi implementacijo vmesnikov, čemur re
 
 \section{Type inference}
 
-Type inference omogoča prevajalniku, da avtomatsko prepozna podatkovni tip izraza, na podlagi vrednosti, ki so v izrazu. To je posebej uporabno pri definicijah spremeljivk, ki jim pogosto nastavimo vrednost ob sami definiciji.
+Type inference omogoča prevajalniku, da avtomatsko prepozna podatkovni tip izraza, na podlagi vrednosti, ki so v izrazu. To je posebej uporabno pri definicijah spremeljivk, ki jim pogosto nastavimo vrednost ob sami definiciji. \\
+\indent V primeru, da definicija spremenljivke nima eksplicitno navedenega podatkovnega tipa, prevajalnik najprej izračuna podatkovni tip izraza na desni strani prirejevalnega operatorja, ter ga nato dodeli definiciji.
 
-\begin{lstlisting}[caption={Type inference}, captionpos=b]
+\begin{lstlisting}[caption={Avtomatično prepoznavanje podatkovnih tipov}, captionpos=b]
 	let meaningOfLife = 42
 	// meaningOfLife je tipa Int
 	let pi = 3.14159
@@ -1221,7 +1250,7 @@ Type inference omogoča prevajalniku, da avtomatsko prepozna podatkovni tip izra
 	// anotherPi je tudi tipa Double
 \end{lstlisting}
 
-Prepoznavanje tipov postane malenkost kompleksnejše pri tabelah, kadar njeni elementi niso istih tipov. Prevajalnik tekom razreševanja tipov vedno poišče najmanjši možen tip, ki je skupen tipom elementov tabele. V primeru, da so v tabeli objekti, ki jim je skupen nadrazred \textit{A}, bo tudi tabela tipa \textit{A}. V primeru, da elementi nimajo nobenega skupnega tipa, prevajalnik tabeli dodeli poseben abstrakten tip \textit{\textbf{Any}}, ki je definiran v standardni knjižnici. \textit{Any} je v programskem jeziku Atheris to, kar je v Javi \textit{Object}, s to razliko, da je \textit{Object} razred, \textit{Any} pa vmesnik. Vsak podatkovni tip je implicitno tipa \textit{Any} .
+Prepoznavanje tipov postane kompleksnejše pri tabelah, kadar njeni elementi niso istih tipov. Prevajalnik tekom razreševanja tipov vedno poišče najmanjši možen tip, ki je skupen vsem elementom tabele. V primeru, da so v tabeli objekti, ki jim je skupen nadrazred \textit{A}, bo tudi tabela tipa \textit{A}. V primeru, da elementi nimajo nobenega skupnega tipa, prevajalnik tabeli dodeli poseben abstrakten tip \textit{\textbf{Any}}, ki je definiran v standardni knjižnici. \textit{Any} je v programskem jeziku Atheris to, kar je v Javi \textit{Object}, s to razliko, da je \textit{Object} razred, \textit{Any} pa vmesnik. Vsak podatkovni tip je implicitno tudi tipa \textit{Any} .
 
 \begin{lstlisting}[caption={Elementi tabele s skupnim nadrazredom}, captionpos=b]
 	let array = [C(), B(), C(), C()] // spremenljivka array = tipa ARR ( A )

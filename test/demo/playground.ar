@@ -1,45 +1,7 @@
 import stdlib
 
-/*class A {}
-interface I {
-    func foo()
-}
-class B: A, I {
-    func foo() {
-        print("A's implementation of foo")
-    }
-}
-class C: A, I {
-    func foo() {
-        print("B's implementation of foo")
-    }
+class A {
+
 }
 
-
-/*var array: [I] = [A(), B(), A()]
-for i in array {
-    print("kle")
-    i.foo()
-}*/
-
-	extension A {
-	    func toString() {
-	        print("q")
-	    }
-	    class B {
-	        var x = 20
-	    }
-	}
-
-#let array = [C(), B(), C(), C()]
-let array = [10, "string", A(), 3.14]*/
-
-class Collection {}
-interface Iterable {
-    func next() -> Any
-}
-extension Collection: Iterable {
-   func next() -> Any {
-       return nil
-   }
-}
+print(A() is A)

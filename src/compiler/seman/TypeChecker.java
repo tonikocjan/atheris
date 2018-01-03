@@ -49,7 +49,6 @@ public class TypeChecker implements ASTVisitor {
     private Stack<Type> lhsTypes = new Stack<>();
     private Stack<CanType> declarationContext = new Stack<>();
     private Stack<Type> functionReturnTypes = new Stack<>();
-    private boolean resolveTypeOnly = false;
 
     private enum TraversalStates {
         extensions, normal
@@ -132,8 +131,6 @@ public class TypeChecker implements ASTVisitor {
                 symbolDescription.setTypeForAstNode(definition, type);
             }
 
-            resolveTypeOnly = true;
-
             for (AstDefinition def : acceptor.memberDefinitions.definitions) {
                 if (names.contains(def.getName())) {
                     logger.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
@@ -205,8 +202,6 @@ public class TypeChecker implements ASTVisitor {
             }
         }
         else {
-            resolveTypeOnly = false;
-
             CanType staticType = (CanType) symbolDescription.getTypeForAstNode(acceptor);
             ObjectType objectType = (ObjectType) staticType.childType;
 	        CanType baseClass = objectType.baseClass;
@@ -806,7 +801,7 @@ public class TypeChecker implements ASTVisitor {
         symbolDescription.setTypeForAstNode(acceptor, funType);
 
         functionReturnTypes.push(returnType);
-        if (!resolveTypeOnly) {
+        if (traversalState == TraversalStates.normal) {
             acceptor.functionCode.accept(this);
         }
         functionReturnTypes.pop();
@@ -1312,8 +1307,6 @@ public class TypeChecker implements ASTVisitor {
             CanType staticType = (CanType) extendingType;
             ObjectType objectType = (ObjectType) staticType.childType;
 
-            resolveTypeOnly = true;
-
             for (AstDefinition def : acceptor.definitions.definitions) {
                 if (((CanType) extendingType).childType.isAtomType()) {
                     // atomic types methods are always final (not dynamic)
@@ -1344,8 +1337,6 @@ public class TypeChecker implements ASTVisitor {
                     logger.error(conformance.position, "Redundant conformance \"" + conformance.getName() + "\"");
                 }
             }
-
-            resolveTypeOnly = false;
         }
         else {
             for (AstDefinition def : acceptor.definitions.definitions) {

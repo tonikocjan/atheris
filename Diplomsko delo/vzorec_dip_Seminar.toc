@@ -15,41 +15,40 @@
 \contentsline {subsubsection}{Simbolna tabela}{8}{section*.6}
 \contentsline {subsection}{\numberline {2.2.4}Klicni zapisi}{9}{subsection.2.2.4}
 \contentsline {subsubsection}{Sklad}{10}{section*.7}
-\contentsline {subsection}{\numberline {2.2.5}Generiranje vmesne kode}{12}{subsection.2.2.5}
-\contentsline {subsubsection}{Vmesna koda}{12}{section*.8}
-\contentsline {subsubsection}{Vmesno predstavitveno drevo}{12}{section*.9}
+\contentsline {subsection}{\numberline {2.2.5}Generiranje vmesne kode}{11}{subsection.2.2.5}
+\contentsline {subsubsection}{Vmesna koda}{11}{section*.8}
 \contentsline {chapter}{\numberline {3}Programski jezik PINS}{13}{chapter.3}
 \contentsline {section}{\numberline {3.1}Leksikalna pravila}{13}{section.3.1}
 \contentsline {section}{\numberline {3.2}Sintaksna pravila}{14}{section.3.2}
 \contentsline {section}{\numberline {3.3}Semanti\IeC {\v c}na pravila}{15}{section.3.3}
-\contentsline {subsubsection}{Obmo\IeC {\v c}ja vidnosti}{15}{section*.10}
-\contentsline {subsubsection}{Tipiziranost}{15}{section*.11}
-\contentsline {subsubsection}{Deklaracije}{16}{section*.12}
+\contentsline {subsubsection}{Obmo\IeC {\v c}ja vidnosti}{15}{section*.9}
+\contentsline {subsubsection}{Tipiziranost}{15}{section*.10}
+\contentsline {subsubsection}{Deklaracije}{16}{section*.11}
 \contentsline {section}{\numberline {3.4}Spremembe in raz\IeC {\v s}iritve}{16}{section.3.4}
-\contentsline {subsubsection}{Sintaksa}{16}{section*.13}
-\contentsline {subsubsection}{Podatkovni tipi}{17}{section*.14}
-\contentsline {subsubsection}{Enumeracije}{18}{section*.15}
-\contentsline {subsubsection}{Terke}{18}{section*.16}
-\contentsline {subsubsection}{Razredi in vmesniki}{19}{section*.17}
+\contentsline {subsubsection}{Sintaksa}{16}{section*.12}
+\contentsline {subsubsection}{Podatkovni tipi}{17}{section*.13}
+\contentsline {subsubsection}{Enumeracije}{18}{section*.14}
+\contentsline {subsubsection}{Terke}{18}{section*.15}
+\contentsline {subsubsection}{Razredi in vmesniki}{19}{section*.16}
 \contentsline {chapter}{\numberline {4}Programski jezik Atheris}{21}{chapter.4}
 \contentsline {section}{\numberline {4.1}Sintaksa}{21}{section.4.1}
 \contentsline {section}{\numberline {4.2}Funkcije}{24}{section.4.2}
-\contentsline {section}{\numberline {4.3}Enumeracije}{25}{section.4.3}
-\contentsline {section}{\numberline {4.4}Terke}{27}{section.4.4}
+\contentsline {section}{\numberline {4.3}Enumeracije}{26}{section.4.3}
+\contentsline {section}{\numberline {4.4}Terke}{28}{section.4.4}
 \contentsline {section}{\numberline {4.5}Razredi}{28}{section.4.5}
-\contentsline {subsection}{\numberline {4.5.1}Dostop do \IeC {\v c}lanov in nadzor dostopa}{28}{subsection.4.5.1}
+\contentsline {subsection}{\numberline {4.5.1}Dostop do \IeC {\v c}lanov in nadzor dostopa}{29}{subsection.4.5.1}
 \contentsline {subsection}{\numberline {4.5.2}Instan\IeC {\v c}ne funkcije}{29}{subsection.4.5.2}
 \contentsline {subsection}{\numberline {4.5.3}Konstruktorji}{30}{subsection.4.5.3}
-\contentsline {subsection}{\numberline {4.5.4}Stati\IeC {\v c}ni \IeC {\v c}lani razreda}{31}{subsection.4.5.4}
-\contentsline {section}{\numberline {4.6}Dedovanje in polimorfizem}{33}{section.4.6}
-\contentsline {subsection}{\numberline {4.6.1}Dynamic Dispatch}{33}{subsection.4.6.1}
-\contentsline {subsubsection}{Virtualne tabele}{34}{section*.18}
-\contentsline {subsection}{\numberline {4.6.2}Realizacija}{35}{subsection.4.6.2}
-\contentsline {section}{\numberline {4.7}Instance of operator}{36}{section.4.7}
-\contentsline {section}{\numberline {4.8}Pretvarjanje tipov}{36}{section.4.8}
-\contentsline {section}{\numberline {4.9}Vmesniki}{37}{section.4.9}
-\contentsline {section}{\numberline {4.10}Raz\IeC {\v s}iritve}{38}{section.4.10}
-\contentsline {subsection}{\numberline {4.10.1}Raz\IeC {\v s}iritev z vmesnikom}{38}{subsection.4.10.1}
-\contentsline {section}{\numberline {4.11}Type inference}{39}{section.4.11}
-\contentsline {chapter}{\numberline {5}Sklepne ugotovitve}{41}{chapter.5}
-\contentsline {chapter}{Literatura}{42}{chapter.5}
+\contentsline {subsection}{\numberline {4.5.4}Stati\IeC {\v c}ni \IeC {\v c}lani razreda}{32}{subsection.4.5.4}
+\contentsline {section}{\numberline {4.6}Dedovanje in polimorfizem}{34}{section.4.6}
+\contentsline {subsection}{\numberline {4.6.1}Dynamic Dispatch}{34}{subsection.4.6.1}
+\contentsline {subsubsection}{Virtualna tabela}{35}{section*.17}
+\contentsline {subsection}{\numberline {4.6.2}Realizacija}{36}{subsection.4.6.2}
+\contentsline {section}{\numberline {4.7}Instance of operator}{37}{section.4.7}
+\contentsline {section}{\numberline {4.8}Pretvarjanje tipov}{38}{section.4.8}
+\contentsline {section}{\numberline {4.9}Vmesniki}{39}{section.4.9}
+\contentsline {section}{\numberline {4.10}Raz\IeC {\v s}iritve}{40}{section.4.10}
+\contentsline {subsection}{\numberline {4.10.1}Raz\IeC {\v s}iritev z vmesnikom}{40}{subsection.4.10.1}
+\contentsline {section}{\numberline {4.11}Type inference}{41}{section.4.11}
+\contentsline {chapter}{\numberline {5}Sklepne ugotovitve}{43}{chapter.5}
+\contentsline {chapter}{Literatura}{44}{chapter.5}
