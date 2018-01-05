@@ -1,7 +1,48 @@
 import stdlib
 
-class A {
+var list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
 
+func partitionHoare(low: Int, high: Int) Int {
+    let pivot = list[low]
+    var i = low - 1
+    var j = high + 1
+
+    while true {
+        while true {
+            j = j - 1
+            if list[j] <= pivot {
+                break
+            }
+        }
+
+        while true {
+            i = i + 1
+            if list[i] >= pivot {
+                break
+            }
+        }
+
+        if i < j {
+            let tmp = list[i]
+            list[i] = list[j]
+            list[j] = tmp
+        }
+        else {
+            return j
+        }
+    }
 }
 
-print(A() is A)
+func quicksortHoare(low: Int, high: Int) {
+    if low < high {
+        let p = partitionHoare(low: low, high: high)
+        print(p)
+        quicksortHoare(low: low, high: p)
+        quicksortHoare(low: p + 1, high: high)
+    }
+}
+
+quicksortHoare(low: 0, high: list.count - 1)
+/*for i in list {
+    print(i)
+}*/
