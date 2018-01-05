@@ -28,7 +28,7 @@
 \contentsline {subsubsection}{Sintaksa}{16}{section*.12}
 \contentsline {subsubsection}{Podatkovni tipi}{17}{section*.13}
 \contentsline {subsubsection}{Enumeracije}{18}{section*.14}
-\contentsline {subsubsection}{Terke}{18}{section*.15}
+\contentsline {subsubsection}{Terke}{19}{section*.15}
 \contentsline {subsubsection}{Razredi in vmesniki}{19}{section*.16}
 \contentsline {chapter}{\numberline {4}Programski jezik Atheris}{21}{chapter.4}
 \contentsline {section}{\numberline {4.1}Sintaksa}{21}{section.4.1}
@@ -50,5 +50,6 @@
 \contentsline {section}{\numberline {4.10}Raz\IeC {\v s}iritve}{40}{section.4.10}
 \contentsline {subsection}{\numberline {4.10.1}Raz\IeC {\v s}iritev z vmesnikom}{40}{subsection.4.10.1}
 \contentsline {section}{\numberline {4.11}Type inference}{41}{section.4.11}
-\contentsline {chapter}{\numberline {5}Sklepne ugotovitve}{43}{chapter.5}
-\contentsline {chapter}{Literatura}{44}{chapter.5}
+\contentsline {chapter}{\numberline {5}Meritve}{43}{chapter.5}
+\contentsline {chapter}{\numberline {6}Sklepne ugotovitve}{45}{chapter.6}
+\contentsline {chapter}{Literatura}{46}{chapter.6}

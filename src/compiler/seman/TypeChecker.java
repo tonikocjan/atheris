@@ -411,7 +411,7 @@ public class TypeChecker implements ASTVisitor {
 			 */
 			// FIXME: - remove this in the future
 			if (lhs.isArrayType()) {
-				if (!memberName.equals("elementCount"))
+				if (!memberName.equals("count"))
                     logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");
 				symbolDescription.setTypeForAstNode(acceptor, Type.intType);
 				return;
