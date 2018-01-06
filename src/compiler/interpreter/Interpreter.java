@@ -217,11 +217,10 @@ public class Interpreter {
 		
 		if (instruction instanceof ImcCALL) {
 			ImcCALL instr = (ImcCALL) instruction;
-
-			stM(stackPointer, execute(instr.args.getFirst()));
 			
-			for (int i = 1; i < instr.args.size(); i++) {
-				stM(stackPointer + Constants.Byte*i, execute(instr.args.get(i)));
+			for (int i = 0; i < instr.args.size(); i++) {
+			    Object argument = execute(instr.args.get(i));
+				stM(stackPointer + Constants.Byte * i, argument);
 			}
 
 			if (instr.label.getName().equals("_print")) {

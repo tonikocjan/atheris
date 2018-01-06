@@ -185,7 +185,7 @@ public class FrmEvaluator implements ASTVisitor {
         FrmAccess parameterAccess = new FrmParAccess(acceptor, currentFrame, currentFrame.parametersSize);
 		frameDescription.setAccess(acceptor, parameterAccess);
 		Type type = symbolDescription.getTypeForAstNode(acceptor);
-		int size = type.isObjectType() ? 4 : type.sizeInBytes(); // FIXME: -
+		int size = type.isReferenceType() ? 4 : type.sizeInBytes(); // FIXME: -
 		currentFrame.parametersSize += size;
 	}
 
