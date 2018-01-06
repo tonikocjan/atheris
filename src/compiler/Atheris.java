@@ -77,7 +77,7 @@ public class Atheris {
             String size = parser.valueFor("stack_size");
 
             try {
-                Interpreter.stackSize = Integer.parseInt(size);
+                Interpreter.STACK_SIZE = Integer.parseInt(size);
             }
             catch(Exception e) {
                 logger.warning(LanguageManager.localize("error_invalid_stack_size_parameter"));
@@ -163,7 +163,7 @@ public class Atheris {
             source.accept(imcodegen);
 
             // Linearizacija vmesne kode.
-            mainCodeChunk = new CodeGenerator(frameDescription, memory).linearize(imcodegen.chunks);
+            mainCodeChunk = new CodeGenerator(frameDescription).linearize(imcodegen.chunks);
             if (mainCodeChunk == null) {
                 mainCodeChunk = imcodegen.entryPointCode;
             }
@@ -196,7 +196,7 @@ public class Atheris {
 
             System.out.println(LanguageManager.localize("general_executing_file", sourceFileName));
 
-            Interpreter.memory = memory;
+//        Interpreter.memory = memory;
 
             memory.stM(Interpreter.getFP() + Constants.Byte, 0);
             new Interpreter(compiledCode.getFrame(), compiledCode.getLincode());

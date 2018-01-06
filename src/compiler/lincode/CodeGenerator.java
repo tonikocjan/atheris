@@ -26,7 +26,6 @@ import compiler.frames.FrmLabel;
 import compiler.frames.FrmVirtualTableAccess;
 import compiler.imcode.*;
 import compiler.interpreter.Interpreter;
-import compiler.interpreter.Memory;
 import compiler.seman.type.CanType;
 import compiler.seman.type.ClassType;
 import utils.Constants;
@@ -34,23 +33,25 @@ import utils.Constants;
 public class CodeGenerator {
 
     private FrameDescriptionMap frameDescription;
-    private Memory memory;
-    private ImcCodeChunk mainFrame;
 
-    public CodeGenerator(FrameDescriptionMap frameDescription, Memory memory) {
+    public CodeGenerator(FrameDescriptionMap frameDescription) {
         this.frameDescription = frameDescription;
-        this.memory = memory;
     }
 
 	public ImcCodeChunk linearize(List<ImcChunk> chunks) {
-		for (ImcChunk chunk : chunks) {
-			if (chunk instanceof ImcCodeChunk) {
-                linearizeCodeAndStoreFunction((ImcCodeChunk) chunk);
-                saveMainCodeChunk((ImcCodeChunk) chunk);
+		ImcCodeChunk mainFrame = null;
+
+		for (ImcChunk chnk : chunks) {
+			if (chnk instanceof ImcCodeChunk) {
+                storeFunction((ImcCodeChunk) chnk);
+
+                if (chnk.name().equals("__main__")) {
+                    mainFrame = (ImcCodeChunk) chnk;
+                }
 			}
 			else {
-				ImcDataChunk data = (ImcDataChunk) chunk;
-				memory.labelToAddressMapping.put(data.label, Interpreter.heapPointer);
+				ImcDataChunk data = (ImcDataChunk) chnk;
+				Interpreter.locations.put(data.label, Interpreter.heapPointer);
 
 				if (data instanceof ImcVirtualTableDataChunk) {
 				    storeVirtualTable((ImcVirtualTableDataChunk) data);
@@ -64,34 +65,21 @@ public class CodeGenerator {
 		return mainFrame;
 	}
 
-	private void saveMainCodeChunk(ImcCodeChunk chunk) {
-        if (chunk.name().equals("__main__")) {
-            mainFrame = chunk;
-        }
-    }
+	private void storeFunction(ImcCodeChunk fn) {
+        fn.lincode = fn.imcode.linear();
 
-	private void linearizeCodeAndStoreFunction(ImcCodeChunk fn) {
-        linearizeCode(fn);
-        storeFunction(fn);
-    }
-
-    private void linearizeCode(ImcCodeChunk codeChunk) {
-        codeChunk.linearize();
-    }
-
-    private void storeFunction(ImcCodeChunk fn) {
-        memory.labelToAddressMapping.put(fn.getFrame().entryLabel, Interpreter.heapPointer);
-        memory.stM(Interpreter.heapPointer, fn);
+        Interpreter.locations.put(fn.getFrame().entryLabel, Interpreter.heapPointer);
+        Interpreter.stM(Interpreter.heapPointer, fn);
 
         Interpreter.heapPointer += Constants.Byte;
     }
 
     private void storeVariable(ImcDataChunk data) {
         if (data.data == null) {
-            memory.stM(Interpreter.heapPointer, 0);
+            Interpreter.stM(Interpreter.heapPointer, 0);
         }
         else {
-            memory.stM(Interpreter.heapPointer, data.data);
+            Interpreter.stM(Interpreter.heapPointer, data.data);
         }
 
         Interpreter.heapPointer += data.size;
@@ -107,16 +95,16 @@ public class CodeGenerator {
             baseClassVirtualTablePointer = baseVirtualTable.location;
         }
 
-        memory.stM(Interpreter.heapPointer, type.descriptor);
+        Interpreter.stM(Interpreter.heapPointer, type.descriptor);
         Interpreter.heapPointer += Constants.Byte;
-        memory.stM(Interpreter.heapPointer, baseClassVirtualTablePointer);
+        Interpreter.stM(Interpreter.heapPointer, baseClassVirtualTablePointer);
         Interpreter.heapPointer += Constants.Byte;
 
         Iterator<FrmLabel> virtualTableIterator = generateVirtualTableForClass(type);
         for (Iterator<FrmLabel> it = virtualTableIterator; it.hasNext(); ) {
             FrmLabel label = it.next();
 
-            memory.stM(Interpreter.heapPointer, label);
+            Interpreter.stM(Interpreter.heapPointer, label);
             Interpreter.heapPointer += Constants.Byte;
         }
     }

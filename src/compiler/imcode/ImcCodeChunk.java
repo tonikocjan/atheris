@@ -18,16 +18,17 @@
 package compiler.imcode;
 
 import compiler.frames.*;
+import compiler.logger.Logger;
 import compiler.logger.LoggerFactory;
 import compiler.logger.LoggerInterface;
 
 public class ImcCodeChunk extends ImcChunk {
 
-    private static LoggerInterface logger = LoggerFactory.logger();
+    LoggerInterface logger = LoggerFactory.logger();
 
-	private FrmFrame frame;
-	private ImcStmt imcode;
-	private ImcSEQ lincode;
+	public FrmFrame frame;
+    public ImcStmt imcode;
+    public ImcSEQ lincode;
 
 	public ImcCodeChunk(FrmFrame frame, ImcStmt imcode) {
 		this.frame = frame;
