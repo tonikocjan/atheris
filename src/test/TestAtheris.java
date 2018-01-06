@@ -61,13 +61,18 @@ public class TestAtheris {
     }
 
     @Test
+    public void testInheritance() {
+        test("10.Inheritance.ar");
+    }
+
+    @Test
     public void testNestedClasses() {
         test("11.NestedClasses.ar");
     }
 
     @Test
-    public void testInheritance() {
-        test("10.Inheritance.ar");
+    public void testQuickSort() {
+        test("13.QuickSort.ar");
     }
 
     private void test(String sourceFileName) {
