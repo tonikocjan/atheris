@@ -480,10 +480,10 @@ public class LexAn implements LexicalAnalyzer {
             builder.setTokenType(TokenType.IOR);
 		if (ch == '&')
             builder.setTokenType(TokenType.AND);
-		if (ch == '?')
-            builder.setTokenType(TokenType.QMARK);
-		if (ch == '!')
-            builder.setTokenType(TokenType.EMARK);
+//		if (ch == '?')
+//            builder.setTokenType(TokenType.QMARK);
+//		if (ch == '!')
+//            builder.setTokenType(TokenType.EMARK);
         if (ch == '\n')
             builder.setTokenType(TokenType.NEWLINE)
                    .setLexeme("\\n");
