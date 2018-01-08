@@ -97,8 +97,6 @@ public class Atheris {
     }
 
     public Atheris compile(String[] args) {
-        Long startTime = System.currentTimeMillis();
-
         LanguageManager.sharedManager.loadLocalization("Localize/en.lproj/Localizable.strings");
         System.out.println(LanguageManager.localize("general_compiler_name"));
 
@@ -172,8 +170,6 @@ public class Atheris {
             imcode.dump(imcodegen.chunks);
             if (execPhase.equals("imcode")) break;
 
-            compilationTime(startTime);
-
             // Izvajanje linearizirane vmesne kode
             if (execPhase.equals("interpret")) break;
 
@@ -198,8 +194,12 @@ public class Atheris {
 
 //        Interpreter.memory = memory;
 
+            Long startTime = System.currentTimeMillis();
+
             memory.stM(Interpreter.getFP() + Constants.Byte, 0);
             new Interpreter(compiledCode.getFrame(), compiledCode.getLincode());
+            compilationTime(startTime);
+
         }
 
         return this;
@@ -211,6 +211,6 @@ public class Atheris {
 
     private void compilationTime(Long startTime) {
         Long deltaTime = System.currentTimeMillis() - startTime;
-        System.out.println(String.format("Compiled in: %dms", deltaTime));
+        System.out.println(String.format("Executed in: %dms", deltaTime));
     }
 }

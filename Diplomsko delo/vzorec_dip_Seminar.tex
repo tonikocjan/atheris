@@ -22,7 +22,7 @@
 % verzija 5. junij 2016 (Franc Solina dodal vrstice, ki jih je označil s svojim imenom)
 
 
-\documentclass[a4paper, 12pt]{book}
+\documentclass[a4paper, 12p]{book}
 %\documentclass[a4paper, 12pt, draft]{book}  Nalogo preverite tudi z opcijo draft, ki vam bo pokazala, katere vrstice so predolge!
 
 \usepackage[utf8x]{inputenc}   % omogoča uporabo slovenskih črk kodiranih v formatu UTF-8
@@ -41,6 +41,8 @@
 						linkcolor=black, urlcolor=black,
 						pagebackref=false, 
 						pdfproducer={LaTeX}, pdfcreator={LaTeX}, hidelinks]{hyperref}
+						
+\usepackage{pgfplots}
 
 \usepackage{color}       % dodal Solina
 \usepackage{soul}       % dodal Solina
@@ -691,20 +693,25 @@ identifier \quad :\quad type
 določa parameter tipa $type$
 \end{enumerate}
 
-\section{Spremembe in razširitve}
+\chapter{Programski jezik Atheris}
+\label{ch1}
 
-todo porini v 
+Kljub temu, da prevajalnik za Atheris izhaja iz prevajalnika za PINS, sta si jezika med seboj zelo različna. Razlikujeta se predvsem v sintaksi, ki je v programskem jeziku Atheris zelo podobna tisti, ki jo ima programski jezik Swift. \\
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=1\textwidth]{resources/atheris.jpg}
+	\end{center}
+	\caption{Atheris Squamigera. [http://rebrn.com/]}
+	\label{image:ast}
+\end{figure}
 
-\subsubsection{Sintaksa}
-
-Sintaksa je v primerjavi s sintakso jezika PINS popolnoma spremenjena. Pravzaprav je sintaksa skoraj identična programskemu jeziku Swift. \\
 \indent Med drugim nova sintaksa omogoča definiranje kompleksnejših podatkovnih tipov z uporabo razredov, vmesnikov, terk in enumeracij. \\
 \indent Posamezni stavki so med seboj ločeni z novimi vrsticami (Python, Swift), vendar pa prevajalnik omogoča njihovo ločevanje tudi s podpičjem ';' (C++, Java). \\
 \indent Komentarji se lahko začnejo bodisi z '\#' in se raztezajo do konca vrstice (Python, PINS), bodisi z '/*' in končajo z '*/' (Java, C++). \\
 \indent Podprt je tudi \textit{switch} kontrolni stavek s sintakso identične tej od Swifta.\\
 \indent Definicije funkcij ter klici funkcij so spremenjeni; parametri funkcije so sedaj sestavljeni iz labele ter imena parametra (tako kot v Swiftu). Pri klicu funkcije se uprabi labela parametra, znotraj jedra funkcije pa se uporablja ime.
 
-\subsubsection{Podatkovni tipi}
+\subsection{Podatkovni tipi}
 
 Podprti atomarni podatkovni tipi so: \textit{integer, double, string, char} in \textit{bool}. Poleg atomarnih tipov pa so podprti tudi sestavljeni podatkovni tipi:
 
@@ -714,86 +721,7 @@ Podprti atomarni podatkovni tipi so: \textit{integer, double, string, char} in \
 	\item Terke
 \end{enumerate}
 
-Poleg naštetih podatkovnih tipov obstaja še podatkovni tip, ki ga ni mogoče eksplicitno uporabljati. To je kazalec (\textit{angl. pointer}). Spremenljivka, ki je tipa \textit{kazalec}, ne hrani dejanske vrednosti, temveč v sebi hrani naslov na neko lokacijo v pomnilniku. Ena izmed prednosti kazalcev je v tem, da lahko do kompleksnejših objektov, ki v pomnilniku zasedejo veliko prostora, dostopamo preko njihovega naslova s kazalcem, namesto kopiranja celotne vsebine (na primer pri pošiljanju objekta kot argument funkciji). \\
-\indent Prevajalnik omogoča tudi t.i. avtomatsko prepoznavanje tipov, oz. angl. \textit{type inference}. To pomeni, da izrazom, kjer prevajalnik lahko implicitno prepozna podatkovni tip, le-tega ni potrebno eksplicitno navajati.
-
-\begin{lstlisting}[caption={Primer deklaracij spremenljivk, kjer je njun tip prepoznan avtomastsko}, captionpos=b]
-	let x = 120
-	let y = "To je niz"
-\end{lstlisting}
-
-\subsubsection{Enumeracije}
-
-Enumeracija je sestavljen podatkovni tip, ki vsebuje določeno število konstant. Enumeracije omogočajo, da ima vsaka konstanta \textit{surovo vrednost} (\textit{angl. raw value}). Podatkovni tip surovih vrednosti je definiran v naprej in je pri vseh kostantah enak.
-
-\begin{lstlisting}[caption=Enumeracija brez surovih vrednosti, captionpos=b, label={lst:languagesEnumeration}]
-enum Languages {
-  case Cpp
-  case Java
-  case ObjectiveC, Swift
-}
-\end{lstlisting}
-
-\indent Vrednosti surovih vrednosti morajo biti eksplicitno navedene pri vseh konstantah, razen v primeru, ko je podatkovni tip \textit{int} ali \textit{string}. Če je podatkovni tip int in vrednosti niso eksplicitno navedene, se implicitno dodeli zaporedni indeks konstante (začenši z 0).\\
-\indent Če je podatkovni tip string, potem je implicitna vrednost konstante kar njeno ime.
- 
-\begin{lstlisting}[caption=Enumeracija s surovimi vrednostmi tipa String, captionpos=b]
-enum CarBrands: String {
-  case Audi, Renault, VW="Volks Wagen"
-  case None="Izbrali niste nobene znamke"
-}
-\end{lstlisting}
-
- 
- \subsubsection{Terke}
- 
-Terka je podatkovna struktura sestavljena iz poljubnega števila elementov, ki so lahko različnih podatkovnih tipov. Terke poznajo jeziki, kot sta Python in Swift, medtem ko jih Java in C++ ne poznata.\\
-\indent Terka je definirana kot zaporedje izrazov znotraj oklepajev. Do posameznih elementov terke dostopamo podobno kot dostopamo do elementov v razredu, s to razliko, da je ime elementa njegov indeks v terki. 
-
-\begin{lstlisting}[caption={Terka, sestavljena in dveh vrednosti (Int in Double)}, captionpos=b]
-	let x = (10, 5.5) 
-	print(x.0)
-	print(x.1)
-\end{lstlisting} 
-
-Možno pa je tudi, da pri definiciji tipa terke specificiramo imena elementov, in potem do njih dostopamo preko njih. (Swift)
-
-\begin{lstlisting}[caption={Terka, v kateri je en element poimenovan, drugi pa ne}, captionpos=b]
-	let y = (x: "Lorem", "Ipsum")
-	print(y.x)
-	print(y.1)
-\end{lstlisting}
-
-
-\subsubsection{Razredi in vmesniki}
-
-Razred je sestavljena podatkovna struktura, ki lahko, za razliko od tabel, v sebi hrani spremenljivke različnih podatkovnih tipov. \\
-\indent Vmesnik \textit{angl. interface} je abstraktna podatkovna struktura, ki definira poljubno število metod, ki jih mora implementirajoči se razred implementirati. Instanc vmesnikov ne moremo kreirati neposredno.\\
-\indent Vsak razred lahko vsebuje poljubno število atributov (spremenljivk) ter poljubno število metod - to so člani rezreda. Atributi in metode so lahko statični, kar pomeni, da niso del posamezne instance razreda, ampak živijo v statični instanci, ki je kreirana avtomatsko. Poleg tega so lahko člani razreda \textit{privatni} ali \textit{javni}. Razlika je v tem, da do privatnih članov ni možno dostopati izven razreda. Metodam lahko dodamo še modifikator \textit{final}, kar prepreči, da bi bila funkcija re-implementirana v dedujočem se razredu. Če želimo, da metoda re-implementira metodo v starševkem razredu, ji moramo dodati modifikator \textit{overriding}. \\
-
-\indent  \textbf{Dedovanje} \\
-\noindent Vsak razred lahko deduje največ en razred (lahko tudi nobenega), implementira pa lahko poljubno število vmesnikov. Identično je dedovanje narejeno tudi v Javi in Swiftu, za razliko od C++, ki omogoča večkratno dedovanje in ne pozna vmesnikov. \\
-
-\indent  \textbf{Razširitve} \\
-\noindent Podprte so tudi razširitve nad podatkovnimi tipi, ki omogočajo, da obstoječim razredom (in tudi atomarnim tipom) dodamo nove funkcionalnosti. Razširitve so predsvem uporabne takrat, ko želimo razredom, do katerih nimamo dostopa (npr. razredi iz knjižnic), dodati uporabne funkcionalnosti. V jezikih, ki tega ne podpirajo, je ponavadi praksa, da se ustvarijo \textit{utilty} razredi (npr. v Javi). \\
-\indent Razširitve omogočajo tudi to, da razredom dodamo implementacijo vmesnikov, čemur se reče \textit{interface extension}. \\
-
-\begin{lstlisting}[caption=Primer razširitve tipa Int z vmesnikom Hashable, captionpos=b]
-	interface Hashable {
-	    func hash() Int
-	}
-
-	extension Int: Hashable {
-	    func hash() Int {
-	        return self % 21632
-	    }
-	}
-\end{lstlisting}
-
-
-\chapter{Programski jezik Atheris}
-\label{ch1}
-
+Poleg naštetih podatkovnih tipov obstaja še podatkovni tip, ki ga ni mogoče eksplicitno uporabljati. To je kazalec (\textit{angl. pointer}). Ena izmed prednosti kazalcev je v tem, da lahko do kompleksnejših objektov, ki v pomnilniku zasedejo veliko prostora, dostopamo preko njihovega naslova s kazalcem, namesto kopiranja celotne vsebine (na primer pri pošiljanju objekta kot argument funkciji). Spremeljivke, ki jim priredimo objekt, terko ali tabelo, se implicitno smatrajo kot kazalci. \\
 
 \section{Sintaksa}
 
@@ -848,7 +776,7 @@ class_def -> class { definitions }
 
 \end{enumerate} 
 
-Sintakse izrazov so skoraj identične, razen izrazov za nadzor toka (angl. \textit{control flow}):
+Sintaksa izrazov je skoraj identična PINSu, razen izrazov za nadzor toka (angl. \textit{control flow}):
 
 \begin{enumerate}
 	\item If stavek
@@ -878,12 +806,12 @@ for_expression -> for identifier in expression
 \end{lstlisting}
 \end{enumerate} 
 
-Kot sem že omenil, omogoča sintaksa programskega jezika Atheris, da so posamezni stavki ločeni bodisi s ';' bodisi z novo vrstico. Za ta namen je dodan nov tip žetona, ki predstavlja novo vrstico v izvorni kodi (pred tem se je znak za novo vrstico štel kot belo besedilo). V primeru, da je v izvorni kodi več zaporednih novih vrstic, jih leksikalni analizator \textit{požre} in vedno vrne samo en zaporedni \textit{newline} simbol. To naredi sintaksno analizo enostavnejšo. Ločevanje posameznih stavkov z novo vrstico je tako trivialno, potrebno je samo paziti na primere, kjer so stavki ločeni z obema ločiloma. 
+Kot sem že omenil, omogoča sintaksa programskega jezika Atheris, da so posamezni stavki ločeni bodisi s ';' bodisi z novo vrstico. Za ta namen je dodan nov tip žetona, ki predstavlja novo vrstico v izvorni kodi (pred tem se je znak za novo vrstico štel kot belo besedilo). V primeru, da je v izvorni kodi več zaporednih novih vrstic, jih leksikalni analizator \textit{požre} in vedno vrne samo en zaporedni \textit{newline} simbol. To naredi sintaksno analizo enostavnejšo. 
 
 \section{Funkcije}
 
-Programski jezik Atheris zahteva, da ob klicu funkcij, poleg imena funkcije, navedemo tudi imena parametrov. Podobno kot to zahteva tudi Swift. \\
-\indent Ob deklaraciji funkcije lahko opcijsko definiramo poljubno število poimenovanih ter tipiziranih vrednosti, ki jim skupaj rečemo parametri funkcije. Poleg tega lahko opcijsko navedemo še podatkovni tip vrednosti, ki jo bo funkcija vračala (privzeto funkcije ne vračajo ničesar - \textit{Void}. \\
+Programski jezik Atheris zahteva, da ob klicu funkcij poleg imena funkcije navedemo tudi imena parametrov. Podobno kot to zahteva tudi Swift. \\
+\indent Ob deklaraciji funkcije lahko opcijsko definiramo poljubno število poimenovanih ter tipiziranih vrednosti, ki jim skupaj rečemo parametri funkcije. Poleg tega lahko opcijsko navedemo še podatkovni tip vrednosti, ki jo bo funkcija vračala (privzeto funkcije ne vračajo ničesar - \textit{Void}.) \\
 \indent Imena parametrov so sestavljena iz dveh delov: labele argumenta ter imena parametra. Labele argumentov se uporabljajo ob klicu funkcije, medtem ko se imena parametrov uporabljajo znotraj jedra funkcije. Labele so privzeto identične imenom.
 
 \begin{lstlisting}[caption={Primer definicije in klica funkcije}, captionpos=b]
@@ -892,9 +820,8 @@ func someFunction(firstParameterName: Int, secondParameterName: Int) {
 }
 someFunction(firstParameterName: 1, secondParameterName: 2)
 \end{lstlisting}
-\newpage
 
-\textbf{Določanje label argumentov}
+\subsection{Določanje label argumentov}
 
 Če želimo, da sta labela in ime različna, navedemo labelo argumenta pred imenom:
 
@@ -975,7 +902,8 @@ Da lahko realiziramo \textit{runtime} operacije nad člani enumeracije, prevajal
 \newpage
 \section{Terke}
 
-Terka je zaporedje izrazov ločenih z dvopičjem ':' obdano z oklepaji. Vsakemu izrazu znotraj terke lahko opcijsko določimo tudi ime. V primeru, da ime ni eksplicitno določeno, se za ime uporabi indeks izraza v terki (začenši z 0). \\
+Terka je podatkovna struktura sestavljena iz poljubnega števila elementov, ki so lahko različnih podatkovnih tipov. Terke poznajo jeziki, kot sta Python in Swift, medtem ko jih Java in C++ ne poznata.\\
+\indent Terka je definirana kot zaporedje izrazov znotraj oklepajev. Do posameznih elementov terke dostopamo podobno kot dostopamo do elementov v razredu, s to razliko, da je ime elementa njegov indeks v terki. Vsakemu izrazu znotraj terke lahko opcijsko določimo tudi ime. V primeru, da ime ni eksplicitno določeno, se za ime uporabi indeks izraza v terki (začenši z 0). \\
 \indent Do elementov prav tako dostopamo z uporabo DOT operatorja, ki zagotovi, da terka vsebuje izraz z željenim imenom.\\
 \indent V pomnilniku so terke predstavljene skoraj identično kot tabele, s to razliko, da se podatkovni tipi elementov med sabo lahko razlikujejo. Ravno zaradi tega ne moremo odmika izračunati na enak način kot pri tabelah. Pri terkah odmik posameznega elementa od začetnega naslova terke izračunamo tako, da seštejemo velikosti podaktovnih tipov vseh elementov pred željenim elementom:
 
@@ -983,10 +911,12 @@ Terka je zaporedje izrazov ločenih z dvopičjem ':' obdano z oklepaji. Vsakemu 
 
 \section{Razredi}
 
-Razred je kompleksna podatkovna struktura in je sestavljena iz atributov, ki so lastnosti razreda, ter funkcij (oz. metod), ki predstavljajo operacije nad atributi. To so člani razreda.  \\
+Razred je sestavljena podatkovna struktura, ki, podobno kot terka, v sebi hrani spremenljivke različnih podatkovnih tipov. Vsak razred lahko vsebuje poljubno število atributov (spremenljivk) ter poljubno število metod - to so člani rezreda. \\
+\indent Atributi in metode so lahko statični, kar pomeni, da niso del posamezne instance razreda, ampak živijo v statični instanci, ki je kreirana avtomatsko. Poleg tega so lahko člani razreda \textit{privatni} ali \textit{javni}. Razlika je v tem, da do privatnih članov ni možno dostopati izven razreda.\\
+\indent Metodam lahko dodamo tudi modifikator \textit{final}, kar prepreči, da bi bila funkcija re-implementirana v dedujočem se razredu. Če želimo, da metoda re-implementira metodo v starševkem razredu, ji moramo dodati modifikator \textit{overriding}. \\
 \indent Poleg atributov in metod lahko razred vsebuje tudi definicije gnezdenih razredov, enumeracij ter vmesnikov.\\
 \indent V pomnilniku je instanca razreda (objekt) predstavljena podobno kot terka, t.j. kot tabela z vrednostmi različnih podatkovnih tipov. Zato tudi odmik elementov izračunamo podobno kot pri terkah.
-\newpage
+
 \subsection{Dostop do članov in nadzor dostopa}
 
 Do članov razreda dostopamo preko DOT operatorja. DOT operator je binarni operator in je sestavljen iz dveh izrazov, ki ju povezuje pika '.'. \\
@@ -1037,7 +967,6 @@ Konstruktorji so posebne vrste metod, njihova naloga pa je kreacija objektov ter
 \end{lstlisting}
 
 V primeru, da je v razredu privzeti konstruktor tudi eksplicitno definiran, bo poleg svoje kode vseboval tudi kodo implicitnega.
-\newpage
 
 \begin{lstlisting}[caption={Eksplicitni privzeti konstruktor}, captionpos=b]
 	class Atheris {
@@ -1088,7 +1017,6 @@ Da lahko dostopamo do konstruktorjev znotraj gnezdenih razredov, jih prevajalnik
 	}
 	print(Atheris.NestedClass().x) // '20'
 \end{lstlisting}
-\newpage
 
 \section{Dedovanje in polimorfizem}
 
@@ -1141,7 +1069,6 @@ Problem rešimo tako, da kazalec na metodo shranimo v virtualno tabelo na tisti 
 \[ address(method_i) = adress(vtable) + (i * sizeof(void*) + 8) \]
 
 kjer je \[address(vtable)\]\ lokacija tabele v pomnilniku, \[(i * sizeof(void*) + 8)\] indeks pomnožen z velikostjo kazalca (običajno 4 byti) plus odmik od začetka tabele zaradi prej opisanih dodatnih podatkov v tabeli in \[ address(method_i)\] naslov metode na indeksu i.
-\newpage
 
 \section{Instance of operator}
 
@@ -1177,8 +1104,6 @@ Mehanizem pretvarjanja iz enega tipa v drug (angl. \textit{type casting}) deluje
 	    print("cast succeeded") // izvede se 'else' blok
 	}
 \end{lstlisting}
-
-\newpage
 
 \section{Vmesniki}
 
@@ -1262,9 +1187,62 @@ Prepoznavanje tipov postane kompleksnejše pri tabelah, kadar njeni elementi nis
 	let array = [10, "string", A(), 3.14] // spremenljivka array = tipa ARR ( Any )
 \end{lstlisting}
 
-\chapter{Meritve}
+\chapter{Meritve in testiranje}
 
-todo bubble sort in quicksort
+\section{Bubble sort}
+
+\begin{tikzpicture}
+\begin{axis}[
+symbolic x coords={PINS, Atheris, Python},
+xtick=data,
+bar width=40,
+width=300
+]
+\addplot[ybar,fill=blue] coordinates {
+	(PINS,   14.380)
+	(Atheris,  10.739)
+	(Python,   2.017)
+};
+\end{axis}
+\end{tikzpicture}
+
+\section{Quick sort}
+
+\begin{tikzpicture}
+\begin{axis}[
+symbolic x coords={PINS, Atheris, Python},
+xtick=data,
+bar width=40,
+width=300
+]
+\addplot[ybar,fill=blue] coordinates {
+	(PINS,   20.322)
+	(Atheris,  8.449)
+	(Python,   1.507)
+};
+\end{axis}
+\end{tikzpicture}
+
+\section{Rekurzivni fibonacci}
+
+\begin{tikzpicture}
+\begin{axis}[
+symbolic x coords={PINS, Atheris, Python},
+xtick=data,
+bar width=40,
+width=300
+]
+\addplot[ybar,fill=blue] coordinates {
+	(PINS,   180.430)
+	(Atheris,  155.881)
+	(Python,   33.265)
+};
+\end{axis}
+\end{tikzpicture}
+
+\section{Quicksort nad razredi}
+
+37821ms
 
 \chapter{Sklepne ugotovitve}
 

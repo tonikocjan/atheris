@@ -1,4 +1,4 @@
-#import stdlib
+import stdlib
 
 func bubble(_ list: [Int], size: Int) Int {
     var i = 0
@@ -14,4 +14,12 @@ func bubble(_ list: [Int], size: Int) Int {
         }
         i = i + 1
     }
+}
+
+var list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
+var i = 0
+while i < 100000 {
+    bubble(list, size: list.count - 1)
+    list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
+    i = i + 1
 }

@@ -336,7 +336,7 @@ public class TypeChecker implements ASTVisitor {
 		else if (oper == AstBinaryExpression.ASSIGN) {
 		    boolean success = false;
 
-            if (rhs.isArrayType()) {
+		    if (rhs == null) {
                 System.out.println();
             }
 
@@ -345,6 +345,10 @@ public class TypeChecker implements ASTVisitor {
                 symbolDescription.setTypeForAstNode(acceptor, rhs);
 				symbolDescription.setTypeForAstNode(acceptor.expr1, rhs);
 				symbolDescription.setTypeForAstNode(symbolDescription.getDefinitionForAstNode(acceptor.expr1), rhs);
+
+				if (rhs == null) {
+                    System.out.println();
+                }
 
 				if (rhs.isArrayType() && ((ArrayType) rhs).memberType.sameStructureAs(Type.anyType)) {
                     logger.warning(acceptor.expr2.position, "Implicitly inferred Any memberType");

@@ -40,8 +40,9 @@ func quicksort(_ list: [Int], low: Int, high: Int) {
 }
 
 var list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
-quicksort(list, low: 0, high: list.count - 1)
-
-for element in list {
-    print(element)
+var i = 0
+while i < 100000 {
+    quicksort(list, low: 0, high: list.count - 1)
+    list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
+    i = i + 1
 }
