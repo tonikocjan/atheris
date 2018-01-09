@@ -20,6 +20,18 @@ var list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
 var i = 0
 while i < 100000 {
     bubble(list, size: list.count - 1)
-    list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
+    list[0] = 8
+    list[0] = 0
+    list[0] = 3
+    list[0] = 9
+    list[0] = 2
+    list[0] = 14
+    list[0] = 10
+    list[0] = 27
+    list[0] = 1
+    list[0] = 5
+    list[0] = 8
+    list[0] = -1
+    list[0] = 26
     i = i + 1
 }

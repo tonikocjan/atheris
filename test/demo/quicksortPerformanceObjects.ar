@@ -1,11 +1,10 @@
 import stdlib
 
 class Comparable {
-    func compare(_ other: Any) Int {
-        if other is Comparable {
-            let comparable = other as Comparable
-            let value: Int = comparable.value()
-            return self.value() - value
+    func compare(with object: Any) Int {
+        let comparable = object as Comparable
+        if comparable != null {
+            return self.value() - comparable.value()
         }
         else {
             return 0
@@ -61,7 +60,7 @@ func partition(_ list: [Comparable], low: Int, high: Int) Int {
         while true {
             j = j - 1
             let el = list[j]
-            if el.compare(pivot) <= 0 {
+            if el.compare(with: pivot) <= 0 {
                 break
             }
         }
@@ -69,7 +68,7 @@ func partition(_ list: [Comparable], low: Int, high: Int) Int {
         while true {
             i = i + 1
             let el = list[i]
-            if el.compare(pivot) >= 0 {
+            if el.compare(with: pivot) >= 0 {
                 break
             }
         }

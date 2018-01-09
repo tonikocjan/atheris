@@ -324,7 +324,7 @@ Svoji dragi Alenčici.
 V diplomskem delu je predstavljen programski jezik Atheris, ki je nastal kot nadgradnja programskega jezika PINS. Programski jezik PINS je učni programski jezik, za kategera prevajalnik smo implementirali tekom semestra pri predmetu Prevajalniki in navidezni stroji. Ker mi je bilo delo na prevajalniku izjemno zanimivo sem se odločil, da ustvarim svoj programski jezik in sam določim pravila zanj. \\
 \indent V diplomskem delu so na kratko predstavljeni programski jeziki in prevajalniki, kaj sploh so in kaj je njihov namen. Opisane so sodobne prakse pri ravoju prevajalnikov, s kakšnimi problemi se prevajalnik sooča ter kako je zgrajen. \\
 \indent Bistvo diplomske naloge je nadgradnja obstoječega prevajalnika z gradniki, ki niso bili del učnega načrta pri predmetu. Osredetočil sem se predvsem na objektno usmerjene gradnike. Prevajalnik za Atheris podpira enumeracije, terke, razrede in vmesnike, poleg tega pa vsebuje tudi povsem spremenjeno sintakso, ki je zelo podobna sintaksi programskega jezika Swift. Tekom naloge so razširitve in njihova implementacija podrobneje opisane. \\
-\indent Delovanje programskega jezika Atheris je preverjeno na testnih primerih, poleg tega pa je še izmerjena hitrost izvajanja in primerjana s PINSom in Pythonom.
+\indent Delovanje programskega jezika Atheris je preverjeno na testnih primerih, izmerjena pa je tudi hitrost samega izvajanja in primerjana z osnovnim jezikom PINS ter za referenco tudi s Pythonom.
 
 \noindent 
 
@@ -394,7 +394,7 @@ Iz drugega zornega kota si lahko program predstavljamo tudi kot model problemske
 
 \section{Zgradba prevajalnika}
 
-Sodobni prevajalniki so pogosto organizirani v več posameznih faz, vsaka izmed njih pa operira na različnem nivoju abstrakcije jezika \cite{modernCompiler}.
+Sodobni prevajalniki so pogosto organizirani v več posameznih faz, vsaka faza pa operira na drugem nivoju abstrakcije jezika \cite{modernCompiler}.
 
 \begin{figure}[h]
 	\begin{center}
@@ -424,7 +424,7 @@ Leksikalni analizator kot vhod prejme tok znakov, kot izhod pa vrne tok v naprej
 
 \subsubsection{Leksikalni simboli:}
 
-Simbol (ali simbol) je zaporedje znakov, ki ga interpretiramo kot samostojno enoto v slovnici programskega jezika \cite{modernCompiler}. \\ 
+Simbol je zaporedje znakov, ki ga interpretiramo kot samostojno enoto v slovnici programskega jezika \cite{modernCompiler}. \\ 
 Tabela \ref{tabel:vrsteZetonov} prikazuje nekaj vrst simbolov ter primere. \\
 
 \begin{table}
@@ -467,6 +467,8 @@ public override
 	\label{tabel:vrsteZetonov}
 \end{table}
 
+Sledi preprost primer programa v programskem jeziku Atheris ter rezultat leksikalne analize zanj.
+
 \renewcommand{\lstlistingname}{Program}
 \begin{lstlisting}[caption={Primer programa v programskem jeziku Atheris},label={lst:atherisCode}, captionpos=b]
 	let x: Int
@@ -491,8 +493,6 @@ public override
 	[3:5-3:6] 	IDENTIFIER:y
 	EOF:$
 \end{lstlisting}
-
-Leksikalni analizator programskega jezika Atheris za primer programa \ref{lst:atherisCode} zgenerira tok simbolov, kot je prikazan v izpisu \ref{lst:lexedSource}.
 
 \subsection{Sintaksna analiza}
 
@@ -525,7 +525,7 @@ Semantična analiza poveže definicije spremenljivk z njihovimi uporabami ter pr
 	\end{lstlisting}
 	
 	\item \textbf{Preverjanje tipov:} vsakemu vozlišču v AST določi podatkovni tip, ter na podlagi postavljenih semantičnih pravil zagotovi, da so vsi izrazi pravilnih tipov. \\
-	Sledi primer, kjer pride do napake pri razreševanju podatkovnih tipov (operacija '+' ni definirana za podatkovna tipa \textit{String} in \textit{Int}):
+	Sledi primer, kjer pride do napake pri razreševanju podatkovnih tipov (operacija '+' ni definirana nad podatkovnima tipoma \textit{String} in \textit{Int}):
 	
 	\renewcommand{\lstlistingname}{Program}
 	\begin{lstlisting}[caption={Primer programa, kjer je napaka v podatkovnih tipih},label={lst:atherisCodeTypeError},captionpos=b]
@@ -536,7 +536,7 @@ Semantična analiza poveže definicije spremenljivk z njihovimi uporabami ter pr
 	
 \end{enumerate}
 
-V zahtevnejših prevajalnikih se v fazi semantične analize opravi še veliko drugih stvari. Običajno so to lahko analiza inicializiranosti spremenljivk, zaznavanje mrtve kode, ipd., vendar se s tem na tem mestu ne ukvarjamo.
+V zahtevnejših prevajalnikih se v fazi semantične analize opravi še veliko drugih stvari. Običajno so to lahko analiza inicializiranosti spremenljivk, zaznavanje mrtve kode, ipd., vendar se s temi rečmi tekom diplomske naloge ne ukvarjamo.
 
 \begin{figure}[h]
 	\begin{center}
@@ -550,8 +550,8 @@ Pri implementaciji semantične analize nam pomaga \textit{simbolna tabela}.
 
 \subsubsection{Simbolna tabela}
 
-Simbolna tabela je podatkovna struktura, ki preslika imena v njihove definicije in podatkovne tipe \cite{modernCompiler}.  Ker običajno programi vsebujejo več tisoč definicij imen, mora podatkovna struktura omogočati učinkovito poizvedovanje. Iz slike ~\ref{image:astSeman} lahko razberemo, kaj se med izvajanjem semantične analize zgodi v ozadju: puščice predstavljajo povezave med definicijami in uporabami posameznega imena, evaluacija podatkovnih tipov pa je pri vseh vozliščih \textit{Integer}, razen pri korenu, ki nima tipa oz. je tipa \textit{Void}.\\
-\indent Semantična analiza zagotovi, da za vsako uporabo imena obstaja njena definicija, in da so podatkovni tipi pravilni. Sledita dva primera, kjer to ne drži:
+Simbolna tabela je podatkovna struktura, ki preslika imena v njihove definicije in podatkovne tipe \cite{modernCompiler}.  Ker običajno programi vsebujejo več tisoč definicij imen, mora podatkovna struktura omogočati učinkovito poizvedovanje. Iz slike ~\ref{image:astSeman} lahko razberemo, kaj se med izvajanjem semantične analize zgodi v ozadju: puščice predstavljajo povezave med definicijami in uporabami posameznih imen, evaluacija podatkovnih tipov pa je pri vseh vozliščih \textit{Integer}, razen pri korenu, ki nima tipa oz. je tipa \textit{Void}.\\
+\indent Semantična analiza zagotovi, da za vsako uporabo imena obstaja njena definicija, in da so podatkovni tipi pravilni. Sliki \ref{image:astSemanCodeNameError} in \ref{image:astSemanTypeError} prikazujeta semantični napaki.
 
 \begin{figure}[h]
 	\begin{center}
@@ -563,7 +563,7 @@ Simbolna tabela je podatkovna struktura, ki preslika imena v njihove definicije 
 
 \begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=0.9\textwidth]{resources/astSemanTypeError.png}
+		\includegraphics[width=1\textwidth]{resources/astSemanTypeError.png}
 	\end{center}
 	\caption{Napaka v programu ~\ref{lst:atherisCodeTypeError}; seštevanje med podatkovnima tipoma \textit{Integer} in \textit{String} ni dovoljeno.}
 	\label{image:astSemanTypeError}
@@ -571,7 +571,7 @@ Simbolna tabela je podatkovna struktura, ki preslika imena v njihove definicije 
 
 \subsection{Klicni zapisi}
 
-Klicni zapis je prostor v pomnilniku, ki je dodeljen vsakemu posameznemu klicu funkcije posebej, in vsebuje vse potrebne informacije za klicanje in izvedbo funkcij. Običajno vsebuje prostor za lokalne spremenljivke, vhodne parametre in register, kamor se shrani izhodna vrednost. \\
+Klicni zapis je prostor v pomnilniku, ki je dodeljen vsakemu posameznemu klicu funkcije posebej, in vsebuje vse potrebne informacije za klicanje in izvedbo funkcij. Običajno klicni zapis vsebuje prostor za lokalne spremenljivke, vhodne parametre in register, kamor se shrani izhodna vrednost funkcije. \\
 \indent V skoraj vsakem modernem programskem jeziku ima lahko funkcija \textit{lokalne} spremenljivke. Ker lahko hkrati obstaja več klicev iste funkcije je pomembno, da ima vsak klic dostop do lastnih spremenljivk. Ta problem rešujemo s klicnimi zapisi \cite{modernCompiler}.  \\\\
 \indent V funkciji 
 
@@ -587,7 +587,7 @@ Klicni zapis je prostor v pomnilniku, ki je dodeljen vsakemu posameznemu klicu f
 	}
 \end{lstlisting}
 
-se za vsak njen klic ustvari nova instanca spremeljivke \textit{n}, ki živi na klicnem zapisu funkcije, vrednost pa ji priredi klicalec funkcije kot vhodni argument. Ker je funkcija rekurzivna, živi v pomnilniku naenkrat veliko instanc spremenljivke \textit{n}, vsaka v lastnem klicnem zapisu \cite{modernCompiler}.
+se za vsak njen klic ustvari nova instanca spremeljivke \textit{n}, ki živi na klicnem zapisu funkcije, vrednost pa ji priredimo kot vhodni argument. Ker je funkcija rekurzivna, živi v pomnilniku naenkrat veliko instanc spremenljivke \textit{n}, vsaka v lastnem klicnem zapisu \cite{modernCompiler}.
 
 \begin{figure}[h]
 	\begin{center}
@@ -633,7 +633,7 @@ V jezikih, ki podpirajo gnezdenje funkcij, lahko gnezdene funkcije dostopajo do 
     }
 \end{lstlisting}
 
-Primer ~\ref{lst:nestedFunctions} vsebuje gnezdeni funkciji \textit{g} in \textit{h}. Funkcija h lahko dostopa do spremenljivk definiranih v \textit{g} in \textit{f}, ne pa tudi do tistih v \textit{e}.
+Program ~\ref{lst:nestedFunctions} vsebuje gnezdeni funkciji \textit{g} in \textit{h}. Funkcija h lahko dostopa do spremenljivk definiranih v \textit{g} in \textit{f}, ne pa tudi do tistih v \textit{e}.
 
 \subsection{Generiranje vmesne kode}   
 
@@ -1106,9 +1106,9 @@ Virtualna tabela je podatkovna stuktura, ki vsebuje kazalce na funkcije implemen
 
 \begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=1\textwidth]{resources/v-tables.png}
+		\includegraphics[width=1.1\textwidth]{resources/vtables.png}
 	\end{center}
-	\caption{Virtualne tabele za dane razrede. (todo popravi shemo da uporabiš razrede iz zgornjega primera)}
+	\caption{Virtualne tabele za dane razrede.}
 	\label{vtables}
 \end{figure}
 
@@ -1241,6 +1241,8 @@ Prepoznavanje tipov postane kompleksnejše pri tabelah, kadar njeni elementi nis
 
 \chapter{Meritve in testiranje}
 
+Delovanje programskega jezika Atheris je testirano na znanih algoritmih - \textit{bubble sort}, \textit{quick sort} in \textit{fibonacci}. Testni primeri so izbrani tako, da preko njih preizkusimo delovanje čim večih funkcionalnosti jezika. Kot zanimivost je izmerjena tudi hitrost izvajanja programov in primerjana z osnovnim jezikom, za referenco pa je izmerjena še hitrost delovanja algoritmov v Pythonu (vsi rezultati v nadaljevanju so prikazani v sekundah).
+
 \section{Bubble sort}
 
 \begin{tikzpicture}
@@ -1292,9 +1294,27 @@ width=300
 \end{axis}
 \end{tikzpicture}
 
-\section{Quicksort nad razredi}
+\section{Quicksort s polimorfnimi operacijami}
 
-37821ms
+V razdelku ~\ref{dynamicDispatch} je podrobneje opisano delovanje polimorfnih operacij, kot so \textit{dynamic dispatch}, \textit{instance of} operator ter pretvarjanje tipov. Naštete operacije nam omogočajo veliko zelo priročnih stvari, ki nam pri razvoju programske opreme pogosto pridejo prav. A pod določeno ceno. Izvedba teh operacij je namreč relativno počasna. \\
+\indent Zanimalo me je, kolikšno ceno moramo pravzaprav dejansko plačati za njihovo delovanje, zato sem pripravil primer, ki testira prav to. Gre za quicksort algoritem, ki se izvaja nad objekti različnih razredov s skupnim nadrazredom, ki izvede operacijo primerjanja. Vhodni podatki so identični kot pri prejšnjih primerih, s to razliko, da števila ovijemo z objekti.\\
+
+\begin{tikzpicture}
+\begin{axis}[
+symbolic x coords={PINS, Atheris, Atheris - razredi},
+xtick=data,
+bar width=40,
+width=300
+]
+\addplot[ybar,fill=blue] coordinates {
+	(PINS,   20.322)
+	(Atheris,  8.449)
+	(Atheris - razredi,   42.874)
+};
+\end{axis}
+\end{tikzpicture}
+
+Po pričakovanjih se izkaže, da je izvajanje res občutno počasnejše; in sicer kar cca. 400\%. Algoritem sem poiskusil pohitriti tako, da sem se izognil operaciji \textit{instance of}. Izvajanje se je s to optimizacijo pohitrilo za približno 10 sekund.
 
 \chapter{Sklepne ugotovitve}
 
@@ -1312,7 +1332,6 @@ Pri kakršnihkoli nadaljnih vprašanjih ali napakah pa svetujem uporabo Googla, 
 \addcontentsline{toc}{chapter}{Literatura}
 \bibliographystyle{plain}
 \bibliography{literatura}
-
 
 \end{document}
 

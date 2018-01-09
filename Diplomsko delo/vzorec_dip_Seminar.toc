@@ -15,7 +15,7 @@
 \contentsline {subsubsection}{Simbolna tabela}{7}{section*.6}
 \contentsline {subsection}{\numberline {2.2.4}Klicni zapisi}{8}{subsection.2.2.4}
 \contentsline {subsubsection}{Sklad}{9}{section*.7}
-\contentsline {paragraph}{Kazalec na klicni zapis:}{9}{section*.8}
+\contentsline {paragraph}{Kazalec na klicni zapis:}{10}{section*.8}
 \contentsline {paragraph}{Prenos parametrov:}{10}{section*.9}
 \contentsline {paragraph}{Static link:}{10}{section*.10}
 \contentsline {subsection}{\numberline {2.2.5}Generiranje vmesne kode}{11}{subsection.2.2.5}
@@ -42,7 +42,7 @@
 \contentsline {section}{\numberline {4.6}Dedovanje in polimorfizem}{29}{section.4.6}
 \contentsline {subsection}{\numberline {4.6.1}Dynamic Dispatch}{29}{subsection.4.6.1}
 \contentsline {subsubsection}{Virtualna tabela}{30}{section*.15}
-\contentsline {subsection}{\numberline {4.6.2}Realizacija}{31}{subsection.4.6.2}
+\contentsline {subsection}{\numberline {4.6.2}Realizacija}{30}{subsection.4.6.2}
 \contentsline {section}{\numberline {4.7}Instance of operator}{31}{section.4.7}
 \contentsline {section}{\numberline {4.8}Pretvarjanje tipov}{32}{section.4.8}
 \contentsline {section}{\numberline {4.9}Vmesniki}{32}{section.4.9}
@@ -53,6 +53,6 @@
 \contentsline {section}{\numberline {5.1}Bubble sort}{35}{section.5.1}
 \contentsline {section}{\numberline {5.2}Quick sort}{36}{section.5.2}
 \contentsline {section}{\numberline {5.3}Rekurzivni fibonacci}{36}{section.5.3}
-\contentsline {section}{\numberline {5.4}Quicksort nad razredi}{36}{section.5.4}
-\contentsline {chapter}{\numberline {6}Sklepne ugotovitve}{37}{chapter.6}
-\contentsline {chapter}{Literatura}{38}{chapter.6}
+\contentsline {section}{\numberline {5.4}Quicksort s polimorfnimi operacijami}{37}{section.5.4}
+\contentsline {chapter}{\numberline {6}Sklepne ugotovitve}{39}{chapter.6}
+\contentsline {chapter}{Literatura}{40}{chapter.6}
