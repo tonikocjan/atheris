@@ -1,12 +1,35 @@
 \begin{thebibliography}{1}
 
+\bibitem{Atheris}
+Atheris chlorechis.
+\newblock Dosegljivo:
+  \url{https://qph.ec.quoracdn.net/main-qimg-6ee9bd139819545a1af652b204b5dc2e]}.
+\newblock [Dostopano: 9.1.2018].
+
+\bibitem{compilerStructure}
+Modern compiler structure.
+\newblock Dosegljivo:
+  \url{http://anstoques.blogspot.si/2013/05/show-different-phases-of-compiler-with.html}.
+\newblock [Dostopano: 9.1.2018].
+
+\bibitem{tiobeIndex}
+Programming language popularity index.
+\newblock Dosegljivo: \url{https://www.tiobe.com/tiobe-index/}.
+\newblock [Dostopano: 9.1.2018].
+
+\bibitem{stackFrames}
+Stack frames.
+\newblock Dosegljivo:
+  \url{https://loonytek.com/2015/04/28/call-stack-internals-part-1/}.
+\newblock [Dostopano: 9.1.2018].
+
 \bibitem{computationalModel}
 A complete description of a programming language includes the computational
   model, the syntax and semantics of programs, and the pragmatic considerations
   that shape the language.
 \newblock Dosegljivo:
   \url{http://www.emu.edu.tr/aelci/Courses/D-318/D-318-Files/plbook/intro.htm}.
-\newblock [Dostopano: 26.11.2017].
+\newblock [Dostopano: 9.1.2018].
 
 \bibitem{modernCompiler}
 Andrew~W. Appel and Jens Palsberg.

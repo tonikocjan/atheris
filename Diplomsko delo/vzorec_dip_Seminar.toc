@@ -6,24 +6,27 @@
 \select@language {slovene}
 \contentsline {chapter}{\numberline {1}Uvod}{1}{chapter.1}
 \contentsline {chapter}{\numberline {2}Prevajalniki}{3}{chapter.2}
-\contentsline {section}{\numberline {2.1}Uvod v prevajalnike in programske jezike}{3}{section.2.1}
+\contentsline {section}{\numberline {2.1}Uvod v programske jezike in prevajalnike}{3}{section.2.1}
 \contentsline {section}{\numberline {2.2}Zgradba prevajalnika}{4}{section.2.2}
-\contentsline {subsection}{\numberline {2.2.1}Leksikalna analiza}{4}{subsection.2.2.1}
-\contentsline {subsubsection}{Leksikalni \IeC {\v z}etoni:}{5}{section*.5}
+\contentsline {subsection}{\numberline {2.2.1}Leksikalna analiza}{5}{subsection.2.2.1}
+\contentsline {subsubsection}{Leksikalni simboli:}{5}{section*.5}
 \contentsline {subsection}{\numberline {2.2.2}Sintaksna analiza}{6}{subsection.2.2.2}
 \contentsline {subsection}{\numberline {2.2.3}Semanti\IeC {\v c}na analiza}{7}{subsection.2.2.3}
 \contentsline {subsubsection}{Simbolna tabela}{7}{section*.6}
 \contentsline {subsection}{\numberline {2.2.4}Klicni zapisi}{8}{subsection.2.2.4}
 \contentsline {subsubsection}{Sklad}{9}{section*.7}
-\contentsline {subsection}{\numberline {2.2.5}Generiranje vmesne kode}{10}{subsection.2.2.5}
-\contentsline {subsubsection}{Vmesna koda}{10}{section*.8}
+\contentsline {paragraph}{Kazalec na klicni zapis:}{9}{section*.8}
+\contentsline {paragraph}{Prenos parametrov:}{10}{section*.9}
+\contentsline {paragraph}{Static link:}{10}{section*.10}
+\contentsline {subsection}{\numberline {2.2.5}Generiranje vmesne kode}{11}{subsection.2.2.5}
+\contentsline {subsubsection}{Vmesna koda}{11}{section*.11}
 \contentsline {chapter}{\numberline {3}Programski jezik PINS}{13}{chapter.3}
 \contentsline {section}{\numberline {3.1}Leksikalna pravila}{13}{section.3.1}
 \contentsline {section}{\numberline {3.2}Sintaksna pravila}{13}{section.3.2}
 \contentsline {section}{\numberline {3.3}Semanti\IeC {\v c}na pravila}{15}{section.3.3}
-\contentsline {subsubsection}{Obmo\IeC {\v c}ja vidnosti}{15}{section*.9}
-\contentsline {subsubsection}{Tipiziranost}{15}{section*.10}
-\contentsline {subsubsection}{Deklaracije}{15}{section*.11}
+\contentsline {subsubsection}{Obmo\IeC {\v c}ja vidnosti}{15}{section*.12}
+\contentsline {subsubsection}{Tipiziranost}{15}{section*.13}
+\contentsline {subsubsection}{Deklaracije}{15}{section*.14}
 \contentsline {chapter}{\numberline {4}Programski jezik Atheris}{17}{chapter.4}
 \contentsline {subsection}{\numberline {4.0.1}Podatkovni tipi}{18}{subsection.4.0.1}
 \contentsline {section}{\numberline {4.1}Sintaksa}{18}{section.4.1}
@@ -38,7 +41,7 @@
 \contentsline {subsection}{\numberline {4.5.4}Stati\IeC {\v c}ni \IeC {\v c}lani razreda}{28}{subsection.4.5.4}
 \contentsline {section}{\numberline {4.6}Dedovanje in polimorfizem}{29}{section.4.6}
 \contentsline {subsection}{\numberline {4.6.1}Dynamic Dispatch}{29}{subsection.4.6.1}
-\contentsline {subsubsection}{Virtualna tabela}{30}{section*.12}
+\contentsline {subsubsection}{Virtualna tabela}{30}{section*.15}
 \contentsline {subsection}{\numberline {4.6.2}Realizacija}{31}{subsection.4.6.2}
 \contentsline {section}{\numberline {4.7}Instance of operator}{31}{section.4.7}
 \contentsline {section}{\numberline {4.8}Pretvarjanje tipov}{32}{section.4.8}

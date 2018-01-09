@@ -3,44 +3,49 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: vzorec_dip_Seminar.aux
 The style file: plain.bst
 Database file #1: literatura.bib
-You've used 2 entries,
+Warning--to sort, need author or key in tiobeIndex
+Warning--to sort, need author or key in compilerStructure
+Warning--to sort, need author or key in stackFrames
+Warning--to sort, need author or key in Atheris
+You've used 6 entries,
             2118 wiz_defined-function locations,
-            509 strings with 4503 characters,
-and the built_in function-call counts, 440 in all, are:
-= -- 39
-> -- 14
+            525 strings with 5000 characters,
+and the built_in function-call counts, 1112 in all, are:
+= -- 107
+> -- 18
 < -- 0
-+ -- 7
++ -- 11
 - -- 4
-* -- 18
-:= -- 72
-add.period$ -- 6
-call.type$ -- 2
-change.case$ -- 8
+* -- 38
+:= -- 148
+add.period$ -- 18
+call.type$ -- 6
+change.case$ -- 20
 chr.to.int$ -- 0
-cite$ -- 2
-duplicate$ -- 19
-empty$ -- 46
+cite$ -- 10
+duplicate$ -- 47
+empty$ -- 138
 format.name$ -- 4
-if$ -- 96
+if$ -- 264
 int.to.chr$ -- 0
-int.to.str$ -- 2
+int.to.str$ -- 6
 missing$ -- 2
-newline$ -- 13
+newline$ -- 33
 num.names$ -- 2
-pop$ -- 18
+pop$ -- 58
 preamble$ -- 1
-purify$ -- 7
+purify$ -- 15
 quote$ -- 0
-skip$ -- 13
+skip$ -- 33
 stack$ -- 0
-substring$ -- 11
-swap$ -- 2
+substring$ -- 31
+swap$ -- 6
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 6
-warning$ -- 0
+type$ -- 22
+warning$ -- 4
 while$ -- 2
-width$ -- 3
-write$ -- 21
+width$ -- 7
+write$ -- 57
+(There were 4 warnings)

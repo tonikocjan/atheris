@@ -9,7 +9,7 @@ func recursivePrint(_ n: Int) {
 
 recursivePrint(3)
 
-/*print("########")
+print("########")
 
 func fib(_ n: Int) Int {
     if n < 2 {
@@ -24,4 +24,4 @@ print(fib(1))
 print(fib(2))
 print(fib(3))
 print(fib(4))
-print(fib(5))*/
+print(fib(5))
