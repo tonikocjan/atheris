@@ -69,6 +69,8 @@ public class Interpreter {
 
 	/** Kazalec na dno klicnega zapisa. */
 	private static int stackPointer = STACK_SIZE;
+
+	public static HashMap<String, Integer> executedInstructions = new HashMap<>();
 	
 	/*--- dinamicni removeDefinitionFromCurrentScope navideznega stroja ---*/
 	
@@ -176,6 +178,10 @@ public class Interpreter {
 	}
 	
 	public Object execute(ImcCode instruction) {
+        Integer count = executedInstructions.get(instruction.toString());
+        count = count == null ? 1 : count + 1;
+        executedInstructions.put(instruction.toString(), count);
+
         if (instruction instanceof ImcBINOP) {
 			ImcBINOP instr = (ImcBINOP) instruction;
 

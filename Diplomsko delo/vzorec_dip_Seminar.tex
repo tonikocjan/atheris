@@ -294,6 +294,8 @@ Svoji dragi Alenčici.
   {\bf AST} & abstract syntax tree & abstraktno sintaksno drevo \\
   {\bf IR} & intermidiate representation & vmesna koda \\
   {\bf PINS} &  & prevajalniki in navidezni stroji \\
+  {\bf SP} & stack pointer & kazalec na sklad \\
+  {\bf FP} & frame pointer & kazalec na klicni zapis \\
   \dots & \dots & \dots \\
 \end{tabular}
 \end{comment}
@@ -321,10 +323,10 @@ Svoji dragi Alenčici.
 \bigskip
 
 %\noindent\textbf{Povzetek:} 
-V diplomskem delu je predstavljen programski jezik Atheris, ki je nastal kot nadgradnja programskega jezika PINS. Programski jezik PINS je učni programski jezik, za kategera prevajalnik smo implementirali tekom semestra pri predmetu Prevajalniki in navidezni stroji. Ker mi je bilo delo na prevajalniku izjemno zanimivo sem se odločil, da ustvarim svoj programski jezik in sam določim pravila zanj. \\
+V diplomskem delu je predstavljen programski jezik Atheris, ki je nastal kot nadgradnja programskega jezika PINS. Programski jezik PINS je učni programski jezik, za kategera prevajalnik smo implementirali tekom semestra pri predmetu Prevajalniki in navidezni stroji. Ker mi je bilo delo na prevajalniku zelo zanimivo, in zaradi želje po dodatnem znanju, sem z delom nadaljeval po zaključku semestra in tako implementiral svoj programski jezik. \\
 \indent V diplomskem delu so na kratko predstavljeni programski jeziki in prevajalniki, kaj sploh so in kaj je njihov namen. Opisane so sodobne prakse pri ravoju prevajalnikov, s kakšnimi problemi se prevajalnik sooča ter kako je zgrajen. \\
-\indent Bistvo diplomske naloge je nadgradnja obstoječega prevajalnika z gradniki, ki niso bili del učnega načrta pri predmetu. Osredetočil sem se predvsem na objektno usmerjene gradnike. Prevajalnik za Atheris podpira enumeracije, terke, razrede in vmesnike, poleg tega pa vsebuje tudi povsem spremenjeno sintakso, ki je zelo podobna sintaksi programskega jezika Swift. Tekom naloge so razširitve in njihova implementacija podrobneje opisane. \\
-\indent Delovanje programskega jezika Atheris je preverjeno na testnih primerih, izmerjena pa je tudi hitrost samega izvajanja in primerjana z osnovnim jezikom PINS ter za referenco tudi s Pythonom.
+\indent Bistvo diplomske naloge je nadgradnja obstoječega prevajalnika z gradniki, ki niso bili del učnega načrta pri predmetu. Posvetil sem se predvsem objektno usmerjenim gradnikom. Izmed njih programski jezik Atheris podpira enumeracije, terke, razrede in vmesnike, poleg tega pa vsebuje tudi povsem spremenjeno sintakso. Tekom naloge so razširitve in njihova implementacija podrobneje opisane. \\
+\indent Delovanje programskega jezika Atheris je preverjeno na testnih primerih, izmerjena pa je tudi hitrost izvajanja in primerjana z osnovnim jezikom PINS ter za referenco tudi s Pythonom.
 
 \noindent 
 
@@ -365,7 +367,7 @@ A proper abstract should contain around 100 words which makes this one way too s
 
 Razvoj prevajalnikov, ter s tem tudi programskih jezikov, je, po mojem mnenju, izjemno pomembna panoga v računalništvu. Programski jezik je medij, preko katerega komuniciramo z računalnikom. Prevajalniki razvijalcem omogočajo, da se med razvojem programske opreme ne rabijo osredotočati na nizkovojske detajle, ampak se lahko posvetijo reševanju praktičnih problemov. Naloga prevajalnika je, da pretvori človeku berljivo kodo v računalniku razumljivo zaporedje strojnih ukazov. \\
 \indent Dandanes lahko za razvoj programske opreme izbiramo med velikim številom programskih jezikov. Trenutno eni izmed najbolj popularnih so, Java, C in C++, Python in C\#, popularnost pa dobivajo tudi novejši jeziki kot so GoLang, Swift, Kotlin in podobni \cite{tiobeIndex}. \\
-\indent S prevajalniki sem se začel ukvarjati pri predmetu Prevajalniki in navidezni stroji (PINS) v drugem letnik na Fakulteti za Računalništvo in Informatiko. Tekom diplomske naloge je predstavljen programski jezik Atheris ter prevajalnik zanj. Osredotočil sem se predvsem na vgradnjo objektno usmerjenih gradnikov, ki niso bili del učnega načrta pri predmetu. V okviru predmeta smo namreč obravnavali samo osnovne proceduralne jezike. 
+\indent S prevajalniki sem se začel ukvarjati pri predmetu Prevajalniki in navidezni stroji (PINS) v drugem letniku na Fakulteti za Računalništvo in Informatiko. Pri predmetu smo se osredotočili predvsem na enostavne proceduralne jezike, cilj diplomske naloge pa je vgradnja naprednejših gradnikov, ki niso bili del učnega načrta. V diplomski nalogi grobo opišem programske jezike in prevajalnike, v nadaljevanju predstavim programski jezik PINS, podrobneje pa se posvetim programskemu jeziku Atheris.
 
 \chapter{Prevajalniki}
 \label{ch0}
@@ -513,7 +515,7 @@ Iz slike \ref{image:abstractSyntaxTree} lahko razberemo, da gre za dve definicij
 \subsection{Semantična analiza}
 
 Semantična analiza poveže definicije spremenljivk z njihovimi uporabami ter preveri, ali so vsi izrazi pravilnih podatkovnih tipov \cite{modernCompiler}. \\
-\indent Običajno enostavno izvedbo semantične analize razdelimo na dve pod-fazi:
+\indent Običajno izvedbo semantične analize razdelimo na dve pod-fazi:
 \begin{enumerate}
 	\item \textbf{Razreševanje imen:} zagotovi, da za vsako uporabo imena obstaja znotraj trenutnega območja vidnosti definicija z istim imenom, ter uporabo poveže z definicijo. \\
 	Sledi primer, kjer se sklicujemo na nedefinirano spremenljivko:
@@ -536,7 +538,7 @@ Semantična analiza poveže definicije spremenljivk z njihovimi uporabami ter pr
 	
 \end{enumerate}
 
-V zahtevnejših prevajalnikih se v fazi semantične analize opravi še veliko drugih stvari. Običajno so to lahko analiza inicializiranosti spremenljivk, zaznavanje mrtve kode, ipd., vendar se s temi rečmi tekom diplomske naloge ne ukvarjamo.
+V zahtevnejših prevajalnikih se lahko tekom semantične analize opravi še dosti drugih analiz, npr. analiza inicializiranosti spremenljivk, zaznavanje mrtve kode, eliminacija neuporabljenih izrazov, ipd., vendar se z njimi tekom te diplomske naloge ne ukvarjamo.
 
 \begin{figure}[h]
 	\begin{center}
@@ -571,7 +573,7 @@ Simbolna tabela je podatkovna struktura, ki preslika imena v njihove definicije 
 
 \subsection{Klicni zapisi}
 
-Klicni zapis je prostor v pomnilniku, ki je dodeljen vsakemu posameznemu klicu funkcije posebej, in vsebuje vse potrebne informacije za klicanje in izvedbo funkcij. Običajno klicni zapis vsebuje prostor za lokalne spremenljivke, vhodne parametre in register, kamor se shrani izhodna vrednost funkcije. \\
+Klicni zapis je prostor v pomnilniku, ki vsebuje vse potrebne informacije za klicanje in izvedbo funkcij. Običajno klicni zapis vsebuje prostor za lokalne spremenljivke, vhodne parametre in register, kamor se shrani izhodna vrednost funkcije. \\
 \indent V skoraj vsakem modernem programskem jeziku ima lahko funkcija \textit{lokalne} spremenljivke. Ker lahko hkrati obstaja več klicev iste funkcije je pomembno, da ima vsak klic dostop do lastnih spremenljivk. Ta problem rešujemo s klicnimi zapisi \cite{modernCompiler}.  \\\\
 \indent V funkciji 
 
@@ -585,6 +587,7 @@ Klicni zapis je prostor v pomnilniku, ki je dodeljen vsakemu posameznemu klicu f
 	        return fib(n - 1) + fib(n - 2)
 	    }
 	}
+	fib(10)
 \end{lstlisting}
 
 se za vsak njen klic ustvari nova instanca spremeljivke \textit{n}, ki živi na klicnem zapisu funkcije, vrednost pa ji priredimo kot vhodni argument. Ker je funkcija rekurzivna, živi v pomnilniku naenkrat veliko instanc spremenljivke \textit{n}, vsaka v lastnem klicnem zapisu \cite{modernCompiler}.
@@ -648,7 +651,7 @@ Vmesna koda (angl. \textit{intermidiate representation}) je abstraktni približe
 	\item Vsak gradnik mora imeti jasen pomen, da so lahko optimizacijske transformacije enostavno implementirane
 \end{enumerate}
 
-Poznamo dve vrsti vmesne kode: drevesno in ploščato. Za ploščato vmesno kodo se pogosto uporablja t.i. \textit{three-address code} (TAC ali 3AC), kar pomeni, da imajo lahko ukazi take kode največ tri operande. (todo mogoče opišem kaj več o obeh vrstah?)\\
+Poznamo dve vrsti vmesne kode: drevesno in ploščato (todo). Za ploščato vmesno kodo se pogosto uporablja t.i. \textit{three-address code} (TAC ali 3AC), kar pomeni, da imajo lahko ukazi take kode največ tri operande. (todo mogoče opišem kaj več o obeh vrstah?)\\
 \indent Pri predmetu smo uporabili drevesno vmesno kodo, zato je tudi vmesna koda zgenerirana s strani prevajalnika za Atheris drevesna.\\
 \indent Posamezni deli abstraktnega sintaksnega drevesa so lahko kompleksne stvari, na primer zanke, klici funkcij, itd., ki jih ne moremo neposredno preslikati v strojne ukaze. Zato morajo gradniki vmesne kode predstavljati le enostavne operacije, kot so npr. LOAD (preberi vrednost iz pomnilnika), STORE (shrani vrednost v pomnilnik), ADD (seštej dve vrednosti), itd. Tako lahko vsak posamezen del AST prevedemo v ravno pravo zsaporedje ukazov abstraktne vmesne kode \cite{modernCompiler}. \\ 
 
@@ -929,7 +932,7 @@ V primeru, da enumeracija nima surovih vrednosti, je semantična analiza dokaj p
 	}
 \end{lstlisting}
 
-Do posameznih elementov enumeracije dostopamo z \textit{DOT} operatorjem ('.'), kjer je na levi strani ime enumeracije, na desni pa ime elementa. Podobno dostopamo tudi do surovih vrednosti z uporabo imena \textit{rawValue}. Operator DOT bom podrobneje opisal na razdelku razredov, za zdaj lahko povem da je njegova naloga to, da zagotovi, da v sestavljenem podaktovnem tipu na levi strani obstaja član z imenom na desni strani.
+Do posameznih elementov enumeracije dostopamo z \textit{DOT} operatorjem ('.'), kjer je na levi strani ime enumeracije, na desni pa ime elementa. Podobno dostopamo tudi do surovih vrednosti z uporabo imena \textit{rawValue}. Operator zagotovi, da se v sestavljenem podaktovnem tipu na levi strani nahaja član z imenom na desni strani (več o operatorju v nadaljevanju).
 
 \begin{lstlisting}[caption={Primer dostopa do elementov enumeracije ~\ref{lst:fruitEnumeration}}, captionpos=b]
 	print(Fruit.Apple.rawValue) // 'Apple'
@@ -992,7 +995,6 @@ Konstruktorji so posebne vrste metod, njihova naloga pa je kreacija objektov ter
 \indent Naloga konstruktorja je, da na kopici, t.j. delu pomnilnika, kamor shranjujemo dinamično alicirane objekte (za razliko od sklada, kamor shranjujemo statične), alocira prostor, kjer bo shranjen objekt. Za dinamično alociranje pomnilnika se uporabi gradnik vmesne kode \textbf{ImcMALLOC}. Ta gradnik na kopici rezervira željeno velikost pomnilnika ter vrne naslov. \\
 \indent Pri generiranju vmesne kode prevajalnik vstavi na začetek kode funkcije MALLOC gradnik, ki bo rezerviral prostor za objekt. Nato bo prevajalnik vrnjen naslov shranil na sklad v parameter \textit{self}, zato da lahko znotraj konstruktorja nastavimo vrednosti ostalih atributov razreda. Na koncu bo ta naslov konstruktor tudi vrnil. Vrnjen naslov je referenca na objekt in ga uporabljamo za nadaljne operacije nad objektom. \\
 \indent Razred ima lahko poljubno število konstruktorjev, ki jih definiramo z uporabo ključne besede \textit{\textbf{init}}. 
-\newpage
 
 \begin{lstlisting}[caption={Konsturktorji}, captionpos=b]
 	class Atheris {
@@ -1079,7 +1081,7 @@ Dedovanje in polimorfizem sta, poleg enkapsulacije in abstrakcije, najpomembnej�
 
 Dynamic dispatch je proces izbire, katera implementacija polimorfne operacije naj se izvede v času \textbf{izvajanja programa}. Običajno lahko pri klicih funkcij že v času prevajanja izberemo, katera \textit{implementacija} funkcije naj se kliče, saj obstaja samo ena. Pri razredih nastane problem, kadar dovolimo, da imajo lahko dedujoči se razredi svoje implementacije funkcij (oz. metod), kot je razvidno v spodnjem primeru: 
 
-\begin{lstlisting}[caption={Več implementacij za isto funkcionalnost}, captionpos=b]
+\begin{lstlisting}[caption={Več implementacij za isto funkcionalnost}, captionpos=b, label={virtualTableExamples}]
 	class Fruit {
 	    func kind() {
 	        print("I am a Fruit!")
@@ -1108,7 +1110,7 @@ Virtualna tabela je podatkovna stuktura, ki vsebuje kazalce na funkcije implemen
 	\begin{center}
 		\includegraphics[width=1.1\textwidth]{resources/vtables.png}
 	\end{center}
-	\caption{Virtualne tabele za dane razrede.}
+	\caption{Virtualne tabele za dane razrede iz ~\ref{virtualTableExamples}.}
 	\label{vtables}
 \end{figure}
 
@@ -1140,8 +1142,6 @@ Dejanski algoritem za preverjanje, ali je objekt instanca danega razreda, je  ko
 \begin{lstlisting}[caption={Algoritem za izračun ali je objekt instanca danega razeda}, captionpos=b]
 todo
 \end{lstlisting}
-
-\newpage
 
 \section{Pretvarjanje tipov}
 
@@ -1184,7 +1184,7 @@ Vmesnik je abstraken opis akcij, ki jih lahko izvede objekt. Tekom prevajanja pr
 
 \section{Razširitve}
 
-Razširitev (angl. \textit{extension}) je mehanizem, ki omogoča dodajanje funkcionalnosti obstoječim razredom. 
+Razširitev (angl. \textit{extension}) je mehanizem, ki omogoča dodajanje funkcionalnosti obstoječim razredom. Razred lahko razširimo z metodami, enumeracijami in razredi.  
 
 \begin{lstlisting}[caption={Razširitev razreda A}, captionpos=b]
 	extension A {
@@ -1195,7 +1195,6 @@ Razširitev (angl. \textit{extension}) je mehanizem, ki omogoča dodajanje funkc
 	A().toString()
 \end{lstlisting}
 
-Razred lahko razširimo z metodami, enumeracijami in razredi. 
 
 \subsection{Razširitev z vmesnikom}
 
@@ -1243,7 +1242,9 @@ Prepoznavanje tipov postane kompleksnejše pri tabelah, kadar njeni elementi nis
 
 Delovanje programskega jezika Atheris je testirano na znanih algoritmih - \textit{bubble sort}, \textit{quick sort} in \textit{fibonacci}. Testni primeri so izbrani tako, da preko njih preizkusimo delovanje čim večih funkcionalnosti jezika. Kot zanimivost je izmerjena tudi hitrost izvajanja programov in primerjana z osnovnim jezikom, za referenco pa je izmerjena še hitrost delovanja algoritmov v Pythonu (vsi rezultati v nadaljevanju so prikazani v sekundah).
 
-\section{Bubble sort}
+\section{Meritve}
+
+\subsection{Bubble sort}
 
 \begin{tikzpicture}
 \begin{axis}[
@@ -1253,14 +1254,14 @@ bar width=40,
 width=300
 ]
 \addplot[ybar,fill=blue] coordinates {
-	(PINS,   14.380)
-	(Atheris,  10.739)
+	(PINS,   32.000)
+	(Atheris,  33.948)
 	(Python,   2.017)
 };
 \end{axis}
 \end{tikzpicture}
 
-\section{Quick sort}
+\subsection{Quick sort}
 
 \begin{tikzpicture}
 \begin{axis}[
@@ -1270,14 +1271,16 @@ bar width=40,
 width=300
 ]
 \addplot[ybar,fill=blue] coordinates {
-	(PINS,   20.322)
-	(Atheris,  8.449)
+	(PINS,   34.600)
+	(Atheris,  18.449)
 	(Python,   1.507)
 };
 \end{axis}
 \end{tikzpicture}
 
-\section{Rekurzivni fibonacci}
+\subsection{Izračun n-tega fibonaccijevega števila}
+
+fib(35)\\
 
 \begin{tikzpicture}
 \begin{axis}[
@@ -1287,14 +1290,14 @@ bar width=40,
 width=300
 ]
 \addplot[ybar,fill=blue] coordinates {
-	(PINS,   180.430)
-	(Atheris,  155.881)
-	(Python,   33.265)
+	(PINS,  417.771)
+	(Atheris, 362.531)
+	(Python, 33.265)
 };
 \end{axis}
 \end{tikzpicture}
 
-\section{Quicksort s polimorfnimi operacijami}
+\subsection{Quicksort s polimorfnimi operacijami}
 
 V razdelku ~\ref{dynamicDispatch} je podrobneje opisano delovanje polimorfnih operacij, kot so \textit{dynamic dispatch}, \textit{instance of} operator ter pretvarjanje tipov. Naštete operacije nam omogočajo veliko zelo priročnih stvari, ki nam pri razvoju programske opreme pogosto pridejo prav. A pod določeno ceno. Izvedba teh operacij je namreč relativno počasna. \\
 \indent Zanimalo me je, kolikšno ceno moramo pravzaprav dejansko plačati za njihovo delovanje, zato sem pripravil primer, ki testira prav to. Gre za quicksort algoritem, ki se izvaja nad objekti različnih razredov s skupnim nadrazredom, ki izvede operacijo primerjanja. Vhodni podatki so identični kot pri prejšnjih primerih, s to razliko, da števila ovijemo z objekti.\\
@@ -1308,13 +1311,56 @@ width=300
 ]
 \addplot[ybar,fill=blue] coordinates {
 	(PINS,   20.322)
-	(Atheris,  8.449)
+	(Atheris,  18.449)
 	(Atheris - razredi,   42.874)
 };
 \end{axis}
 \end{tikzpicture}
 
-Po pričakovanjih se izkaže, da je izvajanje res občutno počasnejše; in sicer kar cca. 400\%. Algoritem sem poiskusil pohitriti tako, da sem se izognil operaciji \textit{instance of}. Izvajanje se je s to optimizacijo pohitrilo za približno 10 sekund.
+Po pričakovanjih se izkaže, da je izvajanje res občutno počasnejše; in sicer skoraj 230\%. Algoritem sem poiskusil pohitriti tako, da sem se izognil operaciji \textit{instance of}. Izvajanje se je s to optimizacijo pohitrilo za približno 10 sekund.
+
+\section{Analiza}
+
+To, da je izvanja algoritma v Pythonu bistveno hitrejše, ni presenetljiv rezultat. Je pa zanimivo to, da je Atheris v vseh primerih občutno hitrejši od osnovnega jezika PINS, kljub temu, da v prevajalnik niso bile vgrajene posebne optimizacije, in tudi njun interpreter je praktično identičen. \\
+\indent Analiza izvajanja vmesne kode dobljen rezultat potrdi, saj se izkaže, da PINS izvede občutno večje število ukazov kot Atheris: \\
+
+\begin{tikzpicture}
+\begin{axis}[
+ybar,
+symbolic x coords={JUMP, TEMP, NAME, CALL, CONST, BINOP, MEM, CJUMP, MOVE, LABEL},
+xtick=data,
+width=420,
+ylabel={$*10^6$},
+]
+\addplot[x=interval,y=carT,fill=blue] coordinates {
+	(JUMP,   32.7)
+	(TEMP,  164.8)
+	(NAME,  1.4)
+	(CALL,  0.1)
+	(CONST,  257.4)
+	(BINOP,  320.8)
+	(MEM,  182.3)
+	(CJUMP,  36.6)
+	(MOVE,  33.3)
+	(LABEL,  74.6)
+};
+\addplot[x=interval,y=carD,fill=red] coordinates {
+	(JUMP,  31.4)
+	(TEMP,  136.4)
+	(NAME,  1.7)
+	(CALL,  0.1)
+	(CONST,  190.9)
+	(BINOP,  253)
+	(MEM,  150.6)
+	(CJUMP,  31.4)
+	(MOVE,  22.4)
+	(LABEL,  77.4)
+};
+\legend{PINS, Atheris}
+\end{axis}
+\end{tikzpicture}
+
+Izkaže se, da PINS izvede 212.498.982 (212 * $10^6$) ukazev več kot Atheris.
 
 \chapter{Sklepne ugotovitve}
 

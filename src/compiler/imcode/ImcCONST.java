@@ -46,4 +46,9 @@ public class ImcCONST extends ImcExpr {
 		return new ImcESEQ(new ImcSEQ(), this);
 	}
 
+    @Override
+    public String toString() {
+        return "ImcCONST";
+    }
+
 }

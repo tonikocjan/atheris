@@ -48,4 +48,9 @@ public class ImcNAME extends ImcExpr {
 		return new ImcESEQ(new ImcSEQ(), this);
 	}
 
+    @Override
+    public String toString() {
+        return "ImcNAME";
+    }
+
 }

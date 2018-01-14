@@ -66,4 +66,8 @@ public class ImcCJUMP extends ImcStmt {
 		return lin;
 	}
 
+    @Override
+    public String toString() {
+        return "ImcCJUMP";
+    }
 }

@@ -57,4 +57,9 @@ public class ImcLABEL extends ImcStmt {
 		}
 		return false;
 	}
+
+    @Override
+    public String toString() {
+        return "ImcLABEL";
+    }
 }

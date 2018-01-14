@@ -49,4 +49,9 @@ public class ImcMEM extends ImcExpr {
 		return lin;
 	}
 
+    @Override
+    public String toString() {
+        return "ImcMEM";
+    }
+
 }

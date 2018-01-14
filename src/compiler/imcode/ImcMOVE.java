@@ -58,4 +58,9 @@ public class ImcMOVE extends ImcStmt {
 		return lin;
 	}
 
+    @Override
+    public String toString() {
+        return "ImcMOVE";
+    }
+
 }

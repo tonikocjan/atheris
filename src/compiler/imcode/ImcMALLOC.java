@@ -37,4 +37,9 @@ public class ImcMALLOC extends ImcExpr {
 		return eseq;
 	}
 
+    @Override
+    public String toString() {
+        return "ImcMALLOC";
+    }
+
 }

@@ -48,4 +48,9 @@ public class ImcMethodCALL extends ImcExpr {
 
         return new ImcESEQ(linStmt, new ImcTEMP(temp));
     }
+
+    @Override
+    public String toString() {
+        return "ImcDynamicCALL";
+    }
 }

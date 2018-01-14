@@ -97,4 +97,9 @@ public class ImcBINOP extends ImcExpr {
 		ImcESEQ lin = new ImcESEQ(stmt, new ImcBINOP(op, limc.expr, rimc.expr));
 		return lin;
 	}
+
+    @Override
+    public String toString() {
+        return "ImcBINOP";
+    }
 }

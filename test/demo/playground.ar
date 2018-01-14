@@ -1,17 +1,21 @@
-#import stdlib
+import stdlib
 
-func bubble(_ list: [Int], size: Int) Int {
-    var i = 0
-    while i < size {
-        var j = 0
-        while j < size {
-            if list[i] < list[j] {
-                let tmp = list[i]
-                list[i] = list[j]
-                list[j] = tmp
-            }
-            j = j + 1
-        }
-        i = i + 1
+/*func fib(_ n: Int) Int {
+    if n < 2 {
+        return 1
+    }
+    else {
+        return fib(n - 1) + fib(n - 2)
     }
 }
+
+print(fib(30))*/
+
+func a() Int {
+    func b() {
+        print("test")
+    }
+    b()
+}
+
+a()

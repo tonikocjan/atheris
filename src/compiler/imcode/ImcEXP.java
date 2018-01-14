@@ -51,5 +51,10 @@ public class ImcEXP extends ImcStmt {
 		return lin;
 	}
 
+    @Override
+    public String toString() {
+        return "ImcEXP";
+    }
+
 }
 

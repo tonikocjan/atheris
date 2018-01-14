@@ -27,11 +27,7 @@ public class ImcRETURN extends ImcExpr {
 	/** Izraz.  */
 	public final ImcExpr expr;
 	
-	/** Ustvari nov prenos.
-	 * 
-	 * @param dst Ponor.
-	 * @param src Izvor.
-	 */
+
 	public ImcRETURN(ImcExpr expr) {
 		this.expr = expr;
 	}
@@ -48,5 +44,10 @@ public class ImcRETURN extends ImcExpr {
 		lin.expr = new ImcMEM(lin.expr);
 		return lin;
 	}
+
+    @Override
+    public String toString() {
+        return "ImcRETURN";
+    }
 
 }

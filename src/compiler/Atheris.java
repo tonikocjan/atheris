@@ -23,6 +23,7 @@ import compiler.interpreter.Memory;
 import compiler.logger.LoggerFactory;
 import compiler.logger.LoggerInterface;
 import compiler.seman.*;
+import javafx.util.Pair;
 import utils.ArgumentParser;
 import utils.Constants;
 import compiler.ast.tree.AstNode;
@@ -40,6 +41,8 @@ import managers.LanguageManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Atheris {
 
@@ -200,6 +203,7 @@ public class Atheris {
             new Interpreter(compiledCode.getFrame(), compiledCode.getLincode());
             compilationTime(startTime);
 
+            printMap(Interpreter.executedInstructions);
         }
 
         return this;
@@ -212,5 +216,17 @@ public class Atheris {
     private void compilationTime(Long startTime) {
         Long deltaTime = System.currentTimeMillis() - startTime;
         System.out.println(String.format("Executed in: %dms", deltaTime));
+    }
+
+    public static void printMap(Map mp) {
+        Iterator it = mp.entrySet().iterator();
+        long sum = 0;
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            sum += ((Integer) pair.getValue());
+            System.out.println(pair.getKey() + " = " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+        System.out.println("Instructions executed: " + sum);
     }
 }
