@@ -761,9 +761,7 @@ public class TypeChecker implements ASTVisitor {
 
 	@Override
 	public void visit(AstFunctionCallExpression acceptor) {
-        String funCallIdentifier = acceptor.getStringRepresentation();
-		AstFunctionDefinition definition = (AstFunctionDefinition) symbolTable.findDefinitionForName(funCallIdentifier);
-
+        AstFunctionDefinition definition = (AstFunctionDefinition) symbolDescription.getDefinitionForAstNode(acceptor);
 		FunctionType funType = (FunctionType) symbolDescription.getTypeForAstNode(definition);
 
 		symbolDescription.setTypeForAstNode(acceptor, funType.resultType);
@@ -1343,20 +1341,20 @@ public class TypeChecker implements ASTVisitor {
             }
         }
         else {
-//            for (AstDefinition def : acceptor.definitions.definitions) {
-//                if (def instanceof AstFunctionDefinition) {
-//                    if (!def.isStatic()) {
-//                        // set type for implicit "self" parameter
-//                        AstFunctionDefinition funDef = (AstFunctionDefinition) def;
-//                        AstParameterDefinition selfParDef = funDef.getParameterAtIndex(0);
-//                        selfParDef.type = new AstTypeName(selfParDef.position, acceptor.getName());
-//
-//                        symbolDescription.setDefinitionForAstNode(selfParDef.type, acceptor);
-//                    }
-//                }
-//
-//                def.accept(this);
-//            }
+            for (AstDefinition def : acceptor.definitions.definitions) {
+                if (def instanceof AstFunctionDefinition) {
+                    if (!def.isStatic()) {
+                        // set type for implicit "self" parameter
+                        AstFunctionDefinition funDef = (AstFunctionDefinition) def;
+                        AstParameterDefinition selfParDef = funDef.getParameterAtIndex(0);
+                        selfParDef.type = new AstTypeName(selfParDef.position, acceptor.getName());
+
+                        symbolDescription.setDefinitionForAstNode(selfParDef.type, acceptor);
+                    }
+                }
+
+                def.accept(this);
+            }
         }
     }
 
