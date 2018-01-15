@@ -1,5 +1,6 @@
 package compiler.seman.type;
 
+import compiler.ast.tree.def.AstFunctionDefinition;
 import compiler.logger.LoggerFactory;
 import compiler.logger.LoggerInterface;
 import compiler.ast.tree.def.AstClassDefinition;
@@ -233,6 +234,40 @@ public abstract class ObjectType extends Type {
         return true;
     }
 
+    public boolean conformsTo(ObjectType baseClass) {
+        for (Iterator<AstFunctionDefinition> it = baseClass.abstractMethods(); it.hasNext(); ) {
+            AstFunctionDefinition abstractMethod = it.next();
+            AstDefinition member = findMemberDefinitionWithName(abstractMethod.getName(), false);
+            if (member == null) return false;
+        }
+        return true;
+    }
+
+    public Iterator<AstFunctionDefinition> abstractMethods() {
+        return new Iterator<AstFunctionDefinition>() {
+
+            Iterator<AstDefinition> it = classDefinition.memberDefinitions.definitions.iterator();
+            AstFunctionDefinition nextDef = null;
+
+            @Override
+            public boolean hasNext() {
+                while (it.hasNext()) {
+                    AstDefinition def = it.next();
+                    if (def instanceof AstFunctionDefinition && def.isAbstract()) {
+                        nextDef = (AstFunctionDefinition) def;
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public AstFunctionDefinition next() {
+                return nextDef;
+            }
+        };
+    }
+
     public boolean isConformingTo(InterfaceType type) {
         if (base != null && base.isConformingTo(type)) {
             return true;
@@ -276,4 +311,5 @@ public abstract class ObjectType extends Type {
     public Iterator<String> getNames() {
         return memberNames.iterator();
     }
+
 }

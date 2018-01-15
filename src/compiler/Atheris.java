@@ -89,17 +89,6 @@ public class Atheris {
                 logger.warning(LanguageManager.localize("error_invalid_stack_size_parameter"));
             }
         }
-
-        if (parser.containsArgument("testing")) {
-            if (parser.valueFor("testing").equals(Constants.trueKeyword)) {
-                File outputFile = new File(sourceFileName + ".out");
-                try {
-                    Interpreter.interpreterOutput = new PrintStream(outputFile);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     public Atheris compile(String[] args) {

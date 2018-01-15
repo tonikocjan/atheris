@@ -1,3 +1,3 @@
-Abstract method cannot have implementation.
-Class 'C' must implement all abstract methods from 'B'
-implemented abstract method
+Non abstract class "C" must implement all abstract methods from "B"
+Cannot instantiate instance of an abstract class "B"
+"implemented abstract method"

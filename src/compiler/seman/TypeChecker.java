@@ -88,11 +88,6 @@ public class TypeChecker implements ASTVisitor {
 
                 Type type = symbolDescription.getTypeForAstNode(acceptor.baseClass);
 
-                if (acceptor instanceof AstStructureDefinition) {
-                    // only classes are allowed to inherit
-                    logger.error("Structs are not allowed to inherit");
-                }
-
                 if (!type.isInterfaceType() && (!type.isCanType() || !((CanType) type).childType.isClassType())) {
                     logger.error(acceptor.baseClass.position,
                             "Inheritance from non-class type \"" + type.friendlyName() + "\" is not allowed");
@@ -210,6 +205,14 @@ public class TypeChecker implements ASTVisitor {
             AstFunctionDefinition baseClassDefaultConstructor = null;
             if (baseClass != null) {
                 baseClassDefaultConstructor = ((ClassType) baseClass.childType).classDefinition.defaultConstructor;
+
+                // if base class is 'abstract', make sure all abstract methods are implemented
+                AstClassDefinition baseClassDefinition = (AstClassDefinition) symbolDescription.getDefinitionForAstNode(acceptor.baseClass);
+                if (baseClassDefinition.isAbstract()) {
+                    if (!objectType.conformsTo((ObjectType) baseClass.childType)) {
+                        logger.error(acceptor.position, "Non abstract class \"" + acceptor.getName() + "\" must implement all abstract methods from \"" + baseClassDefinition.getName() + "\"");
+                    }
+                }
             }
 
             // check if all methods in conforming interfaces are implemented
@@ -765,6 +768,10 @@ public class TypeChecker implements ASTVisitor {
 
 		symbolDescription.setTypeForAstNode(acceptor, funType.resultType);
 		boolean isConstructor = definition.isConstructor;
+
+		if (isConstructor && funType.resultType.isClassType() && ((ClassType) funType.resultType).classDefinition.isAbstract()) {
+		    logger.error(acceptor.position, "Cannot instantiate instance of an abstract class \"" + acceptor.name + "\"");
+        }
 
 		for (int i = 0; i < acceptor.getArgumentCount(); i++) {
 			AstExpression arg = acceptor.getArgumentAtIndex(i);

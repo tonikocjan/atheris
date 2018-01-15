@@ -101,4 +101,6 @@ public abstract class AstDefinition extends AstStatement {
     public boolean isDynamic() {
         return !(isFinal() || isStatic());
     }
+
+    public boolean isAbstract() { return modifiers.contains(DefinitionModifier.isAbstract); }
 }

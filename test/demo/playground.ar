@@ -1,7 +1,13 @@
 import stdlib
 
-class A {}
-class B: A {}
+abstract class A {
+    abstract func foo()
+}
 
-let a = B()
-print(a is A)
+class B: A {
+    override func foo() {
+        print("implemented abstract method")
+    }
+}
+
+B().foo()

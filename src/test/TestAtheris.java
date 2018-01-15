@@ -18,11 +18,11 @@
 package test;
 
 import compiler.Main;
+import compiler.interpreter.Interpreter;
 import compiler.logger.LoggerFactory;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -88,7 +88,21 @@ public class TestAtheris {
         args[1] = "--phase=interpret";
         args[2] = "--testing=true";
 
-        Main.main(args);
+        try {
+            File outputFile = new File(args[0] + ".out");
+            outputFile.createNewFile();
+            Interpreter.interpreterOutput = new PrintStream(outputFile);
+            TestLogger logger = (TestLogger) LoggerFactory.logger();
+            logger.outputStream = Interpreter.interpreterOutput;
+
+            Main.main(args);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            Interpreter.interpreterOutput.close();
+        }
 
         assertTrue(compareFiles(args[0] + ".out", args[0] + ".test"));
     }

@@ -174,6 +174,9 @@ public class NameChecker implements ASTVisitor {
 	@Override
 	public void visit(AstFunctionCallExpression acceptor) {
         AstFunctionDefinition definition = findFunctionDefinitionForFunctionCall(acceptor);
+        if (definition == null) {
+            logger.error("Function \"" + definition.getName() + "\" is not defined");
+        }
         symbolDescription.setDefinitionForAstNode(acceptor, definition);
         acceptFunctionCallArguments(acceptor);
 	}
