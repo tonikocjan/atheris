@@ -70,7 +70,7 @@ public class SynAn {
 		AstNode abstrTree = parseStatements();
 
 		if (symbol.tokenType() != TokenType.EOF && symbol.tokenType() != TokenType.NEWLINE)
-            logger.error(symbol.position(), "Syntax error on tokenType \""
+            logger.error(symbol.position(), "Syntax error on token \""
 					+ previous.getLexeme() + "\"");
 
 		return abstrTree;
@@ -245,9 +245,9 @@ public class SynAn {
 			absDefs.add(0, definition);
 			return absDefs;
 		default:
-            logger.error(symbol.position(), "Syntax error on tokenType \""
+            logger.error(symbol.position(), "Syntax error on token \""
 					+ previous.getLexeme()
-					+ "\", expected \";\" or \"}\" after this tokenType");
+					+ "\", expected \";\" or \"}\" after this token");
 		}
 		return null;
 	}
@@ -381,7 +381,7 @@ public class SynAn {
 
 			return parseFunDefinition_(startPos, functionName, params, false);
 		}
-        logger.error(previous.position(), "Syntax error on tokenType \""
+        logger.error(previous.position(), "Syntax error on token \""
 				+ previous.getLexeme() + "\", expected keyword \"functionDefinition\"");
 
 		return null;
@@ -450,13 +450,13 @@ public class SynAn {
 			return new AstVariableDefinition(startPos, id.getLexeme(), null, isMutable);
 		}
 		else if (symbol.tokenType() != TokenType.COLON) {
-            logger.error(previous.position(), "Syntax error on tokenType \""
+            logger.error(previous.position(), "Syntax error on token \""
                     + previous.getLexeme() + "\", expected \":\"");
         }
 
 		nextSymbol();
 
-		dump("var_definition -> variableDefinition identifier : memberType");
+		dump("var_definition -> variableDefinition identifier : member");
 
         AstType type = parseType();
 		return new AstVariableDefinition(new Position(startPos, type.position), id.getLexeme(), type, isMutable);
@@ -538,7 +538,7 @@ public class SynAn {
         ArrayList staticConstructor = data[3];
 
 		if (symbol.tokenType() != TokenType.RBRACE) {
-            logger.error(symbol.position(), "Syntax error on tokenType \"" + symbol.getLexeme() + "\", expected \"}\"");
+            logger.error(symbol.position(), "Syntax error on token \"" + symbol.getLexeme() + "\", expected \"}\"");
         }
 
 		Position end = symbol.position();
@@ -732,7 +732,7 @@ public class SynAn {
 
         ArrayList<AstDefinition> enumDefinitions = parseEnumMemberDefinitions();
 		if (symbol.tokenType() != TokenType.RBRACE)
-            logger.error(symbol.position(), "Syntax error on tokenType \""
+            logger.error(symbol.position(), "Syntax error on token \""
 					+ symbol.getLexeme() + "\", expected \"}\"");
 		nextSymbol();
 
@@ -751,8 +751,7 @@ public class SynAn {
 				while (symbol.tokenType() == TokenType.COMMA) {
 					nextSymbol();
 					if (symbol.tokenType() != TokenType.IDENTIFIER)
-                        logger.error(symbol.position(), "Expected idenfitifer "
-								+ "after comma in enums member definition");
+                        logger.error(symbol.position(), "Expected identifier after comma in enums member definition");
 					definitions.add(parseEnumCaseDefinition());
 				}
 			}
@@ -763,8 +762,7 @@ public class SynAn {
 					break;
 
 				if (symbol.tokenType() == TokenType.IDENTIFIER)
-                    logger.error(symbol.position(), "Enum member definition "
-							+ "must begin with \"case\" keyword");
+                    logger.error(symbol.position(), "Enum member definition must begin with \"case\" keyword");
 			}
 		}
 
@@ -942,8 +940,8 @@ public class SynAn {
 //			type = parseType();
 //			return new AstFunctionType(new Position(start, type.position), expressions, type);
 		default:
-            logger.error(symbol.position(), "Syntax error on tokenType \""
-					+ symbol.getLexeme() + "\", expected \"variable memberType\"");
+            logger.error(symbol.position(), "Syntax error on token \""
+					+ symbol.getLexeme() + "\", expected \"variable member\"");
 		}
 
 		return null;
@@ -1039,8 +1037,8 @@ public class SynAn {
 			expressions.addAll(parseExpressions_());
 			return expressions;
 		default:
-            logger.error(symbol.position(), "Syntax error on tokenType \""
-					+ symbol.getLexeme() + "\", delete this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \""
+					+ symbol.getLexeme() + "\", delete this token");
 		}
 
 		return null;
@@ -1064,7 +1062,7 @@ public class SynAn {
 			nextSymbol();
 			break;
 		default:
-            logger.error(symbol.position(), "Syntax error on tokenType \""
+            logger.error(symbol.position(), "Syntax error on token \""
 					+ previous.getLexeme()
 					+ "\", expected \",\" or \")\" to end expression");
 		}
@@ -1092,7 +1090,7 @@ public class SynAn {
 			dump("expression -> logical_ior_expression");
 			return parseExpression_(parseIorExpression());
 		default:
-            logger.error(symbol.position(), "Syntax error on tokenType \"" + symbol.getLexeme() + "\", delete this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \"" + symbol.getLexeme() + "\", delete this token");
 		}
 
 		return null;
@@ -1119,8 +1117,8 @@ public class SynAn {
 			AstExpression e2 = parseExpression();
 			return new AstBinaryExpression(new Position(e.position, e2.position), AstBinaryExpression.ASSIGN, e, e2);
 		default:
-            logger.error(symbol.position(), "Syntax error on tokenType \""
-					+ symbol.getLexeme() + "\", delete this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \""
+					+ symbol.getLexeme() + "\", delete this token");
 		}
 
 		return null;
@@ -1147,8 +1145,8 @@ public class SynAn {
 			dump("logical_ior_expression -> logical_and_expression logical_ior_expression'");
 			return parseIorExpression_(parseAndExpression());
 		default:
-            logger.error(symbol.position(), "Syntax error on tokenType \""
-					+ symbol.getLexeme() + "\", delete this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \""
+					+ symbol.getLexeme() + "\", delete this token");
 		}
 
 		return null;
@@ -1177,8 +1175,7 @@ public class SynAn {
 			dump("logical_ior_expression' -> e");
 			return e;
 		default:
-            logger.error(symbol.position(), "Syntax error on tokenType \""
-					+ symbol.getLexeme() + "\", delete this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \"symbol.getLexeme()\", delete this token");
 		}
 
 		return null;
@@ -1205,8 +1202,8 @@ public class SynAn {
 			dump("logical_and_expression -> logical_compare_expression logical_and_expression'");
 			return parseAndExpression_(parseCmpExpression());
 		default:
-            logger.error(symbol.position(), "Syntax error on tokenType \""
-					+ symbol.getLexeme() + "\", delete this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \""
+					+ symbol.getLexeme() + "\", delete this token");
 		}
 
 		return null;
@@ -1909,7 +1906,7 @@ public class SynAn {
 		case LPARENT:
 			return parseTupleExpression(false);
 		default:
-            logger.error("Syntax error on tokenType \"" + symbol.getLexeme() + "\", delete this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \"" + symbol.getLexeme() + "\", delete this token");
 		}
 		return null;
 	}
@@ -1921,9 +1918,9 @@ public class SynAn {
 			nextSymbol();
 
 			if (symbol.tokenType() != TokenType.KW_IN)
-                logger.error(previous.position(), "Syntax error on tokenType \""
+                logger.error(previous.position(), "Syntax error on token \""
 						+ previous.getLexeme()
-						+ "\", expected keyword \"in\" after this tokenType");
+						+ "\", expected keyword \"in\" after this token");
 			nextSymbol();
 
 			AstExpression e = parseExpression();
@@ -1969,15 +1966,15 @@ public class SynAn {
 				AstStatements s = parseStatements();
 
 				if (symbol.tokenType() != TokenType.RBRACE)
-                    logger.error(symbol.position(), "Syntax error on tokenType \""
+                    logger.error(symbol.position(), "Syntax error on token \""
 							+ previous.getLexeme()
-							+ "\", expected '}' after this tokenType");
+							+ "\", expected '}' after this token");
 				nextSymbol();
 
 				return new AstWhileStatement(new Position(start, s.position), e1, s);
 			}
-            logger.error(previous.position(), "Syntax error on tokenType \""
-					+ previous.getLexeme() + "\", expected \"{\" after this tokenType");
+            logger.error(previous.position(), "Syntax error on token \""
+					+ previous.getLexeme() + "\", expected \"{\" after this token");
 		}
         logger.error(previous.position(),
 				"Syntax error, expected keyword \"while\"");
@@ -1991,14 +1988,14 @@ public class SynAn {
 		nextSymbol();
 		AstExpression condition = parseExpression();
 		if (symbol.tokenType() != TokenType.LBRACE)
-            logger.error(symbol.position(), "Syntax error on tokenType \""
-					+ previous.getLexeme() + "\", expected '{' after this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \""
+					+ previous.getLexeme() + "\", expected '{' after this token");
 		nextSymbol(TokenType.NEWLINE, "NEWLINE");
 		nextSymbol();
 		AstStatements s = parseStatements();
 		if (symbol.tokenType() != TokenType.RBRACE)
-            logger.error(symbol.position(), "Syntax error on tokenType \""
-					+ previous.getLexeme() + "\", expected '}' after this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \""
+					+ previous.getLexeme() + "\", expected '}' after this token");
 		nextSymbol();
 		return new Condition(condition, s);
 	}
@@ -2035,8 +2032,8 @@ public class SynAn {
 				}
 
 				if (symbol.tokenType() != TokenType.LBRACE)
-                    logger.error(symbol.position(), "Syntax error on tokenType \""
-							+ previous.getLexeme() + "\", expected '{' after this tokenType");
+                    logger.error(symbol.position(), "Syntax error on token \""
+							+ previous.getLexeme() + "\", expected '{' after this token");
 
 				dump("if_expression' -> else { statements }");
 

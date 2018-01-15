@@ -141,12 +141,20 @@ public class TypeChecker implements ASTVisitor {
                             logger.error(def.position, "Cannot override \"final\" instance method");
                         }
                     }
-                    else if (baseClass.containsMember(def.getName())) {
-                        logger.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+                    else {
+                        AstDefinition memberDefinition = baseClass.findMemberDefinitionWithName(def.getName());
+                        if (!(memberDefinition == null || memberDefinition.isAbstract())) {
+                            logger.error(def.position, "Invalid redeclaration of \"" + def.getName() + "\"");
+                        }
                     }
                 }
                 else if (def.isOverriding()) {
                     logger.error(def.position, "Method does not override any method from it's super class");
+                }
+
+                // prevent abstract methods to be defined in non-abstract class
+                if (def.isAbstract() && !acceptor.isAbstract()) {
+                    logger.error(def.position, "Abstract methods are not allowed in non-abstract classes");
                 }
 
                 def.accept(this);

@@ -147,8 +147,7 @@ public abstract class ObjectType extends Type {
             if (contains) return true;
         }
 
-        AstDefinition definition = definitions.get(name);
-        return !(definition == null || definition.isAbstract());
+        return definitions.containsKey(name);
     }
 
     @Override
@@ -209,9 +208,21 @@ public abstract class ObjectType extends Type {
             AstDefinition member = base.findMemberDefinitionWithName(name);
             if (member != null) return member;
         }
+        return definitions.get(name);
+    }
 
+    private AstDefinition findNonAbstractDefinitionWithName(String name, boolean fromBase) {
         AstDefinition definition = definitions.get(name);
-        return definition == null ? null : definition.isAbstract() ? null : definition;
+
+        if (!(definition == null || definition.isAbstract())) {
+            return definition;
+        }
+
+        if (fromBase && base != null) {
+            definition = base.findNonAbstractDefinitionWithName(name, fromBase);
+        }
+
+        return definition;
     }
 
     public boolean isDescendantOf(ObjectType baseType) {
@@ -238,8 +249,8 @@ public abstract class ObjectType extends Type {
     public boolean conformsTo(ObjectType baseClass) {
         for (Iterator<AstFunctionDefinition> it = baseClass.abstractMethods(); it.hasNext(); ) {
             AstFunctionDefinition abstractMethod = it.next();
-            AstDefinition member = findMemberDefinitionWithName(abstractMethod.getName(), true);
-            if (member == null) return false;
+            AstDefinition abstractMethodImplementation = findNonAbstractDefinitionWithName(abstractMethod.getName(), true);
+            if (abstractMethodImplementation == null) return false;
         }
         return true;
     }
