@@ -54,7 +54,7 @@ public interface ASTVisitor {
     void visit(AstCaseStatement acceptor);
     void visit(AstEnumDefinition acceptor);
     void visit(AstEnumMemberDefinition acceptor);
-    void visit(AstTupleDefinition acceptor);
+    void visit(AstTupleType acceptor);
     void visit(AstLabeledExpr acceptor);
     void visit(AstTupleExpression acceptor);
     void visit(AstOptionalType acceptor);

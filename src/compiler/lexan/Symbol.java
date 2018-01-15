@@ -41,7 +41,7 @@ public class Symbol {
         this.tokenType = tokenType;
     }
 
-    public Position getPosition() {
+    public Position position() {
         return position;
     }
 
@@ -49,7 +49,7 @@ public class Symbol {
         return lexeme;
     }
 
-    public TokenType getTokenType() {
+    public TokenType tokenType() {
         return tokenType;
     }
 

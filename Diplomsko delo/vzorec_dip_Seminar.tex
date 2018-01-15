@@ -263,16 +263,6 @@ Na tem mestu zapišite, komu se zahvaljujete za izdelavo diplomske naloge. Pazit
 \clearemptydoublepage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% posvetilo, če sama zahvala ne zadošča :-)
-\thispagestyle{empty}\mbox{}{\vskip0.20\textheight}\mbox{}\hfill\begin{minipage}{0.55\textwidth}%
-Svoji dragi Alenčici.
-\normalfont\end{minipage}
-
-% prazna stran
-\clearemptydoublepage
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % kazalo
 \pagestyle{empty}
 \def\thepage{}% preprecimo tezave s stevilkami strani v kazalu
@@ -301,10 +291,15 @@ Svoji dragi Alenčici.
 \end{comment}
 
 \noindent\begin{tabular}{l|l|l}
+\begin{tabular}{l|l|l}
 	{\bf kratica} & {\bf angleško} & {\bf slovensko} \\ \hline
+	% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
 	{\bf AST} & abstract syntax tree & abstraktno sintaksno drevo \\
 	{\bf IR} & intermidiate representation & vmesna koda \\
-	{\bf PINS} &  & prevajalniki in navidezni stroji \\
+	{\bf PINS} & compilers and virtual machines & prevajalniki in navidezni stroji \\
+	{\bf SP} & stack pointer & kazalec na sklad \\
+	{\bf FP} & frame pointer & kazalec na klicni zapis \\
+\end{tabular}
 \end{tabular}
 
 
@@ -402,7 +397,7 @@ Sodobni prevajalniki so pogosto organizirani v več posameznih faz, vsaka faza p
 	\begin{center}
 		\includegraphics[width=1\textwidth]{resources/compilerStructure.jpg}
 	\end{center}
-	\caption{Zgradba prevajalnika \cite{compilerStructure}}
+	\caption{Zgradba prevajalnika \cite{compilerStructure}.}
 	\label{pic1}
 \end{figure}
 
@@ -465,21 +460,21 @@ public override
 \end{lstlisting} \\
 		\end{tabular}
 	\end{center}
-	\caption{Primeri simbolov v programskem jeziku Java}
+	\caption{Primeri simbolov v programskem jeziku Java.}
 	\label{tabel:vrsteZetonov}
 \end{table}
 
 Sledi preprost primer programa v programskem jeziku Atheris ter rezultat leksikalne analize zanj.
 
 \renewcommand{\lstlistingname}{Program}
-\begin{lstlisting}[caption={Primer programa v programskem jeziku Atheris},label={lst:atherisCode}, captionpos=b]
+\begin{lstlisting}[caption={Primer programa v programskem jeziku Atheris.},label={lst:atherisCode}, captionpos=b]
 	let x: Int
 	let y: Int
 	x * y
 \end{lstlisting}
 
 \renewcommand{\lstlistingname}{Izpis}
-\begin{lstlisting}[caption={Rezultat leksikalne analize za program ~\ref{lst:atherisCode}},label={lst:lexedSource},captionpos=b]
+\begin{lstlisting}[caption={Rezultat leksikalne analize za program ~\ref{lst:atherisCode}.},label={lst:lexedSource},captionpos=b]
 	[1:1-1:4] 	LET:let
 	[1:5-1:6] 	IDENTIFIER:x
 	[1:6-1:7] 	COLON::
@@ -512,7 +507,7 @@ Druga faza prevajanja je sintaksna analiza (angl. \textit{syntax analysis} ali \
 Iz slike \ref{image:abstractSyntaxTree} lahko razberemo, da gre za dve definiciji spremenljivk in množenje.\\\\
 \indent Abstraktno sintaksno drevo je bistvenega pomena, saj nadaljne faze operirajo izključno nad njim.
 
-\subsection{Semantična analiza}
+\subsection{Semantična analiza} \label{semanSection}
 
 Semantična analiza poveže definicije spremenljivk z njihovimi uporabami ter preveri, ali so vsi izrazi pravilnih podatkovnih tipov \cite{modernCompiler}. \\
 \indent Običajno izvedbo semantične analize razdelimo na dve pod-fazi:
@@ -521,7 +516,7 @@ Semantična analiza poveže definicije spremenljivk z njihovimi uporabami ter pr
 	Sledi primer, kjer se sklicujemo na nedefinirano spremenljivko:
 	
 	\renewcommand{\lstlistingname}{Program}
-	\begin{lstlisting}[caption={Primer programa, kjer spremenljivka \textit{y} ni definirana},label={lst:atherisCodeNameError},captionpos=b]
+	\begin{lstlisting}[caption={Primer programa, kjer spremenljivka \textit{y} ni definirana.},label={lst:atherisCodeNameError},captionpos=b]
 	let x: Int
 	print(y)
 	\end{lstlisting}
@@ -530,7 +525,7 @@ Semantična analiza poveže definicije spremenljivk z njihovimi uporabami ter pr
 	Sledi primer, kjer pride do napake pri razreševanju podatkovnih tipov (operacija '+' ni definirana nad podatkovnima tipoma \textit{String} in \textit{Int}):
 	
 	\renewcommand{\lstlistingname}{Program}
-	\begin{lstlisting}[caption={Primer programa, kjer je napaka v podatkovnih tipih},label={lst:atherisCodeTypeError},captionpos=b]
+	\begin{lstlisting}[caption={Primer programa, kjer je napaka v podatkovnih tipih.},label={lst:atherisCodeTypeError},captionpos=b]
 	let x: Int
 	let s: String
 	x + s
@@ -544,7 +539,7 @@ V zahtevnejših prevajalnikih se lahko tekom semantične analize opravi še dost
 	\begin{center}
 		\includegraphics[width=1\textwidth]{resources/astSeman.png}
 	\end{center}
-	\caption{Rezultat semantične analize za program ~\ref{lst:atherisCode}}
+	\caption{Rezultat semantične analize za program ~\ref{lst:atherisCode}.}
 	\label{image:astSeman}
 \end{figure}
 
@@ -606,7 +601,11 @@ Klicni zapisi funkcij se shranjujejo na sklad. Sklad je v pomnilniku predstavlje
 
 \paragraph{Kazalec na klicni zapis:}
 
-Predpostavimo da funkcija \textit{g} kliče funkcijo \textit{f}. Ob vstopu v f kazalec na sklad (SP) kaže na prvi vhodni argument funkciji f. Nov prostor na skladu je rezerviran tako, da se od SP odšteje velikost klicnega zapisa f. Tako SP sedaj kaže na konec sklada. Stara vrednost SP postane nova vrednost kazalca na klicni zapis (\textit{angl. frame pointer}). V programskih jezikih, kjer je velikost klicnega zapisa za posamezno funkcijo konstantna, je vrednost kazalca na klicni (FP) zapis vedno izračunljiva, zato si je ni potrebno posebaj shranjevati na sklad. FP = SP + velikost sklada \cite{modernCompiler}.
+Predpostavimo da funkcija \textit{g} kliče funkcijo \textit{f}. Ob vstopu v f kazalec na sklad (SP) kaže na prvi vhodni argument funkciji f. Nov prostor na skladu je rezerviran tako, da se od SP odšteje velikost klicnega zapisa f. Tako SP sedaj kaže na konec sklada. Stara vrednost SP postane nova vrednost kazalca na klicni zapis (\textit{angl. frame pointer}). V programskih jezikih, kjer je velikost klicnega zapisa za posamezno funkcijo konstantna, je vrednost kazalca na klicni (FP) zapis vedno izračunljiva, zato si je ni potrebno posebaj shranjevati na sklad \cite{modernCompiler}: 
+
+\begin{lstlisting}
+	FP = SP + velikost klicnega zapisa
+\end{lstlisting}
 
 \paragraph{Prenos parametrov:}
 
@@ -621,7 +620,7 @@ Standarden način klicanja funkcij je, da klicoča funkcija rezervira prostor na
 V jezikih, ki podpirajo gnezdenje funkcij, lahko gnezdene funkcije dostopajo do spremenljivk, ki se nahajajo v zunanjih funkcijah. Da lahko gnezdena funkcija dostopa do spremenljivk, ki niso na njenem klicnem zapisu, ji ob klicu, poleg ostalih parametrov, posredujemo FP funkcije, ki jo neposredno definira. Temu kazalcu rečemo \textit{static link}. 
 
 \renewcommand{\lstlistingname}{Program}
-\begin{lstlisting}[caption={Primer gnezdenih funkcij}, captionpos=b, label={lst:nestedFunctions}]
+\begin{lstlisting}[caption={Primer gnezdenih funkcij.}, captionpos=b, label={lst:nestedFunctions}]
     func f() {
         var x: Int = 10
         func e() {
@@ -774,6 +773,7 @@ Podprti atomarni podatkovni tipi so: \textit{integer, double, string, char} in \
 	\item Razredi
 	\item Enumeracije
 	\item Terke
+	\item Vmesniki
 \end{enumerate}
 
 Poleg naštetih podatkovnih tipov obstaja še podatkovni tip, ki ga ni mogoče eksplicitno uporabljati. To je kazalec (\textit{angl. pointer}). Ena izmed prednosti kazalcev je v tem, da lahko do kompleksnejših objektov, ki v pomnilniku zasedejo veliko prostora, dostopamo preko njihovega naslova s kazalcem, namesto kopiranja celotne vsebine (na primer pri pošiljanju objekta kot argument funkciji). Spremeljivke, ki jim priredimo objekt, terko ali tabelo, se implicitno smatrajo kot kazalci. \\
@@ -818,7 +818,6 @@ enum_defs -> enum_defs, enum_member_def
 
 enum_member_def -> case identifier
 enum_member_def -> case identifier = expression (literal)
-enum_member_def -> enum_member_def, enum_member_def // todo
 \end{lstlisting}
 	\item Terke
 \begin{lstlisting}
@@ -869,7 +868,7 @@ Programski jezik Atheris zahteva, da ob klicu funkcij poleg imena funkcije naved
 \indent Ob deklaraciji funkcije lahko opcijsko definiramo poljubno število poimenovanih ter tipiziranih vrednosti, ki jim skupaj rečemo parametri funkcije. Poleg tega lahko opcijsko navedemo še podatkovni tip vrednosti, ki jo bo funkcija vračala (privzeto funkcije ne vračajo ničesar - \textit{Void}.) \\
 \indent Imena parametrov so sestavljena iz dveh delov: labele argumenta ter imena parametra. Labele argumentov se uporabljajo ob klicu funkcije, medtem ko se imena parametrov uporabljajo znotraj jedra funkcije. Labele so privzeto identične imenom.
 
-\begin{lstlisting}[caption={Primer definicije in klica funkcije}, captionpos=b]
+\begin{lstlisting}[caption={Primer definicije in klica funkcije.}, captionpos=b]
 func someFunction(firstParameterName: Int, secondParameterName: Int) {
   /* znotraj telesa funkcije, sta firstParameterName in secondParameterName referenci na vrednosti argumentov za prvi in drugi parameter. */
 }
@@ -880,9 +879,9 @@ someFunction(firstParameterName: 1, secondParameterName: 2)
 
 Če želimo, da sta labela in ime različna, navedemo labelo argumenta pred imenom:
 
-\begin{lstlisting}[caption={Labela argumenta in ime parametra se razlikujeta}, captionpos=b]
+\begin{lstlisting}[caption={Labela argumenta in ime parametra se razlikujeta.}, captionpos=b]
 func someFunction(argumentLabel parameterName: Int) {
-/* znotraj telesa funkcije, se parameterName sklicuje na vrednost argumentza funkciji */
+/* znotraj telesa funkcije, se parameterName sklicuje na vrednost argumenta funkciji */
 }
 someFunction(argumentLabel: 1) 
 \end{lstlisting}
@@ -898,7 +897,7 @@ someFunction(1, 2)
 
 V ozadju so opisane funkcionalnosti implementirane tako, da se v simbolno tabelo ne shrani samo \textit{ime} funkcije, ampak se celotna definicija pretvori v posebno znakovno predstavitev, ki je sestavljena iz imena ter label argumentov. Funkcije z istim imenom, a različnimi imeni parametrov, lahko tako shranimo v simbolno tabelo brez težav. Znakovne predstavitve zgornjih funkcij izgledajo tako:
 
-\begin{lstlisting}[caption={Znakovne predstavitve funkcij}, captionpos=b]
+\begin{lstlisting}[caption={Znakovne predstavitve funkcij.}, captionpos=b]
 someFunction(firstParameterName:secondParameterName)
 someFunction(argumentLabel)
 someFunction(_:_)
@@ -912,7 +911,7 @@ T.i. \textit{overloadanje} funkcij sedaj ni problem, saj čeprav imajo funkcije 
 V primeru, da enumeracija nima surovih vrednosti, je semantična analiza dokaj preprosta. Kompleksnejša postane kadar so surove vrednosti prisotne, saj je potrebno zagotoviti, da so ustreznega podatkovnega tipa. V primeru, da surove vrednosti niso eksplicitno navedene, jih prevajalnik skuša določiti sam. To lahko stori samo v primeru, če so surove vrednosti tipa \textbf{Int} ali \textbf{String}. \\
 \indent Privzeto so surove vrednosti za \textbf{Int} zaporedna števila začenši z 0. V primeru, da je vrednost eksplicitno navedena, je vrednost naslednje surove vrednosti naslednje zaporedno število od prejšnje vrednosti.
 
-\begin{lstlisting}[caption={Enumeracija s surovimi vrednostmi tipa Int}, captionpos=b]
+\begin{lstlisting}[caption={Enumeracija s surovimi vrednostmi tipa Int.}, captionpos=b]
 	enum Days: Int {
 	  case Monday // vrednost = 0
 	  case Tuesday = 10 // vrednost = 10
@@ -924,7 +923,7 @@ V primeru, da enumeracija nima surovih vrednosti, je semantična analiza dokaj p
 
 \indent Za \textbf{String} so privzete surove vrednosti imena članov enumeracije.
 
-\begin{lstlisting}[caption={Enumeracija s surovimi vrednostmi tipa String}, captionpos=b, label={lst:fruitEnumeration}]
+\begin{lstlisting}[caption={Enumeracija s surovimi vrednostmi tipa String.}, captionpos=b, label={lst:fruitEnumeration}]
 	enum Fruit: String {
 	  case Apple // privzeta vrednost = "Apple"
 	  case Orange = "Annoying Orange"
@@ -934,7 +933,7 @@ V primeru, da enumeracija nima surovih vrednosti, je semantična analiza dokaj p
 
 Do posameznih elementov enumeracije dostopamo z \textit{DOT} operatorjem ('.'), kjer je na levi strani ime enumeracije, na desni pa ime elementa. Podobno dostopamo tudi do surovih vrednosti z uporabo imena \textit{rawValue}. Operator zagotovi, da se v sestavljenem podaktovnem tipu na levi strani nahaja član z imenom na desni strani (več o operatorju v nadaljevanju).
 
-\begin{lstlisting}[caption={Primer dostopa do elementov enumeracije ~\ref{lst:fruitEnumeration}}, captionpos=b]
+\begin{lstlisting}[caption={Primer dostopa do elementov enumeracije ~\ref{lst:fruitEnumeration}.}, captionpos=b]
 	print(Fruit.Apple.rawValue) // 'Apple'
 	print(Fruit.Orange.rawValue)  // 'Annoying Orange'
 	print(Fruit.Strawberry.rawValue)  // 'Strawberry'
@@ -962,13 +961,14 @@ Terka je podatkovna struktura sestavljena iz poljubnega števila elementov, ki s
 \indent Do elementov prav tako dostopamo z uporabo DOT operatorja, ki zagotovi, da terka vsebuje izraz z željenim imenom.\\
 \indent V pomnilniku so terke predstavljene skoraj identično kot tabele, s to razliko, da se podatkovni tipi elementov med sabo lahko razlikujejo. Ravno zaradi tega ne moremo odmika izračunati na enak način kot pri tabelah. Pri terkah odmik posameznega elementa od začetnega naslova terke izračunamo tako, da seštejemo velikosti podaktovnih tipov vseh elementov pred željenim elementom:
 
-\[ offset ( element_i )  = sum ( size ( element_0 ), size( element_1 ), ..., size ( element_n-1)) \]
+\vspace{-7mm}
+\[ offset ( element_i )  = sum ( size ( element_0 ), size( element_1 ), ..., size ( element_{n-1})) \]
 
 \section{Razredi}
 
 Razred je sestavljena podatkovna struktura, ki, podobno kot terka, v sebi hrani spremenljivke različnih podatkovnih tipov. Vsak razred lahko vsebuje poljubno število atributov (spremenljivk) ter poljubno število metod - to so člani rezreda. \\
-\indent Atributi in metode so lahko statični, kar pomeni, da niso del posamezne instance razreda, ampak živijo v statični instanci, ki je kreirana avtomatsko. Poleg tega so lahko člani razreda \textit{privatni} ali \textit{javni}. Razlika je v tem, da do privatnih članov ni možno dostopati izven razreda.\\
-\indent Metodam lahko dodamo tudi modifikator \textit{final}, kar prepreči, da bi bila funkcija re-implementirana v dedujočem se razredu. Če želimo, da metoda re-implementira metodo v starševkem razredu, ji moramo dodati modifikator \textit{overriding}. \\
+\indent Atributi in metode so lahko statični, kar pomeni, da niso del posamezne instance razreda, ampak živijo v statični instanci, ki je kreirana avtomatsko. Poleg tega so lahko člani razreda \textit{privatni} ali \textit{javni}. Do privatnih članov ne moremo dostopati izven razreda. \\
+\indent Metodam lahko dodamo modifikator \textit{final}, kar prepreči, da bi bila funkcija re-implementirana v dedujočem se razredu. Če želimo, da metoda re-implementira metodo v starševkem razredu, ji moramo dodati modifikator \textit{overriding}. \\
 \indent Poleg atributov in metod lahko razred vsebuje tudi definicije gnezdenih razredov, enumeracij ter vmesnikov.\\
 \indent V pomnilniku je instanca razreda (objekt) predstavljena podobno kot terka, t.j. kot tabela z vrednostmi različnih podatkovnih tipov. Zato tudi odmik elementov izračunamo podobno kot pri terkah.
 
@@ -985,7 +985,7 @@ Nadzor dostopa omejuje dostop do članov razreda izven definicije, če to ekspli
 
 \subsection{Instančne funkcije}
 
-Razred ima lahko v sebi definirane funkcije, ki se jim v OOP žargonu pogosto reče \textit{metode}. Metode se od funkcij, ki niso definirane v razredu, razlikuje v tem, da vsebujejo impliciten parameter, ki je referenca na objekt, ki metodo kliče. Ta parameter prevajalnik v metodo vstavi avtomatsko. \\
+Razred ima lahko v sebi definirane funkcije, ki se jim v OOP žargonu pogosto reče \textit{metode}. Metode se od funkcij, ki niso definirane v razredu, razlikujejo v tem, da vsebujejo impliciten parameter, ki je referenca na objekt, ki metodo kliče. Ta parameter prevajalnik v metodo vstavi avtomatsko. \\
 \indent V C++ in Javi se ta parameter imenuje \textbf{\textit{this}}, v Pythonu, Swiftu in v Atherisu pa \textbf{\textit{self}}. V Pythonu je ta razlika, da je parameter potrebno eksplicitno navesti, če ga ne, se funkcija / metoda smatra kot statična (več o statičnih metodah v nadaljevanju). \\
 \indent Prevajalnik mora implicitni \textit{self} parameter avtomatsko vstaviti v vse metode razreda. Delno to stori tekom razreševanja imen, ko definiciji funkcije vstavi nov parameter, delno pa tekom razreševanja tipov, ko parametru nastavi tip razreda. \\
 
@@ -993,10 +993,10 @@ Razred ima lahko v sebi definirane funkcije, ki se jim v OOP žargonu pogosto re
 
 Konstruktorji so posebne vrste metod, njihova naloga pa je kreacija objektov ter inicializacija atributov. Podobno kot ostalim metodam razreda tudi konstruktorju prevajalnik implicitno vstavi \textit{self} parameter. \\
 \indent Naloga konstruktorja je, da na kopici, t.j. delu pomnilnika, kamor shranjujemo dinamično alicirane objekte (za razliko od sklada, kamor shranjujemo statične), alocira prostor, kjer bo shranjen objekt. Za dinamično alociranje pomnilnika se uporabi gradnik vmesne kode \textbf{ImcMALLOC}. Ta gradnik na kopici rezervira željeno velikost pomnilnika ter vrne naslov. \\
-\indent Pri generiranju vmesne kode prevajalnik vstavi na začetek kode funkcije MALLOC gradnik, ki bo rezerviral prostor za objekt. Nato bo prevajalnik vrnjen naslov shranil na sklad v parameter \textit{self}, zato da lahko znotraj konstruktorja nastavimo vrednosti ostalih atributov razreda. Na koncu bo ta naslov konstruktor tudi vrnil. Vrnjen naslov je referenca na objekt in ga uporabljamo za nadaljne operacije nad objektom. \\
+\indent Pri generiranju vmesne kode prevajalnik vstavi na začetek kode konstruktorja MALLOC gradnik, ki bo rezerviral prostor za objekt. Nato bo prevajalnik vrnjen naslov shranil na sklad v parameter \textit{self}, zato da lahko znotraj konstruktorja nastavimo vrednosti ostalih atributov razreda. Na koncu bo ta naslov konstruktor tudi vrnil. Vrnjen naslov je referenca na objekt in ga uporabljamo za nadaljne operacije nad objektom. \\
 \indent Razred ima lahko poljubno število konstruktorjev, ki jih definiramo z uporabo ključne besede \textit{\textbf{init}}. 
 
-\begin{lstlisting}[caption={Konsturktorji}, captionpos=b]
+\begin{lstlisting}[caption={Konsturktorji.}, captionpos=b]
 	class Atheris {
 	    var x: Int
 	    init() {
@@ -1010,7 +1010,7 @@ Konstruktorji so posebne vrste metod, njihova naloga pa je kreacija objektov ter
 
 \indent Poleg eksplicitnih konstruktorjev prevajalnik zgenerira tudi impliciten \textit{privzeti} konstruktor. Vanj je vstavljena koda za inicializacijo atributov, ki so inicializirani ob definiciji. 
 
-\begin{lstlisting}[caption={Implicitni privzeti konstruktor}, captionpos=b]
+\begin{lstlisting}[caption={Implicitni privzeti konstruktor.}, captionpos=b]
 	class Atheris {
 	    var x: Int = 10
 	    var y: Int = 20
@@ -1022,12 +1022,12 @@ Konstruktorji so posebne vrste metod, njihova naloga pa je kreacija objektov ter
 
 V primeru, da je v razredu privzeti konstruktor tudi eksplicitno definiran, bo poleg svoje kode vseboval tudi kodo implicitnega.
 
-\begin{lstlisting}[caption={Eksplicitni privzeti konstruktor}, captionpos=b]
+\begin{lstlisting}[caption={Eksplicitni privzeti konstruktor.}, captionpos=b]
 	class Atheris {
 	    var x: Int = 10
 	    var y: Int = 20
 	    init() { // privzeti konstruktor
-	        y = 100
+	        self.y = 100
 	    }
 	}
 	
@@ -1039,7 +1039,7 @@ V primeru, da je v razredu privzeti konstruktor tudi eksplicitno definiran, bo p
 
 Statični člani razreda so tisti člani, ki ne živijo znotraj posameznih instanc, ampak živijo v globalni statični instanci razreda. Definiramo jih z uporabo modifikatorja \textit{\textbf{static}}. Statična instanca razreda je naložena v pomnilnik avtomatsko ob zagonu programa. Do statičnih članov dostopamo preko imena razreda. Ker statične funkcije niso del instance razreda, ne vsebujejo \textit{self} parametra.
 
-\begin{lstlisting}[caption={Klicanje statične funkcije}, captionpos=b]
+\begin{lstlisting}[caption={Klicanje statične funkcije.}, captionpos=b]
 	class Static {
    	    static func foo() {
 	         print("I am a static function")
@@ -1048,10 +1048,10 @@ Statični člani razreda so tisti člani, ki ne živijo znotraj posameznih insta
 	Static.foo()
 \end{lstlisting}
 
-\indent V času razreševanja tipov so statične definicije razreda shranjene v ločeno podatkovno strukturo od instančnih. Vozlišču AST, ki definira razred (\textit{AstClassDefinition}), v simbolno tabelo ne pripišemo razredni podatkovni tip, ampak \textit{statični / kanonični} tip, ki hrani podatke o statičnih definicijah razreda ter referenco na dejanski instačni podatkovni tip. Ko se sklicujemo na člane statične instance preko DOT operatorja, prevajalnik preveri, ali statični tip vsebuje iskan član.\\
+\indent V času razreševanja tipov so statične definicije razreda shranjene v ločeno podatkovno strukturo od instančnih. Vozlišču AST, ki definira razred (\textit{AstClassDefinition}), v simbolno tabelo ne pripišemo razredni podatkovni tip, ampak \textit{statični} tip, ki hrani podatke o statičnih definicijah razreda. Ko se sklicujemo na člane statične instance preko DOT operatorja, prevajalnik preveri, ali statični tip vsebuje iskan član.\\
 \indent Razredi lahko vsebujejo tudi enumeracije in gnezdene razrede. Definicije enumeracij in razredov se smatrajo privzeto kot statične, zato do njih dostopamo enako kot do statičnih članov. 
 
-\begin{lstlisting}[caption={Enumeracija znotraj razreda}, captionpos=b]
+\begin{lstlisting}[caption={Enumeracija znotraj razreda.}, captionpos=b]
 	class Static {
 	    enum Languages: Int {
 	        case Cpp, Java
@@ -1063,7 +1063,7 @@ Statični člani razreda so tisti člani, ki ne živijo znotraj posameznih insta
 
 Da lahko dostopamo do konstruktorjev znotraj gnezdenih razredov, jih prevajalnik smatra, kot da so to statične metode.
 
-\begin{lstlisting}[caption={Gnezden razred}, captionpos=b]
+\begin{lstlisting}[caption={Gnezden razred.}, captionpos=b]
 	class Atheris {
 	    class NestedClass {
 	        var x = 20
@@ -1081,7 +1081,7 @@ Dedovanje in polimorfizem sta, poleg enkapsulacije in abstrakcije, najpomembnej�
 
 Dynamic dispatch je proces izbire, katera implementacija polimorfne operacije naj se izvede v času \textbf{izvajanja programa}. Običajno lahko pri klicih funkcij že v času prevajanja izberemo, katera \textit{implementacija} funkcije naj se kliče, saj obstaja samo ena. Pri razredih nastane problem, kadar dovolimo, da imajo lahko dedujoči se razredi svoje implementacije funkcij (oz. metod), kot je razvidno v spodnjem primeru: 
 
-\begin{lstlisting}[caption={Več implementacij za isto funkcionalnost}, captionpos=b, label={virtualTableExamples}]
+\begin{lstlisting}[caption={Več implementacij za isto funkcionalnost.}, captionpos=b, label={virtualTableExamples}]
 	class Fruit {
 	    func kind() {
 	        print("I am a Fruit!")
@@ -1126,10 +1126,10 @@ kjer je \[address(vtable)\]\ lokacija tabele v pomnilniku, \[(i * sizeof(void*) 
 
 \section{Instance of operator}
 
-Instance of operator je operator, ki v času izvajanja programa preveri, ali je objekt instanca danega razreda. To naredi z uporabo virtualne tabele. Kot sem omenil, vsaka tabela vsebuje unikatni deskriptor njenega razreda. Preko deskriptorja lahko preverimo, ali se dva podatkovna tipa ujemata. \\
+Instance of operator je operator, ki v času izvajanja programa preveri, ali je objekt instanca danega razreda. To naredi z uporabo virtualne tabele. Kot je bilo omenjeno, vsaka tabela vsebuje unikatni deskriptor njenega razreda. Preko deskriptorja lahko preverimo, ali se dva podatkovna tipa ujemata. \\
 \indent V programskem jeziku Atheris se operator imenuje \textit{is}.
 
-\begin{lstlisting}[caption={Uporaba operatorja \textit{is} za razrede iz sheme ~\ref{vtables}}, captionpos=b]
+\begin{lstlisting}[caption={Uporaba operatorja \textit{is} za razrede iz sheme ~\ref{vtables}.}, captionpos=b]
 	var object: A
 	object = B()
 	print(object is A) // 'true'
@@ -1137,9 +1137,9 @@ Instance of operator je operator, ki v času izvajanja programa preveri, ali je 
 	print(object is C) // 'false'
 \end{lstlisting}
 
-Dejanski algoritem za preverjanje, ali je objekt instanca danega razreda, je  kompleksnejši kot sem opisal zgoraj, saj je lahko razredna hiearhija obsežna in je zato potrebno preverjanje izvesti rekurzivno po celotni hiearhiji.
+Ker je lahko razredna hiearhija obsežna, je potrebno preverjanje izvesti rekurzivno po celotni hiearhiji.
 
-\begin{lstlisting}[caption={Algoritem za izračun ali je objekt instanca danega razeda}, captionpos=b]
+\begin{lstlisting}[caption={Algoritem za izračun ali je objekt instanca danega razeda.}, captionpos=b]
 todo
 \end{lstlisting}
 
@@ -1147,7 +1147,7 @@ todo
 
 Mehanizem pretvarjanja iz enega tipa v drug (angl. \textit{type casting}) deluje po zelo podobnem principu kot \textit{as} operator. Razlikujeta se predvsem v njunem rezultatu. Rezultat \textit{as} operatorja je \textit{true} ali \textit{false}, medtem ko je pri neuspešnem pretvarjanju rezultat \textit{null}, pri uspešnem pa objekt, pretvorjen v željen tip. Takemu tipu pretvarjanja rečemo \textit{safe casting}, saj program nadaljuje z izvajanjem tudi če pretvorba ni uspešna. Za razliko od \textit{non-safe castanja}, kjer bi program vrnil \textit{null pointer exception}.
 
-\begin{lstlisting}[caption={Pretvorba za razrede iz sheme ~\ref{vtables}}, captionpos=b]
+\begin{lstlisting}[caption={Pretvorba za razrede iz sheme ~\ref{vtables}.}, captionpos=b]
 	var object: A = B()
 	let casted = object as B
 	    print("cast failed")
@@ -1161,7 +1161,7 @@ Mehanizem pretvarjanja iz enega tipa v drug (angl. \textit{type casting}) deluje
 
 Vmesnik je abstraken opis akcij, ki jih lahko izvede objekt. Tekom prevajanja prevajalnik zagotovi, da razred vsebuje vse metode v vmesnikih, ki jih želi implementirati. Ker je vmesnik abstraktna podatkovna struktura, ne moremo kreirati instance neposredno, lahko pa spremeljivki priredimo instanco razreda, če razred implementira vmesnik. Vse metode so klicane dinamično, po postoku opisanem v razdelku \ref{dynamicDispatch}.
 
-\begin{lstlisting}[caption={Vmesniki}, label={lst:interfaces}, captionpos=b]
+\begin{lstlisting}[caption={Vmesniki.}, label={lst:interfaces}, captionpos=b]
 	interface I {
 	    func foo()
 	}
@@ -1186,7 +1186,7 @@ Vmesnik je abstraken opis akcij, ki jih lahko izvede objekt. Tekom prevajanja pr
 
 Razširitev (angl. \textit{extension}) je mehanizem, ki omogoča dodajanje funkcionalnosti obstoječim razredom. Razred lahko razširimo z metodami, enumeracijami in razredi.  
 
-\begin{lstlisting}[caption={Razširitev razreda A}, captionpos=b]
+\begin{lstlisting}[caption={Razširitev razreda A.}, captionpos=b]
 	extension A {
 	    func toString() {
 	        print("ext::toString()")
@@ -1195,22 +1195,23 @@ Razširitev (angl. \textit{extension}) je mehanizem, ki omogoča dodajanje funkc
 	A().toString()
 \end{lstlisting}
 
+Implementacija razširitev ni ravno zapletena; prevajalnik v fazi razreševanja tipov tekom prvega sprehoda po AST za vsako novo definicijo v razširitvi izračuna njen podatkovni tip, zagotovi, da razred ne vsebuje definicije z istim imenom, ter mu jo nakoncu vstavi.
 
 \subsection{Razširitev z vmesnikom}
 
 Razredom lahko preko razširitev dodamo tudi implementacijo vmesnikov, čemur rečemo \textit{interface extension}.
 
-\begin{lstlisting}[caption=Razširitev z vmesnikom, captionpos=b]
+\begin{lstlisting}[caption=Razširitev z vmesnikom., captionpos=b]
 	class Collection {}
 	interface Iterable {
-	    func next() Any
+	    func next() Int
 	}
 	extension Collection: Iterable {
-	    func next() Any {
-	        return nil
+	    func next() Int {
+	        return 10
 	    }
 	}
-	let iterable: Iterable = Collection()
+	let iterable = Collection()
 	print(iterable.next())
 \end{lstlisting}
 
@@ -1219,7 +1220,7 @@ Razredom lahko preko razširitev dodamo tudi implementacijo vmesnikov, čemur re
 Type inference omogoča prevajalniku, da avtomatsko prepozna podatkovni tip izraza, na podlagi vrednosti, ki so v izrazu. To je posebej uporabno pri definicijah spremeljivk, ki jim pogosto nastavimo vrednost ob sami definiciji. \\
 \indent V primeru, da definicija spremenljivke nima eksplicitno navedenega podatkovnega tipa, prevajalnik najprej izračuna podatkovni tip izraza na desni strani prirejevalnega operatorja, ter ga nato dodeli definiciji.
 
-\begin{lstlisting}[caption={Avtomatično prepoznavanje podatkovnih tipov}, captionpos=b]
+\begin{lstlisting}[caption={Avtomatično prepoznavanje podatkovnih tipov.}, captionpos=b]
 	let meaningOfLife = 42
 	// meaningOfLife je tipa Int
 	let pi = 3.14159
@@ -1230,11 +1231,11 @@ Type inference omogoča prevajalniku, da avtomatsko prepozna podatkovni tip izra
 
 Prepoznavanje tipov postane kompleksnejše pri tabelah, kadar njeni elementi niso istih tipov. Prevajalnik tekom razreševanja tipov vedno poišče najmanjši možen tip, ki je skupen vsem elementom tabele. V primeru, da so v tabeli objekti, ki jim je skupen nadrazred \textit{A}, bo tudi tabela tipa \textit{A}. V primeru, da elementi nimajo nobenega skupnega tipa, prevajalnik tabeli dodeli poseben abstrakten tip \textit{\textbf{Any}}, ki je definiran v standardni knjižnici. \textit{Any} je v programskem jeziku Atheris to, kar je v Javi \textit{Object}, s to razliko, da je \textit{Object} razred, \textit{Any} pa vmesnik. Vsak podatkovni tip je implicitno tudi tipa \textit{Any} .
 
-\begin{lstlisting}[caption={Elementi tabele s skupnim nadrazredom}, captionpos=b]
+\begin{lstlisting}[caption={Elementi tabele s skupnim nadrazredom.}, captionpos=b]
 	let array = [C(), B(), C(), C()] // spremenljivka array = tipa ARR ( A )
 \end{lstlisting}
 
-\begin{lstlisting}[caption={Elementi tabele nimajo skupnega tipa}, captionpos=b]
+\begin{lstlisting}[caption={Elementi tabele nimajo skupnega tipa.}, captionpos=b]
 	let array = [10, "string", A(), 3.14] // spremenljivka array = tipa ARR ( Any )
 \end{lstlisting}
 
@@ -1246,6 +1247,17 @@ Delovanje programskega jezika Atheris je testirano na znanih algoritmih - \texti
 
 \subsection{Bubble sort}
 
+Z bubble sort algoritmom preverimo:
+\vspace{-7mm}
+\begin{itemize}
+	\setlength\itemsep{-1em}
+	\item dostopanje do pomnilnika (do elementov v tabeli na nekem indeksu)
+	\item delovanje zank
+	\item klicanje funkcij, prenos parametrov
+\end{itemize}
+\vspace{-5mm}
+Algoritem izvedemo 100.000-krat na številih \textit{8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26} in pri tem merimo čas izvajanja.
+
 \begin{tikzpicture}
 \begin{axis}[
 symbolic x coords={PINS, Atheris, Python},
@@ -1254,14 +1266,18 @@ bar width=40,
 width=300
 ]
 \addplot[ybar,fill=blue] coordinates {
-	(PINS,   32.000)
-	(Atheris,  33.948)
+	(PINS,   29.802)
+	(Atheris,  28.535)
 	(Python,   2.017)
 };
 \end{axis}
 \end{tikzpicture}
 
+Rezultati niso presenetljivi, PINS in Atheris oba potrebujeta približno enako časa, medtem ko je Python (po pričakovanjih) bistveno hitrejši.
+
 \subsection{Quick sort}
+
+Z uporabo quick sort algoritma, poleg prej naštetih funkcionalnosti, stestiramo še delovanje rekurzije. Algoritem je izveden pod enakimi pogoji kot bubble sort. \\
 
 \begin{tikzpicture}
 \begin{axis}[
@@ -1280,7 +1296,8 @@ width=300
 
 \subsection{Izračun n-tega fibonaccijevega števila}
 
-fib(35)\\
+Zadnji testni algoritem je izračun n-tega fibonaccijevega števila z uporabo rekurzivne enačbe
+$fib(n) = fib(n - 1) + fib(n - 2) ; fib(0) = 1; fib(1) = 1$. Računamo $fib(35)$. \\
 
 \begin{tikzpicture}
 \begin{axis}[
@@ -1290,17 +1307,17 @@ bar width=40,
 width=300
 ]
 \addplot[ybar,fill=blue] coordinates {
-	(PINS,  417.771)
-	(Atheris, 362.531)
-	(Python, 33.265)
+	(PINS,  34.874)
+	(Atheris, 32.308)
+	(Python, 3.019)
 };
 \end{axis}
 \end{tikzpicture}
 
 \subsection{Quicksort s polimorfnimi operacijami}
 
-V razdelku ~\ref{dynamicDispatch} je podrobneje opisano delovanje polimorfnih operacij, kot so \textit{dynamic dispatch}, \textit{instance of} operator ter pretvarjanje tipov. Naštete operacije nam omogočajo veliko zelo priročnih stvari, ki nam pri razvoju programske opreme pogosto pridejo prav. A pod določeno ceno. Izvedba teh operacij je namreč relativno počasna. \\
-\indent Zanimalo me je, kolikšno ceno moramo pravzaprav dejansko plačati za njihovo delovanje, zato sem pripravil primer, ki testira prav to. Gre za quicksort algoritem, ki se izvaja nad objekti različnih razredov s skupnim nadrazredom, ki izvede operacijo primerjanja. Vhodni podatki so identični kot pri prejšnjih primerih, s to razliko, da števila ovijemo z objekti.\\
+V razdelku ~\ref{dynamicDispatch} je podrobneje opisano delovanje polimorfnih operacij, kot so \textit{dynamic dispatch}, \textit{instance of} operator ter pretvarjanje tipov. Naštete operacije nam omogočajo kar nekaj priročnih funkcionalnosti, ki nam pri razvoju programske opreme pogosto pridejo prav. A pod določeno ceno, saj je izvedba teh operacij relativno počasna. \\
+\indent Zanimalo me je, kolikšno ceno moramo pravzaprav dejansko plačati za njihovo delovanje, zato sem pripravil primer, ki testira prav to. Gre za quicksort algoritem, ki se izvaja nad instancami dveh različnih razredov, ki imata skupni nadrazred. Ta poskbri za operacijo primerjanja preko naštetih polimorfnih operacij. Vhodni podatki v algoritem so identični kot pri prejšnjih primerih. \\
 
 \begin{tikzpicture}
 \begin{axis}[
@@ -1317,60 +1334,470 @@ width=300
 \end{axis}
 \end{tikzpicture}
 
-Po pričakovanjih se izkaže, da je izvajanje res občutno počasnejše; in sicer skoraj 230\%. Algoritem sem poiskusil pohitriti tako, da sem se izognil operaciji \textit{instance of}. Izvajanje se je s to optimizacijo pohitrilo za približno 10 sekund.
-
-\section{Analiza}
-
-To, da je izvanja algoritma v Pythonu bistveno hitrejše, ni presenetljiv rezultat. Je pa zanimivo to, da je Atheris v vseh primerih občutno hitrejši od osnovnega jezika PINS, kljub temu, da v prevajalnik niso bile vgrajene posebne optimizacije, in tudi njun interpreter je praktično identičen. \\
-\indent Analiza izvajanja vmesne kode dobljen rezultat potrdi, saj se izkaže, da PINS izvede občutno večje število ukazov kot Atheris: \\
-
-\begin{tikzpicture}
-\begin{axis}[
-ybar,
-symbolic x coords={JUMP, TEMP, NAME, CALL, CONST, BINOP, MEM, CJUMP, MOVE, LABEL},
-xtick=data,
-width=420,
-ylabel={$*10^6$},
-]
-\addplot[x=interval,y=carT,fill=blue] coordinates {
-	(JUMP,   32.7)
-	(TEMP,  164.8)
-	(NAME,  1.4)
-	(CALL,  0.1)
-	(CONST,  257.4)
-	(BINOP,  320.8)
-	(MEM,  182.3)
-	(CJUMP,  36.6)
-	(MOVE,  33.3)
-	(LABEL,  74.6)
-};
-\addplot[x=interval,y=carD,fill=red] coordinates {
-	(JUMP,  31.4)
-	(TEMP,  136.4)
-	(NAME,  1.7)
-	(CALL,  0.1)
-	(CONST,  190.9)
-	(BINOP,  253)
-	(MEM,  150.6)
-	(CJUMP,  31.4)
-	(MOVE,  22.4)
-	(LABEL,  77.4)
-};
-\legend{PINS, Atheris}
-\end{axis}
-\end{tikzpicture}
-
-Izkaže se, da PINS izvede 212.498.982 (212 * $10^6$) ukazev več kot Atheris.
+Po pričakovanjih se izkaže, da je izvajanje res občutno počasnejše; in sicer skoraj 230\%. Algoritem sem malenkost pohitril tako, da sem se izognil operaciji \textit{instance of}. Izvajanje se je s to optimizacijo pohitrilo za približno 10 sekund.
 
 \chapter{Sklepne ugotovitve}
 
-Uporaba \LaTeX{a} in \BibTeX{a} je v okviru Diplomskega seminarja \textbf{obvezna}!
-Izbira \LaTeX\ ali ne \LaTeX\ pri pisanju dejanske diplomske naloge pa je pre\-pu\-šče\-na dogovoru med vami in vašim mentorjem.
+V okviru diplomske naloge so predstavljeni programski jeziki in prevajalniki, sodobne prakse načrtovanja in implementacije prevajalnikov ter njihova zgradba. Podrobneje sta opisana programska jezika PINS in Atheris, poudarek na slednjem, ki je nadgradnja prvega. Razširitve, ki jih prevajalnik za Atheris vsebuje napram prevajalniku za PINS, in njihova implementacija, so tekom naloge podrobneje opisane. \\
+\indent Programski jezik Atheris omogoča uporabo objektno usmerjenih gradnikov, ki jih vidimo v večini sodobnih objektnih jezikov; to so enumeracije, terke, razredi in vmesniki. Atheris podpira tudi razširitve razredov, podobno kot to lahko počnemo v Swiftu. \\
+\indent Za diplomsko nalogo je bilo načrtovano še kar nekaj dodatnih funkcionalnosti, ki zaenkrat še niso implementirane. Med njih spadajo generični podatkovni tipi in generične funkcije, opcijski podatkovni tipi in \textit{closure} \footnote{todo razlaga} funkcije. Njihova vgradnja bo prišla na vrsto v nadaljnem razvoju prevajalnika. \\
+\indent  V razdelku ~\ref{semanSection} je omenjeno, da lahko semantična analiza stori več, kot le razreši imena in podatkovne tipe. Prevajalnik za Atheris vsebuje še tretjo semantično fazo, ki se imenuje \textit{preverjanje inicializiranosti}. Naloga te faze je, da za vsako spremenljivko zagotovi, da ji je bila pred njeno uporabo nastavljena vrednost. Poleg tega prepreči, da lahko konstantam vrednost priredimo natanko enkrat. Faza je trenutno še v povojih in zaenkrat ne deluje tako, kot bi si želeli, zato ni opisana tekom diplomske naloge. \\
+\indent Tekom te diplomske naloge se osredotočamo predvsem na \textit{front-end} del prevajalnika, kjer se izvede analiza izvorne kode in sinteza v vmesno. Preskočen je celoten zaledni del prevajalnika (\textit{back-end}). Naloga zalednega dela je optimizacija vmesne in generiranje dejanske strojne kode za ciljno arhitekturo. V prihodnje je cilj vgradnja v prevajalnik za Atheris izjemno močen zaledni sistem \textbf{LLVM} \cite{LLVM}, na katerem temeljijo tudi zelo zmogljivi C++, Objective-C in Swift prevajalniki.
 
-Res je, da so prvi koraki v \LaTeX{}u težavni. 
-Ta dokument naj vam služi kot začetna opora pri hoji.
-Pri kakršnihkoli nadaljnih vprašanjih ali napakah pa svetujem uporabo Googla, saj je spletnih strani za pomoč pri odpravljanju težav pri uporabi \LaTeX{}a ogromno.
 
+\chapter{Priloge}
+
+\section{Atheris}
+
+\subsection{Bubble sort}
+
+\begin{lstlisting}
+func bubbleSort(_ list: [Int], size: Int) Int {
+    var i = 0
+    while i < size {
+        var j = 0
+        while j < size {
+            if list[i] < list[j] {
+                let tmp = list[i]
+                list[i] = list[j]
+                list[j] = tmp
+            }
+            j = j + 1
+        }
+        i = i + 1
+    }
+}
+
+var list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
+var i = 0
+while i < 100000 {
+    bubbleSort(list, size: list.count)
+    list[0] = 8
+    list[1] = 0
+    list[2] = 3
+    list[3] = 9
+    list[4] = 2
+    list[5] = 14
+    list[6] = 10
+    list[7] = 27
+    list[8] = 1
+    list[9] = 5
+    list[10] = 8
+    list[11] = -1
+    list[12] = 26
+    i = i + 1
+}
+\end{lstlisting}
+
+\subsection{Quick sort}
+
+\begin{lstlisting}
+func quickSort(_ list: [Int], low: Int, high: Int) {
+    func partition(_ list: [Int], low: Int, high: Int) Int {
+        let pivot = list[low]
+        var i = low - 1
+        var j = high + 1
+
+        while true {
+            while true {
+                j = j - 1
+                if list[j] <= pivot {
+                    break
+                }
+            }
+
+            while true {
+                i = i + 1
+                if list[i] >= pivot {
+                    break
+                }
+            }
+
+            if i < j {
+                let tmp = list[i]
+                list[i] = list[j]
+                list[j] = tmp
+            }
+            else {
+                return j
+            }
+        }
+    }
+
+    if low < high {
+        let p = partition(list, low: low, high: high)
+        quickSort(list, low: low, high: p)
+        quickSort(list, low: p + 1, high: high)
+    }
+}
+
+var list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
+var i = 0
+while i < 100000 {
+    quickSort(list, low: 0, high: list.count - 1)
+    list[0] = 8
+    list[1] = 0
+    list[2] = 3
+    list[3] = 9
+    list[4] = 2
+    list[5] = 14
+    list[6] = 10
+    list[7] = 27
+    list[8] = 1
+    list[9] = 5
+    list[10] = 8
+    list[11] = -1
+    list[12] = 26
+    i = i + 1
+}
+\end{lstlisting}
+
+\subsection{Fibonacci}
+
+\begin{lstlisting}
+func fib(_ n: Int) Int {
+    if n < 2 {
+        return 1
+    }
+    else {
+        return fib(n - 1) + fib(n - 2)
+    }
+}
+fib(35)
+\end{lstlisting}
+
+\subsection{Quick sort nad razredi}
+
+\begin{lstlisting}
+class Comparable {
+    func compare(with object: Any) Int {
+        let comparable = object as Comparable
+        if comparable != null {
+            return self.value() - comparable.value()
+        }
+        else {
+            return 0
+        }
+    }
+
+    func value() Int {
+        return 0
+    }
+
+    func toString() {
+    }
+}
+
+class Integer: Comparable {
+    var val: Int
+
+    init(_ val: Int) {
+        self.val = val
+    }
+
+    override func value() Int {
+        return self.val
+    }
+
+    override func toString() {
+        print(self.val)
+    }
+}
+
+class Decimal: Comparable {
+    var val: Int
+
+    init(_ val: Int) {
+        self.val = val
+    }
+
+    override func value() Int {
+        return self.val
+    }
+
+    override func toString() {
+        print(self.val)
+    }
+}
+
+func partition(_ list: [Comparable], low: Int, high: Int) Int {
+    let pivot = list[low]
+    var i = low - 1
+    var j = high + 1
+
+    while true {
+        while true {
+            j = j - 1
+            let el = list[j]
+            if el.compare(with: pivot) <= 0 {
+                break
+            }
+        }
+
+        while true {
+            i = i + 1
+            let el = list[i]
+            if el.compare(with: pivot) >= 0 {
+                break
+            }
+        }
+
+        if i < j {
+            let tmp = list[i]
+            list[i] = list[j]
+            list[j] = tmp
+        }
+        else {
+            return j
+        }
+    }
+}
+
+func quicksort(_ list: [Comparable], low: Int, high: Int) {
+    if low < high {
+        let p = partition(list, low: low, high: high)
+        quicksort(list, low: low, high: p)
+        quicksort(list, low: p + 1, high: high)
+    }
+}
+
+var list = [ Integer(8), Decimal(0), Integer(3), Integer(9), Decimal(14), Decimal(10), Integer(27), Decimal(1), Decimal(5), Integer(8), Decimal(-1), Decimal(26) ]
+
+var i = 0
+while i < 100000 {
+    quicksort(list, low: 0, high: list.count - 1)
+    i = i + 1
+}
+\end{lstlisting}
+
+\section{PINS}
+
+\subsection{Bubble sort}
+
+\begin{lstlisting}
+fun bubble(tab:arr[13] integer) : integer = (
+    {for i = 0, 13, 1 :
+        {for j = 0, 13, 1:
+            {if tab[j] > tab[i] then 
+                (
+                {tmp = tab[j]},
+                {tab[j] = tab[i]},
+                {tab[i] = tmp}, 0
+                ) 
+                { where var tmp : integer} 
+            }
+        }
+    },
+    1
+) { where var i : integer; var j : integer };
+
+var tab: arr[13] integer;
+var count: integer;
+
+fun main(i:integer) : integer = (
+    {while count < 100000:
+        (
+        {tab[0] = 8},
+        {tab[1] = 0},
+        {tab[2] = 3},
+        {tab[3] = 9},
+        {tab[4] = 2},
+        {tab[5] = 14},
+        {tab[6] = 10},
+        {tab[7] = 27},
+        {tab[8] = 1},
+        {tab[9] = 5},
+        {tab[10] = 8},
+        {tab[11] = -1},
+        {tab[12] = 26},
+        bubble(tab),
+        {count = count + 1}
+        )
+    },
+    0
+)
+\end{lstlisting}
+
+
+\subsection{Quick sort}
+
+\begin{lstlisting}
+fun partition(tab: arr[13] integer, low: integer, high: integer) : integer = (
+    {pivot = tab[low]},
+    {i = low - 1},
+    {j = high + 1},
+    {loop = true},
+    {while loop == true:
+        (
+        {p = true},
+        {while p == true:
+            (
+            {j = j - 1},
+            {if tab[j] <= pivot then
+                {p = false}
+            }
+            )
+        },
+        {p = true},
+        {while p == true:
+            (
+            {i = i + 1},
+            {if tab[i] >= pivot then
+               {p = false}
+            }
+            )
+        },
+        {if i < j then
+            (
+            {tmp = tab[j]},
+            {tab[j] = tab[i]},
+            {tab[i] = tmp},0
+            )
+        { where var tmp : integer}
+        else ({loop = false})
+        }
+        )
+    },
+    j
+) { where var pivot: integer; var i: integer; var j: integer; var p: logical; var loop: logical };
+
+fun quickSort(tab: arr[13] integer, low: integer, high: integer) : integer = (
+    {if low < high then
+        (
+        {p = partition(tab, low, high)},
+        quickSort(tab, low, p),
+        quickSort(tab, p + 1, high)
+        )
+    },
+    0
+) { where var p: integer }
+
+var tab: arr[13] integer;
+var count: integer;
+
+fun main(i:integer) : integer = (
+    {while count < 100000:
+        (
+        {tab[0] = 8},
+        {tab[1] = 0},
+        {tab[2] = 3},
+        {tab[3] = 9},
+        {tab[4] = 2},
+        {tab[5] = 14},
+        {tab[6] = 10},
+        {tab[7] = 27},
+        {tab[8] = 1},
+        {tab[9] = 5},
+        {tab[10] = 8},
+        {tab[11] = -1},
+        {tab[12] = 26},
+        quickSort(tab, 0, tab.length - 1),
+        {count = count + 1}
+        )
+    },
+    0
+)
+\end{lstlisting}
+
+
+\subsection{Fibonacci}
+
+\begin{lstlisting}
+fun fib(x : integer) : integer = (
+    { if x < 2 then
+        ({rez = 1})
+    else 
+        ({rez = fib(x - 1) + fib(x - 2)})
+    },
+    rez
+) {where var rez : integer};
+
+fun main(i:integer) : integer = (
+    {i = fib(35)},
+    0
+)
+\end{lstlisting}
+
+\section{Python}
+
+\subsection{Bubble sort}
+
+\begin{lstlisting}
+def bubble(list):
+    for i in range(len(list)):
+        for j in range(len(list)):
+            if list[i] < list[j]:
+                tmp = list[i]
+                list[i] = list[j]
+                list[j] = tmp
+
+startTime = time.time()
+
+list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
+for i in range(100000):
+    bubble(list)
+    list = [8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26]
+print(time.time() - startTime)
+\end{lstlisting}
+
+
+\subsection{Quick sort}
+
+\begin{lstlisting}
+import time
+
+def partition(list, low, high):
+    pivot = list[low]
+    i = low - 1
+    j = high + 1
+
+    while True:
+        while True:
+            j = j - 1
+            if list[j] <= pivot:
+                break
+
+        while True:
+            i = i + 1
+            if list[i] >= pivot:
+                break
+
+        if i < j:
+            tmp = list[i]
+            list[i] = list[j]
+            list[j] = tmp
+        else:
+            return j
+
+def quickSort(list, low, high):
+    if low < high:
+        p = partition(list, low, high)
+        quickSort(list, low, p)
+        quickSort(list, p + 1, high)
+
+startTime = time.time()
+
+list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
+for i in range(100000):
+    quickSort(list, 0, len(list) - 1)
+    list = [8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26]
+print(time.time() - startTime)
+\end{lstlisting}
+
+\subsection{Fibonacci}
+
+\begin{lstlisting}
+import time
+
+def fib(n):
+    if n < 2:
+        return 1
+    return fib(n - 1) + fib(n - 2)
+
+startTime = time.time()
+fib(35)
+print(time.time() - startTime)
+\end{lstlisting}
 
 \newpage %dodaj po potrebi, da bo številka strani za Literaturo v Kazalu pravilna!
 

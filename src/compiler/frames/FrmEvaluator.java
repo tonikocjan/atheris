@@ -132,12 +132,11 @@ public class FrmEvaluator implements ASTVisitor {
 
 	@Override
 	public void visit(AstFunctionCallExpression acceptor) {
-		int parSize = 4;
+		int parSize = Constants.Byte;
 
 		for (AstExpression arg: acceptor.arguments) {
             Type argType = symbolDescription.getTypeForAstNode(arg);
-            int size = argType.isReferenceType() ? 4 : argType.sizeInBytes(); // FIXME: -
-
+            int size = argType.isReferenceType() ? Constants.Byte : argType.sizeInBytes(); // FIXME: -
             parSize += size;
         }
 
@@ -289,7 +288,7 @@ public class FrmEvaluator implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AstTupleDefinition acceptor) {
+	public void visit(AstTupleType acceptor) {
 		acceptor.definitions.accept(this);
 	}
 

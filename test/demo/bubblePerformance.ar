@@ -1,37 +1,21 @@
 import stdlib
 
-func bubble(_ list: [Int], size: Int) Int {
-    var i = 0
-    while i < size {
-        var j = 0
-        while j < size {
-            if list[i] < list[j] {
-                let tmp = list[i]
-                list[i] = list[j]
-                list[j] = tmp
-            }
-            j = j + 1
-        }
-        i = i + 1
-    }
-}
-
 var list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
 var i = 0
 while i < 100000 {
-    bubble(list, size: list.count - 1)
+    bubble(list, size: list.count)
     list[0] = 8
-    list[0] = 0
-    list[0] = 3
-    list[0] = 9
-    list[0] = 2
-    list[0] = 14
-    list[0] = 10
-    list[0] = 27
-    list[0] = 1
-    list[0] = 5
-    list[0] = 8
-    list[0] = -1
-    list[0] = 26
+    list[1] = 0
+    list[2] = 3
+    list[3] = 9
+    list[4] = 2
+    list[5] = 14
+    list[6] = 10
+    list[7] = 27
+    list[8] = 1
+    list[9] = 5
+    list[10] = 8
+    list[11] = -1
+    list[12] = 26
     i = i + 1
 }

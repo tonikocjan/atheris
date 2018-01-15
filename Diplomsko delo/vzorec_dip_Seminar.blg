@@ -7,45 +7,46 @@ Warning--to sort, need author or key in tiobeIndex
 Warning--to sort, need author or key in compilerStructure
 Warning--to sort, need author or key in stackFrames
 Warning--to sort, need author or key in Atheris
-You've used 6 entries,
+Warning--to sort, need author or key in LLVM
+You've used 7 entries,
             2118 wiz_defined-function locations,
-            525 strings with 5000 characters,
-and the built_in function-call counts, 1112 in all, are:
-= -- 107
-> -- 18
+            529 strings with 5082 characters,
+and the built_in function-call counts, 1280 in all, are:
+= -- 124
+> -- 19
 < -- 0
-+ -- 11
++ -- 12
 - -- 4
-* -- 38
-:= -- 148
-add.period$ -- 18
-call.type$ -- 6
-change.case$ -- 20
+* -- 43
+:= -- 167
+add.period$ -- 21
+call.type$ -- 7
+change.case$ -- 23
 chr.to.int$ -- 0
-cite$ -- 10
-duplicate$ -- 47
-empty$ -- 138
+cite$ -- 12
+duplicate$ -- 54
+empty$ -- 161
 format.name$ -- 4
-if$ -- 264
+if$ -- 306
 int.to.chr$ -- 0
-int.to.str$ -- 6
+int.to.str$ -- 7
 missing$ -- 2
-newline$ -- 33
+newline$ -- 38
 num.names$ -- 2
-pop$ -- 58
+pop$ -- 68
 preamble$ -- 1
-purify$ -- 15
+purify$ -- 17
 quote$ -- 0
-skip$ -- 33
+skip$ -- 38
 stack$ -- 0
-substring$ -- 31
-swap$ -- 6
+substring$ -- 36
+swap$ -- 7
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 22
-warning$ -- 4
+type$ -- 26
+warning$ -- 5
 while$ -- 2
-width$ -- 7
-write$ -- 57
-(There were 4 warnings)
+width$ -- 8
+write$ -- 66
+(There were 5 warnings)

@@ -402,7 +402,7 @@ public class LexAn implements LexicalAnalyzer {
     }
 
     private Symbol parseOperator(Symbol op) throws IOException {
-        if (op.getTokenType() == TokenType.NEWLINE) {
+        if (op.tokenType() == TokenType.NEWLINE) {
             // skip all whitespaces
             skipWhitespaces();
 
@@ -422,7 +422,7 @@ public class LexAn implements LexicalAnalyzer {
         nextCharacter = tmpCh;
         startCol++;
 
-        if (op.getTokenType() == TokenType.NEWLINE) {
+        if (op.tokenType() == TokenType.NEWLINE) {
             startRow++;
             startCol = 1;
         }
@@ -549,10 +549,10 @@ public class LexAn implements LexicalAnalyzer {
 			return;
 		if (logger.dumpFile() == null)
 			return;
-		if (symb.getTokenType() == TokenType.EOF)
+		if (symb.tokenType() == TokenType.EOF)
             logger.dumpFile().println(symb.toString());
 		else
             logger.dumpFile().println(
-					"[" + symb.getPosition().toString() + "] " + symb.toString());
+					"[" + symb.position().toString() + "] " + symb.toString());
 	}
 }

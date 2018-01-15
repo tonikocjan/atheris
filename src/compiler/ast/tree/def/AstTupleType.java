@@ -23,11 +23,11 @@ import compiler.Position;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.AstDefinitions;
 
-public class AstTupleDefinition extends AstTypeDefinition {
+public class AstTupleType extends AstTypeDefinition {
 
 	public final AstDefinitions definitions;
 
-	public AstTupleDefinition(Position pos, List<AstDefinition> defs) {
+	public AstTupleType(Position pos, List<AstDefinition> defs) {
 		super(pos, "");
 
 		this.definitions = new AstDefinitions(pos, defs);

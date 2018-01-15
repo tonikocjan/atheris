@@ -1,21 +1,7 @@
 import stdlib
 
-/*func fib(_ n: Int) Int {
-    if n < 2 {
-        return 1
-    }
-    else {
-        return fib(n - 1) + fib(n - 2)
-    }
-}
+class A {}
+class B: A {}
 
-print(fib(30))*/
-
-func a() Int {
-    func b() {
-        print("test")
-    }
-    b()
-}
-
-a()
+let a = B()
+print(a is A)

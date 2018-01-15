@@ -30,7 +30,7 @@
 \contentsline {chapter}{\numberline {4}Programski jezik Atheris}{17}{chapter.4}
 \contentsline {subsection}{\numberline {4.0.1}Podatkovni tipi}{18}{subsection.4.0.1}
 \contentsline {section}{\numberline {4.1}Sintaksa}{18}{section.4.1}
-\contentsline {section}{\numberline {4.2}Funkcije}{20}{section.4.2}
+\contentsline {section}{\numberline {4.2}Funkcije}{21}{section.4.2}
 \contentsline {subsection}{\numberline {4.2.1}Dolo\IeC {\v c}anje label argumentov}{21}{subsection.4.2.1}
 \contentsline {section}{\numberline {4.3}Enumeracije}{22}{section.4.3}
 \contentsline {section}{\numberline {4.4}Terke}{24}{section.4.4}
@@ -53,8 +53,21 @@
 \contentsline {section}{\numberline {5.1}Meritve}{35}{section.5.1}
 \contentsline {subsection}{\numberline {5.1.1}Bubble sort}{35}{subsection.5.1.1}
 \contentsline {subsection}{\numberline {5.1.2}Quick sort}{36}{subsection.5.1.2}
-\contentsline {subsection}{\numberline {5.1.3}Izra\IeC {\v c}un n-tega fibonaccijevega \IeC {\v s}tevila}{36}{subsection.5.1.3}
+\contentsline {subsection}{\numberline {5.1.3}Izra\IeC {\v c}un n-tega fibonaccijevega \IeC {\v s}tevila}{37}{subsection.5.1.3}
 \contentsline {subsection}{\numberline {5.1.4}Quicksort s polimorfnimi operacijami}{37}{subsection.5.1.4}
-\contentsline {section}{\numberline {5.2}Analiza}{37}{section.5.2}
 \contentsline {chapter}{\numberline {6}Sklepne ugotovitve}{39}{chapter.6}
-\contentsline {chapter}{Literatura}{40}{chapter.6}
+\contentsline {chapter}{\numberline {7}Priloge}{41}{chapter.7}
+\contentsline {section}{\numberline {7.1}Atheris}{41}{section.7.1}
+\contentsline {subsection}{\numberline {7.1.1}Bubble sort}{41}{subsection.7.1.1}
+\contentsline {subsection}{\numberline {7.1.2}Quick sort}{42}{subsection.7.1.2}
+\contentsline {subsection}{\numberline {7.1.3}Fibonacci}{44}{subsection.7.1.3}
+\contentsline {subsection}{\numberline {7.1.4}Quick sort nad razredi}{44}{subsection.7.1.4}
+\contentsline {section}{\numberline {7.2}PINS}{47}{section.7.2}
+\contentsline {subsection}{\numberline {7.2.1}Bubble sort}{47}{subsection.7.2.1}
+\contentsline {subsection}{\numberline {7.2.2}Quick sort}{48}{subsection.7.2.2}
+\contentsline {subsection}{\numberline {7.2.3}Fibonacci}{50}{subsection.7.2.3}
+\contentsline {section}{\numberline {7.3}Python}{50}{section.7.3}
+\contentsline {subsection}{\numberline {7.3.1}Bubble sort}{50}{subsection.7.3.1}
+\contentsline {subsection}{\numberline {7.3.2}Quick sort}{51}{subsection.7.3.2}
+\contentsline {subsection}{\numberline {7.3.3}Fibonacci}{52}{subsection.7.3.3}
+\contentsline {chapter}{Literatura}{53}{lstnumber.-34.10}

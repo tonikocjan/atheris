@@ -1,46 +1,7 @@
 import stdlib
 
-func partition(_ list: [Int], low: Int, high: Int) Int {
-    let pivot = list[low]
-    var i = low - 1
-    var j = high + 1
-
-    while true {
-        while true {
-            j = j - 1
-            if list[j] <= pivot {
-                break
-            }
-        }
-
-        while true {
-            i = i + 1
-            if list[i] >= pivot {
-                break
-            }
-        }
-
-        if i < j {
-            let tmp = list[i]
-            list[i] = list[j]
-            list[j] = tmp
-        }
-        else {
-            return j
-        }
-    }
-}
-
-func quicksort(_ list: [Int], low: Int, high: Int) {
-    if low < high {
-        let p = partition(list, low: low, high: high)
-        quicksort(list, low: low, high: p)
-        quicksort(list, low: p + 1, high: high)
-    }
-}
-
 var list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
-quicksort(list, low: 0, high: list.count - 1)
+quickSort(list, low: 0, high: list.count - 1)
 
 for element in list {
     print(element)

@@ -28,7 +28,7 @@ func mem(_ memory: Int) Int {
 }
 
 
-func bubble(_ list: [Int], size: Int) Int {
+func bubbleSort(_ list: [Int], size: Int) Int {
     var i = 0
     while i < size {
         var j = 0
@@ -44,7 +44,7 @@ func bubble(_ list: [Int], size: Int) Int {
     }
 }
 
-/*func quicksort(_ list: [Int], low: Int, high: Int) {
+func quickSort(_ list: [Int], low: Int, high: Int) {
 
     func partition(_ list: [Int], low: Int, high: Int) Int {
         let pivot = list[low]
@@ -79,7 +79,7 @@ func bubble(_ list: [Int], size: Int) Int {
 
     if low < high {
         let p = partition(list, low: low, high: high)
-        quicksort(list, low: low, high: p)
-        quicksort(list, low: p + 1, high: high)
+        quickSort(list, low: low, high: p)
+        quickSort(list, low: p + 1, high: high)
     }
-}*/
+}

@@ -27,7 +27,6 @@ import compiler.ast.tree.type.*;
 import compiler.logger.LoggerFactory;
 import compiler.logger.LoggerInterface;
 import compiler.seman.SymbolDescriptionMap;
-import compiler.seman.SymbolTableMap;
 import utils.Constants;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.*;
@@ -289,7 +288,7 @@ public class ImcCodeGen implements ASTVisitor {
 
             // This is safe casting; if casting fails, object points to null
             // swift equivalent would be 'as?'
-            // TODO: - Implement safe and non-safe casting (as? and as!)
+            // TODO: - Implement non-safe casting (as!)
 
             ImcSEQ statements = new ImcSEQ();
             statements.stmts.add(new ImcMOVE(virtualTablePointer, virtualTable));
@@ -955,7 +954,7 @@ public class ImcCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AstTupleDefinition acceptor) {
+	public void visit(AstTupleType acceptor) {
         ///
 	}
 

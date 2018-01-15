@@ -300,7 +300,7 @@
 //	}
 //
 //	@Override
-//	public void visit(AstTupleDefinition acceptor) {
+//	public void visit(AstTupleType acceptor) {
 //	    ///
 //	}
 //

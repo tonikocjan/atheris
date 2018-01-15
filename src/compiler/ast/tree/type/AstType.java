@@ -22,12 +22,6 @@ import compiler.ast.tree.AstNode;
 
 public abstract class AstType extends AstNode {
 
-	/**
-	 * Ustvari nov opis podatkovnega tipa.
-	 * 
-	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
-	 */
 	public AstType(Position pos) {
 		super(pos);
 	}

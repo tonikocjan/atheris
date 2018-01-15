@@ -262,6 +262,10 @@ public class Interpreter {
                 offset += Constants.Byte;
             }
 
+            if (ldM((Integer) ldT(instr.temp)) instanceof Integer) {
+                System.out.println();
+                // TODO: fix this
+            }
             FrmLabel label = (FrmLabel) ldM((Integer) ldT(instr.temp));
 
             Integer address = locations.get(label);

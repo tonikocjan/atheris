@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Map;
 
 import compiler.ast.tree.def.AstDefinition;
-import compiler.ast.tree.def.AstTupleDefinition;
+import compiler.ast.tree.def.AstTupleType;
 
 public class TupleType extends Type implements ReferenceType {
 
-	public final AstTupleDefinition definition;
+	public final AstTupleType definition;
 	private final LinkedHashMap<String, Type> members = new LinkedHashMap<>();
 	private final int size;
 
@@ -42,7 +42,7 @@ public class TupleType extends Type implements ReferenceType {
 		this.size = size;
 	}
 
-	public TupleType(AstTupleDefinition definition, List<Type> types, List<String> names) {
+	public TupleType(AstTupleType definition, List<Type> types, List<String> names) {
 		int size = 0;
 		
 		for (int i = 0; i < names.size(); i++) {
@@ -73,15 +73,15 @@ public class TupleType extends Type implements ReferenceType {
 	public boolean sameStructureAs(Type type) {
 		if (!type.isTupleType()) return false;
 		
-		TupleType t2 = (TupleType) type;
-		if (t2.members.size() != members.size()) return false;
+		TupleType other = (TupleType) type;
+		if (other.members.size() != this.members.size()) return false;
 		
 		// FIXME: - This should be improved
 		Object[] thisKeySet = members.keySet().toArray();
-		Object[] otherKeySet = t2.members.keySet().toArray();
+		Object[] otherKeySet = other.members.keySet().toArray();
 		
 		for (int i = 0; i < thisKeySet.length; i++) {
-			if (!members.get(thisKeySet[i]).sameStructureAs(t2.members.get(otherKeySet[i])))
+			if (!members.get(thisKeySet[i]).sameStructureAs(other.members.get(otherKeySet[i])))
 				return false;
 		}
 

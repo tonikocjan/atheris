@@ -456,7 +456,7 @@ public class NameChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AstTupleDefinition acceptor) {
+	public void visit(AstTupleType acceptor) {
 		acceptor.definitions.accept(this);
 	}
 

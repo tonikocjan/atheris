@@ -21,7 +21,6 @@ import java.util.*;
 
 import compiler.logger.LoggerFactory;
 import compiler.logger.LoggerInterface;
-import compiler.ast.tree.enums.AtomTypeKind;
 import compiler.ast.tree.enums.DefinitionModifier;
 import compiler.ast.tree.expr.*;
 import compiler.ast.tree.stmt.*;
@@ -864,13 +863,12 @@ public class TypeChecker implements ASTVisitor {
 		AstDefinition definition = symbolDescription.getDefinitionForAstNode(acceptor);
 		
 		if (!(definition instanceof AstTypeDefinition))
-            logger.error(acceptor.position, "Use of undeclared memberType \'" + definition.name + "\'");
+            logger.error(acceptor.position, "Use of undeclared type \'" + definition.name + "\'");
 
 		Type type = symbolDescription.getTypeForAstNode(definition);
 
 		if (type == null)
-            logger.error(acceptor.position, "Type \"" + acceptor.name
-					+ "\" is undefined");
+            logger.error(acceptor.position, "Type \"" + acceptor.name + "\" is undefined");
 
 		symbolDescription.setTypeForAstNode(acceptor, type);
 	}
@@ -1202,7 +1200,7 @@ public class TypeChecker implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AstTupleDefinition acceptor) {
+	public void visit(AstTupleType acceptor) {
         if (traversalState == TraversalStates.extensions) return;
 
         ArrayList<Type> types = new ArrayList<>();
@@ -1294,40 +1292,40 @@ public class TypeChecker implements ASTVisitor {
                 conformance.accept(this);
             }
 
-            Type extendingType = symbolDescription.getTypeForAstNode(acceptor.extendingType);
+            Type typeToExtend = symbolDescription.getTypeForAstNode(acceptor.extendingType);
 
-            if (extendingType.isAtomType()) {
-                extendingType = ((AtomType) extendingType).staticType;
+            if (typeToExtend.isAtomType()) {
+                typeToExtend = ((AtomType) typeToExtend).staticType;
             }
 
-            symbolDescription.setTypeForAstNode(acceptor, extendingType);
+            symbolDescription.setTypeForAstNode(acceptor, typeToExtend);
 
-            if (!extendingType.isCanType() || !((CanType) extendingType).childType.isObjectType()) {
+            if (!typeToExtend.isCanType() || !((CanType) typeToExtend).childType.isObjectType()) {
                 logger.error(acceptor.position, "Only classes can be extended (for now)");
             }
 
-            CanType staticType = (CanType) extendingType;
-            ObjectType objectType = (ObjectType) staticType.childType;
+            CanType staticType = (CanType) typeToExtend;
+            ObjectType extendingType = (ObjectType) staticType.childType;
 
-            for (AstDefinition def : acceptor.definitions.definitions) {
-                if (((CanType) extendingType).childType.isAtomType()) {
+            for (AstDefinition definition : acceptor.definitions.definitions) {
+                if (extendingType.isAtomType()) {
                     // atomic types methods are always final (not dynamic)
-                    def.setModifier(DefinitionModifier.isFinal);
+                    definition.setModifier(DefinitionModifier.isFinal);
                 }
 
-                def.accept(this);
+                definition.accept(this);
 
-                String memberName = def.getName();
-                Type memberType = symbolDescription.getTypeForAstNode(def);
+                String memberName = definition.getName();
+                Type memberType = symbolDescription.getTypeForAstNode(definition);
 
-                if (def.isStatic()) {
-                    boolean successfullyAdded = staticType.addStaticMember(def, memberName, memberType);
+                if (definition.isStatic()) {
+                    boolean successfullyAdded = staticType.addStaticMember(definition, memberName, memberType);
                     if (!successfullyAdded) {
                         logger.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
                     }
                 }
                 else {
-                    boolean successfullyAdded = objectType.addMember(def, memberName, memberType);
+                    boolean successfullyAdded = extendingType.addMember(definition, memberName, memberType);
                     if (!successfullyAdded) {
                         logger.error(acceptor.position, "Invalid redeclaration of \"" + memberName + "\"");
                     }
@@ -1335,7 +1333,7 @@ public class TypeChecker implements ASTVisitor {
             }
 
             for (AstType conformance : acceptor.conformances) {
-                if (!objectType.addConformance(conformance)) {
+                if (!extendingType.addConformance(conformance)) {
                     logger.error(conformance.position, "Redundant conformance \"" + conformance.getName() + "\"");
                 }
             }

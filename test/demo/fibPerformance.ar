@@ -9,4 +9,4 @@ func fib(_ n: Int) Int {
     }
 }
 
-print(fib(40))
+print(fib(35))

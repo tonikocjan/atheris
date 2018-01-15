@@ -638,8 +638,8 @@ public class PrintAstVisitor implements ASTVisitor {
 	}
 
 	@Override
-	public void visit(AstTupleDefinition tupleDef) {
-        logger.dump(indent, "AstTupleDefinition " + tupleDef.position.toString());
+	public void visit(AstTupleType tupleDef) {
+        logger.dump(indent, "AstTupleType " + tupleDef.position.toString());
 		{
 			Type typ = symbolDescription.getTypeForAstNode(tupleDef);
 			if (typ != null)

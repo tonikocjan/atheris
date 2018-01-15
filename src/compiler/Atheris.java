@@ -23,7 +23,6 @@ import compiler.interpreter.Memory;
 import compiler.logger.LoggerFactory;
 import compiler.logger.LoggerInterface;
 import compiler.seman.*;
-import javafx.util.Pair;
 import utils.ArgumentParser;
 import utils.Constants;
 import compiler.ast.tree.AstNode;
@@ -54,6 +53,10 @@ public class Atheris {
     private String dumpPhases = "interpret";
     private Memory memory = new Memory();
     private ImcCodeChunk compiledCode;
+
+    public Atheris() {
+        Interpreter.heapPointer = 0;
+    }
 
     private void parseArguments(String[] args) {
         ArgumentParser parser = new ArgumentParser(args);
@@ -130,7 +133,7 @@ public class Atheris {
             // Leksikalna analiza.
             LexAn lexAn = LexAn.parseSourceFile(sourceFileName, dumpPhases.contains("lexan"));
             if (execPhase.equals("lexan")) {
-                while (lexAn.nextSymbol().getTokenType() != TokenType.EOF) {}
+                while (lexAn.nextSymbol().tokenType() != TokenType.EOF) {}
                 break;
             }
 
