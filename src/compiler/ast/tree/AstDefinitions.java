@@ -32,11 +32,6 @@ public class AstDefinitions extends AstNode {
 		this.definitions = defs;
 	}
 
-    /**
-	 * Find definition for given getName.
-	 * @param name Name of the definition
-	 * @return Definition if found, otherwise null
-	 */
 	// TODO: - O(n), should optimize??
 	public AstDefinition findDefinitionForName(String name) {
 		for (AstDefinition d : definitions) {

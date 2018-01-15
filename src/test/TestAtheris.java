@@ -18,6 +18,7 @@
 package test;
 
 import compiler.Main;
+import compiler.logger.LoggerFactory;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 public class TestAtheris {
 
     public TestAtheris() {
-        System.out.println();
+        LoggerFactory.setLoggerImpl(TestLogger.class);
     }
 
     @Test
@@ -73,6 +74,11 @@ public class TestAtheris {
     @Test
     public void testQuickSort() {
         test("13.QuickSort.ar");
+    }
+
+    @Test
+    public void testAbstractClasses() {
+        test("14.AbstractClasses.ar");
     }
 
     private void test(String sourceFileName) {

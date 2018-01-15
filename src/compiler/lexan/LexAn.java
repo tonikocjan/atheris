@@ -42,7 +42,7 @@ public class LexAn implements LexicalAnalyzer {
                     "let", "null", "class", "in", "return", "public",
                     "private", "continue", "break", "switch", "case", "default",
                     "enum", "init", "is", "override", "as", "extension", "final",
-                    "static", "interface"
+                    "static", "interface", "abstract"
             };
 
     private static Map<String, TokenType> keywordsMap = null;

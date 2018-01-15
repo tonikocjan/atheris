@@ -63,6 +63,9 @@ public class SynAn {
 		if (symbol.tokenType() == TokenType.NEWLINE)
 			nextSymbol();
 
+		if (symbol.tokenType() == TokenType.EOF)
+		    return new AstDefinitions(symbol.position(), new ArrayList<>());
+
 		dump("source -> statements");
 		AstNode abstrTree = parseStatements();
 
@@ -155,6 +158,7 @@ public class SynAn {
 		case KW_FUN:
 		case KW_IMPORT:
         case KW_EXTENSION:
+        case KW_ABSTRACT:
 			dump("statement -> definition");
 			return parseDefinition();
 
@@ -292,17 +296,32 @@ public class SynAn {
 			dump("definition -> enum_member_definition");
 			definition = parseEnumCaseDefinition();
 			break;
+        case KW_ABSTRACT:
+            dump("definition -> abstract def");
+            nextSymbol();
+            if (symbol.tokenType() == TokenType.KW_CLASS) {
+                AstClassDefinition classDefinition = parseClassDefinition(false);
+                classDefinition.setModifier(DefinitionModifier.isAbstract);
+                return classDefinition;
+            }
+            else if (symbol.tokenType() == TokenType.KW_FUN) {
+                AstFunctionDefinition functionPrototype = parseFunctionPrototype();
+                functionPrototype.setModifier(DefinitionModifier.isAbstract);
+                return functionPrototype;
+            }
+            else {
+                logger.error(symbol.position(), "Syntax error on token \"" + symbol.getLexeme() + "\", delete this token");
+            }
 		default:
-			if (symbol.tokenType() != TokenType.EOF)
-                logger.error(symbol.position(), "Syntax error on tokenType \""
-						+ symbol.getLexeme() + "\", delete this tokenType");
-			else
-                logger.error(previous.position(), "Syntax error on tokenType \""
-						+ previous.getLexeme() + "\", delete this tokenType");
+			if (symbol.tokenType() != TokenType.EOF) {
+                logger.error(symbol.position(), "Syntax error on token \"" + symbol.getLexeme() + "\", delete this token");
+            }
+			else {
+                logger.error(previous.position(), "Syntax error on token \"" + previous.getLexeme() + "\", delete this token");
+            }
 		}
 
 		definition.setModifiers(modifiers);
-
 		return definition;
 	}
 
@@ -1545,8 +1564,7 @@ public class SynAn {
 			expr = parsePrefixExpression();
 			break;
 		default:
-            logger.error(symbol.position(), "Syntax error on tokenType \""
-					+ symbol.getLexeme() + "\", delete this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \"" + symbol.getLexeme() + "\", delete this token");
 		}
 
 		expr = new AstBinaryExpression(new Position(e.position, expr.position), oper, e, expr);

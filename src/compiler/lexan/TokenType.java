@@ -105,4 +105,5 @@ public enum TokenType {
     /** Token memberType: keyword final.  */ 						    KW_FINAL,
     /** Token memberType: keyword static.  */ 						KW_STATIC,
     /** Token memberType: keyword interface.  */ 						KW_INTERFACE,
+    /** Token memberType: keyword interface.  */ 						KW_ABSTRACT,
 }

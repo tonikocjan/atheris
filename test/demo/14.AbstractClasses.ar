@@ -1,0 +1,21 @@
+import stdlib
+
+abstract class B {
+    abstract func foo()
+}
+
+class C: B {
+
+}
+
+abstract class E: B {
+
+}
+
+class D: B {
+    override func foo() {
+        print("implemented abstract method")
+    }
+}
+
+D().foo()

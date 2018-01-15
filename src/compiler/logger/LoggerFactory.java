@@ -8,7 +8,7 @@ package compiler.logger;
 public class LoggerFactory {
 
     private static LoggerInterface logger;
-    private static Class<? extends LoggerInterface> loggerImpl;
+    private static Class<? extends LoggerInterface> loggerImpl = Logger.class;
 
     public static LoggerInterface logger() {
         if (logger == null) initLogger();
@@ -16,7 +16,6 @@ public class LoggerFactory {
     }
 
     private static void initLogger() {
-        loggerImpl = Logger.class;
         try {
             logger = (loggerImpl.newInstance());
         }
