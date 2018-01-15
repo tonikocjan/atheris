@@ -4,9 +4,7 @@ abstract class B {
     abstract func foo()
 }
 
-class C: B {
-
-}
+B()
 
 class D: B {
     override func foo() {
@@ -16,4 +14,22 @@ class D: B {
 
 D().foo()
 
-let b = B()
+abstract class Test {
+    abstract func foo()
+}
+
+abstract class Test2: Test {
+    abstract func foo2()
+}
+
+class ImplFail: Test2 {
+    func foo() { print("foo") }
+}
+
+class Impl: Test2 {
+    func foo() { print("foo") }
+    func foo2() { print("foo2") }
+}
+
+Impl().foo()
+Impl().foo2()

@@ -1,3 +1,5 @@
-Non abstract class "C" must implement all abstract methods from "B"
 Cannot instantiate instance of an abstract class "B"
+Non abstract class "ImplFail" must implement all abstract methods from "Test2"
 "implemented abstract method"
+"foo"
+"foo2"

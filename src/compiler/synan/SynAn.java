@@ -402,7 +402,7 @@ public class SynAn {
             return parseFunDefinition_(startPos, functionName, params, true);
         }
 
-        logger.error(previous.position(), "Syntax error on tokenType \""
+        logger.error(previous.position(), "Syntax error on token \""
                 + previous.getLexeme() + "\", expected keyword \"init\"");
 
         return null;
@@ -416,22 +416,23 @@ public class SynAn {
 			type = new AstAtomType(symbol.position(), AtomTypeKind.VOID);
 		}
 		else {
-			dump("function_definition' -> memberType { statements } ");
+			dump("function_definition' -> type { statements } ");
 			type = parseType();
 		}
 
 		if (symbol.tokenType() != TokenType.LBRACE) {
-            logger.error(symbol.position(), "Syntax error on tokenType \""
-                    + previous.getLexeme() + "\", expected \"{\" after this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \""
+                    + previous.getLexeme() + "\", expected \"{\" after this token");
         }
 
-		nextSymbol(TokenType.NEWLINE, "NEWLINE");
 		nextSymbol();
+		if (symbol.tokenType() == TokenType.NEWLINE)
+		    nextSymbol();
 
 		AstStatements expr = parseStatements();
 		if (symbol.tokenType() != TokenType.RBRACE)
-            logger.error(symbol.position(), "Syntax error on tokenType \""
-					+ previous.getLexeme() + "\", expected \"}\" after this tokenType");
+            logger.error(symbol.position(), "Syntax error on token \""
+					+ previous.getLexeme() + "\", expected \"}\" after this token");
 		nextSymbol();
 
 		return new AstFunctionDefinition(new Position(startPos, expr.position), functionName.getLexeme(), params, type, expr, isConstructor);
@@ -690,7 +691,7 @@ public class SynAn {
 
             nextSymbol(TokenType.LPARENT, "(");
             nextSymbol();
-            dump("function_prototype -> functionCode identifier ( parameters ) function_prototype'");
+            dump("function_prototype -> func identifier ( parameters ) function_prototype'");
 
             ArrayList<AstParameterDefinition> params = parseParameters();
 
@@ -698,17 +699,16 @@ public class SynAn {
 
             if (symbol.tokenType() == TokenType.NEWLINE || symbol.tokenType() == TokenType.SEMIC) {
                 dump("function_prototype' -> $ ");
-                nextSymbol();
                 type = new AstAtomType(symbol.position(), AtomTypeKind.VOID);
             }
             else {
-                dump("function_prototype' -> memberType ");
+                dump("function_prototype' -> type ");
                 type = parseType();
             }
 
             return new AstFunctionDefinition(new Position(startPos, type.position), functionName.getLexeme(), params, type, new AstStatements(startPos, new ArrayList<>()));
         }
-        logger.error(previous.position(), "Syntax error on tokenType \"" + previous.getLexeme() + "\", expected keyword \"functionDefinition\"");
+        logger.error(previous.position(), "Syntax error on token \"" + previous.getLexeme() + "\", expected keyword \"func\"");
 
         return null;
     }

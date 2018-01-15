@@ -144,11 +144,11 @@ public abstract class ObjectType extends Type {
         // first check in base class
         if (base != null) {
             boolean contains = base.containsMember(name);
-
             if (contains) return true;
         }
 
-        return memberNames.contains(name);
+        AstDefinition definition = definitions.get(name);
+        return !(definition == null || definition.isAbstract());
     }
 
     @Override
@@ -189,6 +189,7 @@ public abstract class ObjectType extends Type {
     }
 
     public List<ObjectType> generateHierarchy() {
+        // TODO this should be iterator
         List<ObjectType> baseClasses = new ArrayList<>();
         ObjectType baseClass = base;
         while (baseClass != null) {
@@ -206,11 +207,11 @@ public abstract class ObjectType extends Type {
     public AstDefinition findMemberDefinitionWithName(String name, boolean fromBase) {
         if (fromBase && base != null) {
             AstDefinition member = base.findMemberDefinitionWithName(name);
-
             if (member != null) return member;
         }
 
-        return definitions.get(name);
+        AstDefinition definition = definitions.get(name);
+        return definition == null ? null : definition.isAbstract() ? null : definition;
     }
 
     public boolean isDescendantOf(ObjectType baseType) {
@@ -237,7 +238,7 @@ public abstract class ObjectType extends Type {
     public boolean conformsTo(ObjectType baseClass) {
         for (Iterator<AstFunctionDefinition> it = baseClass.abstractMethods(); it.hasNext(); ) {
             AstFunctionDefinition abstractMethod = it.next();
-            AstDefinition member = findMemberDefinitionWithName(abstractMethod.getName(), false);
+            AstDefinition member = findMemberDefinitionWithName(abstractMethod.getName(), true);
             if (member == null) return false;
         }
         return true;
@@ -246,11 +247,16 @@ public abstract class ObjectType extends Type {
     public Iterator<AstFunctionDefinition> abstractMethods() {
         return new Iterator<AstFunctionDefinition>() {
 
+            Iterator<AstFunctionDefinition> baseIt = baseClass == null ? null : ((ObjectType) baseClass.childType).abstractMethods();
             Iterator<AstDefinition> it = classDefinition.memberDefinitions.definitions.iterator();
             AstFunctionDefinition nextDef = null;
 
             @Override
             public boolean hasNext() {
+                while (baseIt != null && baseIt.hasNext()) {
+                    nextDef = baseIt.next();
+                    return true;
+                }
                 while (it.hasNext()) {
                     AstDefinition def = it.next();
                     if (def instanceof AstFunctionDefinition && def.isAbstract()) {

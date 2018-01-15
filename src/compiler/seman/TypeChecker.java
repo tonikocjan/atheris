@@ -207,10 +207,12 @@ public class TypeChecker implements ASTVisitor {
                 baseClassDefaultConstructor = ((ClassType) baseClass.childType).classDefinition.defaultConstructor;
 
                 // if base class is 'abstract', make sure all abstract methods are implemented
-                AstClassDefinition baseClassDefinition = (AstClassDefinition) symbolDescription.getDefinitionForAstNode(acceptor.baseClass);
-                if (baseClassDefinition.isAbstract()) {
-                    if (!objectType.conformsTo((ObjectType) baseClass.childType)) {
-                        logger.error(acceptor.position, "Non abstract class \"" + acceptor.getName() + "\" must implement all abstract methods from \"" + baseClassDefinition.getName() + "\"");
+                if (!acceptor.isAbstract()) {
+                    AstClassDefinition baseClassDefinition = (AstClassDefinition) symbolDescription.getDefinitionForAstNode(acceptor.baseClass);
+                    if (baseClassDefinition.isAbstract()) {
+                        if (!objectType.conformsTo((ObjectType) baseClass.childType)) {
+                            logger.error(acceptor.position, "Non abstract class \"" + acceptor.getName() + "\" must implement all abstract methods from \"" + baseClassDefinition.getName() + "\"");
+                        }
                     }
                 }
             }
