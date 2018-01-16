@@ -1,37 +1,8 @@
 import stdlib
 
-abstract class B {
-    abstract func foo()
+func evaluateBoard(_ ticTacToe: [Char]) (Int, Int) {
+    return (1, 10) # igraj
 }
-
-class D: B {
-    func foo() {
-        print("implemented abstract method")
-    }
-}
-
-D().foo()
-
-abstract class Test {
-    abstract func foo()
-}
-
-abstract class Test2: Test {
-    func foo() { print("foo") }
-    abstract func foo2()
-}
-
-abstract class Test3: Test {
-    abstract func foo2()
-}
-
-class ImplFail2: Test2 {
-
-}
-
-class Impl: Test2 {
-    func foo2() { print("foo2") }
-}
-
-Impl().foo()
-Impl().foo2()
+let eval = evaluateBoard(['X', ' ', 'X'])
+print(eval.0)
+print(eval.1)

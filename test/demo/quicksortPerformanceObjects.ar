@@ -2,8 +2,8 @@ import stdlib
 
 class Comparable {
     func compare(with object: Any) Int {
-        let comparable = object as Comparable
-        if comparable != null {
+        if object is Comparable {
+            let comparable = object as Comparable
             return self.value() - comparable.value()
         }
         else {

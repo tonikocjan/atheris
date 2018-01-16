@@ -22,18 +22,22 @@ import java.util.List;
 import compiler.Position;
 import compiler.ast.ASTVisitor;
 import compiler.ast.tree.AstDefinitions;
+import compiler.ast.tree.type.AstType;
 
-public class AstTupleType extends AstTypeDefinition {
+public class AstTupleType extends AstType {
 
-	public final AstDefinitions definitions;
+	public final List<AstType> types;
 
-	public AstTupleType(Position pos, List<AstDefinition> defs) {
-		super(pos, "");
-
-		this.definitions = new AstDefinitions(pos, defs);
+	public AstTupleType(Position pos, List<AstType> types) {
+		super(pos);
+		this.types = types;
 	}
 
 	@Override
 	public void accept(ASTVisitor aSTVisitor) { aSTVisitor.visit(this); }
 
+    @Override
+    public String getName() {
+        return "";
+    }
 }

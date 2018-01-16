@@ -30,44 +30,45 @@
 \contentsline {chapter}{\numberline {4}Programski jezik Atheris}{17}{chapter.4}
 \contentsline {subsection}{\numberline {4.0.1}Podatkovni tipi}{18}{subsection.4.0.1}
 \contentsline {section}{\numberline {4.1}Sintaksa}{18}{section.4.1}
-\contentsline {section}{\numberline {4.2}Funkcije}{21}{section.4.2}
+\contentsline {section}{\numberline {4.2}Funkcije}{20}{section.4.2}
 \contentsline {subsection}{\numberline {4.2.1}Dolo\IeC {\v c}anje label argumentov}{21}{subsection.4.2.1}
 \contentsline {section}{\numberline {4.3}Enumeracije}{22}{section.4.3}
-\contentsline {section}{\numberline {4.4}Terke}{24}{section.4.4}
+\contentsline {section}{\numberline {4.4}Terke}{23}{section.4.4}
 \contentsline {section}{\numberline {4.5}Razredi}{24}{section.4.5}
 \contentsline {subsection}{\numberline {4.5.1}Dostop do \IeC {\v c}lanov in nadzor dostopa}{25}{subsection.4.5.1}
-\contentsline {subsection}{\numberline {4.5.2}Instan\IeC {\v c}ne funkcije}{25}{subsection.4.5.2}
+\contentsline {subsection}{\numberline {4.5.2}Instan\IeC {\v c}ne funkcije}{26}{subsection.4.5.2}
 \contentsline {subsection}{\numberline {4.5.3}Konstruktorji}{26}{subsection.4.5.3}
 \contentsline {subsection}{\numberline {4.5.4}Stati\IeC {\v c}ni \IeC {\v c}lani razreda}{27}{subsection.4.5.4}
-\contentsline {section}{\numberline {4.6}Dedovanje in polimorfizem}{28}{section.4.6}
+\contentsline {section}{\numberline {4.6}Dedovanje in polimorfizem}{29}{section.4.6}
 \contentsline {subsection}{\numberline {4.6.1}Dynamic Dispatch}{29}{subsection.4.6.1}
-\contentsline {subsubsection}{Virtualna tabela}{29}{section*.15}
+\contentsline {subsubsection}{Virtualna tabela}{30}{section*.15}
 \contentsline {subsection}{\numberline {4.6.2}Realizacija}{30}{subsection.4.6.2}
-\contentsline {section}{\numberline {4.7}Instance of operator}{30}{section.4.7}
-\contentsline {section}{\numberline {4.8}Pretvarjanje tipov}{31}{section.4.8}
-\contentsline {section}{\numberline {4.9}Vmesniki}{32}{section.4.9}
-\contentsline {section}{\numberline {4.10}Raz\IeC {\v s}iritve}{32}{section.4.10}
-\contentsline {subsection}{\numberline {4.10.1}Raz\IeC {\v s}iritev z vmesnikom}{33}{subsection.4.10.1}
-\contentsline {section}{\numberline {4.11}Type inference}{33}{section.4.11}
-\contentsline {chapter}{\numberline {5}Meritve in testiranje}{35}{chapter.5}
-\contentsline {section}{\numberline {5.1}Meritve}{35}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Bubble sort}{35}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}Quick sort}{36}{subsection.5.1.2}
-\contentsline {subsection}{\numberline {5.1.3}Izra\IeC {\v c}un n-tega fibonaccijevega \IeC {\v s}tevila}{37}{subsection.5.1.3}
-\contentsline {subsection}{\numberline {5.1.4}Quicksort s polimorfnimi operacijami}{37}{subsection.5.1.4}
-\contentsline {chapter}{\numberline {6}Sklepne ugotovitve}{39}{chapter.6}
-\contentsline {chapter}{\numberline {7}Priloge}{41}{chapter.7}
-\contentsline {section}{\numberline {7.1}Atheris}{41}{section.7.1}
-\contentsline {subsection}{\numberline {7.1.1}Bubble sort}{41}{subsection.7.1.1}
-\contentsline {subsection}{\numberline {7.1.2}Quick sort}{42}{subsection.7.1.2}
-\contentsline {subsection}{\numberline {7.1.3}Fibonacci}{44}{subsection.7.1.3}
-\contentsline {subsection}{\numberline {7.1.4}Quick sort nad razredi}{44}{subsection.7.1.4}
-\contentsline {section}{\numberline {7.2}PINS}{47}{section.7.2}
-\contentsline {subsection}{\numberline {7.2.1}Bubble sort}{47}{subsection.7.2.1}
-\contentsline {subsection}{\numberline {7.2.2}Quick sort}{48}{subsection.7.2.2}
-\contentsline {subsection}{\numberline {7.2.3}Fibonacci}{50}{subsection.7.2.3}
-\contentsline {section}{\numberline {7.3}Python}{50}{section.7.3}
-\contentsline {subsection}{\numberline {7.3.1}Bubble sort}{50}{subsection.7.3.1}
-\contentsline {subsection}{\numberline {7.3.2}Quick sort}{51}{subsection.7.3.2}
-\contentsline {subsection}{\numberline {7.3.3}Fibonacci}{52}{subsection.7.3.3}
-\contentsline {chapter}{Literatura}{53}{lstnumber.-34.10}
+\contentsline {section}{\numberline {4.7}Vmesniki}{31}{section.4.7}
+\contentsline {section}{\numberline {4.8}Abstraktni razredi}{32}{section.4.8}
+\contentsline {section}{\numberline {4.9}Instance of operator}{33}{section.4.9}
+\contentsline {section}{\numberline {4.10}Pretvarjanje tipov}{34}{section.4.10}
+\contentsline {section}{\numberline {4.11}Raz\IeC {\v s}iritve}{34}{section.4.11}
+\contentsline {subsection}{\numberline {4.11.1}Raz\IeC {\v s}iritev z vmesnikom}{35}{subsection.4.11.1}
+\contentsline {section}{\numberline {4.12}Type inference}{35}{section.4.12}
+\contentsline {chapter}{\numberline {5}Meritve in testiranje}{37}{chapter.5}
+\contentsline {section}{\numberline {5.1}Meritve}{37}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Bubble sort}{37}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}Quick sort}{38}{subsection.5.1.2}
+\contentsline {subsection}{\numberline {5.1.3}Izra\IeC {\v c}un n-tega fibonaccijevega \IeC {\v s}tevila}{39}{subsection.5.1.3}
+\contentsline {subsection}{\numberline {5.1.4}Quicksort s polimorfnimi operacijami}{39}{subsection.5.1.4}
+\contentsline {chapter}{\numberline {6}Sklepne ugotovitve}{41}{chapter.6}
+\contentsline {chapter}{\numberline {7}Priloge}{43}{chapter.7}
+\contentsline {section}{\numberline {7.1}Atheris}{43}{section.7.1}
+\contentsline {subsection}{\numberline {7.1.1}Bubble sort}{43}{subsection.7.1.1}
+\contentsline {subsection}{\numberline {7.1.2}Quick sort}{44}{subsection.7.1.2}
+\contentsline {subsection}{\numberline {7.1.3}Fibonacci}{46}{subsection.7.1.3}
+\contentsline {subsection}{\numberline {7.1.4}Quick sort nad razredi}{46}{subsection.7.1.4}
+\contentsline {section}{\numberline {7.2}PINS}{49}{section.7.2}
+\contentsline {subsection}{\numberline {7.2.1}Bubble sort}{49}{subsection.7.2.1}
+\contentsline {subsection}{\numberline {7.2.2}Quick sort}{50}{subsection.7.2.2}
+\contentsline {subsection}{\numberline {7.2.3}Fibonacci}{52}{subsection.7.2.3}
+\contentsline {section}{\numberline {7.3}Python}{52}{section.7.3}
+\contentsline {subsection}{\numberline {7.3.1}Bubble sort}{52}{subsection.7.3.1}
+\contentsline {subsection}{\numberline {7.3.2}Quick sort}{53}{subsection.7.3.2}
+\contentsline {subsection}{\numberline {7.3.3}Fibonacci}{54}{subsection.7.3.3}
+\contentsline {chapter}{Literatura}{55}{lstnumber.-35.10}

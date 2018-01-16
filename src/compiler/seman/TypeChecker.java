@@ -1222,14 +1222,17 @@ public class TypeChecker implements ASTVisitor {
 
         ArrayList<Type> types = new ArrayList<>();
         ArrayList<String> names = new ArrayList<>();
-		
-		for (AstDefinition def : acceptor.definitions.definitions) {
-			def.accept(this);
-			
-			names.add(def.getName());
-			types.add(symbolDescription.getTypeForAstNode(def));
-		}
-		
+
+        int index = 0;
+        for (AstType type : acceptor.types) {
+            type.accept(this);
+
+            names.add("" + index);
+            types.add(symbolDescription.getTypeForAstNode(type));
+
+            index++;
+        }
+
 		TupleType tupleType = new TupleType(acceptor, types, names);
 		symbolDescription.setTypeForAstNode(acceptor, tupleType);
 	}

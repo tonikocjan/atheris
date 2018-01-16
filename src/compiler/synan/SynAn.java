@@ -902,43 +902,26 @@ public class SynAn {
 					type);
 		case LPARENT:
 		    // TODO
-//			Position start = symbol.position();
-//			dump("memberType -> tuple type");
-//			nextSymbol();
-//
-//            ArrayList<AstLabeledExpr> expressions = new ArrayList<>();
-//			if (symbol.tokenType() != TokenType.RPARENT) {
-//				while (true) {
-//					if (symbol.tokenType() == TokenType.IDENTIFIER) {
-//					    Position startPos = symbol.position();
-//					    String identifier = symbol.getLexeme();
-//					    nextSymbol();
-//					    if (symbol.tokenType() == TokenType.COLON) {
-//					        nextSymbol();
-//					        AstType expressionType = parseType();
-//					        expressions.add(new AstLabeledExpr(new Position(startPos, expressionType.position), expressionType, identifier));
-//                        }
-//                        else {
-//					        logger.error(symbol.position(), "Expected ':'");
-//                        }
-//                    }
-//                    else {
-//
-//                    }
-//					if (symbol.tokenType() != TokenType.COMMA)
-//						break;
-//					nextSymbol();
-//				}
-//			}
-//			if (symbol.tokenType() != TokenType.RPARENT) {
-//                logger.error(symbol.position(), "Syntax error, insert \")\" to complete function declaration");
-//            }
-//
-//			nextSymbol(TokenType.ARROW, "->");
-//			nextSymbol();
-//
-//			type = parseType();
-//			return new AstFunctionType(new Position(start, type.position), expressions, type);
+			Position start = symbol.position();
+			dump("memberType -> tuple type");
+			nextSymbol();
+
+			List<AstType> types = new ArrayList<>();
+
+			if (symbol.tokenType() != TokenType.RPARENT) {
+				while (true) {
+				    types.add(parseType());
+					if (symbol.tokenType() != TokenType.COMMA) break;
+					nextSymbol();
+				}
+			}
+			if (symbol.tokenType() != TokenType.RPARENT) {
+                logger.error(symbol.position(), "Syntax error, insert \")\" to complete function declaration");
+            }
+
+            nextSymbol();
+            return new AstTupleType(new Position(start, symbol.position()), types);
+
 		default:
             logger.error(symbol.position(), "Syntax error on token \""
 					+ symbol.getLexeme() + "\", expected \"variable member\"");
