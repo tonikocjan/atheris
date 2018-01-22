@@ -35,16 +35,16 @@ public class Interpreter {
     public static boolean checkMemory = true;
 
     public static PrintStream interpreterOutput = System.out;
-	
+
 	/*--- staticni removeDefinitionFromCurrentScope navideznega stroja ---*/
-	
+
 	/** Pomnilnik navideznega stroja. */
 	public static HashMap<Integer, Object> mems = new HashMap<>();
 	public static HashMap<FrmLabel, Integer> locations = new HashMap<>();
-	
+
 	/** Vrhnji naslov kopice */
 	public static int heapPointer = 4;
-	
+
 	public static void stM(int address, Object value) {
 	    if (checkMemory && value == null)
 	        logger.error("Storing null is illegal");
@@ -60,10 +60,10 @@ public class Interpreter {
 	}
 
 	public static int getFP() { return framePointer; }
-	
+
 	/** Velikost sklada */
 	public static int STACK_SIZE = 1000;
-	
+
 	/** Kazalec na vrh klicnega zapisa. */
 	private static int framePointer = STACK_SIZE;
 
@@ -71,12 +71,12 @@ public class Interpreter {
 	private static int stackPointer = STACK_SIZE;
 
 	public static HashMap<String, Integer> executedInstructions = new HashMap<>();
-	
+
 	/*--- dinamicni removeDefinitionFromCurrentScope navideznega stroja ---*/
-	
+
 	/** Zacasne spremenljivke (`registri') navideznega stroja. */
 	public HashMap<FrmTemp, Object> temps = new HashMap<>();
-		
+
 	public void stT(FrmTemp temp, Object value) {
         if (checkMemory && value == null)
             logger.error("Storing null is illegal");
@@ -176,7 +176,7 @@ public class Interpreter {
 			System.out.println("[END OF " + frame.entryLabel.getName() + "]");
 		}
 	}
-	
+
 	public Object execute(ImcCode instruction) {
         Integer count = executedInstructions.get(instruction.toString());
         count = count == null ? 1 : count + 1;
@@ -220,10 +220,10 @@ public class Interpreter {
             logger.error("Internal error.");
 			return null;
 		}
-		
+
 		if (instruction instanceof ImcCALL) {
 			ImcCALL instr = (ImcCALL) instruction;
-			
+
 			for (int i = 0; i < instr.args.size(); i++) {
 			    Object argument = execute(instr.args.get(i));
 				stM(stackPointer + Constants.Byte * i, argument);
@@ -273,7 +273,7 @@ public class Interpreter {
             new Interpreter(function.getFrame(), function.getLincode());
             return ldM(stackPointer);
         }
-		
+
 		if (instruction instanceof ImcCJUMP) {
 			ImcCJUMP instr = (ImcCJUMP) instruction;
 			Object cond = execute(instr.cond);
@@ -285,25 +285,25 @@ public class Interpreter {
                 return instr.falseLabel;
             }
 		}
-		
+
 		if (instruction instanceof ImcCONST) {
 			ImcCONST instr = (ImcCONST) instruction;
 			return instr.value;
 		}
-		
+
 		if (instruction instanceof ImcJUMP) {
 			ImcJUMP instr = (ImcJUMP) instruction;
 			return instr.label;
 		}
-		
+
 		if (instruction instanceof ImcLABEL) {
 			return null;
 		}
-		
+
 		if (instruction instanceof ImcEXP) {
 			execute(((ImcEXP) instruction).expr);
 		}
-		
+
 		if (instruction instanceof ImcMEM) {
 			ImcMEM instr = (ImcMEM) instruction;
 			Integer address = (Integer) execute(instr.expr);
@@ -311,14 +311,14 @@ public class Interpreter {
                 logger.error("Null pointer exception");
 			return ldM(address);
 		}
-		
+
 		if (instruction instanceof ImcMALLOC) {
 			ImcMALLOC malloc = (ImcMALLOC) instruction;
 			int location = heapPointer;
 			heapPointer += malloc.size;
             return location;
 		}
-		
+
 		if (instruction instanceof ImcMOVE) {
             ImcMOVE instr = (ImcMOVE) instruction;
 
@@ -336,7 +336,7 @@ public class Interpreter {
                 return srcValue;
             }
         }
-		
+
 		if (instruction instanceof ImcNAME) {
 			ImcNAME instr = (ImcNAME) instruction;
 
@@ -345,12 +345,12 @@ public class Interpreter {
 
 			return locations.get(instr.label);
 		}
-		
+
 		if (instruction instanceof ImcTEMP) {
 			ImcTEMP instr = (ImcTEMP) instruction;
 			return ldT(instr.temp);
 		}
-	
+
 		return null;
 	}
 }

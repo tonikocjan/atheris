@@ -1,8 +1,9 @@
 import stdlib
 
-func evaluateBoard(_ ticTacToe: [Char]) (Int, Int) {
-    return (1, 10) # igraj
+func f() {}
+
+var i = 0
+while i < 100000 {
+    f()
+    i = i + 1
 }
-let eval = evaluateBoard(['X', ' ', 'X'])
-print(eval.0)
-print(eval.1)

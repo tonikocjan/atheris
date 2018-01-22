@@ -17,7 +17,7 @@
 \contentsline {subsubsection}{Sklad}{9}{section*.7}
 \contentsline {paragraph}{Kazalec na klicni zapis:}{10}{section*.8}
 \contentsline {paragraph}{Prenos parametrov:}{10}{section*.9}
-\contentsline {paragraph}{Static link:}{10}{section*.10}
+\contentsline {paragraph}{Stati\IeC {\v c}na povezava:}{10}{section*.10}
 \contentsline {subsection}{\numberline {2.2.5}Generiranje vmesne kode}{11}{subsection.2.2.5}
 \contentsline {subsubsection}{Vmesna koda}{11}{section*.11}
 \contentsline {chapter}{\numberline {3}Programski jezik PINS}{13}{chapter.3}

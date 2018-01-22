@@ -6,3 +6,45 @@ quickSort(list, low: 0, high: list.count - 1)
 for element in list {
     print(element)
 }
+
+
+var counter: Int = 0
+
+func quickSort(_ list: [Int], low: Int, high: Int) {
+
+    func partition(_ list: [Int], low: Int, high: Int) Int {
+        let pivot = list[low]
+        var i = low - 1
+        var j = high + 1
+
+        while true {
+            while true {
+                j = j - 1
+                if list[j] <= pivot {
+                    break
+                }
+            }
+
+            while true {
+                i = i + 1
+                if list[i] >= pivot {
+                    break
+                }
+            }
+
+            if i < j {
+                let tmp = list[i]
+                list[i] = list[j]
+                list[j] = tmp
+            }
+            else {
+                return j
+            }
+        }
+    }
+    counter = counter + 1
+    if low < high {
+        let p = partition(list, low: low, high: high)
+        quickSort(list, low: low, high: p)
+        quickSort(list, low: p + 1, high: high)
+    }

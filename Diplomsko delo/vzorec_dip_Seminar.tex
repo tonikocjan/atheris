@@ -256,7 +256,7 @@ Besedilo teme diplomskega dela študent prepiše iz študijskega informacijskega
 % zahvala
 \thispagestyle{empty}\mbox{}\vfill\null\it%
 \noindent
-Na tem mestu zapišite, komu se zahvaljujete za izdelavo diplomske naloge. Pazite, da ne boste koga pozabili. Utegnil vam bo zameriti. Temu se da izogniti tako, da celotno zahvalo izpustite.
+Na tem mestu zapišite, komu se zahvaljujete za izdelavo diplomske naloge. Pazite, da ne boste koga pozabili. Utegnil vam bo zameriti. Temu se da izogniti tako, da celotno zahvalo izpustite. todo
 \rm\normalfont
 
 % prazna stran
@@ -409,7 +409,7 @@ Analizo programa običajno delimo v naslednje korake \cite{modernCompiler}:
 	\item \textbf{Semantična analiza} (angl. \textit{semantic analysis})
 \end{enumerate}
 
-Po končani analizi sledi sinteza programa v izhodni / ciljni jezik. Sintezo sestavljata:
+Po končani analizi sledi sinteza programa v izhodni / ciljni jezik. Sintezo do vmesne kode sestavljata:
 \begin{enumerate}
 	\item \textbf{Izračun klicnih zapisov} (angl. \textit{frame evaluation})
 	\item \textbf{Generiranje vmesne kode} (angl. \textit{intermidiate code generation})
@@ -568,7 +568,7 @@ Simbolna tabela je podatkovna struktura, ki preslika imena v njihove definicije 
 
 \subsection{Klicni zapisi}
 
-Klicni zapis je prostor v pomnilniku, ki vsebuje vse potrebne informacije za klicanje in izvedbo funkcij. Običajno klicni zapis vsebuje prostor za lokalne spremenljivke, vhodne parametre in register, kamor se shrani izhodna vrednost funkcije. \\
+Klicni zapis je prostor v pomnilniku, ki vsebuje vse potrebne informacije za izvedbo posameznega klica funkcije. Običajno klicni zapis vsebuje prostor za lokalne spremenljivke, vhodne parametre in register, kamor se shrani izhodna vrednost funkcije. \\
 \indent V skoraj vsakem modernem programskem jeziku ima lahko funkcija \textit{lokalne} spremenljivke. Ker lahko hkrati obstaja več klicev iste funkcije je pomembno, da ima vsak klic dostop do lastnih spremenljivk. Ta problem rešujemo s klicnimi zapisi \cite{modernCompiler}.  \\\\
 \indent V funkciji 
 
@@ -597,7 +597,7 @@ se za vsak njen klic ustvari nova instanca spremeljivke \textit{n}, ki živi na 
 
 \subsubsection{Sklad}
 
-Klicni zapisi funkcij se shranjujejo na sklad. Sklad je v pomnilniku predstavljen kot velika tabela s posebnim registrom imenovanim \textit{stack pointer}, ki kaže na konec sklada. Ob vsakem klicu funkcije se sklad poveča za velikost klicnega zapisa klicane funkcije. Podobno se ob vrnitvi funkcije zmanjša za enako vrednost. Prostor v klicnem zapisu namenjen hrambi vhodnih parametrov, lokalnih spremenljivk in ostalih registrov se imenuje \textit{activation record} \cite{modernCompiler}. 
+Klicni zapisi funkcij se shranjujejo na sklad. Sklad je v pomnilniku predstavljen kot velika tabela s posebnim registrom imenovanim \textit{stack pointer}, ki kaže na konec sklada. Ob vsakem klicu funkcije se sklad poveča za velikost klicnega zapisa klicane funkcije. Podobno se ob vrnitvi funkcije zmanjša za enako vrednost. Prostor v klicnem zapisu namenjen hrambi vhodnih parametrov, lokalnih spremenljivk in ostalih registrov se imenuje klicni zapis \cite{modernCompiler}. 
 
 \paragraph{Kazalec na klicni zapis:}
 
@@ -615,9 +615,9 @@ Standarden način klicanja funkcij je, da klicoča funkcija rezervira prostor na
 	argumentAddress(i) = FP + (4 * i)
 \end{lstlisting}
 
-\paragraph{Static link:}
+\paragraph{Statična povezava:}
 
-V jezikih, ki podpirajo gnezdenje funkcij, lahko gnezdene funkcije dostopajo do spremenljivk, ki se nahajajo v zunanjih funkcijah. Da lahko gnezdena funkcija dostopa do spremenljivk, ki niso na njenem klicnem zapisu, ji ob klicu poleg ostalih parametrov posredujemo FP funkcije, ki jo neposredno definira. Temu kazalcu rečemo \textit{static link}. 
+V jezikih, ki podpirajo gnezdenje funkcij, lahko gnezdene funkcije dostopajo do spremenljivk, ki se nahajajo v zunanjih funkcijah. Da lahko gnezdena funkcija dostopa do spremenljivk, ki niso na njenem klicnem zapisu, ji ob klicu poleg ostalih parametrov posredujemo FP funkcije, ki jo neposredno definira. Temu kazalcu rečemo statična povezava (angl. \textit{static link}). 
 
 \renewcommand{\lstlistingname}{Program}
 \begin{lstlisting}[caption={Primer gnezdenih funkcij.}, captionpos=b, label={lst:nestedFunctions}]
@@ -645,12 +645,12 @@ Vmesna koda (angl. \textit{intermidiate representation}) je abstraktni približe
 \indent Dobra predstavitev vmesne kode ima naslednje lastnosti \cite{modernCompiler}:
 
 \begin{enumerate}
-	\item Njeno generiranje mora biti priročno
-	\item Pretvorba vmesne kode v dejansko strojno kodo mora biti priročno za vse ciljne arhitekture
-	\item Vsak gradnik mora imeti jasen pomen, da so lahko optimizacijske transformacije enostavno implementirane
+	\item Njeno generiranje mora biti priročno.
+	\item Pretvorba vmesne kode v dejansko strojno kodo mora biti priročno za vse ciljne arhitekture.
+	\item Vsak gradnik mora imeti jasen pomen, da so lahko optimizacijske transformacije enostavno implementirane.
 \end{enumerate}
 
-Poznamo dve vrsti vmesne kode: drevesno in ploščato (todo). Za ploščato vmesno kodo se pogosto uporablja t.i. \textit{three-address code} (TAC ali 3AC), kar pomeni, da imajo lahko ukazi take kode največ tri operande. (todo mogoče opišem kaj več o obeh vrstah?)\\
+Poznamo dve vrsti vmesne kode: drevesno in linearno. Za ploščato vmesno kodo se pogosto uporablja t.i. \textit{three-address code} (TAC ali 3AC), kar pomeni, da imajo lahko ukazi take kode največ tri operande. \\
 \indent Pri predmetu smo uporabili drevesno vmesno kodo, zato je tudi vmesna koda zgenerirana s strani prevajalnika za Atheris drevesna.\\
 \indent Posamezni deli abstraktnega sintaksnega drevesa so lahko kompleksne stvari, na primer zanke, klici funkcij, itd., ki jih ne moremo neposredno preslikati v strojne ukaze. Zato morajo gradniki vmesne kode predstavljati le enostavne operacije, kot so npr. LOAD (preberi vrednost iz pomnilnika), STORE (shrani vrednost v pomnilnik), ADD (seštej dve vrednosti), itd. Tako lahko vsak posamezen del AST prevedemo v ravno pravo zsaporedje ukazov abstraktne vmesne kode \cite{modernCompiler}. \\ 
 
@@ -677,19 +677,18 @@ Celotna izvorna koda je sestavljena iz seznama definicij. Vsaka definicija je la
 
 Kot sem že omenil, podpira PINS tri osnovne podatkovne tipe, vendar sintaksa omogoča tudi definicijo tabel (\textit{angl. array}) s fiksno velikostjo. \\
 \indent Definicija funkcije je sestavljena iz imena, seznama parametrov, tipa ki ga funkcija vrača, ter \textit{izraza} oz. jedra funkcije. Zanimivo pri PINSu je to, da izven jedra funkcij ne moremo početi ničesar drugega, kot ustvarjati definicije (podobno kot pri Javi). \\
-\indent Izraz (\textit{angl. expression}) je lahko:
+\indent S stališča sintaksne analize je Izraz (\textit{angl. expression}) lahko:
 \begin{enumerate}
 	\item Logični izraz
 	\item Primerjalni izraz
 	\item Seštevalni izraz
 	\item Multiplikativni izraz
-	\item Seštevalni izraz
 	\item Prefiksni izraz
 	\item Postfiksni izraz
 	\item Atomarni izraz
 \end{enumerate}
 
-Atomarni izraz se še naprej deli in je lahko:
+Za uspešno izvedbo sintaksne analize atomarni izraz obsega naslednje:
 \begin{enumerate}
 	\item Logična konstanta
 	\item Celoštevilska konstanta
@@ -702,7 +701,9 @@ Atomarni izraz se še naprej deli in je lahko:
 	\item Zaporedje izrazov
 \end{enumerate}
 
-Vsakemu izrazu lahko sledijo tudi definicije gnezdene znotraj zavitih oklepajev.
+Zavedajmo se, da sestavljeni stavki, ki smo jih našteli kot atomarne izraze seveda niso nedeljivi s stališča jezika. Med atomarne izraze so vključeni zaradi upoštevanja prioritet aritmetičnih in logičnih operatorjev. Vsakemu izrazu lahko sledijo tudi definicije gnezdene znotraj zavitih oklepajev.
+
+todo primeri
 
 \section{Semantična pravila}
 
@@ -747,10 +748,12 @@ identifier \quad :\quad type
 določa parameter tipa $type$
 \end{enumerate}
 
+todo dodaj bubble in fibonacci
+
 \chapter{Programski jezik Atheris}
 \label{ch1}
 
-Kljub temu, da prevajalnik za Atheris izhaja iz prevajalnika za PINS, sta si jezika med seboj zelo različna. Razlikujeta se predvsem v sintaksi, ki je v programskem jeziku Atheris zelo podobna tisti, ki jo ima programski jezik Swift. \\
+Kljub temu, da prevajalnik za Atheris izhaja iz prevajalnika za PINS, sta si jezika med seboj zelo različna. Razlikujeta se predvsem v sintaksi, ki je v programskem jeziku Atheris zelo podobna tisti, ki jo ima programski jezik Swift. todo bralec lahko najde razlike med pins in atheris v prilogi \\
 \begin{figure}[h]
 	\begin{center}
 		\includegraphics[width=1\textwidth]{resources/atheris.png}
@@ -1330,18 +1333,20 @@ Delovanje programskega jezika Atheris je testirano na znanih algoritmih - \texti
 
 \section{Meritve}
 
-\subsection{Bubble sort}
+\subsection{Bubblesort}
 
-Z bubble sort algoritmom preverimo:
+Z bubblesort algoritmom preverimo:
 \vspace{-7mm}
 \begin{itemize}
 	\setlength\itemsep{-1em}
-	\item dostopanje do pomnilnika (do elementov v tabeli na nekem indeksu)
-	\item delovanje zank
-	\item klicanje funkcij, prenos parametrov
+	\item dostopanje do pomnilnika (do elementov v tabeli na nekem indeksu),
+	\item delovanje zank,
+	\item klicanje funkcij, prenos parametrov.
 \end{itemize}
 \vspace{-5mm}
-Algoritem izvedemo 100.000-krat na številih \textit{8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26} in pri tem merimo čas izvajanja.
+Algoritem smo izvedli [todo] 100.000-krat na številih \textit{8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26} in pri tem merimo čas izvajanja.
+
+podnaslov na slike, koordinate
 
 \begin{tikzpicture}
 \begin{axis}[
@@ -1360,9 +1365,9 @@ width=300
 
 Rezultati niso presenetljivi, PINS in Atheris oba potrebujeta približno enako časa, medtem ko je Python (po pričakovanjih) bistveno hitrejši.
 
-\subsection{Quick sort}
+\subsection{Quicksort}
 
-Z uporabo quick sort algoritma, poleg prej naštetih funkcionalnosti, stestiramo še delovanje rekurzije. Algoritem je izveden pod enakimi pogoji kot bubble sort. \\
+Z uporabo quicksort algoritma, poleg prej naštetih funkcionalnosti, stestiramo še delovanje rekurzije. Algoritem je izveden pod enakimi pogoji kot bubble sort. \\
 
 \begin{tikzpicture}
 \begin{axis}[
