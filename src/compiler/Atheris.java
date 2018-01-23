@@ -216,7 +216,7 @@ public class Atheris {
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             sum += ((Integer) pair.getValue());
-            System.out.println(pair.getKey() + " = " + pair.getValue());
+            System.out.println(pair.getKey() + " = " + pair.getValue() + ", " + Interpreter.timers.get(pair.getKey()));
             it.remove(); // avoids a ConcurrentModificationException
         }
         System.out.println("Instructions executed: " + sum);

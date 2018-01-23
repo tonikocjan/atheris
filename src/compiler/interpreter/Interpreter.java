@@ -71,8 +71,9 @@ public class Interpreter {
 	private static int stackPointer = STACK_SIZE;
 
 	public static HashMap<String, Integer> executedInstructions = new HashMap<>();
+    public static HashMap<String, Long> timers = new HashMap<>();
 
-	/*--- dinamicni removeDefinitionFromCurrentScope navideznega stroja ---*/
+	/*--- dinamicni del navideznega stroja ---*/
 
 	/** Zacasne spremenljivke (`registri') navideznega stroja. */
 	public HashMap<FrmTemp, Object> temps = new HashMap<>();
@@ -141,7 +142,12 @@ public class Interpreter {
 		while (pc < code.stmts.size()) {
 			if (debug) System.out.println("pc=" + pc);
 			ImcCode instruction = code.stmts.get(pc);
-			Object result = execute(instruction);
+            long current = System.currentTimeMillis();
+            Object result = execute(instruction);
+            long delta = System.currentTimeMillis() - current;
+            Long time = timers.get(instruction.toString());
+            time = time == null ? 0 : time;
+            timers.put(instruction.toString(), time + delta);
 			if (result instanceof FrmLabel) {
 				for (pc = 0; pc < code.stmts.size(); pc++) {
 					instruction = code.stmts.get(pc);
@@ -222,6 +228,7 @@ public class Interpreter {
 		}
 
 		if (instruction instanceof ImcCALL) {
+            long current = System.currentTimeMillis();
 			ImcCALL instr = (ImcCALL) instruction;
 
 			for (int i = 0; i < instr.args.size(); i++) {

@@ -1,9 +1,21 @@
 import stdlib
 
-func f() {}
-
+var list = [ 8, 0, 3, 9, 2, 14, 10, 27, 1, 5, 8, -1, 26 ]
 var i = 0
 while i < 100000 {
-    f()
+    quickSort(list, low: 0, high: list.count - 1)
+    list[0] = 8
+    list[1] = 0
+    list[2] = 3
+    list[3] = 9
+    list[4] = 2
+    list[5] = 14
+    list[6] = 10
+    list[7] = 27
+    list[8] = 1
+    list[9] = 5
+    list[10] = 8
+    list[11] = -1
+    list[12] = 26
     i = i + 1
 }

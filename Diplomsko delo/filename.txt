@@ -1,0 +1,13 @@
+%% 
+%% This is file, `filename.txt',
+%% generated with the extract package.
+%% 
+%% Generated on :  2018/01/23,9:40
+%% From source  :  vzorec_dip_Seminar.tex
+%% Using options:  active,generate=filename.txt,extract-env={document}
+%% 
+\documentclass[a4paper,12p]{book}
+
+\begin{document}
+
+\end{document}
