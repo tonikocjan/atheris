@@ -1973,6 +1973,7 @@ public class SynAn {
 		if (symbol.tokenType() != TokenType.LBRACE)
             logger.error(symbol.position(), "Syntax error on token \""
 					+ previous.getLexeme() + "\", expected '{' after this token");
+
 		nextSymbol(TokenType.NEWLINE, "NEWLINE");
 		nextSymbol();
 		AstStatements s = parseStatements();

@@ -183,7 +183,17 @@ public class Interpreter {
 		}
 	}
 
-	public Object execute(ImcCode instruction) {
+    public Object execute(ImcCode instruction) {
+        long current = System.currentTimeMillis();
+        Object result = execute2(instruction);
+        long delta = System.currentTimeMillis() - current;
+        Long time = timers.get(instruction.toString());
+        time = time == null ? 0 : time;
+        timers.put(instruction.toString(), time + delta);
+        return result;
+    }
+
+	public Object execute2(ImcCode instruction) {
         Integer count = executedInstructions.get(instruction.toString());
         count = count == null ? 1 : count + 1;
         executedInstructions.put(instruction.toString(), count);
@@ -228,7 +238,6 @@ public class Interpreter {
 		}
 
 		if (instruction instanceof ImcCALL) {
-            long current = System.currentTimeMillis();
 			ImcCALL instr = (ImcCALL) instruction;
 
 			for (int i = 0; i < instr.args.size(); i++) {

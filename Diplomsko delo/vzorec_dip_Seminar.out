@@ -18,10 +18,10 @@
 \BOOKMARK [1][-]{section.4.6}{Dedovanje in polimorfizem}{chapter.4}% 18
 \BOOKMARK [1][-]{section.4.7}{Vmesniki}{chapter.4}% 19
 \BOOKMARK [1][-]{section.4.8}{Abstraktni razredi}{chapter.4}% 20
-\BOOKMARK [1][-]{section.4.9}{Instance of operator}{chapter.4}% 21
-\BOOKMARK [1][-]{section.4.10}{Pretvarjanje tipov}{chapter.4}% 22
+\BOOKMARK [1][-]{section.4.9}{Operator is}{chapter.4}% 21
+\BOOKMARK [1][-]{section.4.10}{Pretvarjanje tipov - operator as}{chapter.4}% 22
 \BOOKMARK [1][-]{section.4.11}{Raz\235iritve}{chapter.4}% 23
-\BOOKMARK [1][-]{section.4.12}{Type inference}{chapter.4}% 24
+\BOOKMARK [1][-]{section.4.12}{Avtomaticno prepoznavanje tipov}{chapter.4}% 24
 \BOOKMARK [0][-]{chapter.5}{Meritve in testiranje}{}% 25
 \BOOKMARK [1][-]{section.5.1}{Meritve}{chapter.5}% 26
 \BOOKMARK [0][-]{chapter.6}{Sklepne ugotovitve}{}% 27
@@ -29,4 +29,4 @@
 \BOOKMARK [1][-]{section.7.1}{Atheris}{chapter.7}% 29
 \BOOKMARK [1][-]{section.7.2}{PINS}{chapter.7}% 30
 \BOOKMARK [1][-]{section.7.3}{Python}{chapter.7}% 31
-\BOOKMARK [0][-]{lstnumber.-35.10}{Literatura}{}% 32
+\BOOKMARK [0][-]{lstnumber.-34.10}{Literatura}{}% 32
