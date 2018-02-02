@@ -2,7 +2,7 @@
 %% This is file, `filename.txt',
 %% generated with the extract package.
 %% 
-%% Generated on :  2018/01/31,11:51
+%% Generated on :  2018/02/02,7:01
 %% From source  :  vzorec_dip_Seminar.tex
 %% Using options:  active,generate=filename.txt,extract-env={document}
 %% 

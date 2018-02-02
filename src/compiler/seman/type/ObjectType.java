@@ -249,7 +249,7 @@ public abstract class ObjectType extends Type {
     public boolean conformsTo(ObjectType baseClass) {
         for (Iterator<AstFunctionDefinition> it = baseClass.abstractMethods(); it.hasNext(); ) {
             AstFunctionDefinition abstractMethod = it.next();
-            AstDefinition abstractMethodImplementation = findNonAbstractDefinitionWithName(abstractMethod.getName(), true);
+            AstDefinition abstractMethodImplementation = findNonAbstractDefinitionWithName(abstractMethod.getName(), false);
             if (abstractMethodImplementation == null) return false;
         }
         return true;

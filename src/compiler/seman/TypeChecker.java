@@ -524,6 +524,12 @@ public class TypeChecker implements ASTVisitor {
 			
 			else if (lhs.isTupleType()) {
 				TupleType tupleType = (TupleType) lhs;
+				if (!tupleType.containsMember(memberName)) {
+                    logger.error(acceptor.expr2.position,
+                            LanguageManager.localize("type_error_member_not_found",
+                                    lhs.toString(),
+                                    memberName));
+                }
 
 				symbolDescription.setTypeForAstNode(acceptor.expr2, tupleType.typeForName(memberName));
 				symbolDescription.setTypeForAstNode(acceptor, tupleType.typeForName(memberName));
@@ -797,9 +803,9 @@ public class TypeChecker implements ASTVisitor {
 			Type argType = symbolDescription.getTypeForAstNode(arg);
             if (argType == null) return;
 
-			if (!(funType.getTypeForParameterAtIndex(i).sameStructureAs(argType))) {
+			if (!(funType.typeForParameterAtIndex(i).sameStructureAs(argType))) {
                 logger.error(arg.position, "Cannot assign value of type \"" +
-                        argType.friendlyName() + "\" to type \"" + funType.getTypeForParameterAtIndex(i).friendlyName() + "\"");
+                        argType.friendlyName() + "\" to type \"" + funType.typeForParameterAtIndex(i).friendlyName() + "\"");
 			}
 		}
 	}

@@ -34,27 +34,27 @@ public class FunctionType extends Type implements ReferenceType {
 		this.functionDefinition = definition;
 	}
 
-	public int getParamaterCount() {
+	public int paramaterCount() {
 		return parameterTypes.size();
 	}
 
-	public Type getTypeForParameterAtIndex(int index) {
+	public Type typeForParameterAtIndex(int index) {
 		return parameterTypes.get(index);
 	}
 
 	@Override
 	public boolean sameStructureAs(Type type) {
-		if (type.isFunctionType()) {
-			FunctionType funType = (FunctionType) type;
-			if (this.getParamaterCount() != funType.getParamaterCount())
-				return false;
-			for (int par = 0; par < getParamaterCount(); par++)
-				if (!this.getTypeForParameterAtIndex(par).sameStructureAs(funType.getTypeForParameterAtIndex(par)))
-					return false;
-			if (!this.resultType.sameStructureAs(funType.resultType))
-				return false;
-			return true;
-		}
+//		if (type.isFunctionType()) {
+//			FunctionType funType = (FunctionType) type;
+//			if (this.paramaterCount() != funType.paramaterCount())
+//				return false;
+//			for (int par = 0; par < paramaterCount(); par++)
+//				if (!this.typeForParameterAtIndex(par).sameStructureAs(funType.typeForParameterAtIndex(par)))
+//					return false;
+//			if (!this.resultType.sameStructureAs(funType.resultType))
+//				return false;
+//			return true;
+//		}
 		return false;
 	}
 	
@@ -63,7 +63,7 @@ public class FunctionType extends Type implements ReferenceType {
 		String str = "";
 		str += "(";
 		for (Type t : parameterTypes)
-			str += t.friendlyName() + (t == parameterTypes.get(getParamaterCount() - 1) ? "" : ",") ;
+			str += t.friendlyName() + (t == parameterTypes.get(paramaterCount() - 1) ? "" : ",") ;
 		String res = resultType == null ? "?" : resultType.toString();
 		str += ") -> " + res;
 		return str;

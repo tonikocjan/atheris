@@ -1,8 +1,11 @@
 import stdlib
 
-class A {
-    func f() {}
+interface Iterator {
+    func next()
 }
-extension A {
-    func f() {}
+
+class Array: Iterator {
+    func next() {
+        print("Next element")
+    }
 }

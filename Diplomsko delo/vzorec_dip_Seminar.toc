@@ -12,12 +12,12 @@
 \contentsline {subsubsection}{Leksikalni simboli:}{5}{section*.5}
 \contentsline {subsection}{\numberline {2.2.2}Sintaksna analiza}{6}{subsection.2.2.2}
 \contentsline {subsection}{\numberline {2.2.3}Semanti\IeC {\v c}na analiza}{7}{subsection.2.2.3}
-\contentsline {subsubsection}{Simbolna tabela}{7}{section*.6}
-\contentsline {subsection}{\numberline {2.2.4}Klicni zapisi}{8}{subsection.2.2.4}
-\contentsline {subsubsection}{Sklad}{9}{section*.7}
+\contentsline {subsubsection}{Simbolna tabela}{8}{section*.6}
+\contentsline {subsection}{\numberline {2.2.4}Klicni zapisi}{9}{subsection.2.2.4}
+\contentsline {subsubsection}{Sklad}{10}{section*.7}
 \contentsline {paragraph}{Kazalec na klicni zapis:}{10}{section*.8}
 \contentsline {paragraph}{Prenos parametrov:}{10}{section*.9}
-\contentsline {paragraph}{Stati\IeC {\v c}na povezava:}{10}{section*.10}
+\contentsline {paragraph}{Stati\IeC {\v c}na povezava:}{11}{section*.10}
 \contentsline {subsection}{\numberline {2.2.5}Generiranje vmesne kode}{11}{subsection.2.2.5}
 \contentsline {subsubsection}{Vmesna koda}{11}{section*.11}
 \contentsline {chapter}{\numberline {3}Programski jezik PINS}{13}{chapter.3}
@@ -31,7 +31,7 @@
 \contentsline {chapter}{\numberline {4}Programski jezik Atheris}{17}{chapter.4}
 \contentsline {subsection}{\numberline {4.0.1}Podatkovni tipi}{18}{subsection.4.0.1}
 \contentsline {section}{\numberline {4.1}Sintaksa}{18}{section.4.1}
-\contentsline {section}{\numberline {4.2}Funkcije}{21}{section.4.2}
+\contentsline {section}{\numberline {4.2}Funkcije}{20}{section.4.2}
 \contentsline {subsection}{\numberline {4.2.1}Dolo\IeC {\v c}anje label argumentov}{21}{subsection.4.2.1}
 \contentsline {section}{\numberline {4.3}Enumeracije}{22}{section.4.3}
 \contentsline {section}{\numberline {4.4}Terke}{24}{section.4.4}
@@ -40,24 +40,24 @@
 \contentsline {subsection}{\numberline {4.5.2}Instan\IeC {\v c}ne funkcije}{26}{subsection.4.5.2}
 \contentsline {subsection}{\numberline {4.5.3}Konstruktorji}{26}{subsection.4.5.3}
 \contentsline {subsection}{\numberline {4.5.4}Stati\IeC {\v c}ni \IeC {\v c}lani razreda}{27}{subsection.4.5.4}
-\contentsline {section}{\numberline {4.6}Dedovanje in polimorfizem}{28}{section.4.6}
+\contentsline {section}{\numberline {4.6}Dedovanje in polimorfizem}{29}{section.4.6}
 \contentsline {subsection}{\numberline {4.6.1}Polimorfizem}{29}{subsection.4.6.1}
-\contentsline {subsection}{\numberline {4.6.2}Dinami\IeC {\v c}no sklicevanje funkcij [todo]}{29}{subsection.4.6.2}
-\contentsline {subsubsection}{Virtualna tabela}{30}{section*.15}
-\contentsline {subsection}{\numberline {4.6.3}Realizacija}{30}{subsection.4.6.3}
+\contentsline {subsection}{\numberline {4.6.2}Dinami\IeC {\v c}no klicanje funkcij}{30}{subsection.4.6.2}
+\contentsline {subsubsection}{Navidezna tabela}{30}{section*.15}
+\contentsline {subsection}{\numberline {4.6.3}Realizacija}{31}{subsection.4.6.3}
 \contentsline {section}{\numberline {4.7}Vmesniki}{31}{section.4.7}
 \contentsline {section}{\numberline {4.8}Abstraktni razredi}{32}{section.4.8}
-\contentsline {section}{\numberline {4.9}Operator \textit {is}}{33}{section.4.9}
-\contentsline {section}{\numberline {4.10}Pretvarjanje tipov - operator \textit {as}}{34}{section.4.10}
+\contentsline {section}{\numberline {4.9}Operator {\ttfamily is}}{34}{section.4.9}
+\contentsline {section}{\numberline {4.10}Pretvarjanje tipov - operator {\ttfamily as}}{34}{section.4.10}
 \contentsline {section}{\numberline {4.11}Raz\IeC {\v s}iritve}{35}{section.4.11}
 \contentsline {subsection}{\numberline {4.11.1}Raz\IeC {\v s}iritev z vmesnikom}{36}{subsection.4.11.1}
 \contentsline {section}{\numberline {4.12}Avtomati\IeC {\v c}no prepoznavanje tipov}{36}{section.4.12}
 \contentsline {chapter}{\numberline {5}Meritve in testiranje}{39}{chapter.5}
-\contentsline {section}{\numberline {5.1}Meritve}{40}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Bubblesort}{40}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}Quicksort}{40}{subsection.5.1.2}
-\contentsline {subsection}{\numberline {5.1.3}Izra\IeC {\v c}un n-tega fibonaccijevega \IeC {\v s}tevila}{42}{subsection.5.1.3}
-\contentsline {subsection}{\numberline {5.1.4}Quicksort s polimorfnimi operacijami}{42}{subsection.5.1.4}
+\contentsline {section}{\numberline {5.1}Meritve}{39}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Bubblesort}{39}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}Quicksort}{39}{subsection.5.1.2}
+\contentsline {subsection}{\numberline {5.1.3}Izra\IeC {\v c}un n-tega fibonaccijevega \IeC {\v s}tevila}{41}{subsection.5.1.3}
+\contentsline {subsection}{\numberline {5.1.4}Quicksort s polimorfnimi operacijami}{41}{subsection.5.1.4}
 \contentsline {chapter}{\numberline {6}Sklepne ugotovitve}{45}{chapter.6}
 \contentsline {chapter}{\numberline {7}Priloge}{47}{chapter.7}
 \contentsline {section}{\numberline {7.1}Atheris}{47}{section.7.1}
@@ -73,4 +73,4 @@
 \contentsline {subsection}{\numberline {7.3.1}Bubblesort}{56}{subsection.7.3.1}
 \contentsline {subsection}{\numberline {7.3.2}Quicksort}{57}{subsection.7.3.2}
 \contentsline {subsection}{\numberline {7.3.3}Fibonacci}{58}{subsection.7.3.3}
-\contentsline {chapter}{Literatura}{59}{lstnumber.-34.10}
+\contentsline {chapter}{Literatura}{59}{lstnumber.-41.10}
