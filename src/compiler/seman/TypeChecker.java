@@ -359,11 +359,12 @@ public class TypeChecker implements ASTVisitor {
 				symbolDescription.setTypeForAstNode(symbolDescription.getDefinitionForAstNode(acceptor.expr1), rhs);
 
 				if (rhs == null) {
+				    // TODO: -
                     System.out.println();
                 }
 
 				if (rhs.isArrayType() && ((ArrayType) rhs).memberType.sameStructureAs(Type.anyType)) {
-                    logger.warning(acceptor.expr2.position, "Implicitly inferred Any memberType");
+                    logger.warning(acceptor.expr2.position, "Implicitly inferred Any type");
                 }
 
 				success = true;
@@ -448,21 +449,17 @@ public class TypeChecker implements ASTVisitor {
                 }
 
 				if (!lhs.containsMember(memberName)) {
-                    logger.error(acceptor.expr2.position,
-                            LanguageManager.localize(
-                                    "type_error_member_not_found",
-                                    lhs.friendlyName(),
-                                    memberName));
+                    logger.error(acceptor.expr2.position, LanguageManager.localize("type_error_member_not_found", lhs.friendlyName(), memberName));
                 }
 				
 				AstDefinition definition = lhs.findMemberDefinitionWithName(memberName);
 				AstDefinition objectDefinition = symbolDescription.getDefinitionForAstNode(acceptor.expr1);
 
-				// check for access control (if object's getName is not "self")
-                if (!objectDefinition.name.equals(Constants.selfParameterIdentifier)) {
+				// check for access control (if object's name is not "self")
+                if (objectDefinition != null && !objectDefinition.name.equals(Constants.selfParameterIdentifier)) {
                     if (definition.isPrivate()) {
                         logger.error(acceptor.expr2.position,
-                                "Member '" + memberName + "' is inaccessible due to it's private protection staticLevel");
+                                "Member '" + memberName + "' is inaccessible due to it's private protection level");
                     }
                 }
 				
@@ -608,6 +605,7 @@ public class TypeChecker implements ASTVisitor {
 
                 symbolDescription.setDefinitionForAstNode(acceptor.expr2, def);
                 symbolDescription.setTypeForAstNode(acceptor.expr2, functionType);
+                symbolDescription.setTypeForAstNode(acceptor, functionType);
             }
             else {
                 logger.error(acceptor.position, "Value of type \"" + lhs.friendlyName() + "\" has no member named \"" + memberName + "\"");

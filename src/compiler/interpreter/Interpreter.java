@@ -258,6 +258,9 @@ public class Interpreter {
 			if (instr.label.getName().equals("_mem")) {
 			    return ldM((Integer) ldM(stackPointer + Constants.Byte));
             }
+            if (instr.label.getName().equals("_String")) {
+                return ldM(stackPointer + Constants.Byte).toString();
+            }
 
             Integer address = locations.get(instr.label);
             ImcCodeChunk function = (ImcCodeChunk) ldM(address);

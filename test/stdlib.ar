@@ -27,6 +27,9 @@ func print(_ any: Any) {
 func mem(_ memory: Int) Int {	
 }
 
+func String(_ val: Any) String {
+}
+
 
 func bubbleSort(_ list: [Int], size: Int) Int {
     var i = 0

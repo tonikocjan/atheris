@@ -131,6 +131,7 @@ public class Symbol {
             case KW_IS          : tokenName = "IS"; break;
             case KW_OVERRIDE    : tokenName = "OVERRIDE"; break;
             case KW_ABSTRACT:     tokenName = "ABSTRACT"; break;
+            case KW_INTERFACE:     tokenName = "INTERFACE"; break;
 
             default:
                 logger.error("Internal error: tokenType=" + tokenType + " in compiler.lexan.Symbol.toString().");

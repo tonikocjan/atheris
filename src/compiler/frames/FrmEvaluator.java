@@ -136,6 +136,9 @@ public class FrmEvaluator implements ASTVisitor {
 
 		for (AstExpression arg: acceptor.arguments) {
             Type argType = symbolDescription.getTypeForAstNode(arg);
+            if (argType == null) {
+                System.out.println();
+            }
             int size = argType.isReferenceType() ? Constants.Byte : argType.sizeInBytes(); // FIXME: -
             parSize += size;
         }

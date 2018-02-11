@@ -1,6 +1,6 @@
 import stdlib
 
-class Comparable {
+abstract class Comparable {
     func compare(with object: Any) Int {
         if object is Comparable {
             let comparable = object as Comparable
@@ -51,40 +51,39 @@ class Decimal: Comparable {
     }
 }
 
-func partition(_ list: [Comparable], low: Int, high: Int) Int {
-    let pivot = list[low]
-    var i = low - 1
-    var j = high + 1
-
-    while true {
-        while true {
-            j = j - 1
-            let el = list[j]
-            if el.compare(with: pivot) <= 0 {
-                break
-            }
-        }
+func quicksort(_ list: [Comparable], low: Int, high: Int) {
+    func partition(_ list: [Comparable], low: Int, high: Int) Int {
+        let pivot = list[low]
+        var i = low - 1
+        var j = high + 1
 
         while true {
-            i = i + 1
-            let el = list[i]
-            if el.compare(with: pivot) >= 0 {
-                break
+            while true {
+                j = j - 1
+                let el = list[j]
+                if el.compare(with: pivot) <= 0 {
+                    break
+                }
             }
-        }
 
-        if i < j {
-            let tmp = list[i]
-            list[i] = list[j]
-            list[j] = tmp
-        }
-        else {
-            return j
+            while true {
+                i = i + 1
+                let el = list[i]
+                if el.compare(with: pivot) >= 0 {
+                    break
+                }
+            }
+
+            if i < j {
+                let tmp = list[i]
+                list[i] = list[j]
+                list[j] = tmp
+            }
+            else {
+                return j
+            }
         }
     }
-}
-
-func quicksort(_ list: [Comparable], low: Int, high: Int) {
     if low < high {
         let p = partition(list, low: low, high: high)
         quicksort(list, low: low, high: p)
