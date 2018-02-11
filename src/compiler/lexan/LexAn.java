@@ -53,6 +53,7 @@ public class LexAn implements LexicalAnalyzer {
 	private int nextCharacter = -1;
 	private int startCol = 1, startRow = 1;
 	private boolean skipNextCharacter = false;
+	private Symbol nextSymbol = null;
 
 	private LexAn(String sourceFileName, boolean dump) {
 		this.dump = dump;
@@ -120,10 +121,19 @@ public class LexAn implements LexicalAnalyzer {
 			startCol += currentSymbol.length();
 			currentSymbol = new StringBuilder();
 
-			if (!skipNextCharacter)
-				nextCharacter = file.read();
-			else
-				skipNextCharacter = false;
+			if (nextSymbol == null) {}
+			else {
+			    Symbol temp = nextSymbol;
+			    nextSymbol = null;
+			    return temp;
+            }
+
+			if (skipNextCharacter) {
+                skipNextCharacter = false;
+            }
+			else {
+                nextCharacter = file.read();
+            }
 
 			/**
 			 * Skip characters after '#'
@@ -303,18 +313,43 @@ public class LexAn implements LexicalAnalyzer {
     }
 
     private Symbol parseNumericConstant() throws IOException {
-        boolean didParseDouble = false;
+        boolean isDecimal = false;
 
         while (true) {
-            while (isNumeric(nextCharacter)) {
-                currentSymbol.append((char) nextCharacter);
-                nextCharacter = file.read();
+            if (isNumeric(nextCharacter)) {
+                do {
+                    currentSymbol.append((char) nextCharacter);
+                    nextCharacter = file.read();
+                } while (isNumeric(nextCharacter));
             }
 
-            if (!didParseDouble && nextCharacter == '.') {
-                didParseDouble = true;
-                currentSymbol.append((char) nextCharacter);
+            if (nextCharacter == '.') {
+                isDecimal = true;
                 nextCharacter = file.read();
+
+                if (isNumeric(nextCharacter)) {
+                    currentSymbol.append(".");
+                }
+                else {
+                    skipNextCharacter = true;
+                    nextSymbol = new Symbol.Builder()
+                            .setTokenType(TokenType.DOT)
+                            .setLexeme(".")
+                            .setStartRow(startRow)
+                            .setEndRow(startRow)
+                            .setStartCol(startCol)
+                            .setEndCol(startCol + 1)
+                            .build();
+
+                    return new Symbol.Builder()
+                            .setTokenType(TokenType.INT_CONST)
+                            .setLexeme(currentSymbol.toString())
+                            .setStartRow(startRow)
+                            .setStartCol(startCol)
+                            .setEndRow(startRow)
+                            .setEndCol(startCol + currentSymbol.length())
+                            .build();
+                }
 
                 continue;
             }
@@ -324,7 +359,7 @@ public class LexAn implements LexicalAnalyzer {
 
         skipNextCharacter = true;
 
-        TokenType tokenType = didParseDouble ? TokenType.DOUBLE_CONST : TokenType.INT_CONST;
+        TokenType tokenType = isDecimal ? TokenType.DOUBLE_CONST : TokenType.INT_CONST;
         return new Symbol.Builder()
                 .setTokenType(tokenType)
                 .setLexeme(currentSymbol.toString())
