@@ -278,7 +278,6 @@ Zahvaljujem se svojim staršem, sestri ter prijateljem za vso podporo, ki so mi 
 \chapter*{Seznam uporabljenih kratic}  % spremenil Solina, da predolge vrstice ne gredo preko desnega roba
 
 \noindent\begin{tabular}{l|l|l}
-\begin{tabular}{l|l|l}
 	{\bf kratica} & {\bf angleško} & {\bf slovensko} \\ \hline
 	% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
 	{\bf AST} & abstract syntax tree & abstraktno sintaksno drevo \\
@@ -288,7 +287,6 @@ Zahvaljujem se svojim staršem, sestri ter prijateljem za vso podporo, ki so mi 
 	{\bf FP} & frame pointer & kazalec na klicni zapis \\
 	{\bf KNG} & context free grammar & konteksno neodvisna gramatika \\
 	{\bf OOP} & object oriented programming & objektno usmerjeno programiranje \\
-\end{tabular}
 \end{tabular}
 
 
@@ -346,7 +344,7 @@ The performance of Atheris is tested on practical cases. The implementation spee
 
 \chapter{Uvod}
 
-Razvoj prevajalnikov ter s tem tudi programskih jezikov je izjemno pomembna panoga v računalništvu. Programski jezik je medij, preko katerega komuniciramo z računalnikom. Prevajalniki razvijalcem omogočajo, da se med razvojem programske opreme ne rabijo osredotočati na nizkovojske detajle, ampak se lahko posvetijo reševanju praktičnih problemov. Naloga prevajalnika je, da pretvori človeku berljivo kodo v računalniku razumljivo zaporedje strojnih ukazov. \\
+Razvoj prevajalnikov, ter s tem tudi programskih jezikov, je izjemno pomembna panoga v računalništvu. Programski jezik je medij, preko katerega komuniciramo z računalnikom. Prevajalniki razvijalcem omogočajo, da se med razvojem programske opreme ne rabijo osredotočati na nizkovojske detajle, ampak se lahko posvetijo reševanju praktičnih problemov. Naloga prevajalnika je, da pretvori človeku berljivo kodo v računalniku razumljivo zaporedje strojnih ukazov. \\
 \indent Dandanes lahko za razvoj programske opreme izbiramo med velikim številom programskih jezikov. Trenutno eni izmed najbolj popularnih so Java, C in C++, Python in C\#, popularnost pa dobivajo tudi novejši jeziki kot so GoLang, Swift, Kotlin in podobni \cite{tiobeIndex}. \\
 \indent S prevajalniki smo se začeli ukvarjati pri predmetu Prevajalniki in navidezni stroji (PINS) v drugem letniku na Fakulteti za Računalništvo in Informatiko. Pri predmetu smo se osredotočili predvsem na enostavne proceduralne jezike, cilj diplomskega dela pa je vgradnja naprednejših gradnikov, ki niso bili del učnega načrta. \\
 \indent Tekom diplomskega dela grobo opišemo programske jezike in prevajalnike, v nadaljevanju predstavimo programski jezik PINS, podrobneje pa se posvetimo programskemu jeziku Atheris.
@@ -1533,7 +1531,7 @@ V razdelku ~\ref{dynamicDispatch} je podrobneje opisano delovanje polimorfnih op
 \indent Zanimalo nas je, kakšna je pravzaprav dejanska cena, ki jo moramo plačati za njihovo izvajanje. Pripravljen je primer, ki testira prav to.
 Gre za implementacijo quicksort algoritma, ki se izvaja nad identičnimi vhodnimi podatki kot prejšnji primeri, s to razliko, da so števila ovita v objekte. Izvajanje primerjanja dveh objektov poteka z uporabo naštetih polimorfnih operacij. Rezultat meritve je viden na sliki \ref{meritvePoli}.
 
-\begin{figure}
+\begin{figure}[!b]
 	\centering
 	\begin{tikzpicture}
 \begin{axis}[
