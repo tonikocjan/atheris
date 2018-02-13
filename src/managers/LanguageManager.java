@@ -24,29 +24,29 @@ import java.util.HashMap;
 
 public class LanguageManager {
 
-	public static LanguageManager sharedManager = new LanguageManager();
+    public static LanguageManager sharedManager = new LanguageManager();
     private HashMap<String, String> translationMapping = new HashMap<>();
     private String delimiter = " = ";
 
-	private LanguageManager() { }
+    private LanguageManager() { }
 
-	public boolean loadLocalization(String fileName) {
-		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-		    String line;
-		    while ((line = br.readLine()) != null) {
-		    	if (line.isEmpty()) continue;
-		    	if (isComment(line)) continue;
+    public boolean loadLocalization(String fileName) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.isEmpty()) continue;
+                if (isComment(line)) continue;
 
                 parseLine(line);
-		    }
-		    return true;
-		} catch (IOException e) {
-			System.err.println("Error opening localization file");
-			return false;
-		}
-	}
+            }
+            return true;
+        } catch (IOException e) {
+            System.err.println("Error opening localization file");
+            return false;
+        }
+    }
 
-	private void parseLine(String line) {
+    private void parseLine(String line) {
         String[] splitedString = line.split(delimiter);
 
         if (!isLegal(splitedString)) return;
@@ -57,8 +57,8 @@ public class LanguageManager {
         translationMapping.put(key, value);
     }
 
-	private boolean isComment(String line) {
-	    return line.startsWith("/*");
+    private boolean isComment(String line) {
+        return line.startsWith("/*");
     }
 
     private boolean isLegal(String[] splitted) {
@@ -68,23 +68,23 @@ public class LanguageManager {
         return true;
     }
 
-	public String localizedStringForKey(String key) {
-		if (translationMapping.containsKey(key))
-			return translationMapping.get(key);
-		return key;
-	}
+    public String localizedStringForKey(String key) {
+        if (translationMapping.containsKey(key))
+            return translationMapping.get(key);
+        return key;
+    }
 
-	public String localizedStringForKey(String key, Object... args) {
-		if (translationMapping.containsKey(key))
-			return String.format(translationMapping.get(key), args);
-		return key;
-	}
+    public String localizedStringForKey(String key, Object... args) {
+        if (translationMapping.containsKey(key))
+            return String.format(translationMapping.get(key), args);
+        return key;
+    }
 
-	public static String localize(String key) {
-		return sharedManager.localizedStringForKey(key);
-	}
-	
-	public static String localize(String key, Object... args) {
-		return sharedManager.localizedStringForKey(key, args);
-	}
+    public static String localize(String key) {
+        return sharedManager.localizedStringForKey(key);
+    }
+
+    public static String localize(String key, Object... args) {
+        return sharedManager.localizedStringForKey(key, args);
+    }
 }
