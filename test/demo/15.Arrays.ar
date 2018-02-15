@@ -1,0 +1,33 @@
+import stdlib
+
+let x: [Int] = [ 1, 2, 3, 4, 5 ]
+
+for i in x {
+    print(i)
+}
+
+let y = [ 1, 2, 3, 4, 5 ]
+
+for i in y {
+    print(i)
+}
+
+print(x.count)
+print(y.count)
+
+print(x[0])
+print(x[1])
+print(x[2])
+print(x[3])
+print(x[4])
+
+print(y[0])
+print(y[1])
+print(y[2])
+print(y[3])
+print(y[4])
+
+let z = [1, 2, 5, 10, 100, 333]
+for i in z {
+	print(i)
+}

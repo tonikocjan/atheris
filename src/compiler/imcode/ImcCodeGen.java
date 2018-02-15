@@ -531,8 +531,8 @@ public class ImcCodeGen implements ASTVisitor {
 		ImcExpr iterator = (ImcExpr) imcDescription.getImcCode(acceptor.iterator);
 		ImcExpr collection = (ImcExpr) imcDescription.getImcCode(acceptor.collection);
 
-		ImcBINOP mul = new ImcBINOP(ImcBINOP.MUL, counter, size);
-		ImcBINOP add = new ImcBINOP(ImcBINOP.ADD, collection, mul);
+		ImcBINOP indexTimesSize = new ImcBINOP(ImcBINOP.MUL, counter, size);
+		ImcBINOP elementOffset = new ImcBINOP(ImcBINOP.ADD, collection, indexTimesSize);
 
 		FrmLabel l1 = FrmLabel.newAnonymousLabel(), l2 = FrmLabel.newAnonymousLabel(), l3 = FrmLabel.newAnonymousLabel();
 
@@ -540,9 +540,9 @@ public class ImcCodeGen implements ASTVisitor {
 		statements.stmts.add(new ImcMOVE(hi, new ImcMEM(collection)));
 		statements.stmts.add(new ImcMOVE(counter, new ImcCONST(1)));
 		statements.stmts.add(new ImcLABEL(l1));
-		statements.stmts.add(new ImcCJUMP(new ImcBINOP(ImcBINOP.LTH, counter, hi), l2, l3));
+		statements.stmts.add(new ImcCJUMP(new ImcBINOP(ImcBINOP.LEQ, counter, hi), l2, l3));
 		statements.stmts.add(new ImcLABEL(l2));
-        statements.stmts.add(new ImcMOVE(iterator, new ImcMEM(add)));
+        statements.stmts.add(new ImcMOVE(iterator, new ImcMEM(elementOffset)));
 		statements.stmts.add(bodyCode);
 		statements.stmts.add(new ImcMOVE(counter, new ImcBINOP(ImcBINOP.ADD, counter, new ImcCONST(1))));
 		statements.stmts.add(new ImcJUMP(l1));
@@ -835,7 +835,7 @@ public class ImcCodeGen implements ASTVisitor {
 
 		FrmLabel label = FrmLabel.newAnonymousLabel();
         ImcNAME labelCode = new ImcNAME(label);
-		ImcDataChunk chunk = new ImcDataChunk(label, size * elementSize);
+		ImcDataChunk chunk = new ImcDataChunk(label, size * elementSize + Constants.Byte);
 		ImcSEQ seq = new ImcSEQ();
 
 		seq.stmts.add(new ImcMOVE(new ImcMEM(labelCode), new ImcCONST(size)));
