@@ -312,12 +312,18 @@ public class ImcCodeGen implements ASTVisitor {
             code = new ImcESEQ(statements, result);
         }
 		else if (acceptor.oper == AstBinaryExpression.ARR) {
-		    // TODO: -
 			ArrayType type = (ArrayType) symbolDescription.getTypeForAstNode(acceptor.expr1);
 			int size = type.memberType.sizeInBytes();
-			
-			code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, new ImcBINOP(
-					ImcBINOP.MUL, e2, new ImcCONST(size))));
+
+            ImcBINOP index = new ImcBINOP(ImcBINOP.ADD, e2, new ImcCONST(1));
+			code = new ImcMEM(
+			        new ImcBINOP(
+			                ImcBINOP.ADD,
+                            e1,
+                            new ImcBINOP(
+                                    ImcBINOP.MUL,
+                                    index,
+                                    new ImcCONST(size))));
 		} 
 		else if (acceptor.oper == ImcBINOP.MOD) {
 			ImcBINOP div = new ImcBINOP(ImcBINOP.DIV, e1, e2);
@@ -444,10 +450,6 @@ public class ImcCodeGen implements ASTVisitor {
                 }
                 else {
                     code = new ImcMEM(new ImcBINOP(ImcBINOP.ADD, e1, e2));
-
-//                    if (t.isReferenceType()) {
-//                    code = new ImcMEM((ImcBINOP) code);
-//                    }
                 }
             }
 
@@ -468,11 +470,10 @@ public class ImcCodeGen implements ASTVisitor {
             }
 
             /**
-             * Handle array.length.
+             * Handle array.count.
              */
-            // TODO: - Remove this
             else if (t.isArrayType()) {
-                code = new ImcCONST(((ArrayType) t).count);
+                code = new ImcMEM(e1); // TODO: - Reimplement this (array.count)
             }
 		}
 
@@ -519,15 +520,13 @@ public class ImcCodeGen implements ASTVisitor {
 
 		ImcSEQ bodyCode = (ImcSEQ) imcDescription.getImcCode(acceptor.body);
 		Type type = symbolDescription.getTypeForAstNode(acceptor.collection);
-		int count = 0;
-		
+
 		if (type.isArrayType()) {
-			count = ((ArrayType) type).count;
 			type = ((ArrayType) type).memberType;
 		}
 
 		ImcExpr size = new ImcCONST(type.sizeInBytes());
-		ImcExpr hi = new ImcCONST(count);
+        ImcTEMP hi = new ImcTEMP(new FrmTemp());
 		ImcTEMP counter = new ImcTEMP(new FrmTemp());
 		ImcExpr iterator = (ImcExpr) imcDescription.getImcCode(acceptor.iterator);
 		ImcExpr collection = (ImcExpr) imcDescription.getImcCode(acceptor.collection);
@@ -538,7 +537,8 @@ public class ImcCodeGen implements ASTVisitor {
 		FrmLabel l1 = FrmLabel.newAnonymousLabel(), l2 = FrmLabel.newAnonymousLabel(), l3 = FrmLabel.newAnonymousLabel();
 
 		ImcSEQ statements = new ImcSEQ();
-		statements.stmts.add(new ImcMOVE(counter, new ImcCONST(0)));
+		statements.stmts.add(new ImcMOVE(hi, new ImcMEM(collection)));
+		statements.stmts.add(new ImcMOVE(counter, new ImcCONST(1)));
 		statements.stmts.add(new ImcLABEL(l1));
 		statements.stmts.add(new ImcCJUMP(new ImcBINOP(ImcBINOP.LTH, counter, hi), l2, l3));
 		statements.stmts.add(new ImcLABEL(l2));
@@ -830,33 +830,45 @@ public class ImcCodeGen implements ASTVisitor {
 
 	@Override
 	public void visit(AstListExpr acceptor) {
-		int size = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor)).count;
-		int elSize = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor)).memberType.sizeInBytes();
+		int size = acceptor.expressions.size();
+		int elementSize = ((ArrayType) symbolDescription.getTypeForAstNode(acceptor)).memberType.sizeInBytes();
 
 		FrmLabel label = FrmLabel.newAnonymousLabel();
-		ImcDataChunk chunk = new ImcDataChunk(label, size * elSize);
+        ImcNAME labelCode = new ImcNAME(label);
+		ImcDataChunk chunk = new ImcDataChunk(label, size * elementSize);
 		ImcSEQ seq = new ImcSEQ();
 
-		int i = 0;
+		seq.stmts.add(new ImcMOVE(new ImcMEM(labelCode), new ImcCONST(size)));
+
+		int i = 1;
 		for (AstExpression e : acceptor.expressions) {
 			e.accept(this);
 
 			ImcCode code = imcDescription.getImcCode(e);
 			ImcExpr expr;
-			if (code instanceof ImcEXP)
-				expr = ((ImcEXP) code).expr;
-			else
-				expr = (ImcExpr) code;
+			if (code instanceof ImcEXP) {
+                expr = ((ImcEXP) code).expr;
+            }
+			else {
+                expr = (ImcExpr) code;
+            }
 
-			ImcMOVE move = new ImcMOVE(new ImcMEM(new ImcBINOP(ImcBINOP.ADD,
-					new ImcNAME(label), new ImcBINOP(ImcBINOP.MUL,
-							new ImcCONST(i), new ImcCONST(elSize)))), expr);
-			i++;
+			ImcMOVE move = new ImcMOVE(
+			        new ImcMEM(
+			                new ImcBINOP(
+			                        ImcBINOP.ADD,
+                                    labelCode,
+                                    new ImcBINOP(ImcBINOP.MUL,
+                                            new ImcCONST(i),
+                                            new ImcCONST(elementSize)))),
+                    expr);
 			seq.stmts.add(move);
+
+			i++;
 		}
 
 		chunks.add(chunk);
-		imcDescription.setImcCode(acceptor, new ImcESEQ(seq, new ImcNAME(label)));
+		imcDescription.setImcCode(acceptor, new ImcESEQ(seq, labelCode));
 	}
 
 	@Override

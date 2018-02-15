@@ -18,15 +18,14 @@
 package compiler.seman.type;
 
 import compiler.ast.tree.def.AstDefinition;
+import utils.Constants;
 
 public class ArrayType extends Type implements ReferenceType {
 
 	public final Type memberType;
-	public final int count;
 
 	public ArrayType(Type type, int count) {
 		this.memberType = type;
-		this.count = count;
 	}
 
 	@Override
@@ -46,7 +45,7 @@ public class ArrayType extends Type implements ReferenceType {
 
 	@Override
 	public int sizeInBytes() {
-		return count * memberType.sizeInBytes();
+		return Constants.Byte;
 	}
 
 	@Override
