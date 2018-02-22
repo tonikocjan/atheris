@@ -115,6 +115,7 @@ public class Atheris {
         ImcDescriptionMap imcDescription = new ImcDescription();
 
         Interpreter.heapPointer = 4;
+        FrmVirtualTableAccess.heapOffset = Constants.Byte;
         Type.clean();
 
         // Izvajanje faz prevajanja.

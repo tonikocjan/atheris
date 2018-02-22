@@ -4,7 +4,7 @@ import compiler.ast.tree.def.AstClassDefinition;
 
 public class FrmVirtualTableAccess extends FrmAccess  {
 
-    private static int heapOffset = 4;
+    public static int heapOffset = 4;
 
     public final AstClassDefinition classDef;
     public final int size;
