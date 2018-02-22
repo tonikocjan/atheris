@@ -82,7 +82,7 @@ public class TypeChecker implements ASTVisitor {
 
             CanType baseClass = null;
 
-            // check whether inheritance is legal
+            // validate inheritance
             if (acceptor.baseClass != null) {
                 acceptor.baseClass.accept(this);
 
@@ -101,7 +101,7 @@ public class TypeChecker implements ASTVisitor {
                 }
             }
 
-            // check whether conformance is legal
+            // validate conformances
             for (AstType conformance : acceptor.conformances) {
                 conformance.accept(this);
 

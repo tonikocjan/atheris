@@ -79,6 +79,6 @@ public class ImcCALL extends ImcExpr {
 
     @Override
     public String toString() {
-        return "ImcCALL";
+        return "ImcCALL: " + label.getName();
     }
 }

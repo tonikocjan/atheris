@@ -17,22 +17,15 @@
 
 package compiler.imcode;
 
-/**
- * Konstanta.
- * 
- * @author sliva
- */
+
 public class ImcCONST extends ImcExpr {
 
-	/** Vrednost.  */
 	public Object value;
 
-	/**
-	 * Ustvari novo konstanto.
-	 * 
-	 * @param value Vrednost konstante.
-	 */
 	public ImcCONST(Object value) {
+	    if (value.equals(120)) {
+            System.out.println();
+        }
 		this.value = value;
 	}
 

@@ -36,7 +36,7 @@ public class Interpreter {
 
     public static PrintStream interpreterOutput = System.out;
 
-	/*--- staticni removeDefinitionFromCurrentScope navideznega stroja ---*/
+	/*--- staticni del navideznega stroja ---*/
 
 	/** Pomnilnik navideznega stroja. */
 	public static HashMap<Integer, Object> mems = new HashMap<>();
@@ -92,16 +92,6 @@ public class Interpreter {
 		return value;
 	}
 
-	// TODO: - Bad design!!
-    public static void clean() {
-        mems.clear();
-        locations.clear();
-        heapPointer = Constants.Byte;
-    }
-
-    /**
-	 * Debug print memory
-	 */
 	public static void printMemory() {
 	    int address = 0;
 		for (int i = 0; i < mems.size(); i++, address += 1) {
@@ -184,13 +174,18 @@ public class Interpreter {
 	}
 
     public Object execute(ImcCode instruction) {
-        long current = System.currentTimeMillis();
-        Object result = execute2(instruction);
-        long delta = System.currentTimeMillis() - current;
-        Long time = timers.get(instruction.toString());
-        time = time == null ? 0 : time;
-        timers.put(instruction.toString(), time + delta);
-        return result;
+	    if (debug) {
+            long current = System.currentTimeMillis();
+            Object result = execute2(instruction);
+            long delta = System.currentTimeMillis() - current;
+            Long time = timers.get(instruction.toString());
+            time = time == null ? 0 : time;
+            timers.put(instruction.toString(), time + delta);
+            return result;
+        }
+        else {
+	        return execute2(instruction);
+        }
     }
 
 	public Object execute2(ImcCode instruction) {
@@ -238,6 +233,10 @@ public class Interpreter {
 		}
 
 		if (instruction instanceof ImcCALL) {
+            if (debug) {
+                System.out.println("Fun call: " + instruction.toString());
+            }
+
 			ImcCALL instr = (ImcCALL) instruction;
 
 			for (int i = 0; i < instr.args.size(); i++) {

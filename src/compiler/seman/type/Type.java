@@ -133,7 +133,6 @@ public abstract class Type {
 
     // TODO: Bad design!!
 	public static void clean() {
-        TYPE_DESCRIPTOR = 0;
         intType = new AtomType(AtomTypeKind.INT);
         charType = new AtomType(AtomTypeKind.CHR);
         doubleType = new AtomType(AtomTypeKind.DOB);

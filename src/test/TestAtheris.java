@@ -81,6 +81,11 @@ public class TestAtheris {
         test("14.AbstractClasses.ar");
     }
 
+    @Test
+    public void testArrays() {
+        test("15.Arrays.ar");
+    }
+
     private void test(String sourceFileName) {
         String[] args = new String[3];
 

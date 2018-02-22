@@ -17,18 +17,17 @@
 
 package compiler;
 
-import compiler.frames.FrameDescriptionMap;
+import com.sun.tools.internal.jxc.ap.Const;
+import compiler.frames.*;
 import compiler.imcode.*;
 import compiler.interpreter.Memory;
 import compiler.logger.LoggerFactory;
 import compiler.logger.LoggerInterface;
 import compiler.seman.*;
+import compiler.seman.type.AtomType;
 import utils.ArgumentParser;
 import utils.Constants;
 import compiler.ast.tree.AstNode;
-import compiler.frames.PrintAstVisitor;
-import compiler.frames.FrameDescription;
-import compiler.frames.FrmEvaluator;
 import compiler.interpreter.Interpreter;
 import compiler.lexan.LexAn;
 import compiler.lexan.TokenType;
@@ -53,10 +52,6 @@ public class Atheris {
     private String dumpPhases = "interpret";
     private Memory memory = new Memory();
     private ImcCodeChunk compiledCode;
-
-    public Atheris() {
-        Interpreter.heapPointer = 0;
-    }
 
     private void parseArguments(String[] args) {
         ArgumentParser parser = new ArgumentParser(args);
@@ -114,8 +109,8 @@ public class Atheris {
         FrameDescriptionMap frameDescription = new FrameDescription();
         ImcDescriptionMap imcDescription = new ImcDescription();
 
-        Interpreter.heapPointer = 4;
         FrmVirtualTableAccess.heapOffset = Constants.Byte;
+        Interpreter.heapPointer = Constants.Byte;
         Type.clean();
 
         // Izvajanje faz prevajanja.
@@ -196,7 +191,9 @@ public class Atheris {
             new Interpreter(compiledCode.getFrame(), compiledCode.getLincode());
             compilationTime(startTime);
 
-            printMap(Interpreter.executedInstructions);
+            if (Interpreter.debug) {
+                printMap(Interpreter.executedInstructions);
+            }
         }
 
         return this;
